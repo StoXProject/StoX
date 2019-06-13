@@ -1,0 +1,42 @@
+Applocking
+Sjekk applocker ved EventViewer - Application and services logs - Microsoft - Windows - Applocker [exe/dll/msi/script]
+Oppdater Policies ved gpupdate /force
+
+Hviteliste
+	
+npm moduler (bruk av moduler installert globalt)
+c:\users\*\appdata\roaming\npm\node_modules\electron\dist\electron.exe
+c:\users\*\APPDATA\ROAMING\NPM\NODE_MODULES\ELECTRON-PACKAGER\NODE_MODULES\RCEDIT\BIN\RCEDIT.EXE
+
+squirrel (oppdatering av programmer, pakket av electron-packager \*\* står for <appname>\<version>)
+c:\users\*\appdata\local\*\*\Squirrel.exe   
+
+
+%OSDRIVE%\USERS\*\APPDATA\LOCAL\<appname>\UPDATE.EXE
+
+squirreltemp - oppdatering av postman?
+c:\users\*\APPDATA\LOCAL\SQUIRRELTEMP\UPDATE.EXE
+
+
+node installert exe fil
+ved sertifikat Node.js Foundation - GlobalSign TSA for MS Authenticode - G2
+C:\Program Files\nodejs\node.exe
+
+git-bash installert exe fil
+ved sertifikat Johannes Schindelin
+C:\Program Files\Git\git-bash.exe
+
+Postman sertifikat Postdot Technologies
+R:\alle\postman\Postman-win64-7.1.1-Setup.exe
+
+
+Hvitelistede kataloger (for utvikling):
+Node kan dermed starte cmd / bat filer under denne
+
+C:\Users\*\Documents\R
+E:\Projects
+
+Setup filer
+r og Rtools - setup fil
+ved sertifikat 
+Jeroen Ooms
