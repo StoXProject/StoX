@@ -1,2 +1,0 @@
-Whitelist document
-Internally at IMR: can be found at H:\S2D\development\whitelist.txt
