@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/StoXProject/StoX/issues"
   },
-  "homepage": "https://github.com/StoXProject/StoX#readme"
+  "homepage": "https://github.com/StoXProject/StoX#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }

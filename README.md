@@ -9,3 +9,10 @@ checkout - switches branch
 git merge <branch> merge from branch into current branch  
 
 work on feature branch, merge into develop, keep the master clean
+
+To build
+Install node from https://nodejs.org/en/download/
+Install Visual Studio https://code.visualstudio.com/
+
+run in terminal (i.e. git bash in visual studio) 
+npm install
