@@ -1,0 +1,21 @@
+/* Purchase the Designer API to get full access to the theme engine. */
+
+body .ui-toast .ui-toast-message.ui-toast-message{
+    background-color: #CCC;
+
+}
+body .ui-toast .ui-toast-message .ui-toast-close-icon{
+    color: #000;
+}
+body .ui-toast .ui-toast-message.ui-toast-message-info{
+    background-color: change-color($cyan, $lightness: 70, $saturation: 80);
+}
+body .ui-toast .ui-toast-message.ui-toast-message-success{
+    background-color: change-color($green, $lightness: 70, $saturation: 80);
+}	
+body .ui-toast .ui-toast-message.ui-toast-message-warn{
+    background-color: change-color($yellow, $lightness: 70, $saturation: 80);
+}	
+body .ui-toast .ui-toast-message.ui-toast-message-error{
+    background-color: change-color($red, $lightness: 70, $saturation: 80);
+}	

@@ -4,14 +4,16 @@
   "description": "stox gui program",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron .",
+    "build": "electron-packager . electronquickstart --platform win32 --arch x64 --out dist/ --overwrite --electronVersion 5.0.2",
+    "setup": "electron-installer-windows --src dist/electronquickstart-win32-x64/ --dest dist/installers/ --version-string.CompanyName=HI --version-string.FileDescription=HI --version-string.ProductName=\"Electron App\""
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/StoXProject/StoX.git"
   },
   "author": "IMR institute (HI)",
-  "license": "ISC",
+  "license": "CC0-1.0",
   "bugs": {
     "url": "https://github.com/StoXProject/StoX/issues"
   },

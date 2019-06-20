@@ -1,0 +1,44 @@
+@import 'variables';
+
+$blue:  #336699 !default;
+$cyan:  #00b5d1 !default;
+$red:     #EC4A42 !default;
+$orange:  #f18b2b !default;
+$yellow:  #F7C53A !default;
+$green:   #AADD3E !default;
+
+$hi-blue:  #31377F !default;
+
+
+
+$borderRadius:0px;
+
+$menuitemTextColor: #FFF;
+$menuitemHoverTextColor: #FFF;
+$menuitemHoverBgColor:$blue;
+
+$primaryColor:white;
+$primaryDarkColor:#f0f3f5;
+$primaryDarkerColor:#d3d4d4;
+$primaryTextColor:black;
+
+$panelHeaderBorder:1px solid #c8c8c8;
+$panelHeaderBgColor:rgb(237,237,237);
+$panelHeaderPadding:0.1em 0.4em;
+$panelHeaderActiveBgColor:rgb(235,244,252);
+$panelHeaderActiveBorder:1px solid $primaryDarkerColor;
+$panelHeaderActiveTextColor:black;
+$panelHeaderActiveIconColor:#ffffff;
+$panelHeaderActiveHoverBgColor:$panelHeaderActiveBgColor;
+$panelHeaderHoverBgColor:$panelHeaderActiveBgColor;
+$panelHeaderActiveHoverBorder:1px solid $primaryDarkerColor;
+$panelHeaderActiveHoverTextColor:black;
+$panelHeaderActiveHoverIconColor:black;
+
+
+@import 'menu';
+@import 'designer/_core';
+@import "../node_modules/primeicons/primeicons.css";
+@import "../node_modules/primeng/resources/primeng.min.css";
+@import "../node_modules/primeng/resources/themes/nova-dark/theme.css";
+
