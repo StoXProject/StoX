@@ -16,9 +16,9 @@ export class ProcessComponent implements OnInit {
 
   ngOnInit() {
   }
-  @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
+  @ViewChild(ContextMenuComponent, {static:false}) public basicMenu: ContextMenuComponent;
 
-  @ViewChild('input') input: ElementRef;
+  @ViewChild('input', {static:false}) input: ElementRef;
   ngAfterViewInit(): void {
      this.shortcuts.push(
        {
@@ -30,7 +30,7 @@ export class ProcessComponent implements OnInit {
 
     this.keyboard.select("cmd + f").subscribe(e => console.log(e));
   }
-  @ViewChild(KeyboardShortcutsComponent) private keyboard: KeyboardShortcutsComponent;
+  @ViewChild(KeyboardShortcutsComponent, {static:false}) private keyboard: KeyboardShortcutsComponent;
   showMessage(message: any) {
     console.log(message);
   }

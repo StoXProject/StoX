@@ -1,6 +1,12 @@
 # Stox
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.4.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.0.3.
+by using npm install -g @angular/cli, or using
+npm install -g @angular/cli@8.0.3
+
+Run npm install tosync node_modules from package.json
+
+The packages in package.json is depending on 8.0.3 of angular. Peer dependency warnings can be ignored, if the module is installed and the version asked for is lower (not higher)
 
 ## Development server
 
