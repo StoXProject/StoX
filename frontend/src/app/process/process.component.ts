@@ -11,7 +11,7 @@ import { ContextMenuComponent } from 'ngx-contextmenu';
 })
 export class ProcessComponent implements OnInit {
   shortcuts: ShortcutInput[] = [];
-  constructor(private ps: ProjectService) {
+  constructor(public ps: ProjectService) {
   }
 
   ngOnInit() {
@@ -28,7 +28,7 @@ export class ProcessComponent implements OnInit {
        }
      );
 
-    this.keyboard.select("cmd + f").subscribe(e => console.log(e));
+//    this.keyboard.select("cmd + f").subscribe(e => console.log(e));
   }
   @ViewChild(KeyboardShortcutsComponent, {static:false}) private keyboard: KeyboardShortcutsComponent;
   showMessage(message: any) {

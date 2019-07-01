@@ -33,7 +33,7 @@ function createWindow() {
   createMenu();
 
   // and load the index.html of the app.
-  mainWindow.loadURL('http://localhost:3000/')
+  mainWindow.loadFile('frontend/dist/stox/index.html')
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

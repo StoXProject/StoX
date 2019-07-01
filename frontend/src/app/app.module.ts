@@ -26,6 +26,7 @@ import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService }  from './in-memory-data.service';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { KeyboardShortcutsModule }     from 'ng-keyboard-shortcuts';
+import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} from '@angular/common';
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
 @NgModule({
@@ -38,9 +39,9 @@ import { KeyboardShortcutsModule }     from 'ng-keyboard-shortcuts';
     AngularResizedEventModule,
     //AgGridModule.withComponents([]),
     HttpClientModule,
-    HttpClientInMemoryWebApiModule.forRoot(
+    /*HttpClientInMemoryWebApiModule.forRoot(
       InMemoryDataService, { dataEncapsulation: false }
-    ),
+    ),*/
     AccordionModule, 
     CheckboxModule,
     BrowserAnimationsModule,
@@ -59,6 +60,7 @@ import { KeyboardShortcutsModule }     from 'ng-keyboard-shortcuts';
     ParameterComponent
   ],
   bootstrap: [HomeComponent],
-  providers: []
+  providers: [{ provide: APP_BASE_HREF, useValue: '/' },
+  { provide: LocationStrategy, useClass: HashLocationStrategy }]
 })
 export class AppModule { }

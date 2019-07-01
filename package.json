@@ -1,12 +1,15 @@
 {
   "name": "stox",
+  "productName": "StoX",
   "version": "1.0.0",
-  "description": "stox gui program",
+  "description": "StoX GUI - a desktop application for building stox projects",
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager . electronquickstart --platform win32 --arch x64 --out dist/ --overwrite --electronVersion 5.0.2",
-    "setup": "electron-installer-windows --src dist/electronquickstart-win32-x64/ --dest dist/installers/ --version-string.CompanyName=HI --version-string.FileDescription=HI --version-string.ProductName=\"Electron App\""
+    "package-win": "electron-packager . stox --platform win32 --arch x64 --out dist/ --overwrite  --asar",
+    "installer-win": "node installers/windows/createinstaller.js",
+    "package-and-installer-win": "npm run package-win && npm run installer-win",
+    "build-frontend": "cd frontend && ng build --prod --base-href && cd .."
   },
   "repository": {
     "type": "git",
@@ -20,5 +23,10 @@
   "homepage": "https://github.com/StoXProject/StoX#readme",
   "dependencies": {
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "electron": "^5.0.6",
+    "electron-packager": "^13.1.1",
+    "electron-winstaller": "^3.0.4"
   }
 }

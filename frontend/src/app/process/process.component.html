@@ -12,22 +12,22 @@
         <p-listbox [options]="ps.getProcesses(model.name)" [(ngModel)]="ps.selectedProcess" optionLabel="name">
             <ng-template let-process pTemplate="item">
                 <!-- <p-contextMenu></p-contextMenu> -->
-                <div [contextMenu]="basicMenu" [contextMenuSubject]="process.value">
+            <!--<div [contextMenu]="basicMenu" [contextMenuSubject]="process.value">
                     <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
                     <span *ngIf="process.value.breakingui">
                         <img src="./assets/images/break.png" width="8" style="margin-bottom:12px; margin-left:-16px;">
                         <span style="margin-left:8px;"></span>
                     </span>
                     <span style="margin-left:16px;">{{process.value.name}}</span>
-                </div>
+                 </div>-->
             </ng-template>
         </p-listbox>
     </p-tabPanel>
 </p-tabView>
 <context-menu>
-    <ng-template contextMenuItem let-process (execute)="runFromHere(process.name)">
+    <!--<ng-template contextMenuItem let-process (execute)="runFromHere(process.name)">
         Run from here
-    </ng-template>
+    </ng-template>-->
     <ng-template contextMenuItem divider="true"></ng-template>
     <ng-template contextMenuItem (execute)="toggleBreak($event.item)">
         Break in GUI

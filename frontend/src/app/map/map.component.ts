@@ -169,25 +169,7 @@ export class MapComponent implements OnInit {
       })
     })
 
-    /*
-    // this works
-    this.dataService.getjsonfromfile().toPromise().then(
-      (st: any) => {
-        console.log(st + " in 1");
-        this.map.addLayer(new VectorLayer({
-          source: new VectorSource({
-            format: new GeoJSON(),
-            features: (new GeoJSON).readFeatures(st, {
-              defaultDataProjection: 'EPSG:4326',
-              featureProjection: proj
-            })
-          }),
-          style: s,
-          selectable: true
-        }));
-      }); 
-      */
-      // this works (points)
+    /* // this works (points)
      this.dataService.getjsonfromfile().toPromise().then(
       (st: any) => {
         console.log(JSON.parse(st))
@@ -220,23 +202,8 @@ export class MapComponent implements OnInit {
           selectable: true
         }));
       });  
-         
-      /*
-      // this doesn't work
-     this.dataService.getFeatures().subscribe(
-      (st: Feature[]) => {
-
-        this.map.addLayer(new VectorLayer({
-          source: new VectorSource({
-            // format: new GeoJSON(),
-            features: st
-          }),
-          style: s,
-          selectable: true
-        }));
-      });    
-      */
-
+*/         
+  
     //this.map.on('click', this.onClick());
     var selectClick = new Select({
       //condition: (mapBrowserEvent) => {
