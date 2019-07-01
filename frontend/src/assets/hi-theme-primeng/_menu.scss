@@ -1,0 +1,52 @@
+
+body .ui-menubar{
+    background:inherit;
+    border: 0;
+}
+
+body .menu-container .ui-menubar .ui-menubar-custom{
+    margin-left:.25em;
+    margin-top: 6px;
+    margin-right: 0.25em;
+}
+
+body .menu-container .ui-menubar .ui-menuitem-link{
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+body .menu-container .ui-menubar .ui-menuitem-link:hover{
+    background: inherit;
+}
+
+body .menu-container .ui-menubar .ui-menuitem-link .ui-menuitem-text,
+body .menu-container .ui-menubar .ui-menubar-root-list > .ui-menuitem > .ui-menuitem-link > .ui-submenu-icon{
+    color:  $menuitemTextColor;
+}
+
+body .menu-container .ui-menubar .ui-menuitem.ui-menuitem-active > .ui-menuitem-link,
+body .menu-container .ui-menubar .ui-menuitem.ui-menuitem-active > .ui-menuitem-link .ui-menuitem-text,
+body .menu-container .ui-menubar-active .ui-menuitem-link:hover{
+    color: $menuitemHoverTextColor;
+    background-color: lighten($blue, 5);
+}
+
+body .menu-container .ui-menubar .ui-menuitem-link .ui-menuitem-text:hover,
+body .menu-container .ui-menubar .ui-menubar-root-list > .ui-menuitem > .ui-menuitem-link:hover > .ui-submenu-icon{
+    color: $menuitemHoverTextColor;
+}
+
+body .menu-container .ui-menubar .ui-submenu .ui-menuitem.ui-menu-parent.ui-menuitem-active > .ui-menuitem-link > .ui-menuitem-text,
+body .menu-container .ui-menubar .ui-submenu .ui-menuitem.ui-menu-parent.ui-menuitem-active > .ui-menuitem-link > .ui-submenu-icon,
+body .menu-container .ui-menubar .ui-submenu .ui-menuitem.ui-menuitem-active > .ui-menuitem-link,
+body .menu-container .ui-menubar .ui-submenu .ui-menuitem .ui-menuitem-link:hover .ui-menuitem-text{
+    color: $menuitemHoverTextColor;
+}
+
+body .menu-container .ui-menubar .ui-submenu .ui-menuitem .ui-menuitem-link .ui-menuitem-text,
+body .menu-container .ui-menubar .ui-submenu .ui-menubar-root-list > .ui-menuitem > .ui-menuitem-link > .ui-submenu-icon{
+    color: #333333;
+}
+
+
+

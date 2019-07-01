@@ -1,0 +1,41 @@
+// Variables
+//
+// Variables should follow the `$component-state-property-size` formula for
+// consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
+
+
+// variable reference:
+// https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_variables.scss
+
+$blue:  #336699 !default;
+
+$cyan:  #00b5d1 !default;
+$red:     #EC4A42 !default;
+$orange:  #f18b2b !default;
+$yellow:  #F7C53A !default;
+$green:   #AADD3E !default;
+
+$hi-blue:  #31377F !default;
+
+$brand-primary:         darken($blue, 6.5%) !default; // #337ab7
+$brand-success:         $green !default;
+$brand-info:            $cyan !default;
+$brand-warning:         $yellow !default;
+$brand-danger:          $red !default;
+
+
+$font-size-base:              0.875rem !default; // set default font size to 14px
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+$font-family-sans-serif:       'Open Sans', sans-serif !default;
+$enable-rounded: false;
+
+$alert-bg-level:                    -6 !default;
+$alert-border-level:                -3 !default;
+
+$btn-primary-color:              #fff !default;
+$btn-primary-bg:                 $brand-primary !default;
+
+
+
+

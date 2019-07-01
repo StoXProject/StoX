@@ -1,0 +1,40 @@
+<p-tabView>
+    <p-tabPanel *ngFor="let model of ps.getModels()" header="{{model.caption}}" [selected]="model.name === 'baseline'">
+        <!--given optionLabel, the items are of type SelectItem and has a 'value' property for the object-->
+        <p-toolbar>
+            <div>
+
+                <button pButton type="button"><img src="./assets/images/run16.png" /></button>
+                <!-- <button pButton type="button" label="Upload" icon="pi pi-upload" class="ui-button-success"></button> -->
+            </div>
+        </p-toolbar>
+
+        <p-listbox [options]="ps.getProcesses(model.name)" [(ngModel)]="ps.selectedProcess" optionLabel="name">
+            <ng-template let-process pTemplate="item">
+                <!-- <p-contextMenu></p-contextMenu> -->
+            <!--<div [contextMenu]="basicMenu" [contextMenuSubject]="process.value">
+                    <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
+                    <span *ngIf="process.value.breakingui">
+                        <img src="./assets/images/break.png" width="8" style="margin-bottom:12px; margin-left:-16px;">
+                        <span style="margin-left:8px;"></span>
+                    </span>
+                    <span style="margin-left:16px;">{{process.value.name}}</span>
+                 </div>-->
+            </ng-template>
+        </p-listbox>
+    </p-tabPanel>
+</p-tabView>
+<context-menu>
+    <!--<ng-template contextMenuItem let-process (execute)="runFromHere(process.name)">
+        Run from here
+    </ng-template>-->
+    <ng-template contextMenuItem divider="true"></ng-template>
+    <ng-template contextMenuItem (execute)="toggleBreak($event.item)">
+        Break in GUI
+    </ng-template>
+    <!-- <ng-template contextMenuItem passive="true">
+          Input something: <input type="text">
+        </ng-template> -->
+</context-menu>
+<!-- <input [ngKeyboardShortcut]="shortcuts"/> -->
+ 

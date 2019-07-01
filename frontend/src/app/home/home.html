@@ -1,0 +1,42 @@
+<nav class="navbar navbar-dark bg-primary d-flex justify-content-between" 
+style="height:3rem; z-index:100">
+  <a routerLink="" class="hi-logo logo-sm">
+    <img src="assets/hi-theme-bootstrap/hi-logo-hvit-norsk.svg" alt="Logo">
+    <span>{{title}}</span>
+  </a>
+</nav>
+<div style="height: calc(100vh - 3rem);">
+	<as-split direction="horizontal" gutterSize=6>
+		<as-split-area size="20">
+			<as-split direction="vertical" gutterSize=6>
+				<as-split-area size=30 style="overflow:hidden">
+					<app-project></app-project>
+				</as-split-area>
+				<as-split-area size=70 style="overflow:hidden">
+					<app-process></app-process>
+				</as-split-area>
+			</as-split>
+		</as-split-area>
+		<as-split-area size="60">
+			<as-split direction="vertical" gutterSize=6>
+				<as-split-area size="75">
+          <app-map class="map"></app-map>
+				</as-split-area>
+				<as-split-area size="25">
+					<p>Output tab panes</p>
+				</as-split-area>
+			</as-split>
+		</as-split-area>
+		<as-split-area size="20">
+			<as-split direction="vertical" gutterSize=6>
+				<as-split-area size="50">
+           <app-parameter></app-parameter>
+				</as-split-area>
+				<as-split-area size="50">
+					<p>Parameter description</p>
+				</as-split-area>
+			</as-split>
+		</as-split-area>
+	</as-split>
+</div>
+

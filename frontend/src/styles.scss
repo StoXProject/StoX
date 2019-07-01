@@ -1,0 +1,150 @@
+/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+@import "assets/hi-theme-primeng/hi-primeng.scss";
+@import "assets/hi-theme-bootstrap/hi-bootstrap.scss";
+//@import "~ag-grid-community/dist/styles/ag-grid.css";
+//@import "~ag-grid-community/dist/styles/ag-theme-balham.css";
+
+$fontSize: 0.8rem;
+$menuColor: rgb(240, 240, 240);
+
+.title {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+$available: #83ca5d;
+$missing: #ff7d7d;
+$waiting: #f9d457;
+$unknown: #ad75cc;
+$nodata: #acacac;
+
+.ui-accordion {
+  .ui-accordion-header {
+    background-color: rgb(213, 213, 213) !important;
+    color: black !important;
+    a {
+      text-decoration: none;
+      font-size: $fontSize !important;
+      background-color: rgb(213, 213, 213) !important;
+      color: black !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+    span {
+      color: black !important;
+    }
+  }
+  .ui-accordion-content {
+    padding: 0 !important;
+    font-size: $fontSize !important;
+    border: none !important;
+  }
+}
+
+.ui-listbox {
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: content-box !important;
+  border: none !important;
+}
+.ui-listbox-item {
+  padding-left: 0.4rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-right: 0 !important;
+  width: 100% !important;
+  font-size: 0.9rem !important;
+  color: black !important;
+  user-select: none;
+}
+
+// tabview
+.ui-tabview {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  //box-sizing: content-box;
+  border: none !important;
+  user-select: none !important;
+
+  .ui-tabview-nav {
+    background-color: rgb(240, 240, 240) !important;
+    height: 1.5rem;
+    // inline/nowrap
+    white-space: nowrap;
+    overflow: hidden;
+    li {
+      display: inline;
+      float: none;
+    }
+  }
+  .ui-tabview-panels {
+    padding: 0px !important;
+    //border: 1px solid rgb(137, 140, 149);
+    //box-sizing: content-box;
+    height: calc(100% - 1.5rem);
+    //width: 100%;
+    overflow-y: scroll;
+    .ui-tabview-panel {
+      //padding: 0;
+      //height:100%;
+      //border: none;
+      .ui-toolbar {
+        padding: 0px;
+        background-color: $menuColor;
+        border: none;
+        height: 1.5rem;
+        button {
+          height: 1.35rem;
+          width: 1.35rem;
+          padding: 0rem;
+          margin-bottom: 0.8rem;
+          vertical-align: center;
+          //border:none;
+          img {
+            vertical-align: center;
+          }
+        }
+      }
+    }
+  }
+}
+
+.ngx-contextmenu {
+  background-color: rgb(242, 242, 242);
+  ul {
+    padding: 0;
+    margin: 0;
+    li:not(.divider) {
+      background-color: rgb(242, 242, 242);
+      padding: 0.05rem;
+      margin: 0;
+      a {
+        margin-left: 33px;
+        color: black;
+      }
+      a:hover {
+        text-decoration: none;
+      }
+    }
+    li:hover:not(.divider) {
+      background-color: rgb(145, 201, 247);
+    }
+  }
+}
+
+/*.ui-listbox-item {
+    padding: .1em  !important;
+    margin: 0 !important;
+    //background-color: white !important;
+}
+.ui-listbox .ui-listbox-list-wrapper {
+    overflow-y:scroll  !important;
+    overflow-x:auto  !important;
+    height: 100% !important;
+}*/
+
+//.ui-widget, .ui-widget .ui-widget {    font-size: $fontSize !important;}

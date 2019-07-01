@@ -1,0 +1,74 @@
+
+@import 'variables';
+@import '../../../node_modules/bootstrap-scss/bootstrap';
+// import the rest of bootstrap scss
+
+
+.navbar{
+    border-bottom: 1px solid $hi-blue;
+}
+
+.btn-primary, .btn-info, .btn-success, .btn-warning, .btn-danger{
+    border-color: rgba(0,0,0,0.1);
+}
+
+.btn-warning{
+    color: rgba(0,0,0,0.7);
+}
+
+
+h4{font-weight: bold;}
+
+
+
+.text-hi{
+    color: $hi-blue;
+}
+.bg-hi{
+    background-color: $hi-blue;
+}
+
+
+/**
+ * add hi-logo styles
+ */
+.hi-logo img{
+    width:60px;
+    height:60px;
+}
+.hi-logo.logo-sm img{
+    width:30px;
+    height:30px;
+}
+.hi-logo.logo-sm span{
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+.navbar-dark .hi-logo span{
+    color: white;
+}
+
+.hi-logo span{
+    text-transform: uppercase;
+    color: $hi-blue;
+    font-weight: 600;
+    margin-left: 0.3rem;
+    display: inline-block;
+
+    @include media-breakpoint-down(sm) {
+        display: none;
+    }
+}
+
+
+.hi-app-title{
+    font-size: 1rem;
+    float: right;
+    font-weight: 600;
+    margin-right: 0.3rem;
+    text-transform: uppercase;
+    color: $primary;
+}
+.navbar-dark .hi-app-title{
+    color: white;
+}
