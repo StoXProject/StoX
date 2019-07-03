@@ -5,6 +5,9 @@
     return;
  }
 
+ 
+ var child_process = require('child_process');
+ var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
 
 // grab the packages we need
 var express = require('express');
@@ -51,7 +54,9 @@ function createWindow() {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    mainWindow = null
+    mainWindow = null;
+    rspawn = null;
+    child_process = null;
   })
 }
 
