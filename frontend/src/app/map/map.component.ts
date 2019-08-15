@@ -29,6 +29,7 @@ import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 
 import { DataService } from '../data/data.service';
+import { catchError, map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-map',
@@ -169,14 +170,15 @@ export class MapComponent implements OnInit {
       })
     })
 
-    /* // this works (points)
+    /* // this works (points) */
      this.dataService.getjsonfromfile().toPromise().then(
       (st: any) => {
-        console.log(JSON.parse(st))
+        console.log(st);
+        console.log("parsed st: " + JSON.parse(st));
         this.map.addLayer(new VectorLayer({
           source: new VectorSource({
             format: new GeoJSON(),
-            features: (new GeoJSON).readFeatures(JSON.parse(st), {
+            features: (new GeoJSON).readFeatures(JSON.parse(JSON.parse(st)), {
               defaultDataProjection: 'EPSG:4326',
               featureProjection: proj
             })
@@ -189,11 +191,12 @@ export class MapComponent implements OnInit {
      // this works (polygon)
      this.dataService.getgeojson().toPromise().then(
       (st: any) => {
-        console.log(JSON.parse(st))
+        console.log(st);
+        console.log("parsed st: " + JSON.parse(st));       
         this.map.addLayer(new VectorLayer({
           source: new VectorSource({
             format: new GeoJSON(),
-            features: (new GeoJSON).readFeatures(JSON.parse(st), {
+            features: (new GeoJSON).readFeatures(JSON.parse(JSON.parse(st)), {
               defaultDataProjection: 'EPSG:4326',
               featureProjection: proj
             })
@@ -202,7 +205,7 @@ export class MapComponent implements OnInit {
           selectable: true
         }));
       });  
-*/         
+         
   
     //this.map.on('click', this.onClick());
     var selectClick = new Select({
@@ -230,13 +233,62 @@ export class MapComponent implements OnInit {
     selectClick.on('select', (e) => {
       if (e.selected.length > 0) {
         // console.log("Id " + e.selected[0].getId());
+        // this.dataService.getBioticData().pipe(map((resp: any) => {console.log("response", resp)}));
+        //this.dataService.getBioticData().toPromise().then((st:any) => {console.log(st);});
+
+        this.dataService.runModel().subscribe( 
+          response => {
+            console.log("response : " + response);
+          }, 
+          error => {
+            // console.log("Error message : " + error.message + ", status text : " + error.statusText + ", status : " + error.status + ", url : " + error.url); 
+            console.log("Error.message : " + error.message);
+            console.log("Error.name : " + error.name);
+            console.log("Error.error : " + error.error);
+            console.log("Error.headers : " + error.headers);
+          }
+        );
+
+        // this.dataService.runModel().subscribe( response => console.log("Data : " + response));  
+        // this.dataService.runModel().toPromise().then((st:any) => {console.log("Data : " + st);});
+
+        // this.dataService.getOutputTable().subscribe( response => console.log("Another Data : " + response), error => console.log("Error : " + error));
+
+        
+        this.dataService.getOutputTable().subscribe( 
+          response => {
+            console.log("response : " + response);
+          }, 
+          error => {
+            // console.log("Error message : " + error.message + ", status text : " + error.statusText + ", status : " + error.status + ", url : " + error.url); 
+            console.log("Error.message : " + error.message);
+            console.log("Error.name : " + error.name);
+            console.log("Error.error : " + error.error);
+            console.log("Error.headers : " + error.headers);
+        });
+
+        this.dataService.getOutputTableNames().subscribe( 
+          response => {
+            console.log("response : " + response);
+          }, 
+          error => {
+            // console.log("Error message : " + error.message + ", status text : " + error.statusText + ", status : " + error.status + ", url : " + error.url); 
+            console.log("Error.message : " + error.message);
+            console.log("Error.name : " + error.name);
+            console.log("Error.error : " + error.error);
+            console.log("Error.headers : " + error.headers);
+        });        
+
+        // this.dataService.runModel().toPromise().then((st:any) => {console.log(st);});
         console.log(e.selected[0].getId() + " description " + e.selected[0].get('description'));//e.selected.getId());  
       }
     });
     selectClick.getFeatures().on('remove', function (event) {
-      console.log("remocve");
+      console.log("remove");
     });
-  }
+  } // end of ngOnInit()
+
+
   onClick() {
 
   }
