@@ -260,11 +260,7 @@ export class MapComponent implements OnInit {
             console.log("response : " + response);
           }, 
           error => {
-            // console.log("Error message : " + error.message + ", status text : " + error.statusText + ", status : " + error.status + ", url : " + error.url); 
-            console.log("Error.message : " + error.message);
-            console.log("Error.name : " + error.name);
-            console.log("Error.error : " + error.error);
-            console.log("Error.headers : " + error.headers);
+            console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
         });
 
         this.dataService.getOutputTableNames().subscribe( 
@@ -272,12 +268,42 @@ export class MapComponent implements OnInit {
             console.log("response : " + response);
           }, 
           error => {
-            // console.log("Error message : " + error.message + ", status text : " + error.statusText + ", status : " + error.status + ", url : " + error.url); 
-            console.log("Error.message : " + error.message);
-            console.log("Error.name : " + error.name);
-            console.log("Error.error : " + error.error);
-            console.log("Error.headers : " + error.headers);
-        });        
+            console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
+        });   
+        
+        this.dataService.isRstoxInstalled().subscribe( 
+          response => {
+            console.log("response : " + response);   
+            
+            var json = JSON.parse(response);
+
+            console.log("json ? " + json);
+
+            if (!json) {
+              this.dataService.installRstox().subscribe( 
+                response => {
+                  console.log("response : " + response);
+                  console.log("Rstox installed now.");
+                }, 
+                error => {                 
+                  console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
+              });
+            }
+            // else {
+            //   this.dataService.removeRstox().subscribe( 
+            //     response => {
+            //       console.log("response : " + response);
+            //       console.log("Rstox removed now.");
+            //     }, 
+            //     error => {
+            //       console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
+            //   });
+            // }
+          }, 
+          error => {
+            console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
+          }
+        );   
 
         // this.dataService.runModel().toPromise().then((st:any) => {console.log(st);});
         console.log(e.selected[0].getId() + " description " + e.selected[0].get('description'));//e.selected.getId());  
