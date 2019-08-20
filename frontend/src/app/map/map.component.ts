@@ -238,72 +238,49 @@ export class MapComponent implements OnInit {
 
         this.dataService.runModel().subscribe( 
           response => {
-            console.log("response : " + response);
-          }, 
-          error => {
-            // console.log("Error message : " + error.message + ", status text : " + error.statusText + ", status : " + error.status + ", url : " + error.url); 
-            console.log("Error.message : " + error.message);
-            console.log("Error.name : " + error.name);
-            console.log("Error.error : " + error.error);
-            console.log("Error.headers : " + error.headers);
+            console.log("runModel() response : " + response);
           }
         );
 
-        // this.dataService.runModel().subscribe( response => console.log("Data : " + response));  
-        // this.dataService.runModel().toPromise().then((st:any) => {console.log("Data : " + st);});
-
-        // this.dataService.getOutputTable().subscribe( response => console.log("Another Data : " + response), error => console.log("Error : " + error));
-
-        
         this.dataService.getOutputTable().subscribe( 
           response => {
-            console.log("response : " + response);
-          }, 
-          error => {
-            console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
-        });
+            console.log("getOutputTable() response : " + response);
+          }
+        );
 
         this.dataService.getOutputTableNames().subscribe( 
           response => {
-            console.log("response : " + response);
-          }, 
-          error => {
-            console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
-        });   
+            console.log("getOutputTableNames() response : " + response);
+          }
+        );   
         
         this.dataService.isRstoxInstalled().subscribe( 
           response => {
-            console.log("response : " + response);   
+            // console.log("response : " + response);   
             
-            var json = JSON.parse(response);
+            var installed = JSON.parse(response);
 
-            console.log("json ? " + json);
+            console.log("isRstoxInstalled() ? " + installed);
 
-            if (!json) {
+            if (!installed) {
               this.dataService.installRstox().subscribe( 
                 response => {
                   console.log("response : " + response);
                   console.log("Rstox installed now.");
-                }, 
-                error => {                 
-                  console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
-              });
+                });
             }
             // else {
             //   this.dataService.removeRstox().subscribe( 
             //     response => {
             //       console.log("response : " + response);
             //       console.log("Rstox removed now.");
-            //     }, 
-            //     error => {
-            //       console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
-            //   });
+            //     });
             // }
-          }, 
-          error => {
-            console.log("Error.message : " + error.message + ", Error.name : " + error.name + ", Error.error : " + error.error + ", Error.headers : " + error.headers);
           }
-        );   
+        ); 
+        
+        // this is to test error handling and show it in the console
+        // this.dataService.makeItFail().subscribe(response => console.log("response : " + response));
 
         // this.dataService.runModel().toPromise().then((st:any) => {console.log(st);});
         console.log(e.selected[0].getId() + " description " + e.selected[0].get('description'));//e.selected.getId());  
@@ -314,7 +291,7 @@ export class MapComponent implements OnInit {
     });
   } // end of ngOnInit()
 
-
+  
   onClick() {
 
   }
