@@ -17,7 +17,22 @@ server.listen(port);
 // start the server
 console.log('Server started! At http://localhost:' + port);
 // routes will go here
-server.get('/', function (req, res) {
+
+server.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+server.post('/rpath', function (req, res, next) {
+  // res.append('Access-Control-Allow-Origin', ['*']);
+  // res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  // res.append('Access-Control-Allow-Headers', 'Content-Type');
+  
+  console.log(" log 2");
+
+  console.log("rpath: " + req.body.rpath);
+
   res.send('StoX API Server started...');
 });
 

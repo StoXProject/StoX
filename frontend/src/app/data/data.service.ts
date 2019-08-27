@@ -82,6 +82,13 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTable/json", formData, { responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
   }  
 
+  isNodeServerLocal(): Observable<any> {
+    // return this.httpClient.get("http://10.1.32.231:3000", {responseType: 'text'}).pipe(tap( _ => _ , error => this.handleError(error)));
+    // return this.httpClient.get("http://localhost:3000", {responseType: 'text'}).pipe(tap( _ => _ , error => this.handleError(error)));
+    // return this.httpClient.get("http://127.0.0.1:3000", {responseType: 'text'}).pipe(tap( _ => _ , error => this.handleError(error)));
+    return this.httpClient.post("http://localhost:3000/rpath", {rpath:'c:/test'}, { observe:'body', responseType: 'json' }).pipe(tap( _ => _ , error => this.handleError(error)));
+  }
+
   private handleError(error : HttpErrorResponse) {
     console.log("Error.message : " + error.message);
     console.log("Error.name : " + error.name);
@@ -89,5 +96,6 @@ export class DataService {
     console.log("Error.status : " + error.status);
     console.log("Error.statusText : " + error.statusText);
     console.log("Error.url : " + error.url);
+    console.log("Error.ok : " + error.ok);
   }  
 }
