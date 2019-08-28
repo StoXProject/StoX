@@ -236,61 +236,61 @@ export class MapComponent implements OnInit {
         // this.dataService.getBioticData().pipe(map((resp: any) => {console.log("response", resp)}));
         //this.dataService.getBioticData().toPromise().then((st:any) => {console.log(st);});
 
-        this.dataService.runModel().subscribe( 
-          response => {
-            console.log("runModel() response : " + response);
-          }
-        );
+        // this.dataService.runModel().subscribe( 
+        //   response => {
+        //     console.log("runModel() response : " + response);
+        //   }
+        // );
 
-        this.dataService.getOutputTable().subscribe( 
-          response => {
-            console.log("getOutputTable() response : " + response);
-          }
-        );
+        // this.dataService.getOutputTable().subscribe( 
+        //   response => {
+        //     console.log("getOutputTable() response : " + response);
+        //   }
+        // );
 
-        this.dataService.getOutputTableNames().subscribe( 
-          response => {
-            console.log("getOutputTableNames() response : " + response);
-          }
-        );   
+        // this.dataService.getOutputTableNames().subscribe( 
+        //   response => {
+        //     console.log("getOutputTableNames() response : " + response);
+        //   }
+        // );   
         
-        this.dataService.isRstoxInstalled().subscribe( 
-          response => {
-            console.log("response : " + response);   
+        // this.dataService.isRstoxInstalled().subscribe( 
+        //   response => {
+        //     console.log("response : " + response);   
             
-            var installed = JSON.parse(response);
+        //     var installed = JSON.parse(response);
 
-            console.log("isRstoxInstalled() ? " + installed);
+        //     console.log("isRstoxInstalled() ? " + installed);
 
-            if (!installed) {
-              this.dataService.installRstox().subscribe( 
-                response => {
-                  console.log("response : " + response);
-                  console.log("Rstox installed now.");
-                });
-            }
-            // else {
-            //   this.dataService.removeRstox().subscribe( 
-            //     response => {
-            //       console.log("response : " + response);
-            //       console.log("Rstox removed now.");
-            //     });
-            // }
-          }
-        ); 
+        //     if (!installed) {
+        //       this.dataService.installRstox().subscribe( 
+        //         response => {
+        //           console.log("response : " + response);
+        //           console.log("Rstox installed now.");
+        //         });
+        //     }
+        //     // else {
+        //     //   this.dataService.removeRstox().subscribe( 
+        //     //     response => {
+        //     //       console.log("response : " + response);
+        //     //       console.log("Rstox removed now.");
+        //     //     });
+        //     // }
+        //   }
+        // ); 
         
         // this is to test error handling and show it in the console
         // this.dataService.makeItFail().subscribe(response => console.log("response : " + response));
 
-        var localNodeServer = false;
+        //var localNodeServer = false;
         
         this.dataService.isNodeServerLocal().toPromise().then(
             (response) => {
               console.log("response : " + response)
-              localNodeServer = true;
+           //   localNodeServer = true;
             }
           );
-
+            
         // this.dataService.runModel().toPromise().then((st:any) => {console.log(st);});
         console.log(e.selected[0].getId() + " description " + e.selected[0].get('description'));//e.selected.getId());  
       }

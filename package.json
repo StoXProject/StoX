@@ -9,6 +9,7 @@
     "package-win": "electron-packager . stox --platform win32 --arch x64 --out dist/ --overwrite  --asar --icon=assets/stox_icon.ico",
     "package-mac": "electron-packager . stox --platform darwin --arch x64 --out dist/ --overwrite  --asar",
     "installer-win": "node installers/windows/createinstaller.js",
+    "installer-mac": "electron-installer-dmg . stoxdmg",
     "package-and-installer-win": "npm run package-win && npm run installer-win",
     "package-and-installer-sign-win": "npm run package-win && npm run signstox && npm run installer-win && npm run signinstaller",
     "build-frontend": "cd frontend && npm install && ng build --prod --base-href && cd ..",
@@ -26,10 +27,12 @@
   },
   "homepage": "https://github.com/StoXProject/StoX#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1"
   },
   "devDependencies": {
     "electron": "^5.0.6",
+    "electron-installer-dmg": "^3.0.0",
     "electron-packager": "^13.1.1",
     "electron-winstaller": "^3.0.4",
     "electron-wix-msi": "^2.1.1"

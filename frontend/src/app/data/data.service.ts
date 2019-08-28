@@ -83,10 +83,10 @@ export class DataService {
   }  
 
   isNodeServerLocal(): Observable<any> {
-    // return this.httpClient.get("http://10.1.32.231:3000", {responseType: 'text'}).pipe(tap( _ => _ , error => this.handleError(error)));
-    // return this.httpClient.get("http://localhost:3000", {responseType: 'text'}).pipe(tap( _ => _ , error => this.handleError(error)));
     // return this.httpClient.get("http://127.0.0.1:3000", {responseType: 'text'}).pipe(tap( _ => _ , error => this.handleError(error)));
-    return this.httpClient.post("http://localhost:3000/rpath", {rpath:'c:/test'}, { observe:'body', responseType: 'json' }).pipe(tap( _ => _ , error => this.handleError(error)));
+    //return this.httpClient.post("http://localhost:3000/rpath",  {rpath:'c:/test4'}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
+    return this.httpClient.get("http://localhost:3000/rpath",  { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
+    //return this.httpClient.post("http://localhost:3000/rpath",  {rpath:'c:/test4'}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
   }
 
   private handleError(error : HttpErrorResponse) {

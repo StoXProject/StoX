@@ -1,39 +1,49 @@
- //handle setupevents as quickly as possible
- const setupEvents = require('./installers/setupEvents')
- if (setupEvents.handleSquirrelEvent()) {
-    // squirrel event handled and app will exit in 1000ms, so don't do anything else
-    return;
- }
+//handle setupevents as quickly as possible
+const setupEvents = require('./installers/setupEvents')
+if (setupEvents.handleSquirrelEvent()) {
+  // squirrel event handled and app will exit in 1000ms, so don't do anything else
+  return;
+}
 
- 
- var child_process = require('child_process');
- var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
+
+var child_process = require('child_process');
+var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
 
 // grab the packages we need
 var express = require('express');
+var bodyParser = require('body-parser');
+var cors = require('cors');
 var server = express();
 var port = 3000;
+
 server.listen(port);
 // start the server
 console.log('Server started! At http://localhost:' + port);
-// routes will go here
 
-server.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+server.use(bodyParser.json())
+server.use(cors()) // enable cors in header (http call from static resources)
+
+let rPath = "C:/Users/user/Documents/R"; // read from local properties file.
+console.log('homedir:' + require('os').homedir())
+
+// observe rpath in backend
+server.get('/rpath', function (req, res) {
+  console.log('rpath '+ rPath);
+  res.send(rPath);
 });
 
-server.post('/rpath', function (req, res, next) {
-  // res.append('Access-Control-Allow-Origin', ['*']);
-  // res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  // res.append('Access-Control-Allow-Headers', 'Content-Type');
-  
-  console.log(" log 2");
+// modify rpath in backend
+server.post('/rpath', function (req, res) {
+  rPath = req.body.rpath;
+  console.log('rpath '+ rPath);
+  res.send('post performed ok');
+});
 
-  console.log("rpath: " + req.body.rpath);
-
-  res.send('StoX API Server started...');
+server.post('/login', function (req, res) {
+  var user_name = req.body.user;
+  var password = req.body.password;
+  console.log("User name = " + user_name + ", password is " + password);
+  res.end("yes");
 });
 
 // Modules to control application life and create native browser window
@@ -93,11 +103,19 @@ app.on('activate', function () {
   if (mainWindow === null) createWindow()
 })
 
+
+app.on('quit', function () {
+  // Write app properties file to disc here.
+  console.log('ev:app quit');
+});
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
 
 function createMenu() {
+  // Read app properties file from disc here.
+  console.log('ev:ready');
 
   const template = [
     // { role: 'appMenu' }
@@ -123,7 +141,7 @@ function createMenu() {
       ]
     },
     // { role: 'editMenu' }
-   
+
     // { role: 'viewMenu' }
     {
       label: 'View',
@@ -146,8 +164,8 @@ function createMenu() {
         { role: 'minimize' },
         { role: 'zoom' },
         ...([
-            { role: 'close' }
-          ])
+          { role: 'close' }
+        ])
       ]
     },
     {
