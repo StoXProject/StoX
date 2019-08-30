@@ -27,8 +27,10 @@
   },
   "homepage": "https://github.com/StoXProject/StoX#readme",
   "dependencies": {
+    "command-exists": "^1.2.8",
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "electron": "^5.0.6",

@@ -5,6 +5,11 @@ if (setupEvents.handleSquirrelEvent()) {
   return;
 }
 
+// global variables
+var projectRootPath;
+var projectPath;
+var rPath;
+var rStoxFtpPath;
 
 var child_process = require('child_process');
 var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
@@ -23,8 +28,8 @@ console.log('Server started! At http://localhost:' + port);
 server.use(bodyParser.json())
 server.use(cors()) // enable cors in header (http call from static resources)
 
-let rPath = "C:/Users/user/Documents/R"; // read from local properties file.
-console.log('homedir:' + require('os').homedir())
+// let rPath = "C:/Users/user/Documents/R"; // read from local properties file.
+// console.log('homedir:' + require('os').homedir())
 
 // observe rpath in backend
 server.get('/rpath', function (req, res) {
@@ -36,6 +41,32 @@ server.get('/rpath', function (req, res) {
 server.post('/rpath', function (req, res) {
   rPath = req.body.rpath;
   console.log('rpath '+ rPath);
+
+  var command = rPath + "/" + "RScript";
+
+  console.log('command : '+ command);
+
+  // var commandExists = require('command-exists');
+  
+  // commandExists(command, function(err, data) {
+  //     if(data) {
+  //         // proceed confidently knowing this command is available
+  //         console.log("command exists" );
+  //     }
+  //     if(err) {
+  //       console.log("command does not exist : " + err.error);
+  //     }
+  //   }
+  // );
+
+  var commandExistsSync = require('command-exists').sync;
+
+  if(commandExistsSync(command)) {
+    console.log("command exists.");
+  } else {
+    console.log("command does not exist.");
+  }
+
   res.send('post performed ok');
 });
 
@@ -107,6 +138,7 @@ app.on('activate', function () {
 app.on('quit', function () {
   // Write app properties file to disc here.
   console.log('ev:app quit');
+  writeFile();
 });
 
 // In this file you can include the rest of your app's specific main process
@@ -116,6 +148,7 @@ app.on('quit', function () {
 function createMenu() {
   // Read app properties file from disc here.
   console.log('ev:ready');
+  readFile();
 
   const template = [
     // { role: 'appMenu' }
@@ -184,4 +217,76 @@ function createMenu() {
 
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
+}
+
+function readFile() {
+  let resourcefile = require('os').homedir() + "/.stox.config.xml";
+  fs = require('fs');
+  var options = {encoding: 'utf-8', flag: 'r'};
+  var xml2js = require('xml2js');
+  var parser = new xml2js.Parser({explicitArray: false});
+  
+  if(!fs.existsSync(resourcefile)) {
+    console.log("Resource file (.stox.config.xml) does not exist");
+    return;
+  }
+
+  // read if resource file is found
+  var xml = fs.readFileSync(resourcefile, options);
+  
+  parser.parseString(xml, function (err, result) {
+      if (err) {
+          console.error('xml2js.parseString: Error occurred: ', err);
+      } else {
+          // console.log(JSON.stringify(result, null, 2));
+          // console.log('projectroot : ', result.stox.$.projectroot);
+          projectRootPath = result.stox.$.projectroot;
+          console.log('projectRootPath : ', projectRootPath);
+          // console.log('project : ', result.stox.$.project);
+          projectPath = result.stox.$.project;
+          console.log('projectPath : ', projectPath);
+          // console.log('rfolder : ', result.stox.$.rfolder);
+          rPath = result.stox.$.rfolder;
+          console.log('rPath : ', rPath);
+          // console.log('rStoxFTPPath : ', result.stox.$.rStoxFTPPath);
+          rStoxFtpPath = result.stox.$.rStoxFTPPath;
+          console.log('rStoxFtpPath : ', rStoxFtpPath);
+      }
+  });  
+}
+
+function writeFile() {
+  if(projectRootPath == null || projectPath == null || rPath == null || rStoxFtpPath == null) {
+    return;
+  }
+
+  var result = {
+    "stox": {
+      "$": {
+        "projectroot": projectRootPath,
+        "project": projectPath,
+        "rfolder": rPath,
+        "rStoxFTPPath": rStoxFtpPath
+      }
+    }
+  };
+
+  let resourcefile = require('os').homedir() + "/.copy_stox.config.xml";
+
+  fs = require('fs'); 
+  var xml2js = require('xml2js'); 
+  var builder = new xml2js.Builder();
+  var xml = builder.buildObject(result);
+
+  var options = {encoding:'utf-8', flag:'w'};
+
+  fs.writeFileSync(resourcefile, xml, options);
+
+  // fs.writeFile(resourcefile, xml, function(err, data) {
+  //   if (err) {
+  //     console.log(err);
+  //   } else {
+  //     console.log("successfully written to xml file");
+  //   }
+  // });
 }
