@@ -5,12 +5,6 @@ import { Observable, of } from 'rxjs';
 
 import { catchError, map, tap } from 'rxjs/operators';
 
-// import Feature from 'ol/Feature';
-
-// const httpOptions = {
-//   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-// };
-
 @Injectable({
   providedIn: 'root'
 })
@@ -86,7 +80,7 @@ export class DataService {
     // return this.httpClient.get("http://127.0.0.1:3000", {responseType: 'text'}).pipe(tap( _ => _ , error => this.handleError(error)));
     //return this.httpClient.post("http://localhost:3000/rpath",  {rpath:'c:/test4'}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
     // return this.httpClient.get("http://localhost:3000/rpath",  { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
-    return this.httpClient.post("http://localhost:3000/rpath",  {rpath:'C:/Users/esmaelmh/Documents/R/R-3.6.0/bin/x64'}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
+    return this.httpClient.post("http://localhost:3000/rpath",  {rpath:''}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
   }
 
   private handleError(error : HttpErrorResponse) {

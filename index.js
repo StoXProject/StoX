@@ -42,7 +42,7 @@ server.post('/rpath', function (req, res) {
   rPath = req.body.rpath;
   console.log('rpath '+ rPath);
 
-  var command = rPath + "/" + "RScript";
+  var command = rPath == "" || rPath == null ? "RScript" :  rPath + "/" + "RScript";
 
   console.log('command : '+ command);
 
@@ -62,12 +62,14 @@ server.post('/rpath', function (req, res) {
   var commandExistsSync = require('command-exists').sync;
 
   if(commandExistsSync(command)) {
-    console.log("command exists.");
+    console.log("command " + command + " exists");
+    res.send("command " + command + " exists");
   } else {
-    console.log("command does not exist.");
+    console.log("command " + command + " does not exist.");
+    res.send("command " + command + " does not exist.");
   }
 
-  res.send('post performed ok');
+  // res.send('post performed ok');
 });
 
 server.post('/login', function (req, res) {
@@ -256,17 +258,17 @@ function readFile() {
 }
 
 function writeFile() {
-  if(projectRootPath == null || projectPath == null || rPath == null || rStoxFtpPath == null) {
-    return;
-  }
+  // if(projectRootPath == null || projectPath == null || rPath == null || rStoxFtpPath == null) {
+  //   return;
+  // }
 
   var result = {
     "stox": {
       "$": {
-        "projectroot": projectRootPath,
-        "project": projectPath,
-        "rfolder": rPath,
-        "rStoxFTPPath": rStoxFtpPath
+        "projectroot": projectRootPath == null ? "" : projectRootPath,
+        "project": projectPath == null ? "" : projectPath,
+        "rfolder": rPath == null ? "" : rPath,
+        "rStoxFTPPath": rStoxFtpPath == null ? "" : rStoxFtpPath
       }
     }
   };
