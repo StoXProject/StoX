@@ -12,7 +12,27 @@ var rPath;
 var rStoxFtpPath;
 
 var child_process = require('child_process');
-var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
+// var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
+
+var rspawn = child_process.exec("RScript -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      } else {
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+
+        if(stdout !== null && stdout.includes("FALSE")) {
+          console.log("opencpu is not installed, and is try to install it now ...");
+          child_process.execSync("RScript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+          console.log("Starting opencpu ...");
+          child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
+        } else if(stdout !== null && stdout.includes("TRUE")) {
+          console.log("Starting opencpu ...");
+          child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\""); 
+        }
+      }
+  });
 
 // grab the packages we need
 var express = require('express');
@@ -46,30 +66,43 @@ server.post('/rpath', function (req, res) {
 
   console.log('command : '+ command);
 
-  // var commandExists = require('command-exists');
-  
-  // commandExists(command, function(err, data) {
-  //     if(data) {
-  //         // proceed confidently knowing this command is available
-  //         console.log("command exists" );
-  //     }
-  //     if(err) {
-  //       console.log("command does not exist : " + err.error);
-  //     }
-  //   }
-  // );
+  child_process.exec(command + " --version", (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      res.send(error);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+    
+    if(stderr !== null && stderr.includes("version")) {
+      child_process.exec(command + " -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          res.send(error);
+        } else {
+          console.log(`stdout: ${stdout}`);
+          console.error(`stderr: ${stderr}`);
 
-  var commandExistsSync = require('command-exists').sync;
+          if(stdout !== null && stdout.includes("FALSE")) {
+            console.log("opencpu is not installed, and is trying to install it now ...");
+            child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+            console.log("Starting opencpu ...");
+            child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
+          } else if(stdout !== null && stdout.includes("TRUE")) {
+            console.log("opencpu is installed, and is trying to remove it now ...");
+            child_process.execSync(command + " -e \"remove.packages('opencpu')\"");
+            console.log("trying to install opencpu now ...");
+            child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+            console.log("Starting opencpu ...");
+            child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
+          }
+        }
+      });
+    }
+  });
 
-  if(commandExistsSync(command)) {
-    console.log("command " + command + " exists");
-    res.send("command " + command + " exists");
-  } else {
-    console.log("command " + command + " does not exist.");
-    res.send("command " + command + " does not exist.");
-  }
-
-  // res.send('post performed ok');
+  res.send('post /rpath performed ok');
 });
 
 server.post('/login', function (req, res) {
