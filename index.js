@@ -90,10 +90,10 @@ server.post('/rpath', function (req, res) {
             console.log("Starting opencpu ...");
             child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
           } else if(stdout !== null && stdout.includes("TRUE")) {
-            console.log("opencpu is installed, and is trying to remove it now ...");
-            child_process.execSync(command + " -e \"remove.packages('opencpu')\"");
-            console.log("trying to install opencpu now ...");
-            child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+            // console.log("opencpu is installed, and is trying to remove it now ...");
+            // child_process.execSync(command + " -e \"remove.packages('opencpu')\"");
+            // console.log("trying to install opencpu now ...");
+            // child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
             console.log("Starting opencpu ...");
             child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
           }
