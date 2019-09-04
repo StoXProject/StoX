@@ -171,7 +171,7 @@ export class MapComponent implements OnInit {
     })
 
     /* // this works (points) */
-     this.dataService.getjsonfromfile().toPromise().then(
+    this.dataService.getjsonfromfile().toPromise().then(
       (st: any) => {
         console.log(st);
         console.log("parsed st: " + JSON.parse(st));
@@ -188,11 +188,11 @@ export class MapComponent implements OnInit {
         }));
       });
 
-     // this works (polygon)
-     this.dataService.getgeojson().toPromise().then(
+    // this works (polygon)
+    this.dataService.getgeojson().toPromise().then(
       (st: any) => {
         console.log(st);
-        console.log("parsed st: " + JSON.parse(st));       
+        console.log("parsed st: " + JSON.parse(st));
         this.map.addLayer(new VectorLayer({
           source: new VectorSource({
             format: new GeoJSON(),
@@ -204,9 +204,9 @@ export class MapComponent implements OnInit {
           style: s2,
           selectable: true
         }));
-      });  
-         
-  
+      });
+
+
     //this.map.on('click', this.onClick());
     var selectClick = new Select({
       //condition: (mapBrowserEvent) => {
@@ -253,11 +253,11 @@ export class MapComponent implements OnInit {
         //     console.log("getOutputTableNames() response : " + response);
         //   }
         // );   
-        
+
         // this.dataService.isRstoxInstalled().subscribe( 
         //   response => {
         //     console.log("response : " + response);   
-            
+
         //     var installed = JSON.parse(response);
 
         //     console.log("isRstoxInstalled() ? " + installed);
@@ -278,16 +278,16 @@ export class MapComponent implements OnInit {
         //     // }
         //   }
         // ); 
-        
+
         // this is to test error handling and show it in the console
         // this.dataService.makeItFail().subscribe(response => console.log("response : " + response));
 
         this.dataService.isNodeServerLocal().toPromise().then(
-            (response) => {
-              console.log("response : " + response)
-            }
+          (response) => {
+            console.log("response 1: " + response)
+          }
         );
-            
+
         // this.dataService.runModel().toPromise().then((st:any) => {console.log(st);});
         console.log(e.selected[0].getId() + " description " + e.selected[0].get('description'));//e.selected.getId());  
       }
@@ -297,7 +297,7 @@ export class MapComponent implements OnInit {
     });
   } // end of ngOnInit()
 
-  
+
   onClick() {
 
   }

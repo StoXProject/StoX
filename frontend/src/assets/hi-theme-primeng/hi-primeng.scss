@@ -22,10 +22,26 @@ $primaryDarkColor:#f0f3f5;
 $primaryDarkerColor:#d3d4d4;
 $primaryTextColor:black;
 
+$buttonBorder:1px solid #c8c8c8;
+$buttonBgColor:rgb(237,237,237);
+$buttonPadding:0.1em 0.4em;
+$buttonActiveBgColor:rgb(235,244,252);
+$buttonActiveBorder:1px solid $primaryDarkerColor;
+$buttonActiveTextColor:black;
+$buttonActiveIconColor:#ffffff;
+$buttonActiveHoverBgColor:$buttonActiveBgColor;
+$buttonHoverBgColor:$buttonActiveBgColor;
+$buttonActiveHoverBorder:1px solid $primaryDarkerColor;
+$buttonActiveHoverTextColor:black;
+$buttonActiveHoverIconColor:black;
+$buttonActiveTextColor:black;
+$buttonTextColor:black; 
+$buttonHoverTextColor:$buttonTextColor;
+
 $panelHeaderBorder:1px solid #c8c8c8;
-$panelHeaderBgColor:rgb(237,237,237);
+$panelHeaderBgColor:$buttonBgColor;
 $panelHeaderPadding:0.1em 0.4em;
-$panelHeaderActiveBgColor:rgb(235,244,252);
+$panelHeaderActiveBgColor:$buttonActiveBgColor;
 $panelHeaderActiveBorder:1px solid $primaryDarkerColor;
 $panelHeaderActiveTextColor:black;
 $panelHeaderActiveIconColor:#ffffff;

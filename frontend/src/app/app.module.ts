@@ -20,6 +20,9 @@ import { HttpClientModule }    from '@angular/common/http';
 
 import {AccordionModule} from 'primeng/accordion';
 import {CheckboxModule} from 'primeng/checkbox';
+import {ButtonModule} from 'primeng/button';
+import {DialogModule} from 'primeng/dialog';
+import {InputTextModule} from 'primeng/inputtext';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/components/table/table';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
@@ -32,6 +35,9 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
 @NgModule({
   imports: [
     BrowserModule,
+    ButtonModule,
+    InputTextModule,
+    DialogModule,
     FormsModule,
     TabViewModule,
     NgbModule,

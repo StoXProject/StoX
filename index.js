@@ -12,27 +12,28 @@ var rPath;
 var rStoxFtpPath;
 
 var child_process = require('child_process');
+
 // var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
 
 var rspawn = child_process.exec("RScript -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      } else {
-        console.log(`stdout: ${stdout}`);
-        console.error(`stderr: ${stderr}`);
+  if (error) {
+    console.error(`exec error: ${error}`);
+    return;
+  } else {
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
 
-        if(stdout !== null && stdout.includes("FALSE")) {
-          console.log("opencpu is not installed, and is try to install it now ...");
-          child_process.execSync("RScript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
-          console.log("Starting opencpu ...");
-          child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
-        } else if(stdout !== null && stdout.includes("TRUE")) {
-          console.log("Starting opencpu ...");
-          child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\""); 
-        }
-      }
-  });
+    if (stdout !== null && stdout.includes("FALSE")) {
+      console.log("opencpu is not installed, and is try to install it now ...");
+      child_process.execSync("RScript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+      console.log("Starting opencpu ...");
+      child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
+    } else if (stdout !== null && stdout.includes("TRUE")) {
+      console.log("Starting opencpu ...");
+      child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
+    }
+  }
+});
 
 // grab the packages we need
 var express = require('express');
@@ -47,24 +48,25 @@ console.log('Server started! At http://localhost:' + port);
 
 server.use(bodyParser.json())
 server.use(cors()) // enable cors in header (http call from static resources)
+server.options(cors());
 
 // let rPath = "C:/Users/user/Documents/R"; // read from local properties file.
 // console.log('homedir:' + require('os').homedir())
 
 // observe rpath in backend
 server.get('/rpath', function (req, res) {
-  console.log('rpath '+ rPath);
+  console.log('rpath ' + rPath);
   res.send(rPath);
 });
 
 // modify rpath in backend
 server.post('/rpath', function (req, res) {
   rPath = req.body.rpath;
-  console.log('rpath '+ rPath);
+  console.log('rpath ' + rPath);
 
-  var command = rPath == "" || rPath == null ? "RScript" :  rPath + "/" + "RScript";
+  var command = rPath == "" || rPath == null ? "RScript" : rPath + "/" + "RScript";
 
-  console.log('command : '+ command);
+  console.log('command : ' + command);
 
   child_process.exec(command + " --version", (error, stdout, stderr) => {
     if (error) {
@@ -74,8 +76,8 @@ server.post('/rpath', function (req, res) {
     }
     console.log(`stdout: ${stdout}`);
     console.error(`stderr: ${stderr}`);
-    
-    if(stderr !== null && stderr.includes("version")) {
+
+    if (stderr !== null && stderr.includes("version")) {
       child_process.exec(command + " -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
@@ -84,12 +86,12 @@ server.post('/rpath', function (req, res) {
           console.log(`stdout: ${stdout}`);
           console.error(`stderr: ${stderr}`);
 
-          if(stdout !== null && stdout.includes("FALSE")) {
+          if (stdout !== null && stdout.includes("FALSE")) {
             console.log("opencpu is not installed, and is trying to install it now ...");
             child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
             console.log("Starting opencpu ...");
             child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
-          } else if(stdout !== null && stdout.includes("TRUE")) {
+          } else if (stdout !== null && stdout.includes("TRUE")) {
             // console.log("opencpu is installed, and is trying to remove it now ...");
             // child_process.execSync(command + " -e \"remove.packages('opencpu')\"");
             // console.log("trying to install opencpu now ...");
@@ -112,6 +114,21 @@ server.post('/login', function (req, res) {
   res.end("yes");
 });
 
+
+server.post('/browse', function (req, res) {
+  console.log("select a folder... wait");
+  require('electron').dialog.showOpenDialog({ title: 'Select a folder', defaultPath: /*require('os').homedir()*/ req.body.defaultpath, 
+  properties: [/*'openFile'*/'openDirectory'] }, (folderPath) => {
+    if (folderPath === undefined) {
+      console.log("You didn't select a folder");
+      return;
+    }
+    console.log("You did select a folder");
+    console.log(folderPath);
+    res.send(folderPath);
+  });
+});
+
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu } = require('electron')
 
@@ -130,6 +147,7 @@ function createWindow() {
       nodeIntegration: true
     }
   })
+
 
   // mainWindow.setMenu(null);
   createMenu();
@@ -257,37 +275,37 @@ function createMenu() {
 function readFile() {
   let resourcefile = require('os').homedir() + "/.stox.config.xml";
   fs = require('fs');
-  var options = {encoding: 'utf-8', flag: 'r'};
+  var options = { encoding: 'utf-8', flag: 'r' };
   var xml2js = require('xml2js');
-  var parser = new xml2js.Parser({explicitArray: false});
-  
-  if(!fs.existsSync(resourcefile)) {
+  var parser = new xml2js.Parser({ explicitArray: false });
+
+  if (!fs.existsSync(resourcefile)) {
     console.log("Resource file (.stox.config.xml) does not exist");
     return;
   }
 
   // read if resource file is found
   var xml = fs.readFileSync(resourcefile, options);
-  
+
   parser.parseString(xml, function (err, result) {
-      if (err) {
-          console.error('xml2js.parseString: Error occurred: ', err);
-      } else {
-          // console.log(JSON.stringify(result, null, 2));
-          // console.log('projectroot : ', result.stox.$.projectroot);
-          projectRootPath = result.stox.$.projectroot;
-          console.log('projectRootPath : ', projectRootPath);
-          // console.log('project : ', result.stox.$.project);
-          projectPath = result.stox.$.project;
-          console.log('projectPath : ', projectPath);
-          // console.log('rfolder : ', result.stox.$.rfolder);
-          rPath = result.stox.$.rfolder;
-          console.log('rPath : ', rPath);
-          // console.log('rStoxFTPPath : ', result.stox.$.rStoxFTPPath);
-          rStoxFtpPath = result.stox.$.rStoxFTPPath;
-          console.log('rStoxFtpPath : ', rStoxFtpPath);
-      }
-  });  
+    if (err) {
+      console.error('xml2js.parseString: Error occurred: ', err);
+    } else {
+      // console.log(JSON.stringify(result, null, 2));
+      // console.log('projectroot : ', result.stox.$.projectroot);
+      projectRootPath = result.stox.$.projectroot;
+      console.log('projectRootPath : ', projectRootPath);
+      // console.log('project : ', result.stox.$.project);
+      projectPath = result.stox.$.project;
+      console.log('projectPath : ', projectPath);
+      // console.log('rfolder : ', result.stox.$.rfolder);
+      rPath = result.stox.$.rfolder;
+      console.log('rPath : ', rPath);
+      // console.log('rStoxFTPPath : ', result.stox.$.rStoxFTPPath);
+      rStoxFtpPath = result.stox.$.rStoxFTPPath;
+      console.log('rStoxFtpPath : ', rStoxFtpPath);
+    }
+  });
 }
 
 function writeFile() {
@@ -308,12 +326,12 @@ function writeFile() {
 
   let resourcefile = require('os').homedir() + "/.copy_stox.config.xml";
 
-  fs = require('fs'); 
-  var xml2js = require('xml2js'); 
+  fs = require('fs');
+  var xml2js = require('xml2js');
   var builder = new xml2js.Builder();
   var xml = builder.buildObject(result);
 
-  var options = {encoding:'utf-8', flag:'w'};
+  var options = { encoding: 'utf-8', flag: 'w' };
 
   fs.writeFileSync(resourcefile, xml, options);
 

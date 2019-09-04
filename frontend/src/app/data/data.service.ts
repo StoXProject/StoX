@@ -82,6 +82,18 @@ export class DataService {
     // return this.httpClient.get("http://localhost:3000/rpath",  { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
     return this.httpClient.post("http://localhost:3000/rpath",  {rpath:'C:/Users/esmaelmh/Documents/R/R-3.6.0/bin/x64'}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
   }
+  
+  getRPath(): Observable<any> {
+    return this.httpClient.get("http://localhost:3000/rpath",  { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
+  }
+
+  setRPath(rpath : string): Observable<any> {
+    return this.httpClient.post("http://localhost:3000/rpath", {rpath:rpath}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
+  }
+
+  browse(defaultpath : string): Observable<any> {
+    return this.httpClient.post("http://localhost:3000/browse", {defaultpath:defaultpath}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
+  }
 
   private handleError(error : HttpErrorResponse) {
     console.log("Error.message : " + error.message);
