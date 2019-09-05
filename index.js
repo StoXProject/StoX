@@ -52,9 +52,22 @@ server.use(cors()) // enable cors in header (http call from static resources)
 // console.log('homedir:' + require('os').homedir())
 
 // observe rpath in backend
-server.get('/rpath', function (req, res) {
-  console.log('rpath '+ rPath);
-  res.send(rPath);
+server.get('/browse', function (req, res) {
+ 
+    require('electron').dialog.showOpenDialog({title: 'Select a folder', properties: ['openDirectory']}, (folderPath) => {
+        if (folderPath === undefined){
+            console.log("You didn't select a folder");
+            // return;
+            res.send("You didn't select a folder");
+        } else {
+          console.log("folderPath : " + folderPath);
+          res.send("folderPath : " + folderPath);
+        }
+    });
+
+
+  // console.log('rpath '+ rPath);
+  // res.send(rPath);
 });
 
 // modify rpath in backend

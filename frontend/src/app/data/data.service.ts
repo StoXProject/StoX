@@ -83,6 +83,10 @@ export class DataService {
     return this.httpClient.post("http://localhost:3000/rpath",  {rpath:'C:/Users/esmaelmh/Documents/R/R-3.6.0/bin/x64'}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
   }
 
+  getBrowse(): Observable<any> {
+    return this.httpClient.get("http://localhost:3000/browse",  { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
+  }
+
   private handleError(error : HttpErrorResponse) {
     console.log("Error.message : " + error.message);
     console.log("Error.name : " + error.name);
