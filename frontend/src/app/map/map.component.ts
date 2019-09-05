@@ -282,12 +282,27 @@ export class MapComponent implements OnInit {
         // this is to test error handling and show it in the console
         // this.dataService.makeItFail().subscribe(response => console.log("response : " + response));
 
+<<<<<<< HEAD
         this.dataService.isNodeServerLocal().toPromise().then(
           (response) => {
             console.log("response 1: " + response)
           }
         );
 
+=======
+        this.dataService.postRPath().toPromise().then(
+            (response) => {
+              console.log("response : " + response)
+            }
+        );
+
+        // this.dataService.getBrowse().toPromise().then(
+        //   (response) => {
+        //     console.log("response : " + response)
+        //   }
+        // );  
+            
+>>>>>>> 6659dd235dde684ef0f96349dbb3a03e9f2b484b
         // this.dataService.runModel().toPromise().then((st:any) => {console.log(st);});
         console.log(e.selected[0].getId() + " description " + e.selected[0].get('description'));//e.selected.getId());  
       }
