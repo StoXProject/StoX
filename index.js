@@ -71,6 +71,11 @@ server.get('/browse', function (req, res) {
   // console.log('rpath '+ rPath);
   // res.send(rPath);
 });
+// observe rpath in backend
+server.get('/rpath', function (req, res) {
+  console.log('rpath '+ rPath);
+  res.send(rPath);
+});
 
 // modify rpath in backend
 server.post('/rpath', function (req, res) {
