@@ -15,14 +15,9 @@ export class HomeComponent {
 
   display: boolean = false;
   rpath: string = 'test1';
-  showDialog() {
+  async showDialog() {
     console.log("showDialog");
-    this.dataService.getRPath().toPromise().then(
-        res => {
-          this.rpath = res;
-          console.log("Reading rpath from backend " + this.rpath)
-        } 
-      );
+    this.rpath = await this.dataService.getRPath();
     this.display = true;
   }
 
@@ -30,19 +25,19 @@ export class HomeComponent {
     console.log("apply");
     console.log("Posting rpath " + this.rpath)
     this.dataService.setRPath(this.rpath).toPromise().then(
-        res => {
-          console.log("Posting rpath, response " + res)
-        } 
-      );
+      res => {
+        console.log("Posting rpath, response " + res)
+      }
+    );
     this.display = false;
   }
 
-  browse() : void {
+  browse(): void {
     console.log("browse");
     this.dataService.browse(this.rpath).toPromise().then(
-        res => {
-          this.rpath = res;
-        } 
-      );
+      res => {
+        this.rpath = res;
+      }
+    );
   }
 }
