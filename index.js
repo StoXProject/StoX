@@ -54,11 +54,6 @@ server.options(cors());
 // console.log('homedir:' + require('os').homedir())
 
 // observe rpath in backend
-<<<<<<< HEAD
-server.get('/rpath', function (req, res) {
-  console.log('rpath ' + rPath);
-  res.send(rPath);
-=======
 server.get('/browse', function (req, res) {
  
     require('electron').dialog.showOpenDialog({title: 'Select a folder', properties: ['openDirectory']}, (folderPath) => {
@@ -75,7 +70,6 @@ server.get('/browse', function (req, res) {
 
   // console.log('rpath '+ rPath);
   // res.send(rPath);
->>>>>>> 6659dd235dde684ef0f96349dbb3a03e9f2b484b
 });
 
 // modify rpath in backend
@@ -95,13 +89,8 @@ server.post('/rpath', function (req, res) {
     }
     console.log(`stdout: ${stdout}`);
     console.error(`stderr: ${stderr}`);
-<<<<<<< HEAD
-
-    if (stderr !== null && stderr.includes("version")) {
-=======
     
     if(stdout !== null && stdout.includes("TRUE")) {
->>>>>>> 6659dd235dde684ef0f96349dbb3a03e9f2b484b
       child_process.exec(command + " -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
