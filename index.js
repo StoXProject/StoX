@@ -79,7 +79,7 @@ server.post('/rpath', function (req, res) {
 
   console.log('command : '+ command);
 
-  child_process.exec(command + " --version", (error, stdout, stderr) => {
+  child_process.exec(command + " -e \"print(TRUE)\"", (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
       res.send(error);
@@ -88,7 +88,7 @@ server.post('/rpath', function (req, res) {
     console.log(`stdout: ${stdout}`);
     console.error(`stderr: ${stderr}`);
     
-    if(stderr !== null && stderr.includes("version")) {
+    if(stdout !== null && stdout.includes("TRUE")) {
       child_process.exec(command + " -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
