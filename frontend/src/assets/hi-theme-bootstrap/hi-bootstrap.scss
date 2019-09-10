@@ -28,6 +28,10 @@ h4{font-weight: bold;}
     background-color: $hi-blue;
 }
 
+body .ui-menu .ui-menuitem-link {
+    padding: 0.3em 0.3em 0.3em 2.6em;
+  }
+  
 
 /**
  * add hi-logo styles
@@ -37,8 +41,8 @@ h4{font-weight: bold;}
     height:60px;
 }
 .hi-logo.logo-sm img{
-    width:30px;
-    height:30px;
+    width:60px;
+    height:20px;
 }
 .hi-logo.logo-sm span{
     font-weight: 600;

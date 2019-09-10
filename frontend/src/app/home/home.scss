@@ -1,9 +1,10 @@
 @charset "UTF-8";
-@import '../../assets/hi-theme-bootstrap/variables';
+@import "../../assets/hi-theme-bootstrap/variables";
 
-.nav-link{
-    padding: 3px 0 0 0;
+.nav-link {
+  padding: 3px 0 0 0;
 }
+
 /*
 .menu-container{
     position: absolute;
@@ -20,32 +21,35 @@
 
 /* Application-wide Styles */
 h1 {
-    color: #369;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 250%;
-  }
-  h2, h3 {
-    color: #444;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: lighter;
-  }
-  body {
-    margin: 0;
-  }
-  body, input[type="text"], button {
-    color: #888;
-    font-family: Cambria, Georgia;
-  }
-  /* everywhere else */
-  * {
-    font-family: Arial, Helvetica, sans-serif;
-  }
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 250%;
+}
+h2,
+h3 {
+  color: #444;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: lighter;
+}
+body {
+  margin: 0;
+}
+body,
+input[type="text"],
+button {
+  color: #888;
+  font-family: Cambria, Georgia;
+}
+/* everywhere else */
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-  /* base selector-class for stox panes*/
-[class*=stox-pane] {
+/* base selector-class for stox panes*/
+[class*="stox-pane"] {
   border-radius: 5px;
   border: 1px solid grey;
-/*   background-color: aquamarine;*/
+  /*   background-color: aquamarine;*/
 }
 
 /*.stox-map {

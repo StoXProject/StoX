@@ -23,6 +23,11 @@ import {AccordionModule} from 'primeng/accordion';
 import {CheckboxModule} from 'primeng/checkbox';
 import {ButtonModule} from 'primeng/button';
 import {DialogModule} from 'primeng/dialog';
+//import {RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import {MenuModule } from 'primeng/menu';
+import {PanelMenuModule } from 'primeng/primeng';
+//import { MenuItem } from 'primeng/api';
 import {InputTextModule} from 'primeng/inputtext';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/components/table/table';
@@ -56,7 +61,9 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
     ListboxModule,
     ToolbarModule,
     ContextMenuModule.forRoot(),
-    KeyboardShortcutsModule.forRoot()
+    KeyboardShortcutsModule.forRoot(),
+    RouterModule.forRoot([] ), 
+     MenuModule//, PanelMenuModule
   ],
   declarations: [
     HomeComponent,

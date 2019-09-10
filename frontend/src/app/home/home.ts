@@ -3,35 +3,23 @@ import { tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { DataService } from '../data/data.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
-
+import {MenuItem} from 'primeng/api';
 @Component({
   selector: 'homeComponent',
   templateUrl: './home.html',
   styleUrls: ['./home.scss']
 })
+
 export class HomeComponent {
   title = 'stox';
-  constructor(private rConnectionDlgService : RConnectionDlgService) {
+  constructor(private rConnectionDlgService: RConnectionDlgService) {
+  }
+  items: MenuItem[];
+
+  ngOnInit() {
+    this.items = [{
+      label: 'R connection...', command: e => this.rConnectionDlgService.showDialog()
+    }];
   }
 
-/*  display: boolean = false;
-  rpath: string = 'test1';
-  async showDialog() {
-    console.log("showDialog");
-    this.rpath = await this.dataService.getRPath().toPromise();
-    this.display = true;
-  }
-
-  async apply() {
-    console.log("apply");
-    console.log("Posting rpath " + this.rpath)
-    var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
-    console.log("Posting rpath, response " + res)
-    this.display = false;
-  }
-
-  async browse() {
-    console.log("browse");
-    this.rpath = await this.dataService.browse(this.rpath).toPromise();
-  }*/
 }
