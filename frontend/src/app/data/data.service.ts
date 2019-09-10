@@ -115,10 +115,10 @@ export class DataService {
   }
 
   browse(defaultpath: string): Observable<any> {
-    return this.postLocalNode('rpath', { defaultpath: defaultpath });
+    return this.postLocalNode('browse', { defaultpath: defaultpath });
   }
 
-  getRPath(): Observable<any> {
+  public getRPath(): Observable<any> {
     return this.getLocalNode('rpath');
   }
 

@@ -58,7 +58,7 @@ server.options(cors());
 
 // observe rpath in backend
 server.get('/rpath', function (req, res) {
-  console.log('rpath ' + rPath);
+  console.log('get rpath ' + rPath);
   res.send(rPath);
 });
 

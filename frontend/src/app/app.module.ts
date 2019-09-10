@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { HomeComponent } from './home/home';
+import { RConnectionDlg } from './dlg/RConnectionDlg';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
 import { MapComponent } from './map/map.component';
@@ -59,6 +60,7 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
   ],
   declarations: [
     HomeComponent,
+    RConnectionDlg,
     FileUploadComponent,
     ProjectComponent,
     MapComponent,

@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { DataService } from '../data/data.service';
-import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 
 @Component({
   selector: 'homeComponent',
@@ -11,10 +10,10 @@ import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 })
 export class HomeComponent {
   title = 'stox';
-  constructor(private rConnectionDlgService : RConnectionDlgService) {
+  constructor(private dataService: DataService) {
   }
 
-/*  display: boolean = false;
+  display: boolean = false;
   rpath: string = 'test1';
   async showDialog() {
     console.log("showDialog");
@@ -33,5 +32,5 @@ export class HomeComponent {
   async browse() {
     console.log("browse");
     this.rpath = await this.dataService.browse(this.rpath).toPromise();
-  }*/
+  }
 }
