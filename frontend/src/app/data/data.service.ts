@@ -76,23 +76,28 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
-  postRPath(): Observable<any> {
-    // return this.httpClient.get("http://127.0.0.1:3000", {responseType: 'text'}).pipe(tap( _ => _ , error => this.handleError(error)));
-    //return this.httpClient.post("http://localhost:3000/rpath",  {rpath:'c:/test4'}, { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
-    // return this.httpClient.get("http://localhost:3000/rpath",  { observe:'body', responseType: 'text' }).pipe(tap( _ => _ , error => this.handleError(error)));
-    return this.httpClient.post("http://localhost:3000/rpath", { rpath: 'C:/Users/esmaelmh/Documents/R/R-3.6.0/bin/x64' }, { observe: 'body', responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+
+  static readonly LOCALHOST: string = 'localhost';
+  static readonly NODE_PORT: number = 3000;
+
+  public static getURL(host : string, port : number, api : string) {
+    return "http://" + host + ":" + port + "/" + api;
   }
 
-  getRPath(): Observable<any> {
-    return this.httpClient.get("http://localhost:3000/rpath", { observe: 'body', responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<any> {
+    return this.httpClient.post(DataService.getURL(host, port, api), body, { observe: 'body', responseType: <any>responseType }).pipe(tap(_ => _, error => this.handleError(error)));
+  }
+ 
+  public get(host: string, port: number, api: string, responseType: string = 'text'): Observable<any> {
+    return this.httpClient.get(DataService.getURL(host, port, api), { observe: 'body', responseType: <any>responseType }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
-  setRPath(rpath: string): Observable<any> {
-    return this.httpClient.post("http://localhost:3000/rpath", { rpath: rpath }, { observe: 'body', responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  public postLocalNode(api: string, body: any, responseType: string = 'text'): Observable<any> {
+    return this.post(DataService.LOCALHOST, DataService.NODE_PORT, api, body, responseType);
   }
 
-  browse(defaultpath: string): Observable<any> {
-    return this.httpClient.post("http://localhost:3000/browse", { defaultpath: defaultpath }, { observe: 'body', responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  public getLocalNode(api: string, responseType: string = 'text'): Observable<any> {
+    return this.get(DataService.LOCALHOST, DataService.NODE_PORT, api, responseType);
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -104,4 +109,17 @@ export class DataService {
     console.log("Error.url : " + error.url);
     console.log("Error.ok : " + error.ok);
   }
+
+  setRPath(rpath: string): Observable<any> {
+    return this.postLocalNode('rpath', { rpath: rpath });
+  }
+
+  browse(defaultpath: string): Observable<any> {
+    return this.postLocalNode('rpath', { defaultpath: defaultpath });
+  }
+
+  getRPath(): Observable<any> {
+    return this.getLocalNode('rpath');
+  }
+
 }

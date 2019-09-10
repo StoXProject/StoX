@@ -7,14 +7,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Electron Main",
+            "name": "StoX backend",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
             "program": "${workspaceFolder}/index.js"
         },
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
+            "name": "StoX in Chrome",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/frontend"
         }

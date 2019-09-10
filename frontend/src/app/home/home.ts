@@ -21,14 +21,11 @@ export class HomeComponent {
     this.display = true;
   }
 
-  apply(): void {
+  async apply() {
     console.log("apply");
     console.log("Posting rpath " + this.rpath)
-    this.dataService.setRPath(this.rpath).toPromise().then(
-      res => {
-        console.log("Posting rpath, response " + res)
-      }
-    );
+    var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
+    console.log("Posting rpath, response " + res)
     this.display = false;
   }
 
