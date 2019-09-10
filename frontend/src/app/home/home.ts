@@ -17,7 +17,7 @@ export class HomeComponent {
   rpath: string = 'test1';
   async showDialog() {
     console.log("showDialog");
-    this.rpath = await this.dataService.getRPath();
+    this.rpath = await this.dataService.getRPath().toPromise();
     this.display = true;
   }
 
@@ -32,12 +32,8 @@ export class HomeComponent {
     this.display = false;
   }
 
-  browse(): void {
+  async browse() {
     console.log("browse");
-    this.dataService.browse(this.rpath).toPromise().then(
-      res => {
-        this.rpath = res;
-      }
-    );
+    this.rpath = await this.dataService.browse(this.rpath).toPromise();
   }
 }

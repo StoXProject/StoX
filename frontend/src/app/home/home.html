@@ -1,10 +1,8 @@
 <p-dialog header="Connection to R" [(visible)]="display" [modal]="true" [responsive]="true"
 	[style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
 	<p>Path to R Bin:</p>
-	<div class=".container">
-		<input type="text" pInputText [(ngModel)]="rpath" />
-		<button type="button" pButton icon="pi pi-ellipsis-h" (click)="browse()"></button>
-	</div>
+		<input style="width:calc(100% - 22px);" type="text" pInputText [(ngModel)]="rpath" />
+		<button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h" (click)="browse()"></button>
 	<p>The path to R bin (location to binary executable) is the folder where the R binary is located. StoX will use this
 		path to trigger R commands. When pressing OK, a check will be performed to ensure the dependent packages in
 		RStoX are installed.</p>

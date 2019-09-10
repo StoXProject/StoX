@@ -83,8 +83,8 @@ export class DataService {
     return this.httpClient.post("http://localhost:3000/rpath", { rpath: 'C:/Users/esmaelmh/Documents/R/R-3.6.0/bin/x64' }, { observe: 'body', responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
-  getRPath(): Promise<any> {
-    return this.httpClient.get("http://localhost:3000/rpath", { observe: 'body', responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error))).toPromise();
+  getRPath(): Observable<any> {
+    return this.httpClient.get("http://localhost:3000/rpath", { observe: 'body', responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
   setRPath(rpath: string): Observable<any> {

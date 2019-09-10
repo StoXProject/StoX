@@ -4,6 +4,7 @@ if (setupEvents.handleSquirrelEvent()) {
   // squirrel event handled and app will exit in 1000ms, so don't do anything else
   return;
 }
+var mainWindow
 
 // global variables
 var projectRootPath;
@@ -54,26 +55,10 @@ server.options(cors());
 // console.log('homedir:' + require('os').homedir())
 
 // observe rpath in backend
-server.get('/browse', function (req, res) {
- 
-    require('electron').dialog.showOpenDialog({title: 'Select a folder', properties: ['openDirectory']}, (folderPath) => {
-        if (folderPath === undefined){
-            console.log("You didn't select a folder");
-            // return;
-            res.send("You didn't select a folder");
-        } else {
-          console.log("folderPath : " + folderPath);
-          res.send("folderPath : " + folderPath);
-        }
-    });
 
-
-  // console.log('rpath '+ rPath);
-  // res.send(rPath);
-});
 // observe rpath in backend
 server.get('/rpath', function (req, res) {
-  console.log('rpath '+ rPath);
+  console.log('rpath ' + rPath);
   res.send(rPath);
 });
 
@@ -94,8 +79,8 @@ server.post('/rpath', function (req, res) {
     }
     console.log(`stdout: ${stdout}`);
     console.error(`stderr: ${stderr}`);
-    
-    if(stdout !== null && stdout.includes("TRUE")) {
+
+    if (stdout !== null && stdout.includes("TRUE")) {
       child_process.exec(command + " -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
@@ -133,26 +118,12 @@ server.post('/login', function (req, res) {
 });
 
 
-server.post('/browse', function (req, res) {
-  console.log("select a folder... wait");
-  require('electron').dialog.showOpenDialog({ title: 'Select a folder', defaultPath: /*require('os').homedir()*/ req.body.defaultpath, 
-  properties: [/*'openFile'*/'openDirectory'] }, (folderPath) => {
-    if (folderPath === undefined) {
-      console.log("You didn't select a folder");
-      return;
-    }
-    console.log("You did select a folder");
-    console.log(folderPath);
-    res.send(folderPath);
-  });
-});
 
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
 
 function createWindow() {
 
@@ -166,7 +137,23 @@ function createWindow() {
     }
   })
 
-
+  server.post('/browse', function (req, res) {
+    console.log("select a folder... wait");
+    require('electron').dialog.showOpenDialog(mainWindow, {
+      title: 'Select a folder', defaultPath: /*require('os').homedir()*/ req.body.defaultpath,
+      properties: [/*'openFile'*/'openDirectory']
+    }, (folderPath) => {
+      if (!folderPath || !folderPath.length) {
+        console.log("You didn't select a folder");
+        return;
+      }
+      console.log("You did select a folder");
+      console.log(folderPath[0]);
+      res.send(folderPath[0]);
+    });
+  });
+  
+  
   // mainWindow.setMenu(null);
   createMenu();
 
