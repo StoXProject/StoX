@@ -3,18 +3,20 @@
   "productName": "StoX",
   "version": "1.0.0",
   "description": "StoX GUI - a desktop application for building stox projects",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
-    "start": "electron .",
-    "package-win": "electron-packager . stox --platform win32 --arch x64 --out dist/ --overwrite  --asar --icon=assets/stox_icon.ico",
-    "package-mac": "electron-packager . stox --platform darwin --arch x64 --out dist/ --overwrite  --asar",
+    "start": "tsc && electron ./build/index.js",
+    "start-dev": "tsc-node-dev --respawn --transpileOnly ./index.ts && electron ./build/index.js",
+    "package-win": "tsc && electron-packager . stox --platform win32 --arch x64 --out dist/ --overwrite  --asar --icon=assets/stox_icon.ico",
+    "package-mac": "tsc && electron-packager . stox --platform darwin --arch x64 --out dist/ --overwrite  --asar",
     "installer-win": "node installers/windows/createinstaller.js",
     "installer-mac": "electron-installer-dmg . stoxdmg",
     "package-and-installer-win": "npm run package-win && npm run installer-win",
     "package-and-installer-sign-win": "npm run package-win && npm run signstox && npm run installer-win && npm run signinstaller",
     "build-frontend": "cd frontend && npm install && ng build --prod --base-href && cd ..",
     "signstox": "signtool.exe sign /a ./dist/stox-win32-x64/stox.exe",
-    "signinstaller": "signtool.exe sign /a ./dist/windows-installer/stoxInstaller.exe"
+    "signinstaller": "signtool.exe sign /a ./dist/windows-installer/stoxInstaller.exe",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,7 @@
     "command-exists": "^1.2.8",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "ts-node-dev": "^1.0.0-pre.42",
     "xml2js": "^0.4.19"
   },
   "devDependencies": {

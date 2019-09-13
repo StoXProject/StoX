@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "StoX backend",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
-            "program": "${workspaceFolder}/index.js"
+            "program": "build//index.js",
         },
         {
             "type": "chrome",
