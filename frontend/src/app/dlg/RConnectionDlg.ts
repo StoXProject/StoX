@@ -10,6 +10,6 @@ import { RConnectionDlgService } from './RConnectionDlgService';
   styleUrls: []
 })
 export class RConnectionDlg {
-  constructor(private dataService: DataService, private service : RConnectionDlgService ) {
+  constructor(private dataService: DataService, public service : RConnectionDlgService ) {
   }
 }
