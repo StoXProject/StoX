@@ -88,7 +88,8 @@ function createWindow() {
   createMenu();
 
   // and load the index.html of the app.
-  mainWindow.loadFile('./../frontend/dist/stox/index.html')
+  //mainWindow.loadFile(`../frontend/dist/stox/index.html`)
+  mainWindow.loadURL(`file://${__dirname}/../frontend/dist/stox/index.html`)
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
