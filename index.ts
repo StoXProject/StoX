@@ -1,124 +1,21 @@
 //handle setupevents as quickly as possible
-const setupEvents = require('./installers/setupEvents')
-if (setupEvents.handleSquirrelEvent()) {
-  // squirrel event handled and app will exit in 1000ms, so don't do anything else
-  return;
-}
-var mainWindow
+const setupEvents = require('./../installers/setupEvents')
+var mainWindow: any;
 
 // global variables
-var projectRootPath;
-var projectPath;
-var rPath;
-var rStoxFtpPath;
+var projectRootPath: string;
+var projectPath: string;
+var rPath: string;
+var rStoxFtpPath: string;
 
-var child_process = require('child_process');
 
 // var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
 
-var rspawn = child_process.exec("RScript -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error, stdout, stderr) => {
-  if (error) {
-    console.error(`exec error: ${error}`);
-    return;
-  } else {
-    console.log(`stdout: ${stdout}`);
-    console.error(`stderr: ${stderr}`);
-
-    if (stdout !== null && stdout.includes("FALSE")) {
-      console.log("opencpu is not installed, and is try to install it now ...");
-      child_process.execSync("RScript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
-      console.log("Starting opencpu ...");
-      child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
-    } else if (stdout !== null && stdout.includes("TRUE")) {
-      console.log("Starting opencpu ...");
-      child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
-    }
-  }
-});
-
 // grab the packages we need
 var express = require('express');
-var bodyParser = require('body-parser');
-var cors = require('cors');
 var server = express();
-var port = 3000;
-
-server.listen(port);
-// start the server
-console.log('Server started! At http://localhost:' + port);
-
-server.use(bodyParser.json())
-server.use(cors()) // enable cors in header (http call from static resources)
-server.options(cors());
-
-// let rPath = "C:/Users/user/Documents/R"; // read from local properties file.
-// console.log('homedir:' + require('os').homedir())
-
-// observe rpath in backend
-
-// observe rpath in backend
-server.get('/rpath', function (req, res) {
-  console.log('get rpath ' + rPath);
-  res.send(rPath);
-});
-
-// modify rpath in backend
-server.post('/rpath', function (req, res) {
-  rPath = req.body.rpath;
-  console.log('rpath ' + rPath);
-
-  var command = rPath == "" || rPath == null ? "RScript" : rPath + "/" + "RScript";
-
-  console.log('command : ' + command);
-
-  child_process.exec(command + " -e \"print(TRUE)\"", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      res.send(error);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-    console.error(`stderr: ${stderr}`);
-
-    if (stdout !== null && stdout.includes("TRUE")) {
-      child_process.exec(command + " -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          res.send(error);
-        } else {
-          console.log(`stdout: ${stdout}`);
-          console.error(`stderr: ${stderr}`);
-
-          if (stdout !== null && stdout.includes("FALSE")) {
-            console.log("opencpu is not installed, and is trying to install it now ...");
-            child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
-            console.log("Starting opencpu ...");
-            child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
-          } else if (stdout !== null && stdout.includes("TRUE")) {
-            // console.log("opencpu is installed, and is trying to remove it now ...");
-            // child_process.execSync(command + " -e \"remove.packages('opencpu')\"");
-            // console.log("trying to install opencpu now ...");
-            // child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
-            console.log("Starting opencpu ...");
-            child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
-          }
-        }
-      });
-    }
-  });
-
-  res.send('post /rpath performed ok');
-});
-
-server.post('/login', function (req, res) {
-  var user_name = req.body.user;
-  var password = req.body.password;
-  console.log("User name = " + user_name + ", password is " + password);
-  res.end("yes");
-});
-
-
-
+var child_process: any;
+var rspawn: any;
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu } = require('electron')
 
@@ -126,6 +23,39 @@ const { app, BrowserWindow, Menu } = require('electron')
 // be closed automatically when the JavaScript object is garbage collected.
 
 function createWindow() {
+
+  child_process = require('child_process');
+  rspawn = child_process.exec("RScript -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    } else {
+      console.log(`stdout: ${stdout}`);
+      console.error(`stderr: ${stderr}`);
+
+      if (stdout !== null && stdout.includes("FALSE")) {
+        console.log("opencpu is not installed, and is try to install it now ...");
+        child_process.execSync("RScript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+        console.log("Starting opencpu ...");
+        child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
+      } else if (stdout !== null && stdout.includes("TRUE")) {
+        console.log("Starting opencpu ...");
+        child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
+      }
+    }
+  });
+
+
+  var port = 3000;
+  server.listen(port);
+  // start the server
+  console.log('Server started! At http://localhost:' + port);
+
+  var bodyParser = require('body-parser');
+  server.use(bodyParser.json())
+  var cors = require('cors');
+  server.use(cors()) // enable cors in header (http call from static resources)
+  server.options(cors());
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -137,12 +67,12 @@ function createWindow() {
     }
   })
 
-  server.post('/browse', function (req, res) {
+  server.post('/browse', function (req: any, res: any) {
     console.log("select a folder... wait");
     require('electron').dialog.showOpenDialog(mainWindow, {
       title: 'Select a folder', defaultPath: /*require('os').homedir()*/ req.body.defaultpath,
       properties: [/*'openFile'*/'openDirectory']
-    }, (folderPath) => {
+    }, (folderPath: any) => {
       if (!folderPath || !folderPath.length) {
         console.log("You didn't select a folder");
         return;
@@ -152,13 +82,13 @@ function createWindow() {
       res.send(folderPath[0]);
     });
   });
-  
-  
+
+
   // mainWindow.setMenu(null);
   createMenu();
 
   // and load the index.html of the app.
-  mainWindow.loadFile('frontend/dist/stox/index.html')
+  mainWindow.loadFile('./../frontend/dist/stox/index.html')
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -172,12 +102,15 @@ function createWindow() {
     rspawn = null;
     child_process = null;
   })
+
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', function () {
+  console.log("App is ready")
+  if (!setupEvents.handleSquirrelEvent()) {
+    createWindow()
+  }
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -193,6 +126,11 @@ app.on('activate', function () {
 })
 
 
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+
+
 app.on('quit', function () {
   // Write app properties file to disc here.
   console.log('ev:app quit');
@@ -203,7 +141,7 @@ app.on('quit', function () {
 // code. You can also put them in separate files and require them here.
 
 
-function createMenu() {
+const createMenu = function createMenu() {
   // Read app properties file from disc here.
   console.log('ev:ready');
   readFile();
@@ -277,9 +215,9 @@ function createMenu() {
   Menu.setApplicationMenu(menu)
 }
 
-function readFile() {
+const readFile = function readFile() {
   let resourcefile = require('os').homedir() + "/.stox.config.xml";
-  fs = require('fs');
+  let fs = require('fs');
   var options = { encoding: 'utf-8', flag: 'r' };
   var xml2js = require('xml2js');
   var parser = new xml2js.Parser({ explicitArray: false });
@@ -292,7 +230,7 @@ function readFile() {
   // read if resource file is found
   var xml = fs.readFileSync(resourcefile, options);
 
-  parser.parseString(xml, function (err, result) {
+  parser.parseString(xml, function (err: any, result: any) {
     if (err) {
       console.error('xml2js.parseString: Error occurred: ', err);
     } else {
@@ -313,7 +251,7 @@ function readFile() {
   });
 }
 
-function writeFile() {
+const writeFile = function writeFile() {
   // if(projectRootPath == null || projectPath == null || rPath == null || rStoxFtpPath == null) {
   //   return;
   // }
@@ -331,7 +269,7 @@ function writeFile() {
 
   let resourcefile = require('os').homedir() + "/.copy_stox.config.xml";
 
-  fs = require('fs');
+  let fs = require('fs');
   var xml2js = require('xml2js');
   var builder = new xml2js.Builder();
   var xml = builder.buildObject(result);
@@ -348,3 +286,73 @@ function writeFile() {
   //   }
   // });
 }
+
+
+// let rPath = "C:/Users/user/Documents/R"; // read from local properties file.
+// console.log('homedir:' + require('os').homedir())
+
+// observe rpath in backend
+
+// observe rpath in backend
+server.get('/rpath', function (req: any, res: any) {
+  console.log('get rpath ' + rPath);
+  res.send(rPath);
+});
+
+// modify rpath in backend
+server.post('/rpath', function (req: any, res: any) {
+  rPath = req.body.rpath;
+  console.log('rpath ' + rPath);
+
+  var command = rPath == "" || rPath == null ? "RScript" : rPath + "/" + "RScript";
+
+  console.log('command : ' + command);
+
+  child_process.exec(command + " -e \"print(TRUE)\"", (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      res.send(error);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+
+    if (stdout !== null && stdout.includes("TRUE")) {
+      child_process.exec(command + " -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error: any, stdout: any, stderr: any) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          res.send(error);
+        } else {
+          console.log(`stdout: ${stdout}`);
+          console.error(`stderr: ${stderr}`);
+
+          if (stdout !== null && stdout.includes("FALSE")) {
+            console.log("opencpu is not installed, and is trying to install it now ...");
+            child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+            console.log("Starting opencpu ...");
+            child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
+          } else if (stdout !== null && stdout.includes("TRUE")) {
+            // console.log("opencpu is installed, and is trying to remove it now ...");
+            // child_process.execSync(command + " -e \"remove.packages('opencpu')\"");
+            // console.log("trying to install opencpu now ...");
+            // child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+            console.log("Starting opencpu ...");
+            child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
+          }
+        }
+      });
+    }
+  });
+
+  res.send('post /rpath performed ok');
+});
+
+server.post('/login', function (req: any, res: any) {
+  var user_name = req.body.user;
+  var password = req.body.password;
+  console.log("User name = " + user_name + ", password is " + password);
+  res.end("yes");
+});
+
+
+

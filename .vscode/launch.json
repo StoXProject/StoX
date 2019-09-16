@@ -8,8 +8,8 @@
             "type": "node",
             "request": "launch",
             "name": "StoX backend",
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
-            "program": "${workspaceFolder}/index.js"
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd",
+            "program": "${workspaceFolder}/build/index.js"
         },
         {
             "type": "chrome",
