@@ -14,6 +14,12 @@ var rStoxFtpPath: string;
 // grab the packages we need
 var express = require('express');
 var server = express();
+var bodyParser = require('body-parser');
+server.use(bodyParser.json())
+var cors = require('cors');
+server.use(cors()) // enable cors in header (http call from static resources)
+server.options(cors());
+
 var child_process: any;
 var rspawn: any;
 // Modules to control application life and create native browser window
@@ -51,11 +57,7 @@ function createWindow() {
   // start the server
   console.log('Server started! At http://localhost:' + port);
 
-  var bodyParser = require('body-parser');
-  server.use(bodyParser.json())
-  var cors = require('cors');
-  server.use(cors()) // enable cors in header (http call from static resources)
-  server.options(cors());
+
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
