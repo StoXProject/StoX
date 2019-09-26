@@ -122,4 +122,12 @@ export class DataService {
     return this.getLocalNode('rpath');
   }
 
+  public getProjectRootPath(): Observable<any> {
+    return this.getLocalNode('projectrootpath');
+  }
+
+  public getProjectPath(): Observable<any> {
+    return this.getLocalNode('projectpath');
+  }  
+
 }

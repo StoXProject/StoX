@@ -294,6 +294,18 @@ const writeFile = function writeFile() {
 
 // observe rpath in backend
 
+// observe project path
+server.get('/projectpath', function (req: any, res: any) {
+  console.log('get project path ' + projectPath);
+  res.send(projectPath);
+});
+
+// observe project root path
+server.get('/projectrootpath', function (req: any, res: any) {
+  console.log('get project root path ' + projectRootPath);
+  res.send(projectRootPath);
+});
+
 // observe rpath in backend
 server.get('/rpath', function (req: any, res: any) {
   console.log('get rpath ' + rPath);
