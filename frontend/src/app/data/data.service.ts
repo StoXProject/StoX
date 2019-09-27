@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-
+import { Template } from './Template';
 import { catchError, map, tap } from 'rxjs/operators';
 
 @Injectable({
@@ -76,6 +76,9 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
+  getAvailableTemplates(): Observable<any> {
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getAvailableTemplatesDescriptions/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  }
 
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;

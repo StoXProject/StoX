@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { HomeComponent } from './home/home';
 import { RConnectionDlg } from './dlg/RConnectionDlg';
+import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
 import { MapComponent } from './map/map.component';
@@ -23,6 +24,7 @@ import {AccordionModule} from 'primeng/accordion';
 import {CheckboxModule} from 'primeng/checkbox';
 import {ButtonModule} from 'primeng/button';
 import {DialogModule} from 'primeng/dialog';
+import {DropdownModule} from 'primeng/primeng';
 //import {RouterModule } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import {MenuModule } from 'primeng/menu';
@@ -44,6 +46,7 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
     ButtonModule,
     InputTextModule,
     DialogModule,
+    DropdownModule,
     FormsModule,
     TabViewModule,
     NgbModule,
@@ -68,6 +71,7 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
   declarations: [
     HomeComponent,
     RConnectionDlg,
+    CreateProjectDialog,
     FileUploadComponent,
     ProjectComponent,
     MapComponent,

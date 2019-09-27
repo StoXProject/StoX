@@ -287,6 +287,12 @@ export class MapComponent implements OnInit {
         //     console.log("response : " + response)
         //   }
         // );  
+
+        this.dataService.getAvailableTemplates().subscribe(
+          response => {
+            console.log("response : " + response)
+          }
+        );         
             
         // this.dataService.runModel().toPromise().then((st:any) => {console.log(st);});
         console.log(e.selected[0].getId() + " description " + e.selected[0].get('description'));//e.selected.getId());  
