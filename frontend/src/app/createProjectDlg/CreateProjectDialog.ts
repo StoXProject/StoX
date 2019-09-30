@@ -29,8 +29,8 @@ export class CreateProjectDialog {
         console.log("templates retrieved: " + this.templates.length);
         this.projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
         console.log("project root path retrieved: " + this.projectRootPath);
-        this.project = <string>await this.dataService.getProjectPath().toPromise();
-        console.log("project path retrieved: " + this.project);
+        // this.project = <string>await this.dataService.getProjectPath().toPromise();
+        // console.log("project path retrieved: " + this.project);
         console.log("end initData");
     }  
 
@@ -44,7 +44,7 @@ export class CreateProjectDialog {
         console.log("project : " + this.project);
         console.log("projectRootPath : " + this.projectRootPath);
         console.log("selectedTemplate : " + this.selectedTemplate);
-        console.log("end apply");
-        this.service.display = false;
+        console.log("end apply\n\n");
+        // this.service.display = false;
     }    
 }
