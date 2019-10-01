@@ -7,17 +7,10 @@
 	<p>Project folder:</p>
 		<input style="width:calc(100% - 22px);" type="text" pInputText [(ngModel)]="projectRootPath" />
 		<button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h" (click)="browse()"></button>
-	<!--
+	
 	<ul>
 		<li *ngFor="let template of templates">{{template.name}} - {{template.description}}<li>
-	</ul>	-->	
-
-	<p-listbox [options]="templates" [(ngModel)]="selectedTemplate">
-		<ng-template let-template pTemplate="template">
-			{{template.name}} - {{template.description}}
-		</ng-template>
-	</p-listbox>
-
+	</ul>
 
     <p-footer>
 		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
