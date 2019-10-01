@@ -48,7 +48,7 @@ export class MapComponent implements OnInit {
 
   constructor(private dataService: DataService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     /*this.source = new OlXYZ({
       url: 'http://tile.osm.org/{z}/{x}/{y}.png'
     });*/
@@ -171,40 +171,36 @@ export class MapComponent implements OnInit {
     })
 
     /* // this works (points) */
-    this.dataService.getjsonfromfile().toPromise().then(
-      (st: any) => {
-        console.log(st);
-        console.log("parsed st: " + JSON.parse(st));
-        this.map.addLayer(new VectorLayer({
-          source: new VectorSource({
-            format: new GeoJSON(),
-            features: (new GeoJSON).readFeatures(JSON.parse(JSON.parse(st)), {
-              defaultDataProjection: 'EPSG:4326',
-              featureProjection: proj
-            })
-          }),
-          style: s,
-          selectable: true
-        }));
-      });
+    //const subscribe = this.dataService.getActiveProcessInterval().subscribe(val => if((val == 2)console.log(val));
+  
+    var st: string = <string>await this.dataService.getjsonfromfile().toPromise();
+    console.log("parsed st: " + JSON.parse(st));
+    this.map.addLayer(new VectorLayer({
+      source: new VectorSource({
+        format: new GeoJSON(),
+        features: (new GeoJSON).readFeatures(JSON.parse(st), {
+          defaultDataProjection: 'EPSG:4326',
+          featureProjection: proj
+        })
+      }),
+      style: s,
+      selectable: true
+    }));
 
     // this works (polygon)
-    this.dataService.getgeojson().toPromise().then(
-      (st: any) => {
-        console.log(st);
-        console.log("parsed st: " + JSON.parse(st));
-        this.map.addLayer(new VectorLayer({
-          source: new VectorSource({
-            format: new GeoJSON(),
-            features: (new GeoJSON).readFeatures(JSON.parse(JSON.parse(st)), {
-              defaultDataProjection: 'EPSG:4326',
-              featureProjection: proj
-            })
-          }),
-          style: s2,
-          selectable: true
-        }));
-      });
+    var st: string = <string>await this.dataService.getgeojson().toPromise();
+    console.log("parsed st: " + JSON.parse(st));
+    this.map.addLayer(new VectorLayer({
+      source: new VectorSource({
+        format: new GeoJSON(),
+        features: (new GeoJSON).readFeatures(JSON.parse(st), {
+          defaultDataProjection: 'EPSG:4326',
+          featureProjection: proj
+        })
+      }),
+      style: s2,
+      selectable: true
+    }));
 
 
     //this.map.on('click', this.onClick());
@@ -233,67 +229,6 @@ export class MapComponent implements OnInit {
     selectClick.on('select', (e) => {
       if (e.selected.length > 0) {
         // console.log("Id " + e.selected[0].getId());
-        // this.dataService.getBioticData().pipe(map((resp: any) => {console.log("response", resp)}));
-        //this.dataService.getBioticData().toPromise().then((st:any) => {console.log(st);});
-
-        // this.dataService.runModel().subscribe( 
-        //   response => {
-        //     console.log("runModel() response : " + response);
-        //   }
-        // );
-
-        // this.dataService.getOutputTable().subscribe( 
-        //   response => {
-        //     console.log("getOutputTable() response : " + response);
-        //   }
-        // );
-
-        // this.dataService.getOutputTableNames().subscribe( 
-        //   response => {
-        //     console.log("getOutputTableNames() response : " + response);
-        //   }
-        // );   
-
-        // this.dataService.isRstoxInstalled().subscribe( 
-        //   response => {
-        //     console.log("response : " + response);   
-
-        //     var installed = JSON.parse(response);
-
-        //     console.log("isRstoxInstalled() ? " + installed);
-
-        //     if (!installed) {
-        //       this.dataService.installRstox().subscribe( 
-        //         response => {
-        //           console.log("response : " + response);
-        //           console.log("Rstox installed now.");
-        //         });
-        //     }
-        //     // else {
-        //     //   this.dataService.removeRstox().subscribe( 
-        //     //     response => {
-        //     //       console.log("response : " + response);
-        //     //       console.log("Rstox removed now.");
-        //     //     });
-        //     // }
-        //   }
-        // ); 
-
-        // this is to test error handling and show it in the console
-        // this.dataService.makeItFail().subscribe(response => console.log("response : " + response));
-
-        // this.dataService.getBrowse().toPromise().then(
-        //   (response) => {
-        //     console.log("response : " + response)
-        //   }
-        // );  
-
-        this.dataService.getAvailableTemplates().subscribe(
-          response => {
-            console.log("response : " + response)
-          }
-        );         
-            
         // this.dataService.runModel().toPromise().then((st:any) => {console.log(st);});
         console.log(e.selected[0].getId() + " description " + e.selected[0].get('description'));//e.selected.getId());  
       }
