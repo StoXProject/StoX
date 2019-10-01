@@ -43,8 +43,12 @@ export class CreateProjectDialog {
         console.log("start apply");
         console.log("project : " + this.project);
         console.log("projectRootPath : " + this.projectRootPath);
-        console.log("selectedTemplate : " + this.selectedTemplate);
+        console.log("selectedTemplate : " + this.selectedTemplate ? this.selectedTemplate.name + " - " + this.selectedTemplate.description  : 'none');
+        let absolutePath = this.projectRootPath + "/" + this.project;
+        console.log("absolute path : " + absolutePath);
+        let projectCreated = JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
+        console.log("projectCreated : " + projectCreated);
         console.log("end apply\n\n");
-        // this.service.display = false;
+        this.service.display = false;
     }    
 }
