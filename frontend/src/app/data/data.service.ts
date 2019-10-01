@@ -20,9 +20,11 @@ export class DataService {
 
   constructor(private httpClient: HttpClient) {
     this.mapModeObs = this.mapModeSubject.asObservable();
-    this.mapModeObs.subscribe((newVal) => console.log(newVal));
+    this.mapModeObs.subscribe((newVal) => { 
+      console.log(newVal); 
+    });
     this.mapModeSubject.next('1');
-    this.mapModeSubject.next('2');
+    this.mapModeSubject.next('2'); 
     //const first = ;
     //this.activeProcessInterval = interval(50).pipe(mapTo(this.activeProcess));
   }

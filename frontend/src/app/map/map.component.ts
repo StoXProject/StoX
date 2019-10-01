@@ -172,7 +172,7 @@ export class MapComponent implements OnInit {
 
     /* // this works (points) */
     //const subscribe = this.dataService.getActiveProcessInterval().subscribe(val => if((val == 2)console.log(val));
-  
+    
     var st: string = <string>await this.dataService.getjsonfromfile().toPromise();
     console.log("parsed st: " + JSON.parse(st));
     this.map.addLayer(new VectorLayer({
