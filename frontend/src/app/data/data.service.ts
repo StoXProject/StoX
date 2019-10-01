@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { Template } from './Template';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, tap, mapTo } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,16 +13,23 @@ export class DataService {
   // private featuresUrl = '/api/features';
   private geojsonUrl = '/api/geojson';
   private jsonfromfile = '/api/jsonfromfile';
+  private mapModeObs = new Observable<any>();
+  private mapModeSubject = new Subject<any>();
+  //private activeProcess: number = 1;
+  //private activeProcessInterval: Observable<number>; // clients can subscribe to this observable and thus poll its status.
 
-  constructor(private httpClient: HttpClient) { }
-
-  getgeojson(): Observable<string> {
-    return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/test_geojson_polygon/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  constructor(private httpClient: HttpClient) {
+    this.mapModeObs = this.mapModeSubject.asObservable();
+    this.mapModeObs.subscribe((newVal) => console.log(newVal));
+    this.mapModeSubject.next('1');
+    this.mapModeSubject.next('2');
+    //const first = ;
+    //this.activeProcessInterval = interval(50).pipe(mapTo(this.activeProcess));
   }
 
-  getjsonfromfile(): Observable<string> {
-    return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/test_geojson_points/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  }
+  /*getActiveProcessInterval(): Observable<number> {
+    return this.activeProcessInterval;
+  }*/
 
   getBioticData(): Observable<string> {
     return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/readBioticDataFromXml/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
@@ -82,15 +89,15 @@ export class DataService {
 
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
+  static readonly OCPU_PORT: number = 5307;
 
-  public static getURL(host : string, port : number, api : string) {
+  public static getURL(host: string, port: number, api: string) {
     return "http://" + host + ":" + port + "/" + api;
   }
-
   public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<any> {
     return this.httpClient.post(DataService.getURL(host, port, api), body, { observe: 'body', responseType: <any>responseType }).pipe(tap(_ => _, error => this.handleError(error)));
   }
- 
+
   public get(host: string, port: number, api: string, responseType: string = 'text'): Observable<any> {
     return this.httpClient.get(DataService.getURL(host, port, api), { observe: 'body', responseType: <any>responseType }).pipe(tap(_ => _, error => this.handleError(error)));
   }
@@ -103,6 +110,12 @@ export class DataService {
     return this.get(DataService.LOCALHOST, DataService.NODE_PORT, api, responseType);
   }
 
+  public postLocalOCPU(rPackage: string, rFunctionName: string, body: any, responseType: string = 'text', parseJSON: boolean = false): Observable<any> {
+    return this.post(DataService.LOCALHOST, DataService.OCPU_PORT, 'ocpu/library/' + rPackage + '/R/' + rFunctionName
+      + "/json", body, responseType)
+      .pipe(map(_ => parseJSON ? JSON.parse(_) : _)); // maps response to unparsed JSON
+  }
+
   private handleError(error: HttpErrorResponse) {
     console.log("Error.message : " + error.message);
     console.log("Error.name : " + error.name);
@@ -111,6 +124,14 @@ export class DataService {
     console.log("Error.statusText : " + error.statusText);
     console.log("Error.url : " + error.url);
     console.log("Error.ok : " + error.ok);
+  }
+
+  getgeojson(): Observable<string> {
+    return this.postLocalOCPU('tests', 'test_geojson_polygon', {}, 'text', true);
+  }
+
+  getjsonfromfile(): Observable<string> {
+    return this.postLocalOCPU('tests', 'test_geojson_points', {}, 'text', true);
   }
 
   setRPath(rpath: string): Observable<any> {
@@ -131,6 +152,6 @@ export class DataService {
 
   public getProjectPath(): Observable<any> {
     return this.getLocalNode('projectpath');
-  }  
+  }
 
 }
