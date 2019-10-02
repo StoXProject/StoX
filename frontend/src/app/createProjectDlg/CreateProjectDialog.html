@@ -1,6 +1,6 @@
 <p-dialog header="Create project" [(visible)]="service.display" [modal]="true" [responsive]="true"
     [style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
-    
+    <MessageDlg></MessageDlg>
 	<p>Project name:</p>
 		<input style="width:calc(100% - 22px);" type="text" pInputText [(ngModel)]="project" />	
 
