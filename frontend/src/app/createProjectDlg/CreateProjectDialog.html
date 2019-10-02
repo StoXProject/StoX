@@ -9,10 +9,15 @@
 		<button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h" (click)="browse()"></button>
 		
 	<p>Choose template:</p>
-	<p-listbox [options]="templates" [(ngModel)]="selectedTemplate" optionLabel="name"></p-listbox>
+	<p-listbox [options]="templates" [(ngModel)]="selectedTemplate" optionLabel="name">
+		<p-footer>
+			Selected: {{selectedTemplate ? selectedTemplate.name + " - " + selectedTemplate.description : 'none'}}
+		  </p-footer>		
+	</p-listbox>
 	
-	<p>Selected Template: {{selectedTemplate ? selectedTemplate.name + " - " + selectedTemplate.description : 'none'}}</p>
+	
 	<!--
+		<p>Selected Template: {{selectedTemplate ? selectedTemplate.name + " - " + selectedTemplate.description : 'none'}}</p>
 	<ul>
 		<li *ngFor="let template of templates">{{template.name}} - {{template.description}}<li>
 	</ul> -->
