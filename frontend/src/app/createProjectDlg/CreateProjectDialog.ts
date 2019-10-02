@@ -41,22 +41,29 @@ export class CreateProjectDialog {
     
     async apply() {
         console.log("start apply");
+        
         if(!this.project) {
             window.alert("Project name is empty!");
             return;
         }
         console.log("project : " + this.project);
+
         if(!this.projectRootPath) {
             window.alert("Project folder is empty!");
             return;
         }
         console.log("projectRootPath : " + this.projectRootPath);
+
         if(!this.selectedTemplate) {
             window.alert("Template is not selected!");
             return;
         }        
         console.log("selectedTemplate : " + this.selectedTemplate ? this.selectedTemplate.name + " - " + this.selectedTemplate.description  : 'none');
+
         let absolutePath = this.projectRootPath + "/" + this.project;
+
+        absolutePath = absolutePath.replace(/\\/g, "/");
+
         console.log("absolute path : " + absolutePath);
         let projectCreated = JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
         console.log("projectCreated : " + projectCreated);
