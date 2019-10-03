@@ -1,4 +1,5 @@
 export class Model {
-    name: string;
-    caption: string;
+    modelName: string;
+    displayName: string;
+    description: string; 
   }

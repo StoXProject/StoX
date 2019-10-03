@@ -100,6 +100,10 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/createProject/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
+  getModelInfo(): Observable<any> {
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getModeInfo/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  }
+
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
   static readonly OCPU_PORT: number = 5307;
