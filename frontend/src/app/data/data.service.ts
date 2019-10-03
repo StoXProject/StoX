@@ -91,8 +91,8 @@ export class DataService {
 
   createProject(projectPath: string, templateName: string): Observable<any> {
     const formData = new FormData();
-    formData.set('ProjectPath', "'" + projectPath + "'");
-    formData.set('Template', "'" + templateName + "'");
+    formData.set('projectPath', "'" + projectPath + "'");
+    formData.set('template', "'" + templateName + "'");
 
     // formData.set('ow', 'FALSE');
     // formData.set('showWarnings', 'FALSE');
