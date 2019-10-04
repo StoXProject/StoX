@@ -2,22 +2,22 @@ import { Component, OnInit } from '@angular/core';
 
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
-import VectorSource from 'ol/source/Vector';
+import Source from 'ol/source/Vector';
 import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import Projection from 'ol/proj';
+//import Projection from 'ol/proj';
 import TopoJSON from 'ol/format/TopoJSON';
 import GeoJSON from 'ol/format/GeoJSON';
-import { Vector as VectorLayer } from 'ol/layer';
+import { Vector, Layer } from 'ol/layer';
 import { DoCheck } from '@angular/core';
 
 import { fromLonLat, transform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import * as proj4x from 'proj4';
 
-import { add as addProjection } from 'ol/proj/projection';
+//import { add as addProjection } from 'ol/proj/projection';
 import { Fill, Stroke, Style, RegularShape } from 'ol/style';
 import { mapToMapExpression } from '@angular/compiler/src/render3/util';
 
@@ -30,6 +30,8 @@ import { createStringXY } from 'ol/coordinate';
 
 import { DataService } from '../data/data.service';
 import { catchError, map, tap } from 'rxjs/operators';
+import { MapSetup } from './MapSetup';
+import BaseObject from 'ol/Object';
 
 @Component({
   selector: 'app-map',
@@ -43,7 +45,7 @@ export class MapComponent implements OnInit {
   // source: OlXYZ;
   // toposource: VectorSource;
   // layer: OlTileLayer;
-  vector: VectorLayer;
+  vector: Vector;
   view: OlView;
 
   constructor(private dataService: DataService) { }
@@ -88,8 +90,8 @@ export class MapComponent implements OnInit {
     //console.log(test_coordinate);
     var proj = 'EPSG:9820';//'ESRI:54003'//'EPSG:3857';//'ESRI:54003';//'EPSG:3857';//'EPSG:4326';//'ESRI:54003';//'EPSG:9820';
 
-    this.vector = new VectorLayer({
-      source: new VectorSource({
+    this.vector = new Vector({
+      source: new Source({
         //url: 'assets/landflate_verden.json',
         url: 'assets/landflate_verden.json',
         //url: 'assets/world-110m.json',
@@ -100,8 +102,7 @@ export class MapComponent implements OnInit {
         }),
         overlaps: false,
       }),
-      style: style,
-      selectable: false,
+      style: style
     });
 
 
@@ -111,9 +112,9 @@ export class MapComponent implements OnInit {
 
     this.view = new OlView({
       //center: fromLonLat([170, 10], proj),
-      center: fromLonLat([16.661594, 60.433237], proj),
+      center: fromLonLat([1, 68], proj),
       projection: proj,
-      zoom: 3.9,
+      zoom: 4.9,
     });
     var mousePositionControl = new MousePosition({
       coordinateFormat: createStringXY(4),
@@ -147,20 +148,8 @@ export class MapComponent implements OnInit {
       // console.log( Ftrs[i].getId());
     }  */
 
-    var stroke = new Stroke({ color: 'black', width: 2 });
-    var fill = new Fill({ color: 'blue' });
 
-    var s = new Style({
-      image: new RegularShape({
-        fill: fill,
-        stroke: stroke,
-        points: 4,
-        radius: 4,
-        angle: Math.PI / 4
-      })
-    });
-
-    let s2 = new Style({
+    var s2 = new Style({
       stroke: new Stroke({
         color: 'blue',
         width: 3
@@ -168,40 +157,22 @@ export class MapComponent implements OnInit {
       fill: new Fill({
         color: 'rgba(0, 0, 255, 0.1)'
       })
-    })
+    });
 
     /* // this works (points) */
     //const subscribe = this.dataService.getActiveProcessInterval().subscribe(val => if((val == 2)console.log(val));
-    
-    var st: string = <string>await this.dataService.getjsonfromfile().toPromise();
-    console.log("parsed st: " + JSON.parse(st));
-    this.map.addLayer(new VectorLayer({
-      source: new VectorSource({
-        format: new GeoJSON(),
-        features: (new GeoJSON).readFeatures(JSON.parse(st), {
-          defaultDataProjection: 'EPSG:4326',
-          featureProjection: proj
-        })
-      }),
-      style: s,
-      selectable: true
-    }));
+
+    //var st: string = <string>await this.dataService.getjsonfromfile().toPromise();
 
     // this works (polygon)
-    var st: string = <string>await this.dataService.getgeojson().toPromise();
-    console.log("parsed st: " + JSON.parse(st));
-    this.map.addLayer(new VectorLayer({
-      source: new VectorSource({
-        format: new GeoJSON(),
-        features: (new GeoJSON).readFeatures(JSON.parse(st), {
-          defaultDataProjection: 'EPSG:4326',
-          featureProjection: proj
-        })
-      }),
-      style: s2,
-      selectable: true
-    }));
+    //var st: string = <string>await this.dataService.getgeojson().toPromise();
+    var layers: Layer[] = [
+      MapSetup.getGeoJSONLayerFromURL("station", '/assets/test/station_test.json', MapSetup.getStationPointStyle(), false),
+      MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false),
+      MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
 
+    ];
+    layers.forEach(layer => this.map.addLayer(layer));
 
     //this.map.on('click', this.onClick());
     var selectClick = new Select({
@@ -217,11 +188,15 @@ export class MapComponent implements OnInit {
         return true;
       },//singleClick(mapBrowserEvent) && !shiftKeyOnly(mapBrowserEvent)},//function (ev) { return click; },
       layers: function (layer) {
+        //console.log(layer.get("selectable"))
         return layer.get("selectable") == true;
-
       },
       filter: function (feature, layer) {
         return true/* some logic on a feature and layer to decide if it should be selectable; return true if yes */;
+      },
+      style: function (feature) {
+        console.log(feature.getProperties());
+        return MapSetup.getStationPointStyle()
       },
       multi: true
     });
