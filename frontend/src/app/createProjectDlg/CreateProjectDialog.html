@@ -1,6 +1,6 @@
 <p-dialog header="Create project" [(visible)]="service.display" [modal]="true" [responsive]="true"
     [style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
-    
+    <MessageDlg></MessageDlg>
 	<p>Project name:</p>
 		<input style="width:calc(100% - 22px);" type="text" pInputText [(ngModel)]="project" />	
 
@@ -9,10 +9,15 @@
 		<button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h" (click)="browse()"></button>
 		
 	<p>Choose template:</p>
-	<p-listbox [options]="templates" [(ngModel)]="selectedTemplate" optionLabel="name"></p-listbox>
+	<p-listbox [options]="templates" [(ngModel)]="selectedTemplate" optionLabel="name">
+		<p-footer>
+			Selected: {{selectedTemplate ? selectedTemplate.name + " - " + selectedTemplate.description : 'none'}}
+		  </p-footer>		
+	</p-listbox>
 	
-	<p>Selected Template: {{selectedTemplate ? selectedTemplate.name + " - " + selectedTemplate.description : 'none'}}</p>
+	
 	<!--
+		<p>Selected Template: {{selectedTemplate ? selectedTemplate.name + " - " + selectedTemplate.description : 'none'}}</p>
 	<ul>
 		<li *ngFor="let template of templates">{{template.name}} - {{template.description}}<li>
 	</ul> -->

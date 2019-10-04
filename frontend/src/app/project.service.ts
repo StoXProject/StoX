@@ -3,59 +3,24 @@ import { Injectable } from '@angular/core';
 import { Project } from './project';
 import { Process } from './process';
 import { Model } from './model';
-
-const PROJECTS: Project[] = [
-  { name: 'Gytetokt 2004' },
-  { name: 'Tobis 2006' },
-  { name: 'Tobis 2007' },
-  { name: 'Tobis 2008' },
-  { name: 'Tobis 2009' },
-  { name: 'Tobis 2010' },
-  { name: 'Tobis 2011' },
-  { name: 'Tobis 2012' },
-  { name: 'Tobis 2013' },
-  { name: 'Tobis 2014' },
-  { name: 'Tobis 2015' },
-  { name: 'Tobis 2016' },
-  { name: 'Tobis 2017' },
-  { name: 'Tobis 2018' },
-  { name: 'Tobis 2019' },
-  { name: 'Tobis 2020' },
-  { name: 'Tobis 2021' }
-];
-
-const PROJECT1_BASELINE: Process[] = [
-  { name: 'ReadBioticXML', model: 'baseline' },
-  { name: 'ReadAcousticXML', model: 'baseline' },
-  { name: 'runBootstrap', model: 'statistics' },
-  { name: 'saveProjectData', model: 'statistics' },
-  { name: 'FillMissingData', model: 'reports' },
-  { name: 'EstimateByPopulationCategory', model: 'reports' }
-];
-
-const PROJECT2_BASELINE: Process[] = [
-  { name: 'ReadBioticXML', model: 'baseline' },
-  { name: 'DefineStratum', model: 'baseline' }
-];
-
-const MODELS: Model[] = [
-  { name: 'baseline', caption: 'Baseline' },
-  { name: 'statistics', caption: 'Statistics' },
-  { name: 'reports', caption: 'Reports' }
-]
-
+import { DataService } from './data/data.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
+  PROJECTS: Project[];
+  PROJECT1_BASELINE: Process[];
+  PROJECT2_BASELINE: Process[];
+  MODELS: Model[];  
 
   selectedProject: Project = null;
   selectedProcesses: Process[] = null;
   selectedProcess: Process = null;
 
 
-  constructor() {
+  constructor(private dataService: DataService) {
+    this.initData();
     this.setSelectedProject(this.getProjects()[0]);
   }
 
@@ -81,11 +46,11 @@ export class ProjectService {
   }
 
   getProjects(): Project[] {
-    return PROJECTS;
+    return this.PROJECTS;
   }
 
   getModels(): Model[] {
-    return MODELS;
+    return this.MODELS;
   }
   /**
    * get processes
@@ -120,4 +85,45 @@ export class ProjectService {
   /*  getObservableProjects(): Observable<Project[]> {
     return of(this.getProjects());
   }*/
+
+  async initData() {
+    this.PROJECTS = [
+      { name: 'Gytetokt 2004' },
+      { name: 'Tobis 2006' },
+      { name: 'Tobis 2007' },
+      { name: 'Tobis 2008' },
+      { name: 'Tobis 2009' },
+      { name: 'Tobis 2010' },
+      { name: 'Tobis 2011' },
+      { name: 'Tobis 2012' },
+      { name: 'Tobis 2013' },
+      { name: 'Tobis 2014' },
+      { name: 'Tobis 2015' },
+      { name: 'Tobis 2016' },
+      { name: 'Tobis 2017' },
+      { name: 'Tobis 2018' },
+      { name: 'Tobis 2019' },
+      { name: 'Tobis 2020' },
+      { name: 'Tobis 2021' }
+    ];
+    
+    this.PROJECT1_BASELINE = [
+      { name: 'ReadBioticXML', model: 'baseline' },
+      { name: 'ReadAcousticXML', model: 'baseline' },
+      { name: 'runBootstrap', model: 'statistics' },
+      { name: 'saveProjectData', model: 'statistics' },
+      { name: 'FillMissingData', model: 'reports' },
+      { name: 'EstimateByPopulationCategory', model: 'reports' }
+    ];
+    
+    this.PROJECT2_BASELINE = [
+      { name: 'ReadBioticXML', model: 'baseline' },
+      { name: 'DefineStratum', model: 'baseline' }
+    ];
+    
+    this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() );  
+    
+    console.log("models retrieved : " + this.MODELS.length);
+  }
+
 }

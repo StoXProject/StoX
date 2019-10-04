@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {CreateProjectDialogService} from './create-project-dialog.service';
 import { DataService } from '../data/data.service';
 import { Template } from '../data/Template';
+import { MessageService } from '../message/MessageService';
 
 @Component({
     selector: 'CreateProjectDialog',
@@ -14,7 +15,7 @@ export class CreateProjectDialog {
     templates: Template[];
     selectedTemplate: Template;
 
-    constructor(public service: CreateProjectDialogService, private dataService: DataService) {
+    constructor(public service: CreateProjectDialogService, private msgService: MessageService, private dataService: DataService) {
     }
 
     ngOnInit() {
@@ -41,10 +42,32 @@ export class CreateProjectDialog {
     
     async apply() {
         console.log("start apply");
+        
+        if(!this.project) {            
+            this.msgService.setMessage("Project name is empty!");
+            this.msgService.showMessage();
+            return;
+        }
         console.log("project : " + this.project);
+
+        if(!this.projectRootPath) {
+            this.msgService.setMessage("Project folder is empty!");
+            this.msgService.showMessage();            
+            return;
+        }
         console.log("projectRootPath : " + this.projectRootPath);
+
+        if(!this.selectedTemplate) {          
+            this.msgService.setMessage("Template is not selected!");
+            this.msgService.showMessage();            
+            return;
+        }        
         console.log("selectedTemplate : " + this.selectedTemplate ? this.selectedTemplate.name + " - " + this.selectedTemplate.description  : 'none');
+
         let absolutePath = this.projectRootPath + "/" + this.project;
+
+        absolutePath = absolutePath.replace(/\\/g, "/");
+
         console.log("absolute path : " + absolutePath);
         let projectCreated = JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
         console.log("projectCreated : " + projectCreated);

@@ -91,13 +91,17 @@ export class DataService {
 
   createProject(projectPath: string, templateName: string): Observable<any> {
     const formData = new FormData();
-    formData.set('ProjectPath', "'" + projectPath + "'");
-    formData.set('Template', "'" + templateName + "'");
+    formData.set('projectPath', "'" + projectPath + "'");
+    formData.set('template', "'" + templateName + "'");
 
     // formData.set('ow', 'FALSE');
     // formData.set('showWarnings', 'FALSE');
     // formData.set('open', 'TRUE');
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/createProject/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  }
+
+  getModelInfo(): Observable<any> {
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getModeInfo/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
   static readonly LOCALHOST: string = 'localhost';

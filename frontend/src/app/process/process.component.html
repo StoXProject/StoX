@@ -1,5 +1,5 @@
 <p-tabView>
-    <p-tabPanel *ngFor="let model of ps.getModels()" header="{{model.caption}}" [selected]="model.name === 'baseline'">
+    <p-tabPanel *ngFor="let model of ps.getModels()" header="{{model.displayName}}" [selected]="model.modelName === 'Baseline'">
         <!--given optionLabel, the items are of type SelectItem and has a 'value' property for the object-->
         <p-toolbar>
             <div>
@@ -9,7 +9,7 @@
             </div>
         </p-toolbar>
 
-        <p-listbox [options]="ps.getProcesses(model.name)" [(ngModel)]="ps.selectedProcess" optionLabel="name">
+        <p-listbox [options]="ps.getProcesses(model.modelName)" [(ngModel)]="ps.selectedProcess" optionLabel="name">
             <ng-template let-process pTemplate="item">
                 <!-- <p-contextMenu></p-contextMenu> -->
             <!--<div [contextMenu]="basicMenu" [contextMenuSubject]="process.value">

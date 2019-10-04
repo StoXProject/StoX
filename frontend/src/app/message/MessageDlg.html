@@ -1,0 +1,7 @@
+  <p-dialog header='Message' modal='modal' [(visible)]='service.display'>
+    <p>{{service.message}}</p> 
+    <p-footer>
+      <button pButton type='button' (click)='service.display=false' class='ui-button-primary' label='Close'></button>
+    </p-footer>
+  </p-dialog>
+  
