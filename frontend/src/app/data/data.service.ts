@@ -101,7 +101,7 @@ export class DataService {
   }
 
   getModelInfo(): Observable<any> {
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getModeInfo/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getModelInfo/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
   static readonly LOCALHOST: string = 'localhost';
