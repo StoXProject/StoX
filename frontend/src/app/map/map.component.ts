@@ -174,6 +174,28 @@ export class MapComponent implements OnInit {
     ];
     layers.forEach(layer => this.map.addLayer(layer));
 
+    var selected = [];
+
+    this.map.on('singleclick', e => {
+      console.log("shift " + shiftKeyOnly(e));
+      this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
+        var selIndex = selected.indexOf(f);
+        console.log("layer" + (<Layer>l).get("name"));
+        console.log("style" + (<Feature>f).get("id"));
+        if (selIndex < 0) {
+          selected.push(f);
+          console.log('selected ' + f.get("id"));
+          (<Feature>f).setStyle(MapSetup.getAcousticPointStyleSelected());
+        } else {
+          console.log('unselected ' + f.get("id"))
+          selected.splice(selIndex, 1);
+          (<Feature>f).setStyle(null);
+        }
+      });
+    });
+
+
+    /*
     //this.map.on('click', this.onClick());
     var selectClick = new Select({
       //condition: (mapBrowserEvent) => {
@@ -185,32 +207,34 @@ export class MapComponent implements OnInit {
         return false;
       },//singleClick(mapBrowserEvent) && !shiftKeyOnly(mapBrowserEvent)},//function (ev) { return click; },
       toggleCondition: (mapBrowserEvent) => {
-        return true;
+        return mapBrowserEvent.type == 'click';
       },//singleClick(mapBrowserEvent) && !shiftKeyOnly(mapBrowserEvent)},//function (ev) { return click; },
       layers: function (layer) {
         //console.log(layer.get("selectable"))
         return layer.get("selectable") == true;
       },
       filter: function (feature, layer) {
-        return true/* some logic on a feature and layer to decide if it should be selectable; return true if yes */;
+        return true// some logic on a feature and layer to decide if it should be selectable; return true if yes 
       },
       style: function (feature) {
-        console.log(feature.getProperties());
-        return MapSetup.getStationPointStyle()
+        //console.log(feature.getProperties());
+        return feature.get("layer").get("style");
       },
       multi: true
     });
-    this.map.addInteraction(selectClick);
-    selectClick.on('select', (e) => {
-      if (e.selected.length > 0) {
-        // console.log("Id " + e.selected[0].getId());
-        // this.dataService.runModel().toPromise().then((st:any) => {console.log(st);});
-        console.log(e.selected[0].getId() + " description " + e.selected[0].get('description'));//e.selected.getId());  
+    //this.map.addInteraction(selectClick);
+    selectClick.on('change', (e) => {
+      if (e.target.selected.length > 0) {
+        console.log(e.target.selected[0].get("id") + " is selected, shift:" + shiftKeyOnly(e.target.mapBrowserEvent));
       }
     });
-    selectClick.getFeatures().on('remove', function (event) {
-      console.log("remove");
+    /*selectClick.getFeatures().on('remove', e => {
+      console.log(e.element.get("id") + " is deselected, shift:" + shiftKeyOnly(e.target));
     });
+    
+    this.map.on('click', e => { 
+      shiftKeyOnly(e.);
+    });*/
   } // end of ngOnInit()
 
 
