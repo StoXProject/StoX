@@ -31,7 +31,6 @@ import {DropdownModule} from 'primeng/primeng';
 import { RouterModule } from '@angular/router';
 import {MenuModule } from 'primeng/menu';
 import {PanelMenuModule } from 'primeng/primeng';
-//import { MenuItem } from 'primeng/api';
 import {InputTextModule} from 'primeng/inputtext';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/components/table/table';

@@ -1,18 +1,18 @@
-<p-tabView>
+<!--<p-tabView>
     <p-tabPanel *ngFor="let model of ps.getModels()" header="{{model.displayName}}" [selected]="model.modelName === 'Baseline'">
-        <!--given optionLabel, the items are of type SelectItem and has a 'value' property for the object-->
-        <p-toolbar>
+        --given optionLabel, the items are of type SelectItem and has a 'value' property for the object-->
+<!--     <p-toolbar>
             <div>
 
                 <button pButton type="button"><img src="./assets/images/run16.png" /></button>
-                <!-- <button pButton type="button" label="Upload" icon="pi pi-upload" class="ui-button-success"></button> -->
-            </div>
+               <button pButton type="button" label="Upload" icon="pi pi-upload" class="ui-button-success"></button> -->
+<!--     </div>
         </p-toolbar>
 
-        <!-- <p-listbox [options]="ps.getProcesses(model.modelName)" [(ngModel)]="ps.selectedProcess" optionLabel="processName">
+       <p-listbox [options]="ps.getProcesses(model.modelName)" [(ngModel)]="ps.selectedProcess" optionLabel="processName">
             <ng-template let-process pTemplate="item">
                 <p-contextMenu></p-contextMenu> -->
-            <!--<div [contextMenu]="basicMenu" [contextMenuSubject]="process.value">
+<!--<div [contextMenu]="basicMenu" [contextMenuSubject]="process.value">
                     <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
                     <span *ngIf="process.value.breakingui">
                         <img src="./assets/images/break.png" width="8" style="margin-bottom:12px; margin-left:-16px;">
@@ -22,8 +22,13 @@
                  </div>
             </ng-template>
         </p-listbox>-->
-    </p-tabPanel>
-</p-tabView>
+<!-- </p-tabPanel>
+</p-tabView>-->
+<p-tabMenu #menuItems [model]="items" (click)="activateMenu()">
+    <!--<ng-template pTemplate="item" let-item let-i="index">
+
+    </ng-template>-->
+</p-tabMenu>
 <context-menu>
     <!--<ng-template contextMenuItem let-process (execute)="runFromHere(process.name)">
         Run from here
@@ -37,4 +42,3 @@
         </ng-template> -->
 </context-menu>
 <!-- <input [ngKeyboardShortcut]="shortcuts"/> -->
- 

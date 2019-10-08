@@ -61,6 +61,45 @@ $nodata: #acacac;
 }
 
 // tabview
+.ui-tabmenu {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  //box-sizing: content-box;
+  border: none !important;
+  user-select: none !important;
+  color: black !important;
+
+  .ui-tabmenu-nav {
+    background-color: rgb(240, 240, 240) !important;
+    //height: 1.5rem;
+    // inline/nowrap
+    color: rgb(0, 0, 0) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    .ui-tabmenuitem {
+      padding: 0 !important;
+      margin: 0 !important;
+     // border: none !important;
+      color: rgb(0, 0, 0) !important;
+      border: 1px solid #d3d4d4 !important; 
+      background-color: rgb(240, 240, 240) !important;
+      display: inline-block;
+      float: none;
+      .ui-menuitem-link {
+        padding: 0 !important;
+        margin: 0 !important;
+        color: black !important;
+        .ui-menuitem-text {
+          color: black !important; 
+          font-weight: 700;
+        }
+      }
+    }
+  }
+}
+
 .ui-tabview {
   padding: 0 !important;
   margin: 0 !important;
