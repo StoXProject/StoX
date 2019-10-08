@@ -122,13 +122,13 @@ export class ProjectService {
       { projectName: 'Tobis 2021', path: '.'  }
     ];
     
-    this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );  
+    // this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );  
     
-    console.log("processes retrieved : " + this.PROCESSES_IN_MODEL.length);
+    // console.log("processes retrieved : " + this.PROCESSES_IN_MODEL.length);
 
-    this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() );  
+    // this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() );  
     
-    console.log("models retrieved : " + this.MODELS.length);
+    // console.log("models retrieved : " + this.MODELS.length);
   }
 
 }
