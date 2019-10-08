@@ -82,6 +82,13 @@ export class HomeComponent {
             console.log("response : " + response)
           }
         );  
+        // interactivemode: stratum, station, EDSU, acousticPSU, sweptareaPSU, assignment 
+        // getmapdata(projectName, model, processid) - use model=Baseline
+        // getinteractivemode(projectName, model, processid) - use model=Baseline
+        // getInteractiveData(projectName, model, processid) process data - list with tables. - use model=Baseline 
+        // gui control process run stepwise in loop and keeps track of last successfully run processid. (activeProcessId), 
+        // activeprojectName, activeModel.
+        this.dataService.setMapMode('station'); 
 
         // this.dataService.getAvailableTemplates().subscribe(
         //   response => {
