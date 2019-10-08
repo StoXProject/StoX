@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/StoXProject/StoX#readme",
   "dependencies": {
+    "@types/node": "^12.7.11",
     "command-exists": "^1.2.8",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -36,10 +37,10 @@
     "xml2js": "^0.4.22"
   },
   "devDependencies": {
-    "electron": "^5.0.11",
+    "electron": "^6.0.11",
     "electron-installer-dmg": "^3.0.0",
-    "electron-packager": "^13.1.1",
-    "electron-winstaller": "^3.0.4",
+    "electron-packager": "^14.0.6",
+    "electron-winstaller": "^4.0.0",
     "electron-wix-msi": "^2.1.1"
   }
 }
