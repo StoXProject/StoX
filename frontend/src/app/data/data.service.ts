@@ -13,22 +13,28 @@ export class DataService {
   // private featuresUrl = '/api/features';
   private geojsonUrl = '/api/geojson';
   private jsonfromfile = '/api/jsonfromfile';
-  private mapModeObs = new Observable<any>();
-  private mapModeSubject = new Subject<any>();
+  private mapModeObs = new Observable<string>();
+  private mapModeSubject = new Subject<string>();
   //private activeProcess: number = 1;
   //private activeProcessInterval: Observable<number>; // clients can subscribe to this observable and thus poll its status.
 
   constructor(private httpClient: HttpClient) {
     this.mapModeObs = this.mapModeSubject.asObservable();
-    this.mapModeObs.subscribe((newVal) => { 
-      console.log(newVal); 
-    });
-    this.mapModeSubject.next('1');
-    this.mapModeSubject.next('2'); 
+    // this.mapModeObs.subscribe((newVal) => {
+    //   console.log(newVal);
+    // });
+    //this.mapModeSubject.next('1');
+    //this.mapModeSubject.next('2');
     //const first = ;
     //this.activeProcessInterval = interval(50).pipe(mapTo(this.activeProcess));
   }
 
+  getMapModeObs(): Observable<string> {
+    return this.mapModeObs;
+  }
+  setMapMode(mapMode: string) {
+    this.mapModeSubject.next(mapMode);
+  }
   /*getActiveProcessInterval(): Observable<number> {
     return this.activeProcessInterval;
   }*/

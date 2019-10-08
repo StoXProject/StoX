@@ -39,6 +39,9 @@ export class MapSetup {
     static getAcousticPointStyleSelected(): Style {
         return this.getPointStyle(MapSetup.darken(this.DISTANCE_POINT_ANYSELECTED_COLOR, 0.5), 6);
     }
+    static getAcousticPointStyleAnySelected(): Style {
+        return this.getPointStyle(this.DISTANCE_POINT_ANYSELECTED_COLOR, 6);
+    }
     static getStationPointStyle(): Style {
         return this.getPointStyle(this.STATION_POINT_COLOR, 8);
     }
@@ -64,7 +67,7 @@ export class MapSetup {
         });
         s.on("addfeature", ft => {
             ft.feature.set("layer", v);
-            ft.feature.set("feature", ft); // set a reference to itsself
+            //ft.feature.set("feature", ft); // set a reference to itsself
         })
 
         // Set layer properties

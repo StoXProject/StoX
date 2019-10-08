@@ -166,13 +166,24 @@ export class MapComponent implements OnInit {
 
     // this works (polygon)
     //var st: string = <string>await this.dataService.getgeojson().toPromise();
-    var layers: Layer[] = [
-      MapSetup.getGeoJSONLayerFromURL("station", '/assets/test/station_test.json', MapSetup.getStationPointStyle(), false),
-      MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false),
-      MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
-
-    ];
-    layers.forEach(layer => this.map.addLayer(layer));
+    this.dataService.getMapModeObs().subscribe(mapMode => {
+      switch (mapMode) {
+        case "station": {
+          var layers: Layer[] = [
+            MapSetup.getGeoJSONLayerFromURL("station", '/assets/test/station_test.json', MapSetup.getStationPointStyle(), false)
+//            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false),
+//            MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
+      
+          ];
+          layers.forEach(layer => this.map.addLayer(layer));
+      
+          break;
+        }
+        default: {
+          //this.map.removeLayer(this.map.getLayers()."station");
+        }
+      }
+    })
 
     var selected = [];
 
