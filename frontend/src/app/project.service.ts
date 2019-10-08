@@ -10,8 +10,7 @@ import { DataService } from './data/data.service';
 })
 export class ProjectService {
   PROJECTS: Project[];
-  PROJECT1_BASELINE: Process[];
-  PROJECT2_BASELINE: Process[];
+  PROCESSES_IN_MODEL: Process[];
   MODELS: Model[];  
 
   selectedProject: Project = null;
@@ -20,6 +19,7 @@ export class ProjectService {
 
 
   constructor(private dataService: DataService) {
+    console.log(" constructor() - class ProjectService: ");
     this.initData();
     this.setSelectedProject(this.getProjects()[0]);
   }
@@ -50,6 +50,9 @@ export class ProjectService {
   }
 
   getModels(): Model[] {
+    if(this.MODELS == null) {
+      this.initData();
+    }
     return this.MODELS;
   }
   /**
@@ -57,27 +60,36 @@ export class ProjectService {
    * @param model 
    */
   getProcesses(model: String): Process[] {
-    if (this.selectedProcesses == null) {
-      console.log("test3")
-      this.selectedProcesses = this.getProcessesByModelAndProject(model, this.selectedProject.name);
-    }
-    return this.selectedProcesses;
+    // if (this.selectedProcesses == null) {
+    //   console.log("test3")
+    //   this.selectedProcesses = this.getProcessesByModelAndProject(model, this.selectedProject.projectName);
+    // }
+    // return this.selectedProcesses;
+
+    this.reInitializeProcessesInModel(model);
+
+    return this.PROCESSES_IN_MODEL;
+  }
+
+  async reInitializeProcessesInModel(model: String) {
+    console.log("model name : " + model);
+    this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );
   }
 
   getProcessesByModelAndProject(model: String, project: string): Process[] {
     if (this.selectedProject != null) {
-      switch (this.selectedProject.name) {
-        case 'Gytetokt 2004':
-          switch (model) {
-            case 'baseline': return [{ name: 'ReadBioticXML', model: 'baseline', breakingui:true }, { name: 'ReadAcousticXML', model: 'baseline' }];
-            case 'statistics': return [{ name: 'runBootstrap', model: 'statistics' }, { name: 'saveProjectData', model: 'statistics' }];
-          }
-          break;
-        case 'Tobis 2006':
-          switch (model) {
-            case 'baseline': return [{ name: 'ReadBioticXML', model: 'baseline' }, { name: 'DefineStratum', model: 'baseline' }];
-            case 'statistics': return [{ name: 'runBootstrap', model: 'statistics' }, { name: 'saveProjectData', model: 'statistics' }];
-          }
+      switch (this.selectedProject.projectName) {
+        // case 'Gytetokt 2004':
+        //   switch (model) {
+        //     case 'baseline': return [{ processName: 'ReadBioticXML', model: 'baseline', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  /*, breakingui:true*/ }, { processName: 'ReadAcousticXML', model: 'baseline', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }];
+        //     case 'statistics': return [{ processName: 'runBootstrap', model: 'statistics', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }, { processName: 'saveProjectData', model: 'statistics', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }];
+        //   }
+        //   break;
+        // case 'Tobis 2006':
+        //   switch (model) {
+        //     case 'baseline': return [{ processName: 'ReadBioticXML', model: 'baseline', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }, { processName: 'DefineStratum', model: 'baseline', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }];
+        //     case 'statistics': return [{ processName: 'runBootstrap', model: 'statistics', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }, { processName: 'saveProjectData', model: 'statistics', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }];
+        //   }
       }
     }
     return [];
@@ -87,40 +99,33 @@ export class ProjectService {
   }*/
 
   async initData() {
+
+    console.log(" initData() - class ProjectService: ");
+
     this.PROJECTS = [
-      { name: 'Gytetokt 2004' },
-      { name: 'Tobis 2006' },
-      { name: 'Tobis 2007' },
-      { name: 'Tobis 2008' },
-      { name: 'Tobis 2009' },
-      { name: 'Tobis 2010' },
-      { name: 'Tobis 2011' },
-      { name: 'Tobis 2012' },
-      { name: 'Tobis 2013' },
-      { name: 'Tobis 2014' },
-      { name: 'Tobis 2015' },
-      { name: 'Tobis 2016' },
-      { name: 'Tobis 2017' },
-      { name: 'Tobis 2018' },
-      { name: 'Tobis 2019' },
-      { name: 'Tobis 2020' },
-      { name: 'Tobis 2021' }
+      { projectName: 'Gytetokt 2004', path: '.' },
+      { projectName: 'Tobis 2006', path: '.'  },
+      { projectName: 'Tobis 2007', path: '.'  },
+      { projectName: 'Tobis 2008', path: '.'  },
+      { projectName: 'Tobis 2009', path: '.'  },
+      { projectName: 'Tobis 2010', path: '.'  },
+      { projectName: 'Tobis 2011', path: '.'  },
+      { projectName: 'Tobis 2012', path: '.'  },
+      { projectName: 'Tobis 2013', path: '.'  },
+      { projectName: 'Tobis 2014', path: '.'  },
+      { projectName: 'Tobis 2015', path: '.'  },
+      { projectName: 'Tobis 2016', path: '.'  },
+      { projectName: 'Tobis 2017', path: '.'  },
+      { projectName: 'Tobis 2018', path: '.'  },
+      { projectName: 'Tobis 2019', path: '.'  },
+      { projectName: 'Tobis 2020', path: '.'  },
+      { projectName: 'Tobis 2021', path: '.'  }
     ];
     
-    this.PROJECT1_BASELINE = [
-      { name: 'ReadBioticXML', model: 'baseline' },
-      { name: 'ReadAcousticXML', model: 'baseline' },
-      { name: 'runBootstrap', model: 'statistics' },
-      { name: 'saveProjectData', model: 'statistics' },
-      { name: 'FillMissingData', model: 'reports' },
-      { name: 'EstimateByPopulationCategory', model: 'reports' }
-    ];
+    this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );  
     
-    this.PROJECT2_BASELINE = [
-      { name: 'ReadBioticXML', model: 'baseline' },
-      { name: 'DefineStratum', model: 'baseline' }
-    ];
-    
+    console.log("processes retrieved : " + this.PROCESSES_IN_MODEL.length);
+
     this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() );  
     
     console.log("models retrieved : " + this.MODELS.length);

@@ -104,6 +104,13 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getModelInfo/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
+  getProcessesInModel(): Observable<any> {
+    const formData = new FormData();
+    formData.set('projectPath', "'C:/Users/esmaelmh/workspace/stox/project/project49'");
+    formData.set('modelName', "'Baseline'"); 
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  }
+
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
   static readonly OCPU_PORT: number = 5307;

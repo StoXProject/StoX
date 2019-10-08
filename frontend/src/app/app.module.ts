@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { ProcessComponent } from './process/process.component';
 import { TabViewModule } from 'primeng/primeng';
 import { ListboxModule} from 'primeng/listbox';
+import { TabMenuModule} from 'primeng/tabmenu';
 import { ToolbarModule} from 'primeng/toolbar';
 import { AngularSplitModule } from 'angular-split';
 import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -63,6 +64,7 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
     BrowserAnimationsModule,
     TableModule,
     ListboxModule,
+    TabMenuModule,
     ToolbarModule,
     ContextMenuModule.forRoot(),
     KeyboardShortcutsModule.forRoot(),

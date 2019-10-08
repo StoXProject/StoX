@@ -1,3 +1,4 @@
-export class Project {
-    name: string;
-  }
+export class Project {   
+  projectName: string;  
+  path: string;
+}

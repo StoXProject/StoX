@@ -35,6 +35,6 @@ export class ProcessComponent implements OnInit {
     console.log(message);
   }
   toggleBreak(p: Process) {
-    p.breakingui = !p.breakingui
+    //p.breakingui = !p.breakingui
   }
 }

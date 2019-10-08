@@ -9,9 +9,9 @@
             </div>
         </p-toolbar>
 
-        <p-listbox [options]="ps.getProcesses(model.modelName)" [(ngModel)]="ps.selectedProcess" optionLabel="name">
+        <!-- <p-listbox [options]="ps.getProcesses(model.modelName)" [(ngModel)]="ps.selectedProcess" optionLabel="processName">
             <ng-template let-process pTemplate="item">
-                <!-- <p-contextMenu></p-contextMenu> -->
+                <p-contextMenu></p-contextMenu> -->
             <!--<div [contextMenu]="basicMenu" [contextMenuSubject]="process.value">
                     <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
                     <span *ngIf="process.value.breakingui">
@@ -19,9 +19,9 @@
                         <span style="margin-left:8px;"></span>
                     </span>
                     <span style="margin-left:16px;">{{process.value.name}}</span>
-                 </div>-->
+                 </div>
             </ng-template>
-        </p-listbox>
+        </p-listbox>-->
     </p-tabPanel>
 </p-tabView>
 <context-menu>
