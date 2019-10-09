@@ -4,12 +4,12 @@ import { ProjectService } from '../service/project.service';
 import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "ng-keyboard-shortcuts";
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { MenuItem } from 'primeng/api';
-import { Model } from '../model';
-import { DataService } from '../data/data.service';
+import { Model } from '../data/model';
+import { DataService } from '../service/data.service';
 @Component({
   selector: 'app-process',
   templateUrl: './process.component.html',
-  styleUrls: ['./process.component.scss']
+  styleUrls: ['./process.component.scss'] 
 })
 export class ProcessComponent implements OnInit {
   shortcuts: ShortcutInput[] = [];

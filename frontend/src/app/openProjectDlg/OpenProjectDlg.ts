@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { OpenProjectDialogService } from './OpenProjectDialogService';
-import { DataService } from '../data/data.service';
+import { DataService } from '../service/data.service'; 
 import { MessageService } from '../message/MessageService';
 
 @Component({
