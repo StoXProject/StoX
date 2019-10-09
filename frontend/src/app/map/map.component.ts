@@ -28,7 +28,7 @@ import { defaults as defaultControls } from 'ol/control';
 import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 
-import { DataService } from '../data/data.service';
+import { DataService } from '../service/data.service';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
@@ -171,12 +171,23 @@ export class MapComponent implements OnInit {
         case "station": {
           var layers: Layer[] = [
             MapSetup.getGeoJSONLayerFromURL("station", '/assets/test/station_test.json', MapSetup.getStationPointStyle(), false)
-//            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false),
-//            MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
-      
+            //            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false),
+            //            MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
+
           ];
           layers.forEach(layer => this.map.addLayer(layer));
-      
+
+          break;
+        }
+        case "stratum": {
+          var layers: Layer[] = [
+            //            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/station_test.json', MapSetup.getStationPointStyle(), false)
+            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+            //            MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
+
+          ];
+          layers.forEach(layer => this.map.addLayer(layer));
+
           break;
         }
         default: {

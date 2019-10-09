@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { DataService } from '../data/data.service';
+import { DataService } from '../service/data.service';
 import { RConnectionDlgService } from './RConnectionDlgService';
 
 @Component({

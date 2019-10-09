@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, OnInit, AfterViewInit } from '@angular/core';
-import { Process } from '../process';
-import { ProjectService } from '../project.service';
+import { Process } from '../data/process';
+import { ProjectService } from '../service/project.service';
 import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "ng-keyboard-shortcuts";
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { MenuItem } from 'primeng/api';

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {CreateProjectDialogService} from './create-project-dialog.service';
-import { DataService } from '../data/data.service';
+import { DataService } from '../service/data.service';
 import { Template } from '../data/Template';
 import { MessageService } from '../message/MessageService';
 
