@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { OpenProjectDlgService } from './OpenProjectDlgService';
-import { DataService } from '../data/data.service';
+import { DataService } from '../service/data.service'; 
 import { MessageService } from '../message/MessageService';
-import { Project } from '../project';
+import { Project } from '../data/project';
 
 @Component({
     selector: 'OpenProjectDlg',

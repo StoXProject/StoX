@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 //import { Observable, of } from 'rxjs';
-import { Project } from './project';
-import { Process } from './process';
-import { Model } from './model';
-import { DataService } from './data/data.service';
+import { Project } from '../data/project';
+import { Process } from '../data/process';
+import { Model } from '../data/model';
+import { DataService } from './data.service';
 
 @Injectable({
   providedIn: 'root'

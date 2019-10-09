@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { DataService } from '../data/data.service';
+import { DataService } from '../service/data.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service'
 import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService'
@@ -83,18 +83,18 @@ export class HomeComponent {
         // this is to test error handling and show it in the console
         // this.dataService.makeItFail().subscribe(response => console.log("response : " + response));
 
-        this.dataService.browse('c:/temp').toPromise().then(
+        /*this.dataService.browse('c:/temp').toPromise().then(
           (response) => {
             console.log("response : " + response)
           }
-        );  
+        );*/
         // interactivemode: stratum, station, EDSU, acousticPSU, sweptareaPSU, assignment 
         // getmapdata(projectName, model, processid) - use model=Baseline
         // getinteractivemode(projectName, model, processid) - use model=Baseline
         // getInteractiveData(projectName, model, processid) process data - list with tables. - use model=Baseline 
         // gui control process run stepwise in loop and keeps track of last successfully run processid. (activeProcessId), 
         // activeprojectName, activeModel.
-        this.dataService.setMapMode('station'); 
+
 
         // this.dataService.getAvailableTemplates().subscribe(
         //   response => {
@@ -102,7 +102,19 @@ export class HomeComponent {
         //   }
         // );
       }
-    }];
+    },
+    {
+      label: 'Mapmode stratum', command: e => {
+        this.dataService.setMapMode('stratum');
+      }
+    },
+    {
+      label: 'Mapmode station', command: e => {
+        this.dataService.setMapMode('station');
+      }
+    }
+
+    ];
   }
 
 }

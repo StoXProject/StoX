@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
-import { Template } from './Template';
+import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
 
 @Injectable({
@@ -85,7 +85,7 @@ export class DataService {
   }
 
   makeItFail(): Observable<any> {
-    const formData = new FormData();
+    const formData = new FormData(); 
     formData.set('iProcess', '1');
     formData.set('iTable', 'mission');
     return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
