@@ -14,6 +14,9 @@ import { DataService } from '../data/data.service';
 export class ProcessComponent implements OnInit {
   shortcuts: ShortcutInput[] = [];
   MODELS: Model[];
+  PROCESSES_IN_MODEL: Process[];
+  selectedProcess: Process;
+
   constructor(private dataService: DataService) {
     // this.initializeModels();
   }
@@ -27,7 +30,9 @@ export class ProcessComponent implements OnInit {
     console.log("models " + this.MODELS);
     this.MODELS.forEach(m => this.items.push({label: m.displayName}));
     console.log("items " + this.items);
-  
+    this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );
+    console.log("processes " + this.PROCESSES_IN_MODEL);
+
     // this.items = [
     //   { label: 'Baseline' },
     //   { label: 'Statistics' },
@@ -35,10 +40,12 @@ export class ProcessComponent implements OnInit {
     // ];
     //this.defaultActiveItem = this.items[0]; // set default active item
   }
-  activateMenu() {
+
+  async activateMenu() {
     console.log(this.menu['activeItem'].label);
-    //console.log(this.defaultActiveItem);
+
   }
+
   @ViewChild(ContextMenuComponent, { static: false }) public basicMenu: ContextMenuComponent;
 
   @ViewChild('input', { static: false }) input: ElementRef;

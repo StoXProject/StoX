@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { DataService } from '../data/data.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service'
+import { OpenProjectDialogService } from '../openProjectDlg/openProjectDialogService'
 import { MenuItem } from 'primeng/api';
 
 @Component({
@@ -14,7 +15,9 @@ import { MenuItem } from 'primeng/api';
 
 export class HomeComponent {
   title = 'stox';
-  constructor(private rConnectionDlgService: RConnectionDlgService, private createProjectDialogService: CreateProjectDialogService,
+  constructor(private rConnectionDlgService: RConnectionDlgService, 
+    private createProjectDialogService: CreateProjectDialogService,
+    private openProjectDialogService: OpenProjectDialogService,
     private dataService: DataService) {
   }
   items: MenuItem[];
@@ -26,6 +29,9 @@ export class HomeComponent {
     {
       label: 'Create project...', command: e => this.createProjectDialogService.showDialog()
     },
+    {
+      label: 'Open project...', command: e => this.openProjectDialogService.showDialog()
+    },    
     {
       label: 'Test...', command: e => {
         // this.dataService.getBioticData().pipe(map((resp: any) => {console.log("response", resp)}));
