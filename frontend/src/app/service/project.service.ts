@@ -103,23 +103,23 @@ export class ProjectService {
     console.log(" initData() - class ProjectService: ");
 
     this.PROJECTS = [
-      { projectName: 'Gytetokt 2004', path: '.' },
-      { projectName: 'Tobis 2006', path: '.'  },
-      { projectName: 'Tobis 2007', path: '.'  },
-      { projectName: 'Tobis 2008', path: '.'  },
-      { projectName: 'Tobis 2009', path: '.'  },
-      { projectName: 'Tobis 2010', path: '.'  },
-      { projectName: 'Tobis 2011', path: '.'  },
-      { projectName: 'Tobis 2012', path: '.'  },
-      { projectName: 'Tobis 2013', path: '.'  },
-      { projectName: 'Tobis 2014', path: '.'  },
-      { projectName: 'Tobis 2015', path: '.'  },
-      { projectName: 'Tobis 2016', path: '.'  },
-      { projectName: 'Tobis 2017', path: '.'  },
-      { projectName: 'Tobis 2018', path: '.'  },
-      { projectName: 'Tobis 2019', path: '.'  },
-      { projectName: 'Tobis 2020', path: '.'  },
-      { projectName: 'Tobis 2021', path: '.'  }
+      { projectName: 'Gytetokt 2004', projectPath: '.' },
+      { projectName: 'Tobis 2006', projectPath: '.'  },
+      { projectName: 'Tobis 2007', projectPath: '.'  },
+      { projectName: 'Tobis 2008', projectPath: '.'  },
+      { projectName: 'Tobis 2009', projectPath: '.'  },
+      { projectName: 'Tobis 2010', projectPath: '.'  },
+      { projectName: 'Tobis 2011', projectPath: '.'  },
+      { projectName: 'Tobis 2012', projectPath: '.'  },
+      { projectName: 'Tobis 2013', projectPath: '.'  },
+      { projectName: 'Tobis 2014', projectPath: '.'  },
+      { projectName: 'Tobis 2015', projectPath: '.'  },
+      { projectName: 'Tobis 2016', projectPath: '.'  },
+      { projectName: 'Tobis 2017', projectPath: '.'  },
+      { projectName: 'Tobis 2018', projectPath: '.'  },
+      { projectName: 'Tobis 2019', projectPath: '.'  },
+      { projectName: 'Tobis 2020', projectPath: '.'  },
+      { projectName: 'Tobis 2021', projectPath: '.'  }
     ];
     
     // this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );  

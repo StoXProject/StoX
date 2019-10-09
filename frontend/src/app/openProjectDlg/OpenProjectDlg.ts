@@ -47,7 +47,7 @@ export class OpenProjectDlg {
         // the following should return an instance of class Project
         this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectRootPath).toPromise());
 
-        console.log("returned projectName : " + this.project.projectName);
+        console.log("returned projectName - projectPath : " + this.project.projectName + " - " + this.project.projectPath);
 
         this.service.display = false;
     }
