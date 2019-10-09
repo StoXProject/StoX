@@ -4,6 +4,8 @@ import { ProjectService } from '../service/project.service';
 import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "ng-keyboard-shortcuts";
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { MenuItem } from 'primeng/api';
+import { Model } from '../model';
+import { DataService } from '../data/data.service';
 @Component({
   selector: 'app-process',
   templateUrl: './process.component.html',
@@ -11,24 +13,39 @@ import { MenuItem } from 'primeng/api';
 })
 export class ProcessComponent implements OnInit {
   shortcuts: ShortcutInput[] = [];
-  constructor(public ps: ProjectService) {
+  MODELS: Model[];
+  PROCESSES_IN_MODEL: Process[];
+  selectedProcess: Process;
+
+  constructor(private dataService: DataService) {
+    // this.initializeModels();
   }
-  items: MenuItem[];
+  items: MenuItem[] = [];
   //defaultActiveItem: MenuItem;
   @ViewChild('menuItems', { static: false }) menu: MenuItem[];
 
-  ngOnInit() {
-    this.items = [
-      { label: 'Baseline' },
-      { label: 'Statistics' },
-      { label: 'Reports' }
-    ];
+  async ngOnInit() {
+    console.log("before getmodelinfo");
+    this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() );
+    console.log("models " + this.MODELS);
+    this.MODELS.forEach(m => this.items.push({label: m.displayName}));
+    console.log("items " + this.items);
+    this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );
+    console.log("processes " + this.PROCESSES_IN_MODEL);
+
+    // this.items = [
+    //   { label: 'Baseline' },
+    //   { label: 'Statistics' },
+    //   { label: 'Reports' }
+    // ];
     //this.defaultActiveItem = this.items[0]; // set default active item
   }
-  activateMenu() {
-    console.log(this.menu['activeItem']);
-    //console.log(this.defaultActiveItem);
+
+  async activateMenu() {
+    console.log(this.menu['activeItem'].label);
+
   }
+
   @ViewChild(ContextMenuComponent, { static: false }) public basicMenu: ContextMenuComponent;
 
   @ViewChild('input', { static: false }) input: ElementRef;
@@ -50,4 +67,8 @@ export class ProcessComponent implements OnInit {
   toggleBreak(p: Process) {
     //p.breakingui = !p.breakingui
   }
-}
+
+//   async initializeModels() { 
+//     this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() ); 
+//   }
+ }
