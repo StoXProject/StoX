@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { HomeComponent } from './home/home';
 import { RConnectionDlg } from './dlg/RConnectionDlg';
 import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
+import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
 import { MessageDlg } from './message/MessageDlg';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
@@ -74,6 +75,7 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
     HomeComponent,
     RConnectionDlg,
     CreateProjectDialog,
+    OpenProjectDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,

@@ -1,28 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { OpenProjectDialogService } from './OpenProjectDialogService';
+import { OpenProjectDlgService } from './OpenProjectDlgService';
 import { DataService } from '../data/data.service';
 import { MessageService } from '../message/MessageService';
+import { Project } from '../project';
 
 @Component({
-    selector: 'OpenProjectDialog',
-    templateUrl: './OpenProjectDialog.html',
+    selector: 'OpenProjectDlg',
+    templateUrl: './OpenProjectDlg.html',
     styleUrls: []
 })
-export class CreateProjectDialog implements OnInit{
+export class OpenProjectDlg { 
 
-    projectRootPath: string;
+    project: Project;
 
-    constructor(public service: OpenProjectDialogService, 
+    projectRootPath: string; 
+
+    constructor(public service: OpenProjectDlgService, 
         private msgService: MessageService,
         private dataService: DataService) {       
     }
 
-    async ngOnInit() {
+    async ngOnInit() {  
         this.projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
         console.log("project root path retrieved: " + this.projectRootPath);
     }
 
-    async browse() {
+    async browse() {  
         console.log("browse");
         this.projectRootPath = await this.dataService.browse(this.projectRootPath).toPromise();
     }
@@ -42,9 +45,10 @@ export class CreateProjectDialog implements OnInit{
         console.log("converted projectRootPath : " + this.projectRootPath);
 
         // the following should return an instance of class Project
-        let projectPath = JSON.parse( await this.dataService.openProject(this.projectRootPath).toPromise());
+        this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectRootPath).toPromise());
 
-        console.log("returned projectPath : " + projectPath);
+        console.log("returned projectName : " + this.project.projectName);
 
+        this.service.display = false;
     }
 }

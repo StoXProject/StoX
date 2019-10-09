@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { DataService } from '../data/data.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service'
-import { OpenProjectDialogService } from '../openProjectDlg/openProjectDialogService'
+import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService'
 import { MenuItem } from 'primeng/api';
 
 @Component({
@@ -17,7 +17,7 @@ export class HomeComponent {
   title = 'stox';
   constructor(private rConnectionDlgService: RConnectionDlgService, 
     private createProjectDialogService: CreateProjectDialogService,
-    private openProjectDialogService: OpenProjectDialogService,
+    private openProjectDlgService: OpenProjectDlgService,
     private dataService: DataService) {
   }
   items: MenuItem[];
@@ -30,7 +30,7 @@ export class HomeComponent {
       label: 'Create project...', command: e => this.createProjectDialogService.showDialog()
     },
     {
-      label: 'Open project...', command: e => this.openProjectDialogService.showDialog()
+      label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
     },    
     {
       label: 'Test...', command: e => {
