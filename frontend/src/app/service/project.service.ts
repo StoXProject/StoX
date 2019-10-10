@@ -29,7 +29,14 @@ export class ProjectService {
     console.log("selected project name : " + this.selectedProject.projectName);
   }
 
-  
+  hasProject(project: Project): boolean {
+    for (let i = 0; i < this.PROJECTS.length; i++) {
+        if (this.PROJECTS[i].projectName.valueOf() == project.projectName.valueOf()) {
+            return true;
+        }
+    }
+    return false;    
+  }
 
   onSelectedProjectChanged(event) {
     console.log("selected project changed : " + event.value.projectName);
