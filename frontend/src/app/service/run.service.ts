@@ -18,21 +18,21 @@ export class RunService {
 
     runFromHere(processIdx: number) {
         // Run from the active to the last process
-        this.runProcessIdx(processIdx, this.projectService.getProcesses().length - 1);
+        this.runProcessIdx(processIdx, this.projectService.PROCESSES_IN_MODEL.length - 1);
     }
     runThis(processIdx: number) {
         // Run from this to this process
         this.runProcessIdx(processIdx, processIdx);
     }
     canRunNext(): Boolean {
-        let idx: number = this.projectService.getProcesses().length == 0 ? null :
-            this.activeProcessIdx == null || this.activeProcessIdx == this.projectService.getProcesses().length - 1 ?
+        let idx: number = this.projectService.PROCESSES_IN_MODEL.length == 0 ? null :
+            this.activeProcessIdx == null || this.activeProcessIdx == this.projectService.PROCESSES_IN_MODEL.length - 1 ?
                 0 : this.activeProcessIdx + 1;
         return idx != null;
     }
     runNext() {
-        let idx: number = this.projectService.getProcesses().length == 0 ? null :
-            this.activeProcessIdx == null || this.activeProcessIdx == this.projectService.getProcesses().length - 1 ?
+        let idx: number = this.projectService.PROCESSES_IN_MODEL.length == 0 ? null :
+            this.activeProcessIdx == null || this.activeProcessIdx == this.projectService.PROCESSES_IN_MODEL.length - 1 ?
                 0 : this.activeProcessIdx + 1;
         if (idx != null) {
             this.runProcessIdx(idx, idx);
@@ -40,15 +40,15 @@ export class RunService {
         // Run from the next to the next process.
     }
     runToHere(processIdx: number) {
-        let idx: number = this.projectService.getProcesses().length == 0 || processIdx ? null :
-            this.activeProcessIdx == null || this.activeProcessIdx == this.projectService.getProcesses().length - 1 ?
+        let idx: number = this.projectService.PROCESSES_IN_MODEL.length == 0 || processIdx ? null :
+            this.activeProcessIdx == null || this.activeProcessIdx == this.projectService.PROCESSES_IN_MODEL.length - 1 ?
                 0 : this.activeProcessIdx + 1;
         this.runProcessIdx(this.activeProcessIdx + 1, processIdx);
         // If the active process is the last, use the first.
         // Run from the next to the active to this process
     }
     run() {
-        this.runProcessIdx(this.activeProcessIdx + 1, this.projectService.getProcesses().length - 1);
+        this.runProcessIdx(this.activeProcessIdx + 1, this.projectService.PROCESSES_IN_MODEL.length - 1);
         // If the active process is the last, use the first.
         // Run from next to the active to the last process
     }
