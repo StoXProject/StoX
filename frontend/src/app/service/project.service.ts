@@ -11,7 +11,7 @@ import { DataService } from './data.service';
 export class ProjectService {
   PROJECTS: Project[];
   PROCESSES_IN_MODEL: Process[];
-  MODELS: Model[];  
+  MODELS: Model[];
 
   selectedProject: Project = null;
   selectedProcesses: Process[] = null;
@@ -40,12 +40,12 @@ export class ProjectService {
 
   onSelectedProjectChanged(event) {
     console.log("selected project changed : " + event.value.projectName);
-    if(!event) {
+    if (!event) {
       console.log("event is null ");
     }
     this.selectedProcesses = null;//this.getProcesses('baseline'); // to be retrieved again from API
     //console.log("test1")
-    
+
   }
 
   getSelectedProject(): Project {
@@ -82,7 +82,6 @@ export class ProjectService {
     // return this.selectedProcesses;
 
     // this.reInitializeProcessesInModel(model);
-
     return this.PROCESSES_IN_MODEL;
   }
 
@@ -119,30 +118,30 @@ export class ProjectService {
 
     this.PROJECTS = [
       { projectName: 'Gytetokt 2004', projectPath: '.' },
-      { projectName: 'Tobis 2006', projectPath: '.'  },
-      { projectName: 'Tobis 2007', projectPath: '.'  },
-      { projectName: 'Tobis 2008', projectPath: '.'  },
-      { projectName: 'Tobis 2009', projectPath: '.'  },
-      { projectName: 'Tobis 2010', projectPath: '.'  },
-      { projectName: 'Tobis 2011', projectPath: '.'  },
-      { projectName: 'Tobis 2012', projectPath: '.'  },
-      { projectName: 'Tobis 2013', projectPath: '.'  },
-      { projectName: 'Tobis 2014', projectPath: '.'  },
-      { projectName: 'Tobis 2015', projectPath: '.'  },
-      { projectName: 'Tobis 2016', projectPath: '.'  },
-      { projectName: 'Tobis 2017', projectPath: '.'  },
-      { projectName: 'Tobis 2018', projectPath: '.'  },
-      { projectName: 'Tobis 2019', projectPath: '.'  },
-      { projectName: 'Tobis 2020', projectPath: '.'  },
-      { projectName: 'Tobis 2021', projectPath: '.'  }
+      { projectName: 'Tobis 2006', projectPath: '.' },
+      { projectName: 'Tobis 2007', projectPath: '.' },
+      { projectName: 'Tobis 2008', projectPath: '.' },
+      { projectName: 'Tobis 2009', projectPath: '.' },
+      { projectName: 'Tobis 2010', projectPath: '.' },
+      { projectName: 'Tobis 2011', projectPath: '.' },
+      { projectName: 'Tobis 2012', projectPath: '.' },
+      { projectName: 'Tobis 2013', projectPath: '.' },
+      { projectName: 'Tobis 2014', projectPath: '.' },
+      { projectName: 'Tobis 2015', projectPath: '.' },
+      { projectName: 'Tobis 2016', projectPath: '.' },
+      { projectName: 'Tobis 2017', projectPath: '.' },
+      { projectName: 'Tobis 2018', projectPath: '.' },
+      { projectName: 'Tobis 2019', projectPath: '.' },
+      { projectName: 'Tobis 2020', projectPath: '.' },
+      { projectName: 'Tobis 2021', projectPath: '.' }
     ];
-    
+
     // this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );  
-    
+
     // console.log("processes retrieved : " + this.PROCESSES_IN_MODEL.length);
 
     // this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() );  
-    
+
     // console.log("models retrieved : " + this.MODELS.length);
   }
 

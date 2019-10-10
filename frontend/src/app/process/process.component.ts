@@ -9,7 +9,7 @@ import { DataService } from '../service/data.service';
 @Component({
   selector: 'app-process',
   templateUrl: './process.component.html',
-  styleUrls: ['./process.component.scss'] 
+  styleUrls: ['./process.component.scss']
 })
 export class ProcessComponent implements OnInit {
   shortcuts: ShortcutInput[] = [];
@@ -26,11 +26,11 @@ export class ProcessComponent implements OnInit {
 
   async ngOnInit() {
     console.log("before getmodelinfo");
-    this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() );
+    this.MODELS = <Model[]>JSON.parse(await this.dataService.getModelInfo().toPromise());
     console.log("models " + this.MODELS);
-    this.MODELS.forEach(m => this.items.push({label: m.displayName}));
+    this.MODELS.forEach(m => this.items.push({ label: m.displayName }));
     console.log("items " + this.items);
-    this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );
+    this.PROCESSES_IN_MODEL = <Process[]>JSON.parse(await this.dataService.getProcessesInModel().toPromise());
     console.log("processes " + this.PROCESSES_IN_MODEL);
 
     // this.items = [
@@ -43,7 +43,6 @@ export class ProcessComponent implements OnInit {
 
   async activateMenu() {
     console.log(this.menu['activeItem'].label);
-
   }
 
   @ViewChild(ContextMenuComponent, { static: false }) public basicMenu: ContextMenuComponent;
@@ -68,7 +67,7 @@ export class ProcessComponent implements OnInit {
     //p.breakingui = !p.breakingui
   }
 
-//   async initializeModels() { 
-//     this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() ); 
-//   }
- }
+  //   async initializeModels() { 
+  //     this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() ); 
+  //   }
+}
