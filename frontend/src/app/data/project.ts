@@ -1,4 +1,4 @@
 export class Project {   
   projectName: string;  
-  path: string;
+  projectPath: string;
 }

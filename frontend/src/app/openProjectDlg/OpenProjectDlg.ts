@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { OpenProjectDlgService } from './OpenProjectDlgService';
 import { DataService } from '../service/data.service'; 
+import { ProjectService } from '../service/project.service'; 
 import { MessageService } from '../message/MessageService';
 import { Project } from '../data/project';
 
@@ -17,7 +18,7 @@ export class OpenProjectDlg {
 
     constructor(public service: OpenProjectDlgService, 
         private msgService: MessageService,
-        private dataService: DataService) {       
+        private dataService: DataService, private projectService: ProjectService) {       
     }
 
     async ngOnInit() {  
@@ -47,7 +48,16 @@ export class OpenProjectDlg {
         // the following should return an instance of class Project
         this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectRootPath).toPromise());
 
-        console.log("returned projectName : " + this.project.projectName);
+        console.log("returned projectName - projectPath : " + this.project.projectName + " - " + this.project.projectPath);
+
+        console.log("projects length : " + this.projectService.PROJECTS.length);
+
+        // this.projectService.PROJECTS.push(this.project);
+        this.projectService.PROJECTS =  [...this.projectService.PROJECTS, {projectName:this.project.projectName, projectPath: this.project.projectPath}]; 
+
+        console.log("projects length : " + this.projectService.PROJECTS.length);
+
+        this.projectService.setSelectedProject(this.project);
 
         this.service.display = false;
     }
