@@ -16,7 +16,7 @@ export class ProjectService {
   selectedProject: Project = null;
   selectedProcesses: Process[] = null;
   selectedProcess: Process = null;
-
+  selectedModel: Model = null;
 
   constructor(private dataService: DataService) {
     console.log(" constructor() - class ProjectService: ");
@@ -26,11 +26,19 @@ export class ProjectService {
 
   setSelectedProject(project: Project) {
     this.selectedProject = project;
+    console.log("selected project name : " + this.selectedProject.projectName);
   }
 
+  
+
   onSelectedProjectChanged(event) {
+    console.log("selected project changed : " + event.value.projectName);
+    if(!event) {
+      console.log("event is null ");
+    }
     this.selectedProcesses = null;//this.getProcesses('baseline'); // to be retrieved again from API
     //console.log("test1")
+    
   }
 
   getSelectedProject(): Project {
@@ -50,9 +58,9 @@ export class ProjectService {
   }
 
   getModels(): Model[] {
-    if(this.MODELS == null) {
-      this.initData();
-    }
+    // if(this.MODELS == null) {
+    //   this.initData();
+    // }
     return this.MODELS;
   }
   /**
@@ -66,15 +74,15 @@ export class ProjectService {
     // }
     // return this.selectedProcesses;
 
-    this.reInitializeProcessesInModel(model);
+    // this.reInitializeProcessesInModel(model);
 
     return this.PROCESSES_IN_MODEL;
   }
 
-  async reInitializeProcessesInModel(model: String) {
-    console.log("model name : " + model);
-    this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );
-  }
+  // async reInitializeProcessesInModel(model: String) {
+  //   console.log("model name : " + model);
+  //   this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );
+  // }
 
   getProcessesByModelAndProject(model: String, project: string): Process[] {
     if (this.selectedProject != null) {
