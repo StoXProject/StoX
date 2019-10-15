@@ -33,17 +33,21 @@
                     </p-listbox>
                 </div>        
     </ng-template> -->
-</p-tabMenu> 
+</p-tabMenu>
 
 <p-toolbar>
-    <div>
-        <button pButton type="button"><img src="./assets/images/run16.png" /></button>
-    </div>
-</p-toolbar>    
+    <button class="button ui-button"><i class="runicon"></i></button>
+    <button class="button ui-button"><i class="runnexticon"></i></button>
+    <button class="button ui-button"><i class="runfromhereicon"></i></button>
+    <button class="button ui-button"><i class="runtoicon"></i></button>
+    <button class="button ui-button"><i class="reseticon"></i></button>
+    <button class="button ui-button"><i class="processicon"></i></button>
+</p-toolbar>
 
-<p-listbox [options]="ps.PROCESSES_IN_MODEL" [(ngModel)]="selectedProcesses" (onChange)="onSelectedProcessesChanged($event)" multiple="true" optionLabel="processName">
-                
-</p-listbox>    
+<p-listbox [options]="ps.PROCESSES_IN_MODEL" [(ngModel)]="selectedProcesses"
+    (onChange)="onSelectedProcessesChanged($event)" multiple="true" optionLabel="processName">
+
+</p-listbox>
 
 <context-menu>
     <!--<ng-template contextMenuItem let-process (execute)="runFromHere(process.name)">

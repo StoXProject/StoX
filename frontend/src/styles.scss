@@ -70,6 +70,7 @@ $nodata: #acacac;
   border: none !important;
   user-select: none !important;
   color: black !important;
+  //display: inline-block;
 
   .ui-tabmenu-nav {
     background-color: rgb(240, 240, 240) !important;
@@ -77,13 +78,14 @@ $nodata: #acacac;
     // inline/nowrap
     color: rgb(0, 0, 0) !important;
     white-space: nowrap;
+    border: none !important;
     overflow: hidden;
     .ui-tabmenuitem {
       padding: 0 !important;
       margin: 0 !important;
-     // border: none !important;
+      // border: none !important;
       color: rgb(0, 0, 0) !important;
-      border: 1px solid #d3d4d4 !important; 
+      border: 1px solid #d3d4d4 !important;
       background-color: rgb(240, 240, 240) !important;
       display: inline-block;
       float: none;
@@ -92,14 +94,31 @@ $nodata: #acacac;
         margin: 0 !important;
         color: black !important;
         .ui-menuitem-text {
-          color: black !important; 
+          color: black !important;
           font-weight: 700;
         }
       }
     }
   }
 }
-
+.ui-toolbar {
+  padding: 0 !important;
+  background-color: rgb(240, 240, 240) !important;
+  border: none !important;
+  vertical-align: middle;
+  line-height: 0;
+  height: 25px;
+  padding-left:10px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  button {
+    vertical-align: middle !important;
+    display: inline !important;
+    float: none;
+    margin-right: 4px;
+    padding: 1px 1px;
+  }
+}
 .ui-tabview {
   padding: 0 !important;
   margin: 0 !important;

@@ -80,7 +80,7 @@ export class RunService {
     }
 
     runProcessIdx(iFrom: number, iTo: number) {
-
+        
     }
     runModel(idx) {
         // call rstox active model and active project and process idx
