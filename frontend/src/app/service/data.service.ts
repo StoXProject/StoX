@@ -103,24 +103,32 @@ export class DataService {
     // formData.set('ow', 'FALSE');
     // formData.set('showWarnings', 'FALSE');
     // formData.set('open', 'TRUE');
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/createProject/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/createProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
   getModelInfo(): Observable<any> {
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getModelInfo/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getModelInfo/json?auto_unbox=true", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
-  getProcessesInModel(): Observable<any> {
+  // getTestProcesses(): Observable<any> {
+  //   const formData = new FormData();
+  //   formData.set('projectPath', "'C:/Users/esmaelmh/workspace/stox/project/project49'");
+  //   formData.set('modelName', "'Baseline'"); 
+  //   return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessTable/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  // }
+
+  getProcessesInModel(projectPath: string, modelName: string): Observable<any> {
+    console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
     const formData = new FormData();
-    formData.set('projectPath', "'C:/Users/esmaelmh/workspace/stox/project/project49'");
-    formData.set('modelName', "'Baseline'"); 
+    formData.set('projectPath', "'" + projectPath + "'");
+    formData.set('modelName', "'" + modelName + "'"); 
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  }
+  }  
 
   openProject(projectPath: string): Observable<any> { 
     const formData = new FormData();
     formData.set('projectPath', "'" + projectPath + "'");
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/openProject/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
   static readonly LOCALHOST: string = 'localhost';

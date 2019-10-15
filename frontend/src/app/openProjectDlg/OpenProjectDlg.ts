@@ -52,9 +52,11 @@ export class OpenProjectDlg {
 
         console.log("projects length : " + this.projectService.PROJECTS.length);
 
-        // this.projectService.PROJECTS.push(this.project);
-        this.projectService.PROJECTS =  [...this.projectService.PROJECTS, {projectName:this.project.projectName, projectPath: this.project.projectPath}]; 
-
+        if(!this.projectService.hasProject(this.project)) {
+            // this.projectService.PROJECTS.push(this.project);
+            this.projectService.PROJECTS =  [...this.projectService.PROJECTS, {projectName:this.project.projectName, projectPath: this.project.projectPath}]; 
+        }
+        
         console.log("projects length : " + this.projectService.PROJECTS.length);
 
         this.projectService.setSelectedProject(this.project);

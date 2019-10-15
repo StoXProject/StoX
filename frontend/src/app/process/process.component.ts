@@ -15,24 +15,32 @@ export class ProcessComponent implements OnInit {
   shortcuts: ShortcutInput[] = [];
   MODELS: Model[];
   PROCESSES_IN_MODEL: Process[];
-  selectedProcess: Process;
+  selectedProcesses: Process[];
 
-  constructor(private dataService: DataService) {
-    // this.initializeModels();
+  constructor(private dataService: DataService, private ps: ProjectService) {
   }
   items: MenuItem[] = [];
+  currentLabel: string = '';
+  // activeItem: MenuItem;
   //defaultActiveItem: MenuItem;
   @ViewChild('menuItems', { static: false }) menu: MenuItem[];
 
   async ngOnInit() {
+    // initialize MODELS and populate menu items
     console.log("before getmodelinfo");
     this.MODELS = <Model[]>JSON.parse(await this.dataService.getModelInfo().toPromise());
+    this.ps.setModels(this.MODELS);
     console.log("models " + this.MODELS);
     this.MODELS.forEach(m => this.items.push({ label: m.displayName }));
     console.log("items " + this.items);
-    this.PROCESSES_IN_MODEL = <Process[]>JSON.parse(await this.dataService.getProcessesInModel().toPromise());
-    console.log("processes " + this.PROCESSES_IN_MODEL);
+    this.ps.setSelectedModel('Baseline');
 
+    // if(this.ps.getSelectedProject != null) {
+    //   this.PROCESSES_IN_MODEL = <Process[]>JSON.parse(await this.dataService.getTestProcesses().toPromise());
+    //   console.log("processes " + this.PROCESSES_IN_MODEL);
+    // }
+
+    //this.activeItem = this.items[0];
     // this.items = [
     //   { label: 'Baseline' },
     //   { label: 'Statistics' },
@@ -43,6 +51,11 @@ export class ProcessComponent implements OnInit {
 
   async activateMenu() {
     console.log(this.menu['activeItem'].label);
+    console.log("this.currentLabel : " + this.currentLabel);
+    if(this.menu['activeItem'].label != this.currentLabel) {
+      this.ps.setSelectedModel(this.menu['activeItem'].label);
+    }
+    this.currentLabel = this.menu['activeItem'].label;
   }
 
   @ViewChild(ContextMenuComponent, { static: false }) public basicMenu: ContextMenuComponent;
@@ -67,7 +80,9 @@ export class ProcessComponent implements OnInit {
     //p.breakingui = !p.breakingui
   }
 
-  //   async initializeModels() { 
-  //     this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() ); 
-  //   }
+  onSelectedProcessesChanged(event) {
+    // can be array of selected processes
+    console.log("selected processes " + event.value.length);
+    this.ps.setSelectedProcesses(this.selectedProcesses);
+  }  
 }

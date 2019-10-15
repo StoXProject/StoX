@@ -41,7 +41,7 @@
     </div>
 </p-toolbar>    
 
-<p-listbox [options]="PROCESSES_IN_MODEL" [(ngModel)]="selectedProcess" optionLabel="processName">
+<p-listbox [options]="ps.PROCESSES_IN_MODEL" [(ngModel)]="selectedProcesses" (onChange)="onSelectedProcessesChanged($event)" multiple="true" optionLabel="processName">
                 
 </p-listbox>    
 

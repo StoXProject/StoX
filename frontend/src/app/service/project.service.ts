@@ -9,14 +9,14 @@ import { DataService } from './data.service';
   providedIn: 'root'
 })
 export class ProjectService {
-  PROJECTS!: Project[];
-  PROCESSES_IN_MODEL!: Process[];
-  MODELS!: Model[];
+  PROJECTS: Project[];
+  PROCESSES_IN_MODEL: Process[];
+  MODELS: Model[];
 
-  selectedProject!: Project;
-  selectedProcesses!: Process[];
-  selectedProcess!: Process;
-  selectedModel!: Model;
+  selectedProject: Project = null;
+  selectedProcesses: Process[] = null;
+  // selectedProcess: Process = null;
+  selectedModel: Model = null;
 
   constructor(private dataService: DataService) {
     console.log(" constructor() - class ProjectService: ");
@@ -24,33 +24,61 @@ export class ProjectService {
     this.setSelectedProject(this.getProjects()[0]);
   }
 
-  setSelectedProject(project: Project) {
-    this.selectedProject = project;
-    console.log("selected project name : " + this.selectedProject.projectName);
+  hasProject(project: Project): boolean {
+    var projectPath = project.projectPath;
+    for (let i = 0; i < this.PROJECTS.length; i++) {
+        var currentProjectPath = this.PROJECTS[i].projectPath;
+        if (currentProjectPath == projectPath) {
+            return true;
+        }
+    }
+    return false;    
   }
 
-
-
   onSelectedProjectChanged(event) {
-    console.log("selected project changed : " + event.value.projectName);
-    if (!event) {
-      console.log("event is null ");
-    }
-    this.selectedProcesses = null;//this.getProcesses('baseline'); // to be retrieved again from API
-    //console.log("test1")
+    // if (event.value.projectName) {
+    // }
 
+    console.log("selected project changed : " + this.selectedProject.projectName);
+
+    // the following is implemented in setSelctedProject
+    // set selected model to 'Baseline'
+    // get processes in 'Baseline' for selected project and show it on GUI
+    // this.setSelectedModel("Baseline"); 
+  }
+
+  async setSelectedModel(modelName: string) {
+    for (let i = 0; i < this.MODELS.length; i++) {
+      if(this.MODELS[i].modelName == modelName) {
+        this.selectedModel = this.MODELS[i];
+        break;
+      }
+    }
+
+    if(this.selectedProject) {
+      // set project path and model name as parameter here
+      //this.PROCESSES_IN_MODEL = <Process[]>JSON.parse(await this.dataService.getTestProcesses().toPromise());
+      this.PROCESSES_IN_MODEL = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
+      console.log("nr of processes : " + this.PROCESSES_IN_MODEL.length);
+    }
   }
 
   getSelectedProject(): Project {
     return this.selectedProject;
   }
 
-  getSelectedProcess(): Process {
-    return this.selectedProcess;
+  setSelectedProject(project: Project) {
+    this.selectedProject = project;
+    this.setSelectedModel("Baseline");
+    // console.log("selected project name : " + this.selectedProject.projectName);
+  }
+  
+  getSelectedProcesses(): Process[] {
+    return this.selectedProcesses;
   }
 
-  setSelectedProcess(process: Process) {
-    this.selectedProcess = process;
+  setSelectedProcesses(process: Process []) {
+    this.selectedProcesses = process;
   }
 
   getProjects(): Project[] {
@@ -58,29 +86,24 @@ export class ProjectService {
   }
 
   getModels(): Model[] {
-    // if(this.MODELS == null) {
-    //   this.initData();
-    // }
     return this.MODELS;
   }
-  /**
-   * get processes
-   * @param model 
-   */
-  getProcesses(model: String): Process[] {
-    // if (this.selectedProcesses == null) {
-    //   console.log("test3")
-    //   this.selectedProcesses = this.getProcessesByModelAndProject(model, this.selectedProject.projectName);
-    // }
-    // return this.selectedProcesses;
 
-    // this.reInitializeProcessesInModel(model);
-    return this.PROCESSES_IN_MODEL;
+  setModels(models: Model[]) {
+    this.MODELS = models;
   }
 
-  // async reInitializeProcessesInModel(model: String) {
-  //   console.log("model name : " + model);
-  //   this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );
+  // /**
+  //  * get processes
+  //  * @param model 
+  //  */
+  // getProcesses(model: String): Process[] {
+  //   // if (this.selectedProcesses == null) {
+  //   //   console.log("test3")
+  //   //   this.selectedProcesses = this.getProcessesByModelAndProject(model, this.selectedProject.projectName);
+  //   // }
+  //   // return this.selectedProcesses;
+  //   return this.PROCESSES_IN_MODEL;
   // }
 
   getProcessesByModelAndProject(model: String, project: string): Process[] {
@@ -110,6 +133,7 @@ export class ProjectService {
     console.log(" initData() - class ProjectService: ");
 
     this.PROJECTS = [
+      { projectName: 'project49', projectPath: 'C:/Users/esmaelmh/workspace/stox/project/project49' },
       { projectName: 'Gytetokt 2004', projectPath: '.' },
       { projectName: 'Tobis 2006', projectPath: '.' },
       { projectName: 'Tobis 2007', projectPath: '.' },
@@ -129,13 +153,11 @@ export class ProjectService {
       { projectName: 'Tobis 2021', projectPath: '.' }
     ];
 
-    // this.PROCESSES_IN_MODEL = <Process[]> JSON.parse( await this.dataService.getProcessesInModel().toPromise() );  
+    var projectName = <string> await this.dataService.getProjectPath().toPromise();
+    var projectRootPath = <string> await this.dataService.getProjectRootPath().toPromise();
+    var fullPath = projectRootPath + "/" + projectName;
 
-    // console.log("processes retrieved : " + this.PROCESSES_IN_MODEL.length);
-
-    // this.MODELS = <Model[]> JSON.parse( await this.dataService.getModelInfo().toPromise() );  
-
-    // console.log("models retrieved : " + this.MODELS.length);
+    this.PROJECTS =  [...this.PROJECTS, {projectName: projectName, projectPath: fullPath}];
   }
 
 }

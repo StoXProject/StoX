@@ -3,6 +3,8 @@ import {CreateProjectDialogService} from './create-project-dialog.service';
 import { DataService } from '../service/data.service';
 import { Template } from '../data/Template';
 import { MessageService } from '../message/MessageService';
+import { ProjectService } from '../service/project.service';
+import { Project } from '../data/project';
 
 @Component({
     selector: 'CreateProjectDialog',
@@ -15,7 +17,8 @@ export class CreateProjectDialog {
     templates: Template[];
     selectedTemplate: Template;
 
-    constructor(public service: CreateProjectDialogService, private msgService: MessageService, private dataService: DataService) {
+    constructor(public service: CreateProjectDialogService, private msgService: MessageService, 
+        private dataService: DataService, private ps: ProjectService) {
     }
 
     ngOnInit() {
@@ -61,7 +64,8 @@ export class CreateProjectDialog {
             this.msgService.setMessage("Template is not selected!");
             this.msgService.showMessage();            
             return;
-        }        
+        }       
+         
         console.log("selectedTemplate : " + this.selectedTemplate ? this.selectedTemplate.name + " - " + this.selectedTemplate.description  : 'none');
 
         let absolutePath = this.projectRootPath + "/" + this.project;
@@ -69,8 +73,15 @@ export class CreateProjectDialog {
         absolutePath = absolutePath.replace(/\\/g, "/");
 
         console.log("absolute path : " + absolutePath);
-        let projectCreated = JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
-        console.log("projectCreated : " + projectCreated);
+        let project = <Project> JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
+        console.log("projectCreated : " + project.projectName);
+
+        if(!this.ps.hasProject(project)) {
+            // this.projectService.PROJECTS.push(this.project);
+            this.ps.PROJECTS =  [...this.ps.PROJECTS, {projectName: project.projectName, projectPath: project.projectPath}]; 
+        }        
+
+        this.ps.setSelectedProject(project);
         console.log("end apply\n\n");
         this.service.display = false;
     }    
