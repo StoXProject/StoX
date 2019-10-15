@@ -27,12 +27,12 @@ export class ProjectService {
   hasProject(project: Project): boolean {
     var projectPath = project.projectPath;
     for (let i = 0; i < this.PROJECTS.length; i++) {
-        var currentProjectPath = this.PROJECTS[i].projectPath;
-        if (currentProjectPath == projectPath) {
-            return true;
-        }
+      var currentProjectPath = this.PROJECTS[i].projectPath;
+      if (currentProjectPath == projectPath) {
+        return true;
+      }
     }
-    return false;    
+    return false;
   }
 
   onSelectedProjectChanged(event) {
@@ -48,14 +48,17 @@ export class ProjectService {
   }
 
   async setSelectedModel(modelName: string) {
+    if (this.MODELS == null) {
+      return;
+    }
     for (let i = 0; i < this.MODELS.length; i++) {
-      if(this.MODELS[i].modelName == modelName) {
+      if (this.MODELS[i].modelName == modelName) {
         this.selectedModel = this.MODELS[i];
         break;
       }
     }
 
-    if(this.selectedProject) {
+    if (this.selectedProject) {
       // set project path and model name as parameter here
       //this.PROCESSES_IN_MODEL = <Process[]>JSON.parse(await this.dataService.getTestProcesses().toPromise());
       this.PROCESSES_IN_MODEL = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
@@ -72,12 +75,12 @@ export class ProjectService {
     this.setSelectedModel("Baseline");
     // console.log("selected project name : " + this.selectedProject.projectName);
   }
-  
+
   getSelectedProcesses(): Process[] {
     return this.selectedProcesses;
   }
 
-  setSelectedProcesses(process: Process []) {
+  setSelectedProcesses(process: Process[]) {
     this.selectedProcesses = process;
   }
 
@@ -133,7 +136,7 @@ export class ProjectService {
     console.log(" initData() - class ProjectService: ");
 
     this.PROJECTS = [
-      { projectName: 'project49', projectPath: 'C:/Users/esmaelmh/workspace/stox/project/project49' },
+      { projectName: 'test10', projectPath: 'C:/Users/aasmunds/workspace/stox/project/test10' },
       { projectName: 'Gytetokt 2004', projectPath: '.' },
       { projectName: 'Tobis 2006', projectPath: '.' },
       { projectName: 'Tobis 2007', projectPath: '.' },
@@ -153,11 +156,11 @@ export class ProjectService {
       { projectName: 'Tobis 2021', projectPath: '.' }
     ];
 
-    var projectName = <string> await this.dataService.getProjectPath().toPromise();
-    var projectRootPath = <string> await this.dataService.getProjectRootPath().toPromise();
+    var projectName = <string>await this.dataService.getProjectPath().toPromise();
+    var projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
     var fullPath = projectRootPath + "/" + projectName;
 
-    this.PROJECTS =  [...this.PROJECTS, {projectName: projectName, projectPath: fullPath}];
+    this.PROJECTS = [...this.PROJECTS, { projectName: projectName, projectPath: fullPath }];
   }
 
 }

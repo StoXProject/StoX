@@ -1,12 +1,12 @@
 export class Process {
-  processId: string;
-  processName: string;
-  functionName: string;
-  dataType: string;
-  canShowInMap: boolean;
-  doShowInMap: boolean;
-  hasProcessData: boolean;
-  hasError: boolean;
+  processId?: string;
+  processName?: string;
+  functionName?: string;
+  dataType?: string;
+  canShowInMap?: boolean;
+  doShowInMap?: boolean;
+  hasProcessData?: boolean;
+  hasError?: boolean;
 
   // "processName": "ReadBiotic",
   // "functionName": "ReadBiotic",
