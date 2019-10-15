@@ -19,9 +19,9 @@ export class HomeComponent {
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
     private dataService: DataService) {
-      document.addEventListener('touchstart', function(){}, {passive: false});
+      //document.addEventListener('touchstart', function(){}, {passive: false});
   }
-  items: MenuItem[];
+  items?: MenuItem[];
 
   ngOnInit() {
     this.items = [{

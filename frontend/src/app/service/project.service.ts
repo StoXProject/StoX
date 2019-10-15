@@ -9,14 +9,14 @@ import { DataService } from './data.service';
   providedIn: 'root'
 })
 export class ProjectService {
-  PROJECTS: Project[];
-  PROCESSES_IN_MODEL: Process[];
-  MODELS: Model[];
+  PROJECTS!: Project[];
+  PROCESSES_IN_MODEL!: Process[];
+  MODELS!: Model[];
 
-  selectedProject: Project = null;
-  selectedProcesses: Process[] = null;
-  selectedProcess: Process = null;
-  selectedModel: Model = null;
+  selectedProject!: Project;
+  selectedProcesses!: Process[];
+  selectedProcess!: Process;
+  selectedModel!: Model;
 
   constructor(private dataService: DataService) {
     console.log(" constructor() - class ProjectService: ");

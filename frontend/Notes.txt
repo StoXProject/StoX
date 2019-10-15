@@ -1,0 +1,6 @@
+At R
+
+getProcessTables projectPath with single backslash must be supported.
+modelName key must be incasesensitive.
+
+'C:\\Users\\aasmunds\\workspace\\stox\\project\\test10'

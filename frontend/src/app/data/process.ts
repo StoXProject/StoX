@@ -1,4 +1,5 @@
 export class Process {
+  processId: string;
   processName: string;
   functionName: string;
   dataType: string;
