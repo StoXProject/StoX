@@ -136,7 +136,7 @@ export class ProjectService {
     console.log(" initData() - class ProjectService: ");
 
     this.PROJECTS = [
-      { projectName: 'test10', projectPath: 'C:/Users/aasmunds/workspace/stox/project/test10' },
+      { projectName: 'project50', projectPath: 'C:/Users/esmaelmh/workspace/stox/project/project50' },
       { projectName: 'Gytetokt 2004', projectPath: '.' },
       { projectName: 'Tobis 2006', projectPath: '.' },
       { projectName: 'Tobis 2007', projectPath: '.' },
