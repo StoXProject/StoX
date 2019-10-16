@@ -14,7 +14,7 @@ export class ProjectService {
   MODELS: Model[];
 
   selectedProject: Project = null;
-  selectedProcesses: Process[] = null;
+  public selectedProcess: Process = null;
   // selectedProcess: Process = null;
   selectedModel: Model = null;
 
@@ -76,12 +76,12 @@ export class ProjectService {
     // console.log("selected project name : " + this.selectedProject.projectName);
   }
 
-  getSelectedProcesses(): Process[] {
-    return this.selectedProcesses;
+  getSelectedProcess(): Process {
+    return this.selectedProcess;
   }
 
-  setSelectedProcesses(process: Process[]) {
-    this.selectedProcesses = process;
+  setSelectedProcess(process: Process) {
+    this.selectedProcess = process;
   }
 
   getProjects(): Project[] {

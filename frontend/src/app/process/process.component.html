@@ -44,21 +44,10 @@
     <button class="button ui-button"><i class="processicon"></i></button>
 </p-toolbar>
 
-<p-listbox [options]="ps.PROCESSES_IN_MODEL" [(ngModel)]="selectedProcesses"
-    (onChange)="onSelectedProcessesChanged($event)" multiple="true" optionLabel="processName">
+<p-listbox  #listBox [options]="ps.PROCESSES_IN_MODEL" [(ngModel)]="selectedProcesses"
+    (onChange)="onSelectedProcessesChanged($event)" multiple="false" optionLabel="processName"
+    (contextmenu)="openCm($event, cm)">
 
 </p-listbox>
-
-<context-menu>
-    <!--<ng-template contextMenuItem let-process (execute)="runFromHere(process.name)">
-        Run from here
-    </ng-template>-->
-    <ng-template contextMenuItem divider="true"></ng-template>
-    <ng-template contextMenuItem (execute)="toggleBreak($event.item)">
-        Break in GUI
-    </ng-template>
-    <!-- <ng-template contextMenuItem passive="true">
-          Input something: <input type="text">
-        </ng-template> -->
-</context-menu>
-<!-- <input [ngKeyboardShortcut]="shortcuts"/> -->
+<!--<p-contextMenu #cm [model]="contextMenu"></p-contextMenu>-->
+<p-contextMenu #cm [model]="contextMenu"></p-contextMenu>

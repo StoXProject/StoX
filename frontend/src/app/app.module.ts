@@ -37,7 +37,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/components/table/table';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService }  from './in-memory-data.service';
-import { ContextMenuModule } from 'ngx-contextmenu';
+import { ContextMenuModule } from 'primeng/contextmenu';
 import { KeyboardShortcutsModule }     from 'ng-keyboard-shortcuts';
 import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} from '@angular/common';
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
@@ -66,7 +66,7 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
     ListboxModule,
     TabMenuModule,
     ToolbarModule,
-    ContextMenuModule.forRoot(),
+    ContextMenuModule,
     KeyboardShortcutsModule.forRoot(),
     RouterModule.forRoot([] ), 
      MenuModule//, PanelMenuModule

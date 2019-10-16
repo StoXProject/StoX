@@ -101,6 +101,11 @@ $nodata: #acacac;
     }
   }
 }
+.ui-contextmenu .ui-menuitem-link {
+  padding: 0.2em 0.2em;
+  text-decoration: none;
+}
+
 .ui-toolbar {
   padding: 0 !important;
   background-color: rgb(240, 240, 240) !important;
@@ -108,7 +113,7 @@ $nodata: #acacac;
   vertical-align: middle;
   line-height: 0;
   height: 25px;
-  padding-left:10px !important;
+  padding-left: 10px !important;
   white-space: nowrap;
   overflow: hidden;
   button {
