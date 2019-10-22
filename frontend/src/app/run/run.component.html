@@ -1,8 +1,11 @@
 <p-toolbar>
-        <button class="button ui-button" (click)="handleClick($event)"><i class="runicon" ></i></button>
-        <button class="button ui-button"><i class="runnexticon"></i></button>
-        <button class="button ui-button"><i class="runfromhereicon"></i></button>
-        <button class="button ui-button"><i class="runtoicon"></i></button>
-        <button class="button ui-button"><i class="reseticon"></i></button>
-        <button class="button ui-button"><i class="processicon"></i></button>
-    </p-toolbar>
+   <input type="button" pToolbar="asdafa"></input>
+        <button class="button ui-button" (click)="handleClick($event, 'run')"><i class="runicon"></i></button>
+   
+    <button class="button ui-button" (click)="handleClick($event, 'runnext')"><i class="runnexticon"></i></button>
+    <button class="button ui-button" (click)="handleClick($event, 'runfromhere')"><i
+            class="runfromhereicon"></i></button>
+    <button class="button ui-button" (click)="handleClick($event, 'runto')"><i class="runtoicon"></i></button>
+    <button class="button ui-button"><i class="reseticon"></i></button>
+    <button class="button ui-button"><i class="processicon"></i></button>
+</p-toolbar>

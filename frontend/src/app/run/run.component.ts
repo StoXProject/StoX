@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { RunService } from '../service/run.service';
 @Component({
   selector: 'app-run',
   templateUrl: './run.component.html',
@@ -7,11 +7,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RunComponent implements OnInit {
 
-  constructor() { }
+  constructor(private runService: RunService) { }
 
   ngOnInit() {
   }
-  handleClick(e) { 
-    console.log("run")
+  handleClick(e, command) {
+    switch (command) {
+      case "run":
+        console.log("run")
+        break;
+
+    }
   }
 }
