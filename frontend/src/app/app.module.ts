@@ -40,6 +40,8 @@ import { InMemoryDataService }  from './in-memory-data.service';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { KeyboardShortcutsModule }     from 'ng-keyboard-shortcuts';
 import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} from '@angular/common';
+import { ModelComponent } from './model/model.component';
+import { RunComponent } from './run/run.component';
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
 @NgModule({
@@ -81,7 +83,9 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
     ProjectComponent,
     MapComponent,
     ProcessComponent,
-    ParameterComponent
+    ParameterComponent,
+    ModelComponent,
+    RunComponent
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },

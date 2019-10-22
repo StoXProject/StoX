@@ -102,8 +102,8 @@ $nodata: #acacac;
   }
 }
 .ui-contextmenu .ui-menuitem-link {
-  padding: 0.2em 0.2em;
-  text-decoration: none;
+  padding: 0.2em 0.2em !important ;
+  text-decoration: none !important;
 }
 
 .ui-toolbar {
@@ -211,3 +211,7 @@ $nodata: #acacac;
 }*/
 
 //.ui-widget, .ui-widget .ui-widget {    font-size: $fontSize !important;}
+.ui-listbox .ui-listbox-list-wrapper {
+  overflow: hidden;
+}
+

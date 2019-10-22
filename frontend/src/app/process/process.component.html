@@ -26,28 +26,28 @@
 </p-tabView>-->
 
 
-<p-tabMenu #menuItems [model]="items" (click)="activateMenu()">
-    <!-- <ng-template pTemplate="item" let-item let-i="index">
-                <div>
-                    <p-listbox [options]="PROCESSES_IN_MODEL" [(ngModel)]="selectedProcess" optionLabel="processName">
-                    </p-listbox>
-                </div>        
-    </ng-template> -->
-</p-tabMenu>
-
-<p-toolbar>
-    <button class="button ui-button"><i class="runicon"></i></button>
-    <button class="button ui-button"><i class="runnexticon"></i></button>
-    <button class="button ui-button"><i class="runfromhereicon"></i></button>
-    <button class="button ui-button"><i class="runtoicon"></i></button>
-    <button class="button ui-button"><i class="reseticon"></i></button>
-    <button class="button ui-button"><i class="processicon"></i></button>
-</p-toolbar>
-
-<p-listbox  #listBox [options]="ps.PROCESSES_IN_MODEL" [(ngModel)]="selectedProcesses"
+<p-listbox #listBox [options]="ps.PROCESSES_IN_MODEL" [(ngModel)]="selectedProcesses"
     (onChange)="onSelectedProcessesChanged($event)" multiple="false" optionLabel="processName"
     (contextmenu)="openCm($event, cm)">
-
+    <ng-template let-process pTemplate="item">
+        <!--  <p-contextMenu></p-contextMenu> -->
+        <div>
+            <span *ngIf="process.value.processName== 'ReadBiotic'">
+                <span class="fa-stack" style="vertical-align: middle;">
+                    <i class="fa fa-circle fa-stack-1x"
+                        style="font-size: 0.8em;  color:rgb(243, 240, 85) !important;"></i>
+                    <i class="fa fa-cog fa-stack-1x fa-spin"
+                        style="font-size: 1.2em;  color:rgb(145, 173, 131) !important;  text-shadow: 1px 1px 1px #000000 !important;"></i>
+                </span>
+            </span>
+            <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
+            <span *ngIf="process.value.processName== 'ReadBiotic'">
+                <img src="./assets/images/break.png" width="8" style="margin-bottom:12px; margin-left:-16px;">
+                <span style="margin-left:8px;"></span>
+            </span>
+            <span style="margin-left:16px;">{{process.value.processName}}</span>
+        </div>
+    </ng-template>
 </p-listbox>
 <!--<p-contextMenu #cm [model]="contextMenu"></p-contextMenu>-->
 <p-contextMenu #cm [model]="contextMenu"></p-contextMenu>

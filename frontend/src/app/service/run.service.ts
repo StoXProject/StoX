@@ -12,14 +12,13 @@ import { ProjectService } from '../service/project.service';
  * Manage Run process logic
  */
 export class RunService {
-    activeProcessId: string = null;
     constructor(private projectService: ProjectService) {
     }
     getProcessIdx(processId: string): number {
         return this.projectService.PROCESSES_IN_MODEL.findIndex(p => p.processId === processId);
     }
     getActiveProcessIdx(): number {
-        return this.getProcessIdx(this.activeProcessId);
+        return this.getProcessIdx(this.projectService.activeProcessId);
     }
     canRun(): Boolean {
         return this.projectService.PROCESSES_IN_MODEL.length > 0;

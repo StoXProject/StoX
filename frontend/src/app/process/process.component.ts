@@ -1,11 +1,12 @@
 import { Component, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit } from '@angular/core';
 import { Process } from '../data/process';
 import { ProjectService } from '../service/project.service';
+import { DataService } from '../service/data.service';
 import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "ng-keyboard-shortcuts";
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
-import { DataService } from '../service/data.service';
+
 import { SelectItem, Listbox } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
 @Component({
@@ -15,18 +16,16 @@ import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angul
 })
 export class ProcessComponent implements OnInit/*, DoCheck*/   {
   shortcuts: ShortcutInput[] = [];
-  MODELS: Model[];
+
   PROCESSES_IN_MODEL: Process[];
   selectedProcesses: Process[];
   private contextMenu: MenuItem[];
 
   constructor(private dataService: DataService, private ps: ProjectService) {
   }
-  items: MenuItem[] = [];
-  currentLabel: string = '';
-  // activeItem: MenuItem;
-  //defaultActiveItem: MenuItem;
-  @ViewChild('menuItems', { static: false }) menu: MenuItem[];
+
+
+
   // @ViewChild('listBox', { static: true }) accessor: Listbox;
   // @ViewChild('listBox', { static: false, read: NgModel }) model: NgModel;
   //@ViewChild(ProcessComponent, { static: true }) myFormComponent: ProcessComponent;
@@ -34,46 +33,8 @@ export class ProcessComponent implements OnInit/*, DoCheck*/   {
   async ngOnInit() {
     //this.ngDoCheck();
     this.contextMenu = [{ label: "Run from here   " }];
-
-    // initialize MODELS and populate menu items
-    console.log("before getmodelinfo");
-    this.MODELS = <Model[]>JSON.parse(await this.dataService.getModelInfo().toPromise());
-    this.ps.setModels(this.MODELS);
-    console.log("models " + this.MODELS);
-    this.MODELS.forEach(m => this.items.push({ label: m.displayName }));
-    console.log("items " + this.items);
-    this.ps.setSelectedModel('Baseline');
-
-    // if(this.ps.getSelectedProject != null) {
-    //   this.PROCESSES_IN_MODEL = <Process[]>JSON.parse(await this.dataService.getTestProcesses().toPromise());
-    //   console.log("processes " + this.PROCESSES_IN_MODEL);
-    // }
-
-    //this.activeItem = this.items[0];
-    // this.items = [
-    //   { label: 'Baseline' },
-    //   { label: 'Statistics' },
-    //   { label: 'Reports' }
-    // ];
-    //this.defaultActiveItem = this.items[0]; // set default active item
-
   }
-  // async ngDoCheck() {
-  //   this.accessor.registerOnChange = (fn: (val: any) => void) => {
-  //     this.accessor.onModelChange = (val) => {
-  //       console.log("on model change" + val);
-  //       return fn(val);
-  //     };
-  //   }
-  // }
-   async activateMenu() {
-    console.log(this.menu['activeItem'].label);
-    console.log("this.currentLabel : " + this.currentLabel);
-    if (this.menu['activeItem'].label != this.currentLabel) {
-      this.ps.setSelectedModel(this.menu['activeItem'].label);
-    }
-    this.currentLabel = this.menu['activeItem'].label;
-  }
+
 
   //@ViewChild(ContextMenuComponent, { static: false }) public basicMenu: ContextMenuComponent;
 
@@ -104,8 +65,8 @@ export class ProcessComponent implements OnInit/*, DoCheck*/   {
   }
   prepCm() {
     this.contextMenu = [
-      { label: 'image(png)', icon: 'fa-download', command: (event) => { } },
-      { label: 'List 1 (csv)', icon: 'fa-download', command: (event) => { } },
+      { label: 'image(png)', icon: 'fa fa-cog fa-cog-style', command: (event) => { } },
+      { label: 'List 1 (csv)', icon: 'fa-stack fa-2x fa fa-gear fa-stack fa fa-cog', command: (event) => { } },
       { label: 'List 2 (csv)', icon: 'fa-download', command: (event) => { } }
     ];
   }
@@ -117,4 +78,5 @@ export class ProcessComponent implements OnInit/*, DoCheck*/   {
     cm.show(event);
     return false;
   }
+
 }

@@ -1,0 +1,32 @@
+.button {
+    line-height: 0;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  
+  @mixin define_icon($fileName) {
+    height: 16px;
+    width: 16px;
+    display: inline-block;
+    background: url("./../../assets/images/"+$fileName+".png");
+  }
+  
+  .runicon {
+    @include define_icon("run16");
+  }
+  .runnexticon {
+    @include define_icon("runnext16");
+  }
+  .runfromhereicon {
+    @include define_icon("runfromhere16");
+  }
+  .runtoicon {
+    @include define_icon("runto16");
+  }
+  .reseticon {
+    @include define_icon("reset16");
+  }
+  .processicon {
+    @include define_icon("process");
+  }
+  

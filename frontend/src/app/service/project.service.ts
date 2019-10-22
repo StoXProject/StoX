@@ -12,8 +12,9 @@ export class ProjectService {
   PROJECTS: Project[];
   PROCESSES_IN_MODEL: Process[];
   MODELS: Model[];
+  activeProcessId: string = null; // the process id beeing processed
 
-  selectedProject: Project = null;
+  selectedProject: Project = null; // the selected process by user
   public selectedProcess: Process = null;
   // selectedProcess: Process = null;
   selectedModel: Model = null;
@@ -22,6 +23,9 @@ export class ProjectService {
     console.log(" constructor() - class ProjectService: ");
     this.initData();
     this.setSelectedProject(this.getProjects()[0]);
+  }
+  getProcess(processId: string): Process {
+    return this.PROCESSES_IN_MODEL.find(p => p.processId === processId);
   }
 
   hasProject(project: Project): boolean {
@@ -136,7 +140,7 @@ export class ProjectService {
     console.log(" initData() - class ProjectService: ");
 
     this.PROJECTS = [
-      { projectName: 'project50', projectPath: 'C:/Users/esmaelmh/workspace/stox/project/project50' },
+      { projectName: 'test11', projectPath: 'C:/Users/aasmunds/workspace/stox/project/test11' },
       { projectName: 'Gytetokt 2004', projectPath: '.' },
       { projectName: 'Tobis 2006', projectPath: '.' },
       { projectName: 'Tobis 2007', projectPath: '.' },
