@@ -1,11 +1,6 @@
 <p-toolbar>
-   <input type="button" pToolbar="asdafa"></input>
-        <button class="button ui-button" (click)="handleClick($event, 'run')"><i class="runicon"></i></button>
-   
-    <button class="button ui-button" (click)="handleClick($event, 'runnext')"><i class="runnexticon"></i></button>
-    <button class="button ui-button" (click)="handleClick($event, 'runfromhere')"><i
-            class="runfromhereicon"></i></button>
-    <button class="button ui-button" (click)="handleClick($event, 'runto')"><i class="runtoicon"></i></button>
-    <button class="button ui-button"><i class="reseticon"></i></button>
-    <button class="button ui-button"><i class="processicon"></i></button>
+    <ng-container *ngFor="let btn of buttons">
+        <button class="button ui-button" (click)="handleClick($event, btn.cmd)" openDelay="800" placement="right"
+            [ngbTooltip]="getActionTooltip(btn.cmd)"><i class="{{btn.iclass}}"></i></button>
+    </ng-container>
 </p-toolbar>
