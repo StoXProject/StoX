@@ -78,7 +78,7 @@ export class CreateProjectDialog {
 
         if(!this.ps.hasProject(project)) {
             // this.projectService.PROJECTS.push(this.project);
-            this.ps.PROJECTS =  [...this.ps.PROJECTS, {projectName: project.projectName, projectPath: project.projectPath}]; 
+            this.ps.projects =  [...this.ps.projects, {projectName: project.projectName, projectPath: project.projectPath}]; 
         }        
 
         this.ps.setSelectedProject(project);

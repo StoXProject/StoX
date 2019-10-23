@@ -1,6 +1,6 @@
 <p-toolbar>
     <ng-container *ngFor="let btn of buttons">
-        <button class="button ui-button" (click)="handleClick($event, btn.cmd)" openDelay="800" placement="right"
-            [ngbTooltip]="getActionTooltip(btn.cmd)"><i class="{{btn.iclass}}"></i></button>
+        <button class="button ui-button" (click)="handleClick(btn.cmd)" openDelay="800" placement="right"
+            [ngbTooltip]="getActionTooltip(btn.cmd)" [ngClass]="{disabled: !getActionEnabled(btn.cmd)}"><i class="{{btn.iclass}}"></i></button>
     </ng-container>
 </p-toolbar>

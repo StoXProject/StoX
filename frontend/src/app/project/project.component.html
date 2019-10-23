@@ -1,5 +1,5 @@
 <p-tabView>
   <p-tabPanel *ngFor="let tab of ['Projects']" header="{{tab}}" [selected]="tab === 'Projects'">
-      <p-listbox [options]="ps.PROJECTS" [(ngModel)]="ps.selectedProject" (onChange)="ps.onSelectedProjectChanged($event)" optionLabel="projectName"></p-listbox> 
+      <p-listbox [options]="ps.projects" [(ngModel)]="ps.selectedProject" (onChange)="ps.onSelectedProjectChanged($event)" optionLabel="projectName"></p-listbox> 
   </p-tabPanel>
 </p-tabView>

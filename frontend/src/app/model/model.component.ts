@@ -9,7 +9,7 @@ import { MenuItem } from 'primeng/api';
   styleUrls: ['./model.component.scss']
 })
 export class ModelComponent implements OnInit {
-  MODELS: Model[];
+  models: Model[];
   constructor(private dataService: DataService, private ps: ProjectService) { }
   items: MenuItem[] = [];
   currentLabel: string = '';
@@ -19,10 +19,10 @@ export class ModelComponent implements OnInit {
   async ngOnInit() {
     // initialize MODELS and populate menu items
     console.log("before getmodelinfo");
-    this.MODELS = <Model[]>JSON.parse(await this.dataService.getModelInfo().toPromise());
-    this.ps.setModels(this.MODELS);
-    console.log("models " + this.MODELS);
-    this.MODELS.forEach(m => this.items.push({ label: m.displayName }));
+    this.models = <Model[]>JSON.parse(await this.dataService.getModelInfo().toPromise());
+    this.ps.setModels(this.models);
+    console.log("models " + this.models);
+    this.models.forEach(m => this.items.push({ label: m.displayName }));
     console.log("items " + this.items);
     this.ps.setSelectedModel('Baseline');
 

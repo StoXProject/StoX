@@ -15,32 +15,32 @@ export class RunService {
     constructor(private projectService: ProjectService) {
     }
     getProcessIdx(processId: string): number {
-        return this.projectService.PROCESSES_IN_MODEL.findIndex(p => p.processId === processId);
+        return this.projectService.processes.findIndex(p => p.processId === processId);
     }
     getActiveProcessIdx(): number {
         return this.getProcessIdx(this.projectService.activeProcessId);
     }
     canRun(): Boolean {
-        return this.projectService.PROCESSES_IN_MODEL.length > 0;
+        return this.projectService.processes.length > 0;
     }
     run() {
-        let idx: number = this.getActiveProcessIdx() === null ? 0 : (this.getActiveProcessIdx() + 1) % this.projectService.PROCESSES_IN_MODEL.length;
-        this.runProcessIdx(idx, this.projectService.PROCESSES_IN_MODEL.length - 1);
+        let idx: number = this.getActiveProcessIdx() === null ? 0 : (this.getActiveProcessIdx() + 1) % this.projectService.processes.length;
+        this.runProcessIdx(idx, this.projectService.processes.length - 1);
         // If the active process is the last, use the first.
         // Run from next to the active to the last process
     }
 
     runFromHere(processIdx: number) {
         // Run from the active to the last process
-        this.runProcessIdx(processIdx, this.projectService.PROCESSES_IN_MODEL.length - 1);
+        this.runProcessIdx(processIdx, this.projectService.processes.length - 1);
     }
     runThis(processIdx: number) {
         // Run from this to this process
         this.runProcessIdx(processIdx, processIdx);
     }
     getRunNextIdx(): number {
-        return this.projectService.PROCESSES_IN_MODEL.length == 0 || this.getActiveProcessIdx() === null ||
-            this.getActiveProcessIdx() < this.projectService.PROCESSES_IN_MODEL.length - 1 ?
+        return this.projectService.processes.length == 0 || this.getActiveProcessIdx() === null ||
+            this.getActiveProcessIdx() < this.projectService.processes.length - 1 ?
             null : this.getActiveProcessIdx() + 1;
     }
     canRunNext(): Boolean {
@@ -54,12 +54,12 @@ export class RunService {
         // Run from the next to the next process.
     }
     getRunToHereIndexFrom(): number {
-        return this.projectService.PROCESSES_IN_MODEL.length == 0 ? null : this.getActiveProcessIdx() == null ? 0 : this.getActiveProcessIdx() + 1;
+        return this.projectService.processes.length == 0 ? null : this.getActiveProcessIdx() == null ? 0 : this.getActiveProcessIdx() + 1;
     }
     getRunToHereIndexTo(processIdx: number): number {
-        return this.projectService.PROCESSES_IN_MODEL.length == 0 ||
+        return this.projectService.processes.length == 0 ||
             this.getActiveProcessIdx() == null || processIdx <= this.getActiveProcessIdx() ||
-            processIdx > this.projectService.PROCESSES_IN_MODEL.length - 1 ? null : processIdx;
+            processIdx > this.projectService.processes.length - 1 ? null : processIdx;
     }
 
     canRunToHere(processIdx: number) {
@@ -78,10 +78,14 @@ export class RunService {
         // Run from the next to the active to this process
     }
 
-    runProcessIdx(iFrom: number, iTo: number) {
-        
+    async runProcessIdx(iFrom: number, iTo: number) {
+        for(var i=iFrom;i<=iTo;i++) {
+            console.log("Run process ");
+            await new Promise(resolve => setTimeout(resolve, 300));
+          }
     }
     runModel(idx) {
+
         // call rstox active model and active project and process idx
         // runProcess(projectPath, modelName, processId) -> status hints ("processtable", "processproperties", "log", "updatemapdata")
         // { status: true;

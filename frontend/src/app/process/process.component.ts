@@ -17,7 +17,7 @@ import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angul
 export class ProcessComponent implements OnInit/*, DoCheck*/   {
   shortcuts: ShortcutInput[] = [];
 
-  PROCESSES_IN_MODEL: Process[];
+  processes: Process[];
   selectedProcesses: Process[];
   private contextMenu: MenuItem[];
 
