@@ -15,8 +15,17 @@ export class RunService {
     constructor(private projectService: ProjectService) {
     }
     getProcessIdx(processId: string): number {
-        return this.projectService.processes.findIndex(p => p.processId === processId);
+        return this.projectService.processes.findIndex(p => p.processID === processId);
     }
+
+    getProcess(idx: number): Process {
+        var p : Process = this.projectService.processes[idx];
+        if (p == null) {
+            throw "getProcess(idx) called with idx=" + idx;
+        }
+        return this.projectService.processes[idx]; 
+    }
+
     getActiveProcessIdx(): number {
         return this.getProcessIdx(this.projectService.activeProcessId);
     }
@@ -79,10 +88,13 @@ export class RunService {
     }
 
     async runProcessIdx(iFrom: number, iTo: number) {
-        for(var i=iFrom;i<=iTo;i++) {
-            console.log("Run process ");
-            await new Promise(resolve => setTimeout(resolve, 300));
-          }
+        for (var i = iFrom; i <= iTo; i++) {
+            let p = this.getProcess(i);
+            await new Promise(resolve => setTimeout(resolve, 600));
+            // ask backend for new active process id
+            this.projectService.activeProcessId = p.processID; 
+            console.log("Run process " + p.processName + " with id " + this.projectService.activeProcessId);
+        }
     }
     runModel(idx) {
 

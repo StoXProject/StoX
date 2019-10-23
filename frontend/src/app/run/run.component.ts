@@ -6,8 +6,7 @@ import { RunService } from '../service/run.service';
   styleUrls: ['./run.component.scss']
 })
 export class RunComponent implements OnInit {
-  totalEstimate = 10;
-  ctx = { estimate: this.totalEstimate };
+
   constructor(private runService: RunService) { }
 
   ngOnInit() {
@@ -50,12 +49,8 @@ export class RunComponent implements OnInit {
     //console.log(command)
     switch (command) {
       case "run":
-        // test sync wait
-        for (const item of [1, 2, 3]) {
-          await new Promise(resolve => setTimeout(resolve, 300));
-          console.log(item);
-        }
-        //console.log('Done!');
+        this.runService.run();
+        //console.log('Done!'); 
         break;
 
     }

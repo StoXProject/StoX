@@ -1,5 +1,5 @@
 export class Process {
-  processId?: string;
+  processID?: string;
   processName?: string;
   functionName?: string;
   dataType?: string;

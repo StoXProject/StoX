@@ -26,7 +26,7 @@ export class ProjectService {
     this.setSelectedProject(this.getProjects()[0]);
   }
   getProcess(processId: string): Process {
-    return this.processes.find(p => p.processId === processId);
+    return this.processes.find(p => p.processID === processId);
   }
 
   hasProject(project: Project): boolean {
@@ -141,7 +141,7 @@ export class ProjectService {
     console.log(" initData() - class ProjectService: ");
 
     this.projects = [
-      { projectName: 'test11', projectPath: 'C:/Users/aasmunds/workspace/stox/project/test11' },
+      { projectName: 'test20', projectPath: 'C:/Users/aasmunds/workspace/stox/project/test20' },
       { projectName: 'Gytetokt 2004', projectPath: '.' },
       { projectName: 'Tobis 2006', projectPath: '.' },
       { projectName: 'Tobis 2007', projectPath: '.' },
