@@ -39,14 +39,12 @@
                         style="font-size: 1.2em;  color:rgb(145, 173, 131) !important;  text-shadow: 1px 1px 1px #000000 !important;"></i>
                 </span>
             </ng-template>-->
-            <ng-template #staticProcessItem>
                 <span class="fa-stack" style="vertical-align: middle;">
                     <i class="fa fa-circle fa-stack-1x"
                         style="font-size: 0.8em;  color:rgb(243, 240, 85) !important;"></i>
-                    <i class="fa fa-cog fa-stack-1x"
+                    <i class="fa fa-cog fa-stack-1x" [ngClass]="{'fa-spin': process.value.processID===ps.activeProcessId}"
                         style="font-size: 1.2em;  color:rgb(145, 173, 131) !important;  text-shadow: 1px 1px 1px #000000 !important;"></i>
                 </span>
-            </ng-template>
             
             <!-- <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
             <span *ngIf="process.value.processName== 'ReadBiotic'">
