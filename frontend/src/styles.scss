@@ -215,3 +215,37 @@ $nodata: #acacac;
   overflow: hidden;
 }
 
+@mixin icon_container($w, $h) {
+  position: relative;
+  height: $h !important;
+  line-height: $h !important;
+  width: $w !important;
+  //vertical-align: middle !important;
+}
+
+.icon_container_16 {
+  @include icon_container(16px, 16px);
+}
+
+@mixin icon_content($content, $fontSize, $color, $shadow:false) {
+  position: absolute;
+  left: 0;
+  vertical-align: middle !important;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  content: $content;
+  font-size: $fontSize;
+  color: $color;
+  @if ($shadow) {
+    text-shadow: 1px 1px 1px #000000;
+  }
+}
+
+.process:before {
+  @include icon_content("\f111", 0.5em, rgb(243, 240, 85));
+}
+
+.process:after {
+  @include icon_content("\f013", 1.2em, rgb(145, 173, 131), true);
+}

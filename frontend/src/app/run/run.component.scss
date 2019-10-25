@@ -4,18 +4,19 @@
   vertical-align: middle;
 }
 
+/*
 @mixin define_icon($fileName) {
-  height: 16px;
-  width: 16px;
+  @include icon_size();
   display: inline-block;
   background: url("./../../assets/images/"+$fileName+".png");
-}
+}*/
 
 .disabled {
-    opacity: 0.4;
-    filter: alpha(opacity=40); /* msie */
-    pointer-events: none;
+  opacity: 0.4; 
+  filter: alpha(opacity=40); /* msie */
+  pointer-events: none;
 }
+/*
 .runicon {
   @include define_icon("run16");
 }
@@ -33,10 +34,12 @@
 }
 .processicon {
   @include define_icon("process");
-}
+}*/
 
 .disableButton {
   opacity: 0.35;
   background: #eee;
   color: #444;
 }
+
+
