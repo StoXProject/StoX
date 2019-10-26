@@ -14,7 +14,7 @@ import { MenuItem } from 'primeng/api';
 })
 
 export class HomeComponent {
-  title = 'stox';
+  title = 'StoX';
   constructor(private rConnectionDlgService: RConnectionDlgService, 
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,

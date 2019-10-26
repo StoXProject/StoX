@@ -2,9 +2,8 @@
     <ng-container *ngFor="let btn of buttons">
         <button class="button ui-button" (click)="handleClick(btn.cmd)" openDelay="800" placement="right"
             [ngbTooltip]="getActionTooltip(btn.cmd)" [ngClass]="{disabled: !getActionEnabled(btn.cmd)}">
-            <!--<i class="{{btn.iclass}}"></i>-->
             <ng-template [ngIf]='"true"'>
-                    <span class="icon_container_16 fa process"></span>
+                    <span class="icon_container_16 fa {{btn.iclass}}"></span>
             </ng-template>
         </button>
     </ng-container>
