@@ -220,7 +220,7 @@ $nodata: #acacac;
   height: $h !important;
   line-height: $h !important;
   width: $w !important;
-  //vertical-align: middle !important;
+  vertical-align: middle !important;
 }
 
 .icon_container_16 {
@@ -238,20 +238,24 @@ $nodata: #acacac;
   font-size: $fontSize;
   color: $color;
   @if ($shadow) {
-    text-shadow: 1px 1px 1px #000000;
+    text-shadow: 0.2px 0.2px 0.2px #000000;
   }
 }
 
 .processicon:before {
-  @include icon_content("\f111", 0.5em, rgb(243, 240, 85));
+  @include icon_content("\f013", 16px, rgb(145, 173, 131), true);
 }
 
-.processicon:after {
-  @include icon_content("\f013", 1.2em, rgb(145, 173, 131), true);
+.interactiveicon:before {
+  @include icon_content("\f111", 3px, rgb(243, 240, 85));
+}
+
+.mapicon:after {
+  @include icon_content("\f0ac", 5px, rgb(21, 40, 216));
 }
 
 .runicon:before {
-  @include icon_content("\f111", 1.3em, rgb(33, 122, 196));
+  @include icon_content("\f111", 16.0px, rgb(33, 122, 196));
   -webkit-text-fill-color: transparent;
   background: -webkit-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
   background: -o-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
@@ -259,7 +263,8 @@ $nodata: #acacac;
 }
 
 .runicon:after {
-  @include icon_content("\f0da", 0.9em, rgb(255, 255, 255), false, 1px);
+  @include icon_content("\f0da", 12.3px, rgb(255, 255, 255), false, 1px);
+  top:0px;
 }
 .runnexticon:before {
   @include icon_content("\f064", 1.1em, rgb(33, 122, 196));
