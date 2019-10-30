@@ -66,7 +66,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/   {
   prepCm() {
     this.contextMenu = [
       { label: 'image(png)', icon: 'fa fa-cog fa-cog-style', command: (event) => { } },
-      { label: 'List 1 (csv)', icon: 'fa-stack fa-2x fa fa-gear fa-stack fa fa-cog', command: (event) => { } },
+      { label: 'List 1 (csv)', icon: 'fa icon_container_16 processicon', command: (event) => { } },
       { label: 'List 2 (csv)', icon: 'fa-download', command: (event) => { } }
     ];
   }
