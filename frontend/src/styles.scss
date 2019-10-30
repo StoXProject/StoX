@@ -226,6 +226,10 @@ $nodata: #acacac;
   display: table-cell !important; 
 }
 
+.toolbar-button {
+  height:16px; width:16px;  vertical-align:middle; line-height:16px; font-size:16px !important;
+}
+
 .absa:after {
   position: absolute;
   top: 50%;
@@ -234,20 +238,22 @@ $nodata: #acacac;
 }
 
 @mixin icon_content($content, $fontSize, $color, $shadow: false) {
+  font-family: "FontAwesome";
   content: $content;
-  font-size: $fontSize;
+  font-size: $fontSize !important;
   color: $color;
   @if ($shadow) {
     text-shadow: 0.2px 0.2px 0.2px #000000;
   }
 }
 
-.processicon:before {
+.processicon:before { 
   @include icon_content("\f013", 16px, rgb(145, 173, 131), true);
-  left:0%;
-  top:0%;
+  left:0px;
+  top:0px;
+  position:relative;
 }
-
+ 
 .addprocessicon:before {
   @include icon_content("\f013", 14px, rgb(145, 173, 131), true);
 }
@@ -272,8 +278,10 @@ $nodata: #acacac;
   background: -webkit-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
   background: -o-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
   background-clip: text;
-  top:0%;
-  left:0%;
+  top: 0%;
+  left: 0%;
+  //transform: translate(-50%,  -50%); // needle pinned at the center of the overlay symbol 
+  position:relative;
 }
 
 .runicon:after {
