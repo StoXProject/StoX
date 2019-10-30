@@ -51,13 +51,14 @@ $nodata: #acacac;
 }
 .ui-listbox-item {
   padding-left: 0.4rem !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
   padding-right: 0 !important;
   width: 100% !important;
-  font-size: 0.9rem !important;
+  font-size: 0.75rem !important;
   color: black !important;
   user-select: none;
+  line-height: 1.1;
 }
 
 // tabview
@@ -215,25 +216,24 @@ $nodata: #acacac;
   overflow: hidden;
 }
 
-@mixin icon_container($w, $h) {
+.rib {
   position: relative;
-  height: $h !important;
-  line-height: $h !important;
-  width: $w !important;
-  vertical-align: middle !important;
+  display: inline-block;
 }
 
-.icon_container_16 {
-  @include icon_container(16px, 16px);
+.ritc {
+  position: relative;
+  display: table-cell !important; 
 }
 
-@mixin icon_content($content, $fontSize, $color, $shadow: false, $left: 0) {
+.absa:after {
   position: absolute;
-  left: $left;
-  vertical-align: middle !important;
-  text-align: center;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); // needle pinned at the center of the overlay symbol
+}
+
+@mixin icon_content($content, $fontSize, $color, $shadow: false) {
   content: $content;
   font-size: $fontSize;
   color: $color;
@@ -244,6 +244,18 @@ $nodata: #acacac;
 
 .processicon:before {
   @include icon_content("\f013", 16px, rgb(145, 173, 131), true);
+  left:0%;
+  top:0%;
+}
+
+.addprocessicon:before {
+  @include icon_content("\f013", 14px, rgb(145, 173, 131), true);
+}
+
+.addprocessicon:after {
+  @include icon_content("\f067", 10px, rgb(83, 39, 88), true);
+  top: 20%;
+  left: 80%;
 }
 
 .interactiveicon:before {
@@ -255,29 +267,71 @@ $nodata: #acacac;
 }
 
 .runicon:before {
-  @include icon_content("\f111", 16.0px, rgb(33, 122, 196));
+  @include icon_content("\f111", 16px, rgb(33, 122, 196));
   -webkit-text-fill-color: transparent;
   background: -webkit-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
   background: -o-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
   background-clip: text;
+  top:0%;
+  left:0%;
 }
 
 .runicon:after {
-  @include icon_content("\f0da", 12.3px, rgb(255, 255, 255), false, 1px);
-  top:0px;
+  @include icon_content("\f0da", 12.3px, rgb(255, 255, 255), false);
+  left: 55%;
 }
 .runnexticon:before {
-  @include icon_content("\f064", 1.1em, rgb(33, 122, 196));
+  @include icon_content("\f064", 14px, rgb(33, 122, 196)); // 051?
+}
+.runnexticon:after {
+  @include icon_content("\f013", 5px, rgb(33, 122, 196)); // 051?
+  top: 80%;
 }
 .runfromhereicon:before {
-  @include icon_content("\f08b", 1.3em, rgb(33, 122, 196));
+  @include icon_content("\f08b", 14px, rgb(33, 122, 196));
 }
 .runtoicon:before {
-  @include icon_content("\f090", 1.3em, rgb(33, 122, 196));
+  @include icon_content("\f090", 14px, rgb(33, 122, 196));
 }
 .reseticon:before {
-  @include icon_content("\f04d", 1.1em, rgb(33, 122, 196));
+  @include icon_content("\f04d", 10px, rgb(33, 122, 196));
 }
 .runbadge:before {
   @include icon_content("\f0c8", 0.6em, rgb(33, 122, 196, 100));
 }
+
+// <!--Set the needle point in the middle of the symbol (translate(x, y), then its easier to relate to main symbol-->
+// <style>
+// .rib {
+//   position:relative;
+//   display:inline-block;
+// }
+// .absa:after {
+// position:absolute;
+// top:50%;
+// left:50%;
+// transform: translate(-50%, -50%);
+// }
+// .sy1:before {
+//   content:"1";
+// }
+// .ov2:after {
+//   content:"2";
+// }
+// .ov3:after {
+//   content:"3";
+// }
+// </style>
+// <!--normal flow of inline blocks with encapsulated symbol stacking. Flag in and out symbols and overlays, either on same span using one before and one after, but also for nested spans with symbol and multiple overlays-->
+// <span class="rib sy1"></span>
+// <span class="rib sy1 absa ov2"></span>
+// <span class="rib sy1">
+//    <span class="absa ov3"></span>
+// </span>
+// <span class="rib sy1 absa ov2">
+//    <span class="absa ov3"></span>
+// </span>
+// <span class="rib sy1">
+//    <span class="absa ov2"></span>
+//    <span class="absa ov3"></span>
+// </span>
