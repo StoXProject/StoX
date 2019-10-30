@@ -3,10 +3,23 @@ const setupEvents = require('./../installers/setupEvents')
 var mainWindow: any;
 
 // global variables
-var projectRootPath: string;
-var projectPath: string;
-var rPath: string;
-var rStoxFtpPath: string;
+// var projectRootPath: string;
+// var projectPath: string;
+// var rPath: string;
+// var rStoxFtpPath: string;
+
+var properties =  {
+  "projectRootPath": "",
+  "activeProject": {},
+  "rPath":"",
+  "rStoxFtpPath":""
+  // ,
+  // "projectList": [{}]
+};
+
+// properties.projectList = [{"projectPath": "c:/temp/aa", "projectName":"aa"}, {"projectPath":"c:/1/b", "projectName":"b"}];
+//JSON.stringify(props)-> fil
+//props = JSON.parse("from file")
 
 
 // var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
@@ -51,13 +64,10 @@ function createWindow() {
     }
   });
 
-
   var port = 3000;
   server.listen(port);
   // start the server
   console.log('Server started! At http://localhost:' + port);
-
-
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -84,7 +94,6 @@ function createWindow() {
       res.send(folderPath[0]);
     });
   });
-
 
   // mainWindow.setMenu(null);
   createMenu();
@@ -128,16 +137,14 @@ app.on('activate', function () {
   if (mainWindow === null) createWindow()
 })
 
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 
-
 app.on('quit', function () {
   // Write app properties file to disc here.
   console.log('ev:app quit');
-  writeFile();
+  writePropertiesToFile();
 });
 
 // In this file you can include the rest of your app's specific main process
@@ -147,7 +154,7 @@ app.on('quit', function () {
 const createMenu = function createMenu() {
   // Read app properties file from disc here.
   console.log('ev:ready');
-  readFile();
+  readPropertiesFromFile();
 
   const template = [
     // { role: 'appMenu' }
@@ -218,77 +225,77 @@ const createMenu = function createMenu() {
   Menu.setApplicationMenu(menu)
 }
 
-const readFile = function readFile() {
-  let resourcefile = require('os').homedir() + "/.stox.config.xml";
-  let fs = require('fs');
-  var options = { encoding: 'utf-8', flag: 'r' };
-  var xml2js = require('xml2js');
-  var parser = new xml2js.Parser({ explicitArray: false });
+// const readFile = function readFile() {
+//   let resourcefile = require('os').homedir() + "/.stox.config.xml";
+//   let fs = require('fs');
+//   var options = { encoding: 'utf-8', flag: 'r' };
+//   var xml2js = require('xml2js');
+//   var parser = new xml2js.Parser({ explicitArray: false });
 
-  if (!fs.existsSync(resourcefile)) {
-    console.log("Resource file (.stox.config.xml) does not exist");
-    return;
-  }
+//   if (!fs.existsSync(resourcefile)) {
+//     console.log("Resource file (.stox.config.xml) does not exist");
+//     return;
+//   }
 
-  // read if resource file is found
-  var xml = fs.readFileSync(resourcefile, options);
+//   // read if resource file is found
+//   var xml = fs.readFileSync(resourcefile, options);
 
-  parser.parseString(xml, function (err: any, result: any) {
-    if (err) {
-      console.error('xml2js.parseString: Error occurred: ', err);
-    } else {
-      // console.log(JSON.stringify(result, null, 2));
-      // console.log('projectroot : ', result.stox.$.projectroot);
-      projectRootPath = result.stox.$.projectroot;
-      console.log('projectRootPath : ', projectRootPath);
-      // console.log('project : ', result.stox.$.project);
-      projectPath = result.stox.$.project;
-      console.log('projectPath : ', projectPath);
-      // console.log('rfolder : ', result.stox.$.rfolder);
-      rPath = result.stox.$.rfolder;
-      console.log('rPath : ', rPath);
-      // console.log('rStoxFTPPath : ', result.stox.$.rStoxFTPPath);
-      rStoxFtpPath = result.stox.$.rStoxFTPPath;
-      console.log('rStoxFtpPath : ', rStoxFtpPath);
-    }
-  });
-}
+//   parser.parseString(xml, function (err: any, result: any) {
+//     if (err) {
+//       console.error('xml2js.parseString: Error occurred: ', err);
+//     } else {
+//       // console.log(JSON.stringify(result, null, 2));
+//       // console.log('projectroot : ', result.stox.$.projectroot);
+//       projectRootPath = result.stox.$.projectroot;
+//       console.log('projectRootPath : ', projectRootPath);
+//       // console.log('project : ', result.stox.$.project);
+//       projectPath = result.stox.$.project;
+//       console.log('projectPath : ', projectPath);
+//       // console.log('rfolder : ', result.stox.$.rfolder);
+//       rPath = result.stox.$.rfolder;
+//       console.log('rPath : ', rPath);
+//       // console.log('rStoxFTPPath : ', result.stox.$.rStoxFTPPath);
+//       rStoxFtpPath = result.stox.$.rStoxFTPPath;
+//       console.log('rStoxFtpPath : ', rStoxFtpPath);
+//     }
+//   });
+// }
 
-const writeFile = function writeFile() {
-  // if(projectRootPath == null || projectPath == null || rPath == null || rStoxFtpPath == null) {
-  //   return;
-  // }
+// const writeFile = function writeFile() {
+//   // if(projectRootPath == null || projectPath == null || rPath == null || rStoxFtpPath == null) {
+//   //   return;
+//   // }
 
-  var result = {
-    "stox": {
-      "$": {
-        "projectroot": projectRootPath == null ? "" : projectRootPath,
-        "project": projectPath == null ? "" : projectPath,
-        "rfolder": rPath == null ? "" : rPath,
-        "rStoxFTPPath": rStoxFtpPath == null ? "" : rStoxFtpPath
-      }
-    }
-  };
+//   var result = {
+//     "stox": {
+//       "$": {
+//         "projectroot": projectRootPath == null ? "" : projectRootPath,
+//         "project": projectPath == null ? "" : projectPath,
+//         "rfolder": rPath == null ? "" : rPath,
+//         "rStoxFTPPath": rStoxFtpPath == null ? "" : rStoxFtpPath
+//       }
+//     }
+//   };
 
-  let resourcefile = require('os').homedir() + "/.copy_stox.config.xml";
+//   let resourcefile = require('os').homedir() + "/.copy_stox.config.xml";
 
-  let fs = require('fs');
-  var xml2js = require('xml2js');
-  var builder = new xml2js.Builder();
-  var xml = builder.buildObject(result);
+//   let fs = require('fs');
+//   var xml2js = require('xml2js');
+//   var builder = new xml2js.Builder();
+//   var xml = builder.buildObject(result);
 
-  var options = { encoding: 'utf-8', flag: 'w' };
+//   var options = { encoding: 'utf-8', flag: 'w' };
 
-  fs.writeFileSync(resourcefile, xml, options);
+//   fs.writeFileSync(resourcefile, xml, options);
 
-  // fs.writeFile(resourcefile, xml, function(err, data) {
-  //   if (err) {
-  //     console.log(err);
-  //   } else {
-  //     console.log("successfully written to xml file");
-  //   }
-  // });
-}
+//   // fs.writeFile(resourcefile, xml, function(err, data) {
+//   //   if (err) {
+//   //     console.log(err);
+//   //   } else {
+//   //     console.log("successfully written to xml file");
+//   //   }
+//   // });
+// }
 
 
 // let rPath = "C:/Users/user/Documents/R"; // read from local properties file.
@@ -297,29 +304,29 @@ const writeFile = function writeFile() {
 // observe rpath in backend
 
 // observe project path
-server.get('/projectpath', function (req: any, res: any) {
-  console.log('get project path ' + projectPath);
-  res.send(projectPath);
-});
+// server.get('/projectpath', function (req: any, res: any) {
+//   console.log('get project path ' + projectPath);
+//   res.send(projectPath);
+// });
 
 // observe project root path
 server.get('/projectrootpath', function (req: any, res: any) {
-  console.log('get project root path ' + projectRootPath);
-  res.send(projectRootPath);
+  console.log('get project root path ' + properties.projectRootPath);
+  res.send(properties.projectRootPath);
 });
 
 // observe rpath in backend
 server.get('/rpath', function (req: any, res: any) {
-  console.log('get rpath ' + rPath);
-  res.send(rPath);
+  console.log('get rpath ' + properties.rPath);
+  res.send(properties.rPath);
 });
 
 // modify rpath in backend
 server.post('/rpath', function (req: any, res: any) {
-  rPath = req.body.rpath;
-  console.log('rpath ' + rPath);
+  properties.rPath = req.body.rpath;
+  console.log('rpath ' + properties.rPath);
 
-  var command = rPath == "" || rPath == null ? "RScript" : rPath + "/" + "RScript";
+  var command = properties.rPath == "" || properties.rPath == null ? "RScript" : properties.rPath + "/" + "RScript";
 
   console.log('command : ' + command);
 
@@ -329,6 +336,9 @@ server.post('/rpath', function (req: any, res: any) {
       res.send(error);
       return;
     }
+
+    properties.rPath = req.body.rpath;;
+
     console.log(`stdout: ${stdout}`);
     console.error(`stderr: ${stderr}`);
 
@@ -369,5 +379,63 @@ server.post('/login', function (req: any, res: any) {
   res.end("yes");
 });
 
+const readPropertiesFromFile = function readPropertiesFromFile()  {
+  let resourcefile = require('os').homedir() + "/.stox.properties.json";
+  try {
+    let fs = require('fs');
+    let options = { encoding: 'utf-8', flag: 'r' };
+    let jsonString = fs.readFileSync(resourcefile, options);
+    console.log("jsonString : " + jsonString);
+    properties = JSON.parse(jsonString);
+  } catch(err) {
+    console.log(err);
+  }  
+}
 
+const writePropertiesToFile = function writePropertiesToFile() {
+  let resourcefile = require('os').homedir() + "/.stox.properties.json";
+  try {
+    let fs = require('fs');
+    let options = { encoding: 'utf-8', flag: 'w' };
+    if(!properties.projectRootPath) {
+      properties.projectRootPath = require('os').homedir();
+    }
+    let jsonString = JSON.stringify(properties, null, 2);
+    console.log("jsonString : " + jsonString);
+    fs.writeFileSync(resourcefile, jsonString, options)
+  } catch(err) {
+    console.log(err);
+  }
+}
 
+// server.post('/updateprojectlist', function (req: any, res: any) {
+//   let jsonString = req.body.jsonString;
+//   console.log("in updateprojectlist jsonString : " + jsonString);
+//   properties.projectList = JSON.parse(jsonString);
+//   res.send("project list updated");
+// });
+
+// server.get('/readprojectlist', function (req: any, res: any) {
+//   let jsonString = JSON.stringify(properties.projectList);
+//   res.send(jsonString); 
+// });
+
+server.post('/updateactiveproject', function (req: any, res: any) {
+  let jsonString = req.body.jsonString;
+  console.log("in updateactiveproject jsonString : " + jsonString);
+  properties.activeProject = JSON.parse(jsonString);
+  res.send("active project updated");
+});
+
+server.get('/readactiveproject', function (req: any, res: any) {
+  let jsonString = JSON.stringify(properties.activeProject);
+  console.log("in readactiveproject jsonString : " + jsonString);
+  res.send(jsonString);
+});
+
+server.post('/updateprojectrootpath', function (req: any, res: any) {
+  let jsonString = req.body.jsonString;
+  console.log("in updateprojectrootpath jsonString : " + jsonString);
+  properties.projectRootPath = JSON.parse(jsonString);
+  res.send("project root path updated");
+});
