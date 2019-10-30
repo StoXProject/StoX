@@ -9,7 +9,7 @@ import { DataService } from './data.service';
   providedIn: 'root'
 })
 export class ProjectService {
-  projects: Project[];
+  projects: Project[] = [];
   selectedProject: Project = null; 
 
   models: Model[];
@@ -18,12 +18,12 @@ export class ProjectService {
   processes: Process[];
   selectedProcess: Process = null; // the selected process by user
   activeProcessId: string = null; // the last run process id
-
-
+  
   constructor(private dataService: DataService) {
     console.log(" constructor() - class ProjectService: ");
     this.initData();
-    this.setSelectedProject(this.getProjects()[0]);
+    // console.log("projects length ?? " + this.projects.length);
+    // this.setSelectedProject(this.getProjects()[0]);
   }
   getProcess(processId: string): Process {
     return this.processes.find(p => p.processID === processId);
@@ -44,7 +44,7 @@ export class ProjectService {
     // if (event.value.projectName) {
     // }
 
-    console.log("selected project changed : " + this.selectedProject.projectName);
+    console.log("selected project changed 1 : " + this.selectedProject.projectName);
 
     // the following is implemented in setSelctedProject
     // set selected model to 'Baseline'
@@ -63,9 +63,8 @@ export class ProjectService {
       }
     }
 
-    if (this.selectedProject) {
+    if (!this.isEmpty(this.selectedProject)) {
       // set project path and model name as parameter here
-      //this.PROCESSES_IN_MODEL = <Process[]>JSON.parse(await this.dataService.getTestProcesses().toPromise());
       this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
       console.log("nr of processes : " + this.processes.length);
     }
@@ -75,10 +74,15 @@ export class ProjectService {
     return this.selectedProject;
   }
 
-  setSelectedProject(project: Project) {
+  async setSelectedProject(project: Project) {
     this.selectedProject = project;
     this.setSelectedModel("Baseline");
-    // console.log("selected project name : " + this.selectedProject.projectName);
+
+    console.log("selected project changed 2 : " + this.selectedProject.projectName);
+    
+    let jsonString = JSON.stringify(project);
+    let status = <string> await this.dataService.updateActiveProject(jsonString).toPromise();
+    console.log(status);
   }
 
   getSelectedProcess(): Process {
@@ -101,19 +105,6 @@ export class ProjectService {
     this.models = models;
   }
 
-  // /**
-  //  * get processes
-  //  * @param model 
-  //  */
-  // getProcesses(model: String): Process[] {
-  //   // if (this.selectedProcesses == null) {
-  //   //   console.log("test3")
-  //   //   this.selectedProcesses = this.getProcessesByModelAndProject(model, this.selectedProject.projectName);
-  //   // }
-  //   // return this.selectedProcesses;
-  //   return this.PROCESSES_IN_MODEL;
-  // }
-
   getProcessesByModelAndProject(model: String, project: string): Process[] {
     if (this.selectedProject != null) {
       switch (this.selectedProject.projectName) {
@@ -132,40 +123,70 @@ export class ProjectService {
     }
     return [];
   }
-  /*  getObservableProjects(): Observable<Project[]> {
-    return of(this.getProjects());
-  }*/
-
+  
   async initData() {
 
     console.log(" initData() - class ProjectService: ");
 
-    this.projects = [
-      { projectName: 'test20', projectPath: 'C:/Users/aasmunds/workspace/stox/project/test20' },
-      { projectName: 'Gytetokt 2004', projectPath: '.' },
-      { projectName: 'Tobis 2006', projectPath: '.' },
-      { projectName: 'Tobis 2007', projectPath: '.' },
-      { projectName: 'Tobis 2008', projectPath: '.' },
-      { projectName: 'Tobis 2009', projectPath: '.' },
-      { projectName: 'Tobis 2010', projectPath: '.' },
-      { projectName: 'Tobis 2011', projectPath: '.' },
-      { projectName: 'Tobis 2012', projectPath: '.' },
-      { projectName: 'Tobis 2013', projectPath: '.' },
-      { projectName: 'Tobis 2014', projectPath: '.' },
-      { projectName: 'Tobis 2015', projectPath: '.' },
-      { projectName: 'Tobis 2016', projectPath: '.' },
-      { projectName: 'Tobis 2017', projectPath: '.' },
-      { projectName: 'Tobis 2018', projectPath: '.' },
-      { projectName: 'Tobis 2019', projectPath: '.' },
-      { projectName: 'Tobis 2020', projectPath: '.' },
-      { projectName: 'Tobis 2021', projectPath: '.' }
-    ];
+    // this.projects = [
+    //   { projectName: 'project53', projectPath: 'C:/Users/esmaelmh/workspace/stox/project/project53' },
+    //   { projectName: 'Gytetokt 2004', projectPath: '.' },
+    //   { projectName: 'Tobis 2006', projectPath: '.' },
+    //   { projectName: 'Tobis 2007', projectPath: '.' },
+    //   { projectName: 'Tobis 2008', projectPath: '.' },
+    //   { projectName: 'Tobis 2009', projectPath: '.' },
+    //   { projectName: 'Tobis 2010', projectPath: '.' },
+    //   { projectName: 'Tobis 2011', projectPath: '.' },
+    //   { projectName: 'Tobis 2012', projectPath: '.' },
+    //   { projectName: 'Tobis 2013', projectPath: '.' },
+    //   { projectName: 'Tobis 2014', projectPath: '.' },
+    //   { projectName: 'Tobis 2015', projectPath: '.' },
+    //   { projectName: 'Tobis 2016', projectPath: '.' },
+    //   { projectName: 'Tobis 2017', projectPath: '.' },
+    //   { projectName: 'Tobis 2018', projectPath: '.' },
+    //   { projectName: 'Tobis 2019', projectPath: '.' },
+    //   { projectName: 'Tobis 2020', projectPath: '.' },
+    //   { projectName: 'Tobis 2021', projectPath: '.' }
+    // ];
 
-    var projectName = <string>await this.dataService.getProjectPath().toPromise();
-    var projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
-    var fullPath = projectRootPath + "/" + projectName;
+     let jsonString = <string> await this.dataService.readActiveProject().toPromise();
+     let activeProject: Project  = <Project>JSON.parse(jsonString);
 
-    this.projects = [...this.projects, { projectName: projectName, projectPath: fullPath }];
+     // this.selectedProject = this.findObjectInArray(this.projects, selected);
+
+     this.selectedProject = activeProject;
+
+     this.projects = [ {projectName: this.selectedProject.projectName, projectPath: this.selectedProject.projectPath}]; 
+
+     if (!this.isEmpty(this.selectedProject)) {
+        console.log("active project : " + this.selectedProject.projectName);
+        this.setSelectedProject(this.selectedProject);
+     }
   }
 
+  // findObjectInArray(projects: Project[], project: Project): Project {
+  //   for(let i= 0; i<projects.length; i++) {
+  //     if(projects[i].projectPath == project.projectPath) {
+  //       return projects[i];
+  //     }
+  //   }
+  //   return null;
+  // }
+  /*
+  Returns:
+    true: undefined, null, "", [], {}
+    false: true, false, 1, 0, -1, "foo", [1, 2, 3], { foo: 1 }
+  */
+ isEmpty (value): boolean {
+    return (
+      // null or undefined
+      (value == null) ||
+  
+      // has length and it's zero
+      (value.hasOwnProperty('length') && value.length === 0) ||
+  
+      // is an Object and has no keys
+      (value.constructor === Object && Object.keys(value).length === 0)
+    )
+  }  
 }

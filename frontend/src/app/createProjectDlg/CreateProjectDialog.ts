@@ -13,7 +13,7 @@ import { Project } from '../data/project';
   })
 export class CreateProjectDialog {
     projectRootPath: string;
-    project: string;    
+    projectName: string;    
     templates: Template[];
     selectedTemplate: Template;
 
@@ -41,17 +41,21 @@ export class CreateProjectDialog {
     async browse() {
         console.log("browse");
         this.projectRootPath = await this.dataService.browse(this.projectRootPath).toPromise();
+
+        let jsonString = JSON.stringify(this.projectRootPath);
+        let status = <string> await this.dataService.updateProjectRootPath(jsonString).toPromise();
+        console.log(status);
     }  
     
     async apply() {
         console.log("start apply");
         
-        if(!this.project) {            
+        if(!this.projectName) {            
             this.msgService.setMessage("Project name is empty!");
             this.msgService.showMessage();
             return;
         }
-        console.log("project : " + this.project);
+        console.log("project : " + this.projectName);
 
         if(!this.projectRootPath) {
             this.msgService.setMessage("Project folder is empty!");
@@ -68,7 +72,7 @@ export class CreateProjectDialog {
          
         console.log("selectedTemplate : " + this.selectedTemplate ? this.selectedTemplate.name + " - " + this.selectedTemplate.description  : 'none');
 
-        let absolutePath = this.projectRootPath + "/" + this.project;
+        let absolutePath = this.projectRootPath + "/" + this.projectName;
 
         absolutePath = absolutePath.replace(/\\/g, "/");
 
@@ -76,12 +80,13 @@ export class CreateProjectDialog {
         let project = <Project> JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
         console.log("projectCreated : " + project.projectName);
 
-        if(!this.ps.hasProject(project)) {
+        if(!(project == null)) {
             // this.projectService.PROJECTS.push(this.project);
-            this.ps.projects =  [...this.ps.projects, {projectName: project.projectName, projectPath: project.projectPath}]; 
+            this.ps.projects =  [{projectName: project.projectName, projectPath: project.projectPath}]; 
+
+            this.ps.setSelectedProject(project);
         }        
 
-        this.ps.setSelectedProject(project);
         console.log("end apply\n\n");
         this.service.display = false;
     }    

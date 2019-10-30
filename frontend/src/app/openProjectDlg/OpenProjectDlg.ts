@@ -14,53 +14,53 @@ export class OpenProjectDlg {
 
     project: Project;
 
-    projectRootPath: string; 
+    projectPath: string; 
 
     constructor(public service: OpenProjectDlgService, 
         private msgService: MessageService,
-        private dataService: DataService, private projectService: ProjectService) {       
+        private dataService: DataService, private ps: ProjectService) {       
     }
 
     async ngOnInit() {  
-        this.projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
-        console.log("project root path retrieved: " + this.projectRootPath);
+        this.projectPath = <string>await this.dataService.getProjectRootPath().toPromise();
+        console.log("project root path retrieved: " + this.projectPath);
     }
 
     async browse() {  
         console.log("browse");
-        this.projectRootPath = await this.dataService.browse(this.projectRootPath).toPromise();
+        this.projectPath = await this.dataService.browse(this.projectPath).toPromise();
     }
 
     async apply() {
         console.log("start apply");
 
-        if(!this.projectRootPath) {
+        if(!this.projectPath) {
             this.msgService.setMessage("Project folder is empty!");
             this.msgService.showMessage();            
             return;
         }
-        console.log("projectRootPath : " + this.projectRootPath);   
+        console.log("projectRootPath : " + this.projectPath);   
         
-        this.projectRootPath = this.projectRootPath.replace(/\\/g, "/");
+        this.projectPath = this.projectPath.replace(/\\/g, "/");
 
-        console.log("converted projectRootPath : " + this.projectRootPath);
+        console.log("converted projectRootPath : " + this.projectPath);
 
         // the following should return an instance of class Project
-        this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectRootPath).toPromise());
+        this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectPath).toPromise());
 
         console.log("returned projectName - projectPath : " + this.project.projectName + " - " + this.project.projectPath);
 
-        console.log("projects length : " + this.projectService.projects.length);
+        // console.log("projects length : " + this.ps.projects.length);
 
-        if(!this.projectService.hasProject(this.project)) {
+        if(!(this.project == null)) {
             // this.projectService.PROJECTS.push(this.project);
-            this.projectService.projects =  [...this.projectService.projects, {projectName:this.project.projectName, projectPath: this.project.projectPath}]; 
+            this.ps.projects =  [{projectName:this.project.projectName, projectPath: this.project.projectPath}]; 
+
+            console.log("projects length : " + this.ps.projects.length);
+
+            this.ps.setSelectedProject(this.project);            
         }
-        
-        console.log("projects length : " + this.projectService.projects.length);
-
-        this.projectService.setSelectedProject(this.project);
-
+    
         this.service.display = false;
     }
 }

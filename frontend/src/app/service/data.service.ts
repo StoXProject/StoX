@@ -194,8 +194,27 @@ export class DataService {
     return this.getLocalNode('projectrootpath');
   }
 
-  public getProjectPath(): Observable<any> {
-    return this.getLocalNode('projectpath');
-  }
+  // public getProjectPath(): Observable<any> {
+  //   return this.getLocalNode('projectpath');
+  // }
 
+  // public readProjectList(): Observable<any> {
+  //   return this.getLocalNode('readprojectlist');
+  // }
+
+  // public updateprojectlist(jsonString: string): Observable<any> {
+  //   return this.postLocalNode('updateprojectlist', { jsonString: jsonString });
+  // }
+
+  public readActiveProject(): Observable<any> {
+    return this.getLocalNode('readactiveproject');
+  }  
+
+  public updateActiveProject(jsonString: string): Observable<any> {
+    return this.postLocalNode('updateactiveproject', { jsonString: jsonString });
+  }  
+
+  public updateProjectRootPath(jsonString: string): Observable<any> {
+    return this.postLocalNode('updateprojectrootpath', { jsonString: jsonString });
+  }
 }

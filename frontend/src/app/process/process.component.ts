@@ -19,9 +19,9 @@ export class ProcessComponent implements OnInit/*, DoCheck*/   {
 
   processes: Process[];
   selectedProcesses: Process[];
-  private contextMenu: MenuItem[];
+  contextMenu: MenuItem[];
 
-  constructor(private dataService: DataService, private ps: ProjectService) {
+  constructor(private dataService: DataService, public ps: ProjectService) {
   }
 
 
