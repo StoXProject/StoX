@@ -77,15 +77,23 @@ export class CreateProjectDialog {
         absolutePath = absolutePath.replace(/\\/g, "/");
 
         console.log("absolute path : " + absolutePath);
-        let project = <Project> JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
-        console.log("projectCreated : " + project.projectName);
 
-        if(!(project == null)) {
-            // this.projectService.PROJECTS.push(this.project);
-            this.ps.projects =  [{projectName: project.projectName, projectPath: project.projectPath}]; 
+        try {
+            let project = <Project> JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
+            console.log("projectCreated : " + project.projectName);
 
-            this.ps.setSelectedProject(project);
-        }        
+            if(!(project == null)) {
+                // this.projectService.PROJECTS.push(this.project);
+                this.ps.projects =  [{projectName: project.projectName, projectPath: project.projectPath}]; 
+
+                this.ps.setSelectedProject(project);
+            }
+        } catch(error) {
+            console.log(error.error);
+            this.msgService.setMessage(error.error);
+            this.msgService.showMessage();            
+            return;
+        }
 
         console.log("end apply\n\n");
         this.service.display = false;

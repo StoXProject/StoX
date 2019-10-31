@@ -168,6 +168,20 @@ export class DataService {
     console.log("Error.statusText : " + error.statusText);
     console.log("Error.url : " + error.url);
     console.log("Error.ok : " + error.ok);
+
+    // let errorMessage = '';
+    // if (error.error instanceof ErrorEvent) {
+    //   // client-side error
+    //   // errorMessage = `Error: ${error.error.message}`;
+    //   errorMessage = "Client-side error: "
+    // } else {
+    //   // server-side error
+    //   // errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    //   errorMessage = "Server-side error: "
+    // }
+    // // window.alert(errorMessage);    
+
+    // window.alert(errorMessage + error.error); 
   }
 
   getgeojson(): Observable<string> {
@@ -193,10 +207,6 @@ export class DataService {
   public getProjectRootPath(): Observable<any> {
     return this.getLocalNode('projectrootpath');
   }
-
-  // public getProjectPath(): Observable<any> {
-  //   return this.getLocalNode('projectpath');
-  // }
 
   // public readProjectList(): Observable<any> {
   //   return this.getLocalNode('readprojectlist');

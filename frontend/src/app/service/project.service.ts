@@ -63,7 +63,7 @@ export class ProjectService {
       }
     }
 
-    if (!this.isEmpty(this.selectedProject)) {
+    if (this.selectedProject != null) {
       // set project path and model name as parameter here
       this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
       console.log("nr of processes : " + this.processes.length);
@@ -154,13 +154,10 @@ export class ProjectService {
 
      // this.selectedProject = this.findObjectInArray(this.projects, selected);
 
-     this.selectedProject = activeProject;
-
-     this.projects = [ {projectName: this.selectedProject.projectName, projectPath: this.selectedProject.projectPath}]; 
-
-     if (!this.isEmpty(this.selectedProject)) {
-        console.log("active project : " + this.selectedProject.projectName);
-        this.setSelectedProject(this.selectedProject);
+     if (!this.isEmpty(activeProject)) {
+        this.projects = [ {projectName: activeProject.projectName, projectPath: activeProject.projectPath}];
+        console.log("active project : " + activeProject.projectName);
+        this.setSelectedProject(activeProject);
      }
   }
 

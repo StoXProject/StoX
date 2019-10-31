@@ -52,11 +52,21 @@ export class OpenProjectDlg {
 
         // console.log("projects length : " + this.ps.projects.length);
 
-        if(!(this.project == null)) {
+        if(this.project != null) {
+
+            if(this.ps.getSelectedProject() != null) {
+                if (this.ps.getSelectedProject().projectPath.valueOf() == this.project.projectPath.valueOf()) {
+                    let projectName = this.ps.getSelectedProject().projectName;
+                    this.msgService.setMessage("Project with name " + projectName + " is already open!");
+                    this.msgService.showMessage();
+                    return;
+                }
+            }
+
             // this.projectService.PROJECTS.push(this.project);
             this.ps.projects =  [{projectName:this.project.projectName, projectPath: this.project.projectPath}]; 
 
-            console.log("projects length : " + this.ps.projects.length);
+            // console.log("projects length : " + this.ps.projects.length);
 
             this.ps.setSelectedProject(this.project);            
         }
