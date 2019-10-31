@@ -18,7 +18,7 @@ export class RunComponent implements OnInit {
     { cmd: "runfromhere", iclass: "runfromhereicon" },
     { cmd: "runto", iclass: "runtoicon" },
     { cmd: "reset", iclass: "reseticon" },
-    { cmd: "process", iclass: "processicon" },
+    { cmd: "addprocess", iclass: "addprocessicon" },
   ];
 
   public getActionTooltip(cmd: string): string {
@@ -28,7 +28,7 @@ export class RunComponent implements OnInit {
       case "runfromhere": return "Run from here"
       case "runto": return "Run to here" // or "Run this if selected process < active process"
       case "reset": return "Reset model"
-      case "process": return "Add process"
+      case "addprocess": return "Add process" 
       default:
         throw "getActionTooltip(cmd) called with cmd=" + cmd;
     }
@@ -40,7 +40,7 @@ export class RunComponent implements OnInit {
       case "runfromhere": return true;
       case "runto": return false; // or "Run this if selected process < active process"
       case "reset": return true;
-      case "process": return true;
+      case "addprocess": return true;
       default:
         throw "getActionEnabled(cmd) called with cmd=" + cmd;
     }

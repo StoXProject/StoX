@@ -26,12 +26,11 @@
 </p-tabView>-->
 
 <p-listbox #listBox [options]="ps.processes" [(ngModel)]="selectedProcesses"
-    (onChange)="onSelectedProcessesChanged($event)" multiple="false" optionLabel="processName"
-    (contextmenu)="openCm($event, cm)">
+    (onChange)="onSelectedProcessesChanged($event)" multiple="false" optionLabel="processName">
+    <!-- (contextmenu)="openCm($event, cm)"> -->
     <ng-template let-process pTemplate="item">
         <!--  <p-contextMenu></p-contextMenu> -->
-        <!--<div> -->
-        <!--   <ng-template [ngIf]="process.value.processID===ps.activeProcessId; else staticProcessItem">
+            <!--   <ng-template [ngIf]="process.value.processID===ps.activeProcessId; else staticProcessItem">
                 <span class="fa-stack" style="vertical-align: middle;">
                     <i class="fa fa-circle fa-stack-1x"
                         style="font-size: 0.8em;  color:rgb(243, 240, 85) !important;"></i>
@@ -39,17 +38,17 @@
                         style="font-size: 1.2em;  color:rgb(145, 173, 131) !important;  text-shadow: 1px 1px 1px #000000 !important;"></i>
                 </span>
             </ng-template>-->
-        <span class="icon_container_16 fa fa-spin processicon"></span> 
+            <span class="rib fa fa-spin processicon" 
+                [ngClass]="{'fa-spin': process.value.processID===ps.activeProcessId}">
+            </span>
 
         <!-- <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
             <span *ngIf="process.value.processName== 'ReadBiotic'">
                 <img src="./assets/images/break.png" width="8" style="margin-bottom:12px; margin-left:-16px;">
                 <span style="margin-left:8px;"></span>
             </span>-->
-        <span
-            style="margin-left:16px;vertical-align:middle; display:inline-block; line-height:1.1;">{{process.value.processName}}</span>
+        <span style="display:inline-block; line-height:1.1;">{{process.value.processName}}</span>
 
-        <!--</div> -->
     </ng-template>
 </p-listbox>
 <p-contextMenu #cm [model]="contextMenu"></p-contextMenu>
