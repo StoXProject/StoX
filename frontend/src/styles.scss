@@ -81,6 +81,8 @@ $nodata: #acacac;
     white-space: nowrap;
     border: none !important;
     overflow: hidden;
+    line-height:0;  
+    padding: 1px !important; 
     .ui-tabmenuitem {
       padding: 0 !important;
       margin: 0 !important;
@@ -90,6 +92,7 @@ $nodata: #acacac;
       background-color: rgb(240, 240, 240) !important;
       display: inline-block;
       float: none;
+      line-height:1rem; 
       .ui-menuitem-link {
         padding: 0 !important;
         margin: 0 !important;
@@ -108,20 +111,20 @@ $nodata: #acacac;
 }
 
 .ui-toolbar {
-  padding: 0 !important;
+  padding: 1px !important;
   background-color: rgb(240, 240, 240) !important;
   border: none !important;
   vertical-align: middle;
   line-height: 0;
-  height: 25px;
-  padding-left: 10px !important;
+  //height: 25px;
+ // padding-left: 10px !important;
   white-space: nowrap;
   overflow: hidden;
   button {
     vertical-align: middle !important;
     display: inline !important;
     float: none;
-    margin-right: 4px;
+    margin-right: 2px;
     padding: 1px 1px;
   }
 }
@@ -219,6 +222,8 @@ $nodata: #acacac;
 .rib {
   position: relative;
   display: inline-block;
+  font-size:1rem !important; 
+  text-align: center;
 }
 
 .ritc {
@@ -227,9 +232,9 @@ $nodata: #acacac;
 }
 
 .toolbar-button {
-  height:16px; width:16px;  vertical-align:middle; line-height:16px; font-size:16px !important;
+  width:1rem;  font-size:1rem !important;
 }
-
+ 
 .absa:after {
   position: absolute;
   top: 50%;
@@ -241,6 +246,7 @@ $nodata: #acacac;
   font-family: "FontAwesome";
   content: $content;
   font-size: $fontSize !important;
+  line-height: 1rem;
   color: $color;
   @if ($shadow) {
     text-shadow: 0.2px 0.2px 0.2px #000000;
@@ -248,32 +254,32 @@ $nodata: #acacac;
 }
 
 .processicon:before { 
-  @include icon_content("\f013", 16px, rgb(145, 173, 131), true);
+  @include icon_content("\f013", 1rem, rgb(145, 173, 131), true);
   left:0px;
   top:0px;
   position:relative;
 }
  
 .addprocessicon:before {
-  @include icon_content("\f013", 14px, rgb(145, 173, 131), true);
+  @include icon_content("\f013", 1rem, rgb(145, 173, 131), true);
 }
 
 .addprocessicon:after {
-  @include icon_content("\f067", 10px, rgb(83, 39, 88), true);
+  @include icon_content("\f067", 0.6rem, rgb(83, 39, 88), true);
   top: 20%;
   left: 80%;
 }
 
 .interactiveicon:before {
-  @include icon_content("\f111", 3px, rgb(243, 240, 85));
+  @include icon_content("\f111", 0.2rem, rgb(243, 240, 85));
 }
 
 .mapicon:after {
-  @include icon_content("\f0ac", 5px, rgb(21, 40, 216));
+  @include icon_content("\f0ac", 0.3rem, rgb(21, 40, 216));
 }
 
 .runicon:before {
-  @include icon_content("\f111", 16px, rgb(33, 122, 196));
+  @include icon_content("\f111", 1rem, rgb(33, 122, 196));
   -webkit-text-fill-color: transparent;
   background: -webkit-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
   background: -o-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
@@ -285,27 +291,27 @@ $nodata: #acacac;
 }
 
 .runicon:after {
-  @include icon_content("\f0da", 12.3px, rgb(255, 255, 255), false);
+  @include icon_content("\f0da", 0.8rem, rgb(255, 255, 255), false);
   left: 55%;
 }
 .runnexticon:before {
-  @include icon_content("\f064", 14px, rgb(33, 122, 196)); // 051?
+  @include icon_content("\f064",1rem, rgb(33, 122, 196)); // 051?
 }
 .runnexticon:after {
-  @include icon_content("\f013", 5px, rgb(33, 122, 196)); // 051?
+  @include icon_content("\f013", 0.3rem, rgb(33, 122, 196)); // 051?
   top: 80%;
 }
 .runfromhereicon:before {
-  @include icon_content("\f08b", 14px, rgb(33, 122, 196));
+  @include icon_content("\f08b", 1rem, rgb(33, 122, 196));
 }
 .runtoicon:before {
-  @include icon_content("\f090", 14px, rgb(33, 122, 196));
+  @include icon_content("\f090", 1rem, rgb(33, 122, 196));
 }
 .reseticon:before {
-  @include icon_content("\f04d", 10px, rgb(33, 122, 196));
+  @include icon_content("\f04d", 0.7rem, rgb(33, 122, 196));
 }
 .runbadge:before {
-  @include icon_content("\f0c8", 0.6em, rgb(33, 122, 196, 100));
+  @include icon_content("\f0c8", 0.6rem, rgb(33, 122, 196, 100));
 }
 
 // <!--Set the needle point in the middle of the symbol (translate(x, y), then its easier to relate to main symbol-->
