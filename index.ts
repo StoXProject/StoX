@@ -13,8 +13,6 @@ var properties =  {
   "activeProject": {},
   "rPath":"",
   "rStoxFtpPath":""
-  // ,
-  // "projectList": [{}]
 };
 
 // properties.projectList = [{"projectPath": "c:/temp/aa", "projectName":"aa"}, {"projectPath":"c:/1/b", "projectName":"b"}];
@@ -383,10 +381,13 @@ const readPropertiesFromFile = function readPropertiesFromFile()  {
   let resourcefile = require('os').homedir() + "/.stox.properties.json";
   try {
     let fs = require('fs');
-    let options = { encoding: 'utf-8', flag: 'r' };
-    let jsonString = fs.readFileSync(resourcefile, options);
-    console.log("jsonString : " + jsonString);
-    properties = JSON.parse(jsonString);
+    if (fs.existsSync(resourcefile)) {
+      //file exists
+      let options = { encoding: 'utf-8', flag: 'r' };
+      let jsonString = fs.readFileSync(resourcefile, options);
+      console.log("jsonString : " + jsonString);
+      properties = JSON.parse(jsonString);
+    }
   } catch(err) {
     console.log(err);
   }  
