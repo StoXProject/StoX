@@ -1,6 +1,6 @@
 <p-toolbar>
     <ng-container *ngFor="let btn of buttons">
-        <button class="" (click)="handleClick(btn.cmd)" openDelay="800" placement="right"
+        <button class="b" (click)="handleClick(btn.cmd)" openDelay="800" placement="right"
             [ngbTooltip]="getActionTooltip(btn.cmd)" [ngClass]="{disabled: !getActionEnabled(btn.cmd)}">
             <ng-template [ngIf]='"true"'>
                     <span class="rib absa {{btn.iclass}} toolbar-button"></span>

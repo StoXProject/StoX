@@ -99,15 +99,19 @@ $nodata: #acacac;
         color: black !important;
         .ui-menuitem-text {
           color: black !important;
-          font-weight: 700;
+          font-weight: 600;
+          font-size:0.75rem;
         }
       }
     }
   }
 }
 .ui-contextmenu .ui-menuitem-link {
-  padding: 0.2em 0.2em !important ;
+  padding: 0 !important ;
   text-decoration: none !important;
+  .ui-menuitem-text{
+    font-size:0.75rem;
+  }
 }
 
 .ui-toolbar {
@@ -224,6 +228,7 @@ $nodata: #acacac;
   display: inline-block;
   font-size:1rem !important; 
   text-align: center;
+  width:1rem;  
 }
 
 .ritc {
@@ -312,6 +317,10 @@ $nodata: #acacac;
 }
 .runbadge:before {
   @include icon_content("\f0c8", 0.6rem, rgb(33, 122, 196, 100));
+}
+
+.emptyicon:before {
+  @include icon_content("\f0c8", 1rem, rgb(33, 122, 196, 0));
 }
 
 // <!--Set the needle point in the middle of the symbol (translate(x, y), then its easier to relate to main symbol-->

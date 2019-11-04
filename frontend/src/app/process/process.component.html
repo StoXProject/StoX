@@ -26,8 +26,8 @@
 </p-tabView>-->
 
 <p-listbox #listBox [options]="ps.processes" [(ngModel)]="selectedProcesses"
-    (onChange)="onSelectedProcessesChanged($event)" multiple="false" optionLabel="processName">
-    <!-- (contextmenu)="openCm($event, cm)"> -->
+    (onChange)="onSelectedProcessesChanged($event)" multiple="false" optionLabel="processName"
+      (contextmenu)="openCm($event, cm)"> 
     <ng-template let-process pTemplate="item">
         <!--  <p-contextMenu></p-contextMenu> -->
             <!--   <ng-template [ngIf]="process.value.processID===ps.activeProcessId; else staticProcessItem">
