@@ -90,7 +90,8 @@ export class CreateProjectDialog {
             }
         } catch(error) {
             console.log(error.error);
-            this.msgService.setMessage(error.error);
+            var firstLine = error.error.split('\n', 1)[0];
+            this.msgService.setMessage(firstLine);
             this.msgService.showMessage();            
             return;
         }
