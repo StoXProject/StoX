@@ -45,9 +45,11 @@ export class OpenProjectDlg {
 
         console.log("converted projectRootPath : " + this.projectPath);
 
+        var t0 = performance.now();
         // the following should return an instance of class Project
         this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectPath).toPromise());
-
+        var t1 = performance.now();
+        console.log("Call to dataService.openProject(...) took " + (t1 - t0) + " milliseconds.");
         console.log("returned projectName - projectPath : " + this.project.projectName + " - " + this.project.projectPath);
 
         // console.log("projects length : " + this.ps.projects.length);
@@ -60,6 +62,13 @@ export class OpenProjectDlg {
                     this.msgService.setMessage("Project with name " + projectName + " is already open!");
                     this.msgService.showMessage();
                     return;
+                } else {
+                    // close the previous project after saving it if it is edited 
+                    var t0 = performance.now();
+                    await this.dataService.closeProject(this.ps.getSelectedProject().projectPath, new Boolean(true)).toPromise();
+                    var t1 = performance.now();
+
+                    console.log("Call to dataService.closeProject(...) took " + (t1 - t0) + " milliseconds.");
                 }
             }
 

@@ -18,8 +18,10 @@ export class ModelComponent implements OnInit {
   @ViewChild('menuItems', { static: false }) menu: MenuItem[];
   async ngOnInit() {
     // initialize MODELS and populate menu items
-    console.log("before getmodelinfo");
+    var t0 = performance.now();
     this.models = <Model[]>JSON.parse(await this.dataService.getModelInfo().toPromise());
+    var t1 = performance.now();
+    console.log("Call to dataService.getModelInfo() took " + (t1 - t0) + " milliseconds.");
     this.ps.setModels(this.models);
     console.log("models " + this.models);
     this.models.forEach(m => this.items.push({ label: m.displayName }));
@@ -48,8 +50,8 @@ export class ModelComponent implements OnInit {
   //   }
   // }
   async activateMenu() {
-    console.log(this.menu['activeItem'].label);
-    console.log("this.currentLabel : " + this.currentLabel);
+    // console.log(this.menu['activeItem'].label);
+    // console.log("this.currentLabel : " + this.currentLabel);
     if (this.menu['activeItem'].label != this.currentLabel) {
       this.ps.setSelectedModel(this.menu['activeItem'].label);
     }

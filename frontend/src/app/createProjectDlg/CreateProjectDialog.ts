@@ -79,7 +79,10 @@ export class CreateProjectDialog {
         console.log("absolute path : " + absolutePath);
 
         try {
+            var t0 = performance.now();
             let project = <Project> JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
+            var t1 = performance.now();
+            console.log("Call to dataService.createProject(...) took " + (t1 - t0) + " milliseconds.");
             console.log("projectCreated : " + project.projectName);
 
             if(!(project == null)) {

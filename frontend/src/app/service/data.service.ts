@@ -131,6 +131,13 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
+  closeProject(projectPath: string, save: Boolean): Observable<any> { 
+    const formData = new FormData();
+    formData.set('projectPath', "'" + projectPath + "'");
+    formData.set('save', "'" + save + "'");
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/closeProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  } 
+
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
   static readonly OCPU_PORT: number = 5307;

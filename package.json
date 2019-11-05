@@ -29,15 +29,15 @@
   },
   "homepage": "https://github.com/StoXProject/StoX#readme",
   "dependencies": {
-    "@types/node": "^12.12.3",
+    "@types/node": "^12.12.5",
     "command-exists": "^1.2.8",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "ts-node-dev": "^1.0.0-pre.43",
+    "ts-node-dev": "^1.0.0-pre.44",
     "xml2js": "^0.4.22"
   },
   "devDependencies": {
-    "electron": "^6.1.2",
+    "electron": "^6.1.4",
     "electron-installer-dmg": "^3.0.0",
     "electron-packager": "^14.0.6",
     "electron-winstaller": "^4.0.0",
