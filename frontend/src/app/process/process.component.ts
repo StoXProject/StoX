@@ -65,13 +65,15 @@ export class ProcessComponent implements OnInit/*, DoCheck*/   {
   }
   prepCm() {
     this.contextMenu = [
-      { label: 'image(png)', icon: 'fa fa-cog fa-cog-style', command: (event) => { } },
-      { label: 'List 1 (csv)', icon: 'fa icon_container_16 processicon', command: (event) => { } },
-      { label: 'List 2 (csv)', icon: 'fa-download', command: (event) => { } }
+      { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { } },
+      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } },
+      { label: 'Move up', icon: 'rib absa emptyicon', command: (event) => { } },
+      { label: 'Move down', icon: 'rib absa emptyicon', command: (event) => { } },
+      { label: 'Add process', icon: 'rib absa addprocessicon', command: (event) => { } }
     ];
   }
   openCm(event, cm) {
-    console.log("preparing context menu" + event.activeItem);
+    console.log("preparing context menu" + event.target);
     event.preventDefault();
     event.stopPropagation();
     this.prepCm();

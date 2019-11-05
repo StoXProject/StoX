@@ -8,11 +8,11 @@ var mainWindow: any;
 // var rPath: string;
 // var rStoxFtpPath: string;
 
-var properties =  {
+var properties = {
   "projectRootPath": "",
   "activeProject": {},
-  "rPath":"",
-  "rStoxFtpPath":""
+  "rPath": "",
+  "rStoxFtpPath": ""
 };
 
 // properties.projectList = [{"projectPath": "c:/temp/aa", "projectName":"aa"}, {"projectPath":"c:/1/b", "projectName":"b"}];
@@ -377,7 +377,7 @@ server.post('/login', function (req: any, res: any) {
   res.end("yes");
 });
 
-const readPropertiesFromFile = function readPropertiesFromFile()  {
+const readPropertiesFromFile = function readPropertiesFromFile() {
   let resourcefile = require('os').homedir() + "/.stox.properties.json";
   try {
     let fs = require('fs');
@@ -388,9 +388,9 @@ const readPropertiesFromFile = function readPropertiesFromFile()  {
       console.log("jsonString : " + jsonString);
       properties = JSON.parse(jsonString);
     }
-  } catch(err) {
+  } catch (err) {
     console.log(err);
-  }  
+  }
 }
 
 const writePropertiesToFile = function writePropertiesToFile() {
@@ -398,13 +398,13 @@ const writePropertiesToFile = function writePropertiesToFile() {
   try {
     let fs = require('fs');
     let options = { encoding: 'utf-8', flag: 'w' };
-    if(!properties.projectRootPath) {
+    if (!properties.projectRootPath) {
       properties.projectRootPath = require('os').homedir();
     }
     let jsonString = JSON.stringify(properties, null, 2);
     console.log("jsonString : " + jsonString);
     fs.writeFileSync(resourcefile, jsonString, options)
-  } catch(err) {
+  } catch (err) {
     console.log(err);
   }
 }
