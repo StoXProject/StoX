@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 //import { FormGroup, FormBuilder } from '@angular/forms';
+import { ProjectService } from '../service/project.service';
+import { DataService } from '../service/data.service';
 
 @Component({
   selector: 'app-parameter',
@@ -13,34 +15,36 @@ export class ParameterComponent implements OnInit {
     { field: 'value', header: 'Value', width: '50%' }
   ];
 
-  rowData = [{
-    category: 'Process',
-    parameters: [
-      { name: 'Process name', value: 'ReadBioticXML', type: 'string' },
-      { name: 'Function', value: 'ReadBioticXML', type: 'string' },
-      { name: 'Enabled', value: 'false', type: 'boolean' }
-    ]
-  },
-  {
-    category: 'GUI',
-    parameters: [
-      { name: 'Break in GUI', value: 'true', type: 'boolean' },
-      { name: 'Respond in GUI', value: 'true', type: 'boolean' }
-    ]
-  },
-  {
-    category: 'Parameters',
-    parameters: [
-      { name: 'BioticData', value: 'ReadBioticXML', type: 'string' },
-      { name: 'FishStationExpr', value: "fs.getLengthSampleCount('TORSK')", type: 'string' },
-      { name: 'CatchExpr', value: "species == '164712'", type: 'string' }
-    ]
-  }
-  ];
-  //  booleanForm: FormGroup;
-  constructor() { }
+  // rowData = [{
+  //   category: 'Process',
+  //   parameters: [
+  //     { name: 'Process name', value: 'ReadBioticXML', type: 'string' },
+  //     { name: 'Function', value: 'ReadBioticXML', type: 'string' },
+  //     { name: 'Enabled', value: 'false', type: 'boolean' }
+  //   ]
+  // },
+  // {
+  //   category: 'GUI',
+  //   parameters: [
+  //     { name: 'Break in GUI', value: 'true', type: 'boolean' },
+  //     { name: 'Respond in GUI', value: 'true', type: 'boolean' }
+  //   ]
+  // },
+  // {
+  //   category: 'Parameters',
+  //   parameters: [
+  //     { name: 'BioticData', value: 'ReadBioticXML', type: 'string' },
+  //     { name: 'FishStationExpr', value: "fs.getLengthSampleCount('TORSK')", type: 'string' },
+  //     { name: 'CatchExpr', value: "species == '164712'", type: 'string' }
+  //   ]
+  // }
+  // ];
 
-  ngOnInit() {
+
+  //  booleanForm: FormGroup;
+  constructor(public ps: ProjectService) { }
+
+  async ngOnInit() {
 /*    let a = [];
     for (let i = 0; i < 2; i++) {
       let j = { name: null };
@@ -57,6 +61,4 @@ export class ParameterComponent implements OnInit {
   onChanged(o: any) {
     console.log("parameter " + o.name + " is changed to " + o.value);
   }
-
-
 }

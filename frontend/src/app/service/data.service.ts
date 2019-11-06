@@ -138,6 +138,15 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/closeProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   } 
 
+  getProcessProperties(projectPath: string, modelName: string, processID: string): Observable<any> {
+    const formData = new FormData();
+    // projectPath, modelName, processID
+    formData.set('projectPath', "'" + projectPath + "'");
+    formData.set('modelName', "'" + modelName + "'");
+    formData.set('processID', "'" + processID + "'");
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessProperties/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  }
+
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
   static readonly OCPU_PORT: number = 5307;

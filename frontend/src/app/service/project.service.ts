@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Project } from '../data/project';
 import { Process } from '../data/process';
 import { Model } from '../data/model';
+import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
 
 @Injectable({
@@ -18,6 +19,8 @@ export class ProjectService {
   processes: Process[];
   selectedProcess: Process = null; // the selected process by user
   activeProcessId: string = null; // the last run process id
+
+  propertyCategories: PropertyCategory[] = [];
   
   constructor(private dataService: DataService) {
     this.initData();
@@ -62,6 +65,10 @@ export class ProjectService {
       }
     }
 
+    // if(this.selectedModel) {
+    //   console.log("selected model : " + this.selectedModel.modelName);
+    // }
+
     if (this.selectedProject != null) {
       var t0 = performance.now();
       // set project path and model name as parameter here
@@ -72,6 +79,10 @@ export class ProjectService {
 
       console.log("nr of processes : " + this.processes.length);
     }
+  }
+
+  getSelectedModel() {
+    return this.selectedModel;
   }
 
   getSelectedProject(): Project {
@@ -93,8 +104,17 @@ export class ProjectService {
     return this.selectedProcess;
   }
 
-  setSelectedProcess(process: Process) {
+  async setSelectedProcess(process: Process) {
     this.selectedProcess = process;
+
+    if(this.getSelectedProject() != null && 
+    this.getSelectedProcess() != null && 
+    this.getSelectedModel() != null) {
+      // propertyCategories: PropertyCategory[];
+
+      this.propertyCategories = <PropertyCategory[]>JSON.parse( await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise());
+      console.log("this.propertyCategories.length : " + this.propertyCategories.length);
+    } 
   }
 
   getProjects(): Project[] {

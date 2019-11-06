@@ -7,34 +7,34 @@
 </ag-grid-angular>
 -->
 <p-accordion multiple="true" expandIcon="pi pi-fw pi-caret-down" collapseIcon="pi pi-fw pi-caret-right">
-    <p-accordionTab *ngFor="let row of rowData" header="{{row.category}}" selected="true">
+    <p-accordionTab *ngFor="let category of ps.propertyCategories" header="{{category.displayName}}" selected="true">
 
         <!--<div *ngFor="let col of cols"> {{rowData2[col.field]}}
             </div>-->
-        <p-table [columns]="cols" [value]="row.parameters" [scrollable]="true" [resizableColumns]="true">
+        <p-table [columns]="cols" [value]="category.properties" [scrollable]="true" [resizableColumns]="true">
             <ng-template pTemplate="colgroup" let-columns>
                 <colgroup>
                     <col *ngFor="let col of columns" [style.width]="col.width">
                 </colgroup>
             </ng-template>
-            <ng-template pTemplate="body" let-parameter>
+            <ng-template pTemplate="body" let-propertyItem>
                 <tr>
                     <td pResizableColumn>
                         <div>
-                            {{parameter.name}}
+                            {{propertyItem.name}}
                         </div>
                     </td>
-                    <td pResizableColumn [ngSwitch]="parameter.type"> 
-                        <div *ngSwitchCase="'string'">{{parameter.value}}</div>
-                        <div *ngSwitchCase="'boolean'">
-                             {{parameter.value}}  
+                    <td pResizableColumn [ngSwitch]="propertyItem.type"> 
+                        <div *ngSwitchCase="'character'">{{propertyItem.value}}</div>
+                        <div *ngSwitchCase="'logical'">
+                             {{propertyItem.value}}  
                             <!--<select [(ngModel)]="parameter['value']"
                                 style="width:100% !important; border:none !important;">
                                 <option *ngFor="let bool of getMetParameterValueList()" [ngValue]="bool.name">
                                     {{bool.name}}</option>
                             </select>-->
-                            <input type="checkbox"  [checked]="parameter.value == 'true' ? true : false"  
-                            (change)="parameter.value = $event.target.checked ? 'true' : 'false'; onChanged(parameter)" 
+                            <input type="checkbox"  [checked]="propertyItem.value == 'true' ? true : false"  
+                            (change)="propertyItem.value = $event.target.checked ? 'true' : 'false'; onChanged(propertyItem)" 
                             style="vertical-align: middle !important;"/>
                         </div>
                     </td>

@@ -60,9 +60,11 @@ export class ProcessComponent implements OnInit/*, DoCheck*/   {
 
   onSelectedProcessesChanged(event) {
     // can be array of selected processes
-    console.log("selected processes " + this.selectedProcesses[0].processName);
+    console.log("selected processes name " + this.selectedProcesses[0].processName);
+    console.log("selected processes id " + this.selectedProcesses[0].processID);
     this.ps.setSelectedProcess(this.selectedProcesses[0]);
   }
+  
   prepCm() {
     this.contextMenu = [
       { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { } },
