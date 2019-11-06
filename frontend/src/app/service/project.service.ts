@@ -69,6 +69,8 @@ export class ProjectService {
     //   console.log("selected model : " + this.selectedModel.modelName);
     // }
 
+    this.propertyCategories = [];
+
     if (this.selectedProject != null) {
       var t0 = performance.now();
       // set project path and model name as parameter here
