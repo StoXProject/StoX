@@ -6,7 +6,7 @@ export class Process {
   canShowInMap?: boolean;
   doShowInMap?: boolean;
   hasProcessData?: boolean;
-  hasError?: boolean;
+  hasModelrror?: boolean;
 
   // "processName": "ReadBiotic",
   // "functionName": "ReadBiotic",
