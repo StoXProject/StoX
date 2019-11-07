@@ -27,10 +27,10 @@
 
 <p-listbox #listBox [options]="ps.processes" [(ngModel)]="selectedProcesses"
     (onChange)="onSelectedProcessesChanged($event)" multiple="false" optionLabel="processName"
-      (contextmenu)="openCm($event, cm)"> 
+    (contextmenu)="openCm($event, cm)">
     <ng-template let-process pTemplate="item">
         <!--  <p-contextMenu></p-contextMenu> -->
-            <!--   <ng-template [ngIf]="process.value.processID===ps.activeProcessId; else staticProcessItem">
+        <!--   <ng-template [ngIf]="process.value.processID===ps.activeProcessId; else staticProcessItem">
                 <span class="fa-stack" style="vertical-align: middle;">
                     <i class="fa fa-circle fa-stack-1x"
                         style="font-size: 0.8em;  color:rgb(243, 240, 85) !important;"></i>
@@ -38,10 +38,14 @@
                         style="font-size: 1.2em;  color:rgb(145, 173, 131) !important;  text-shadow: 1px 1px 1px #000000 !important;"></i>
                 </span>
             </ng-template>-->
-            <span class="rib fa fa-spin processicon" 
-                [ngClass]="{'fa-spin': process.value.processID===ps.activeProcessId}">
-            </span>
-
+        <span class="rib fa processicon" [ngClass]="{'fa-spin': process.value===ps.runningProcess}">
+            <span *ngIf="process.value.hasProcessData" class="absa interactiveicon"></span>
+            <span *ngIf="process.value.canShowInMap" class="absa mapicon"></span>
+        </span>
+        <span class="rib fa emptyicon">
+            <span *ngIf="process.value.hasError" class="absa processmodelerroricon"></span>
+            <span class="absa runstatusfailedicon"></span>
+        </span>
         <!-- <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
             <span *ngIf="process.value.processName== 'ReadBiotic'">
                 <img src="./assets/images/break.png" width="8" style="margin-bottom:12px; margin-left:-16px;">

@@ -18,6 +18,7 @@ export class ProjectService {
   processes: Process[];
   selectedProcess: Process = null; // the selected process by user
   activeProcessId: string = null; // the last run process id
+  runningProcess: Process = null; // the last run process id
   
   constructor(private dataService: DataService) {
     console.log(" constructor() - class ProjectService: ");

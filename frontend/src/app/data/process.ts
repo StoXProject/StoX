@@ -15,6 +15,7 @@ export class Process {
   // "doShowInMap": false,
   // "hasProcessData": false,
   // "hasError": false  
+  // hasModelError ? 
 
   // breakingui?: boolean;
   // constructor() {

@@ -21,7 +21,7 @@
 </nav>
 <div style="height: calc(100vh - 3rem);">
 	<as-split direction="horizontal" gutterSize=6>
-		<as-split-area size="20">
+		<as-split-area size="25">
 			<as-split direction="vertical" gutterSize=6>
 				<as-split-area size=30 style="overflow:hidden">
 					<app-project></app-project>
@@ -33,13 +33,22 @@
 				</as-split-area>
 			</as-split>
 		</as-split-area>
-		<as-split-area size="60">
+		<as-split-area size="55">
 			<as-split direction="vertical" gutterSize=6>
 				<as-split-area size="75">
 					<app-map class="map"></app-map>
 				</as-split-area>
 				<as-split-area size="25">
-					<p>Output tab panes</p>
+					<p-tabView>
+						<p-tabPanel header="User log">
+						</p-tabPanel>
+						<p-tabPanel header="Graph">
+						</p-tabPanel>
+						<p-tabPanel header="Output">
+						</p-tabPanel>
+						<p-tabPanel header="Stratum/PSU">
+							</p-tabPanel>
+						</p-tabView>
 				</as-split-area>
 			</as-split>
 		</as-split-area>
