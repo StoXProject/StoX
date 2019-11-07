@@ -113,9 +113,11 @@ export class ProjectService {
     this.getSelectedProcess() != null && 
     this.getSelectedModel() != null) {
       // propertyCategories: PropertyCategory[];
-
+      var t0 = performance.now();
       this.propertyCategories = <PropertyCategory[]>JSON.parse( await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise());
-      console.log("this.propertyCategories.length : " + this.propertyCategories.length);
+      var t1 = performance.now();
+      console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
+      // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
     } 
   }
 

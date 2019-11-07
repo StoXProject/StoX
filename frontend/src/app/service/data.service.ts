@@ -144,7 +144,7 @@ export class DataService {
     formData.set('projectPath', "'" + projectPath + "'");
     formData.set('modelName', "'" + modelName + "'");
     formData.set('processID', "'" + processID + "'");
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessProperties/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessPropertySheet/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
   static readonly LOCALHOST: string = 'localhost';
