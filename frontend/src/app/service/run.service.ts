@@ -4,6 +4,7 @@ import { Project } from '../data/project';
 import { Process } from '../data/process';
 import { Model } from '../data/model';
 import { ProjectService } from '../service/project.service';
+import { DataService } from '../service/data.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,18 +13,18 @@ import { ProjectService } from '../service/project.service';
  * Manage Run process logic
  */
 export class RunService {
-    constructor(private projectService: ProjectService) {
+    constructor(private projectService: ProjectService, private dataService: DataService) {
     }
     getProcessIdx(processId: string): number {
         return this.projectService.processes.findIndex(p => p.processID === processId);
     }
 
     getProcess(idx: number): Process {
-        var p : Process = this.projectService.processes[idx];
+        var p: Process = this.projectService.processes[idx];
         if (p == null) {
             throw "getProcess(idx) called with idx=" + idx;
         }
-        return this.projectService.processes[idx]; 
+        return this.projectService.processes[idx];
     }
 
     getActiveProcessIdx(): number {
@@ -33,7 +34,9 @@ export class RunService {
         return this.projectService.processes.length > 0;
     }
     run() {
-        let idx: number = this.getActiveProcessIdx() === null ? 0 : (this.getActiveProcessIdx() + 1) % this.projectService.processes.length;
+        let idx: number = this.getActiveProcessIdx() === null ||
+            this.getActiveProcessIdx() == this.projectService.processes.length - 1 ? 0 :
+            this.getActiveProcessIdx() + 1 ;
         this.runProcessIdx(idx, this.projectService.processes.length - 1);
         // If the active process is the last, use the first.
         // Run from next to the active to the last process
@@ -90,11 +93,15 @@ export class RunService {
     async runProcessIdx(iFrom: number, iTo: number) {
         for (var i = iFrom; i <= iTo; i++) {
             let p = this.getProcess(i);
-            await new Promise(resolve => setTimeout(resolve, 600));
+            this.projectService.runningProcess = p;
+            console.log("Run process " + p.processName + " with id " + p.processID);
+            let s : string = await this.dataService.runModel(this.projectService.selectedProject.projectPath, this.projectService.selectedModel.modelName, i + 1, i + 1).toPromise();
+            console.log(s);
+            //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
-            this.projectService.activeProcessId = p.processID; 
-            console.log("Run process " + p.processName + " with id " + this.projectService.activeProcessId);
+            this.projectService.activeProcessId = p.processID;
         }
+        this.projectService.runningProcess = null;
     }
     runModel(idx) {
 

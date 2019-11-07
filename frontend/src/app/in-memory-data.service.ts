@@ -1,4 +1,4 @@
-import { InMemoryDbService } from 'angular-in-memory-web-api';
+import { InMemoryDbService, RequestInfoUtilities, ParsedRequestUrl } from 'angular-in-memory-web-api';
 import { Injectable } from '@angular/core';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
@@ -140,7 +140,7 @@ export class InMemoryDataService implements InMemoryDbService {
             "description": "id_82_lon_5.2455_lat_70.9174",
             "hascatch": "true"
           }
-        }       
+        }
       ]
     }
 
@@ -150,7 +150,23 @@ export class InMemoryDataService implements InMemoryDbService {
     // return features;
   }
 
-  // private getJSON(): Observable<any> {
+  parseRequestUrl(url: string, utils: RequestInfoUtilities): ParsedRequestUrl {
+    if (url.endsWith('.json')) {
+      return utils.parseRequestUrl(url);
+    }
+    const splitted = url.split('/');
+    const isLastArgumentIsId = Number.isInteger(parseInt(splitted[splitted.length - 1], 10));
+    const collectionIndex = isLastArgumentIsId ? splitted.length - 3 : splitted.length - 2;
+    const actionIndex = isLastArgumentIsId ? splitted.length - 2 : splitted.length - 1;
+    const collectionName = splitted[collectionIndex] + splitted[actionIndex];
+    // const newUrl = splitted.join(‘/’);
+    const parsed = utils.parseRequestUrl(url);
+    parsed.apiBase = '/api';
+    parsed.collectionName = collectionName;
+    parsed.id = isLastArgumentIsId ? splitted[splitted.length - 1] as any : '';
+    parsed.resourceUrl = parsed.resourceUrl + parsed.collectionName;
+    return parsed;
+  }  // private getJSON(): Observable<any> {
   //   return this.httpClient.get(this._jsonURL);
   // }    
 }

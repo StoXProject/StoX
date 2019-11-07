@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ɵCompiler_compileModuleAndAllComponentsAsync__POST_R3__ } from '@angular/core';
 
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
@@ -43,15 +43,6 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/readBioticDataFromXml/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
-  runModel(): Observable<any> {
-    const formData = new FormData();
-    formData.set('iFrom', '1');
-    formData.set('iTo', '15');
-
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/runModel/json", formData);
-    return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/runModel/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  }
-
   getOutputTable(): Observable<any> {
     const formData = new FormData();
     formData.set('iProcess', '1');
@@ -85,7 +76,7 @@ export class DataService {
   }
 
   makeItFail(): Observable<any> {
-    const formData = new FormData(); 
+    const formData = new FormData();
     formData.set('iProcess', '1');
     formData.set('iTable', 'mission');
     return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
@@ -121,11 +112,11 @@ export class DataService {
     console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
     const formData = new FormData();
     formData.set('projectPath', "'" + projectPath + "'");
-    formData.set('modelName', "'" + modelName + "'"); 
+    formData.set('modelName', "'" + modelName + "'");
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  }  
+  }
 
-  openProject(projectPath: string): Observable<any> { 
+  openProject(projectPath: string): Observable<any> {
     const formData = new FormData();
     formData.set('projectPath', "'" + projectPath + "'");
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
@@ -155,7 +146,13 @@ export class DataService {
     return "http://" + host + ":" + port + "/" + api;
   }
   public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<any> {
-    return this.httpClient.post(DataService.getURL(host, port, api), body, { observe: 'body', responseType: <any>responseType }).pipe(tap(_ => _, error => this.handleError(error)));
+    return this.httpClient.post(DataService.getURL(host, port, api), body,
+      {
+        observe: 'body',
+        // headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+        responseType: <any>responseType
+      })
+      .pipe(tap(_ => _, error => this.handleError(error)));
   }
 
   public get(host: string, port: number, api: string, responseType: string = 'text'): Observable<any> {
@@ -170,10 +167,10 @@ export class DataService {
     return this.get(DataService.LOCALHOST, DataService.NODE_PORT, api, responseType);
   }
 
-  public postLocalOCPU(rPackage: string, rFunctionName: string, body: any, responseType: string = 'text', parseJSON: boolean = false): Observable<any> {
+  public postLocalOCPU(rPackage: string, rFunctionName: string, body: any, responseType: string = 'text', parseJSON: boolean = false, endPoint: string = 'json'): Observable<any> {
     return this.post(DataService.LOCALHOST, DataService.OCPU_PORT, 'ocpu/library/' + rPackage + '/R/' + rFunctionName
-      + "/json", body, responseType)
-      .pipe(map(_ => parseJSON ? JSON.parse(_) : _)); // maps response to unparsed JSON
+      + "/" + endPoint + "?auto_unbox=true", body, responseType)
+      .pipe(map(_ => parseJSON ? endPoint == "json" ? JSON.parse(_) : _ : _)); // maps response to unparsed JSON
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -208,6 +205,28 @@ export class DataService {
     return this.postLocalOCPU('tests', 'test_geojson_points', {}, 'text', true);
   }
 
+  runModel(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<string> {
+    //console.log(" projectPath : " + projectPath + ", modelName : " + modelName + ", startProcess : " + startProcess + ", endProcess:" + endProcess);
+    const formData = new FormData();
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/runModel/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    let args: any = JSON.stringify({
+      "projectPath": projectPath, "modelName": modelName,
+      "startProcess": startProcess, "endProcess": endProcess
+    });
+    let what = "runModel";
+    formData.set('what', what);
+    formData.set('args', args);
+    // runFunction wraps a doCall with what/args and exception handling that returns a list.
+    return this.postLocalOCPU('RstoxFramework', 'runFunction', formData, 'text', true, "json");
+    /*
+        formData.set('projectPath', "'" + projectPath + "'");
+        formData.set('modelName', "'" + modelName + "'");
+        formData.set('startProcess', startProcess + "");
+        formData.set('endProcess', endProcess + "");
+        return this.postLocalOCPU('RstoxFramework', 'runModel', formData, 'text', true, "json");
+    */
+  }
+
   setRPath(rpath: string): Observable<any> {
     return this.postLocalNode('rpath', { rpath: rpath });
   }
@@ -234,11 +253,11 @@ export class DataService {
 
   public readActiveProject(): Observable<any> {
     return this.getLocalNode('readactiveproject');
-  }  
+  }
 
   public updateActiveProject(jsonString: string): Observable<any> {
     return this.postLocalNode('updateactiveproject', { jsonString: jsonString });
-  }  
+  }
 
   public updateProjectRootPath(jsonString: string): Observable<any> {
     return this.postLocalNode('updateprojectrootpath', { jsonString: jsonString });

@@ -6,7 +6,7 @@ export class Process {
   canShowInMap?: boolean;
   doShowInMap?: boolean;
   hasProcessData?: boolean;
-  hasError?: boolean;
+  hasModelrror?: boolean;
 
   // "processName": "ReadBiotic",
   // "functionName": "ReadBiotic",
@@ -15,6 +15,7 @@ export class Process {
   // "doShowInMap": false,
   // "hasProcessData": false,
   // "hasError": false  
+  // hasModelError ? 
 
   // breakingui?: boolean;
   // constructor() {
