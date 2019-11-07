@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Project } from '../data/project';
 import { Process } from '../data/process';
 import { Model } from '../data/model';
+import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
 
 @Injectable({
@@ -19,13 +20,14 @@ export class ProjectService {
   selectedProcess: Process = null; // the selected process by user
   activeProcessId: string = null; // the last run process id
   runningProcess: Process = null; // the last run process id
+
+  propertyCategories: PropertyCategory[] = [];
   
   constructor(private dataService: DataService) {
-    console.log(" constructor() - class ProjectService: ");
     this.initData();
-    // console.log("projects length ?? " + this.projects.length);
     // this.setSelectedProject(this.getProjects()[0]);
   }
+  
   getProcess(processId: string): Process {
     return this.processes.find(p => p.processID === processId);
   }
@@ -64,11 +66,26 @@ export class ProjectService {
       }
     }
 
+    // if(this.selectedModel) {
+    //   console.log("selected model : " + this.selectedModel.modelName);
+    // }
+
+    this.propertyCategories = [];
+
     if (this.selectedProject != null) {
+      var t0 = performance.now();
       // set project path and model name as parameter here
       this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
+      var t1 = performance.now();
+      
+      console.log("Call to dataService.getProcessesInModel(...) took " + (t1 - t0) + " milliseconds.");
+
       console.log("nr of processes : " + this.processes.length);
     }
+  }
+
+  getSelectedModel() {
+    return this.selectedModel;
   }
 
   getSelectedProject(): Project {
@@ -79,7 +96,7 @@ export class ProjectService {
     this.selectedProject = project;
     this.setSelectedModel("Baseline");
 
-    console.log("selected project changed 2 : " + this.selectedProject.projectName);
+    // console.log("selected project changed 2 : " + this.selectedProject.projectName);
     
     let jsonString = JSON.stringify(project);
     let status = <string> await this.dataService.updateActiveProject(jsonString).toPromise();
@@ -90,8 +107,17 @@ export class ProjectService {
     return this.selectedProcess;
   }
 
-  setSelectedProcess(process: Process) {
+  async setSelectedProcess(process: Process) {
     this.selectedProcess = process;
+
+    if(this.getSelectedProject() != null && 
+    this.getSelectedProcess() != null && 
+    this.getSelectedModel() != null) {
+      // propertyCategories: PropertyCategory[];
+
+      this.propertyCategories = <PropertyCategory[]>JSON.parse( await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise());
+      console.log("this.propertyCategories.length : " + this.propertyCategories.length);
+    } 
   }
 
   getProjects(): Project[] {
@@ -130,7 +156,6 @@ export class ProjectService {
     console.log(" initData() - class ProjectService: ");
 
     // this.projects = [
-    //   { projectName: 'project53', projectPath: 'C:/Users/esmaelmh/workspace/stox/project/project53' },
     //   { projectName: 'Gytetokt 2004', projectPath: '.' },
     //   { projectName: 'Tobis 2006', projectPath: '.' },
     //   { projectName: 'Tobis 2007', projectPath: '.' },
@@ -153,8 +178,6 @@ export class ProjectService {
      let jsonString = <string> await this.dataService.readActiveProject().toPromise();
      let activeProject: Project  = <Project>JSON.parse(jsonString);
 
-     // this.selectedProject = this.findObjectInArray(this.projects, selected);
-
      if (!this.isEmpty(activeProject)) {
         this.projects = [ {projectName: activeProject.projectName, projectPath: activeProject.projectPath}];
         console.log("active project : " + activeProject.projectName);
@@ -162,14 +185,6 @@ export class ProjectService {
      }
   }
 
-  // findObjectInArray(projects: Project[], project: Project): Project {
-  //   for(let i= 0; i<projects.length; i++) {
-  //     if(projects[i].projectPath == project.projectPath) {
-  //       return projects[i];
-  //     }
-  //   }
-  //   return null;
-  // }
   /*
   Returns:
     true: undefined, null, "", [], {}

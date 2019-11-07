@@ -45,32 +45,50 @@ export class OpenProjectDlg {
 
         console.log("converted projectRootPath : " + this.projectPath);
 
-        // the following should return an instance of class Project
-        this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectPath).toPromise());
-
-        console.log("returned projectName - projectPath : " + this.project.projectName + " - " + this.project.projectPath);
-
-        // console.log("projects length : " + this.ps.projects.length);
-
-        if(this.project != null) {
-
-            if(this.ps.getSelectedProject() != null) {
-                if (this.ps.getSelectedProject().projectPath.valueOf() == this.project.projectPath.valueOf()) {
-                    let projectName = this.ps.getSelectedProject().projectName;
-                    this.msgService.setMessage("Project with name " + projectName + " is already open!");
-                    this.msgService.showMessage();
-                    return;
-                }
-            }
-
-            // this.projectService.PROJECTS.push(this.project);
-            this.ps.projects =  [{projectName:this.project.projectName, projectPath: this.project.projectPath}]; 
+        try {
+            var t0 = performance.now();
+            // the following should return an instance of class Project
+            this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectPath).toPromise());
+            var t1 = performance.now();
+            console.log("Call to dataService.openProject(...) took " + (t1 - t0) + " milliseconds.");
+            console.log("returned projectName - projectPath : " + this.project.projectName + " - " + this.project.projectPath);
 
             // console.log("projects length : " + this.ps.projects.length);
 
-            this.ps.setSelectedProject(this.project);            
+            if(this.project != null) {
+
+                if(this.ps.getSelectedProject() != null) {
+                    if (this.ps.getSelectedProject().projectPath.valueOf() == this.project.projectPath.valueOf()) {
+                        let projectName = this.ps.getSelectedProject().projectName;
+                        this.msgService.setMessage("Project with name " + projectName + " is already open!");
+                        this.msgService.showMessage();
+                        return;
+                    } else {
+                        // close the previous project after saving it if it is edited 
+                        var t0 = performance.now();
+                        await this.dataService.closeProject(this.ps.getSelectedProject().projectPath, new Boolean(true)).toPromise();
+                        var t1 = performance.now();
+
+                        console.log("Call to dataService.closeProject(...) took " + (t1 - t0) + " milliseconds.");
+                    }
+                }
+
+                // this.projectService.PROJECTS.push(this.project);
+                this.ps.projects =  [{projectName:this.project.projectName, projectPath: this.project.projectPath}]; 
+
+                // console.log("projects length : " + this.ps.projects.length);
+
+                this.ps.setSelectedProject(this.project);            
+            }
+
+        } catch(error) {
+            console.log(error.error);
+            var firstLine = error.error.split('\n', 1)[0];
+            this.msgService.setMessage(firstLine);
+            this.msgService.showMessage();            
+            return;            
         }
-    
+
         this.service.display = false;
     }
 }
