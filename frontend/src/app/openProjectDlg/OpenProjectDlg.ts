@@ -46,6 +46,15 @@ export class OpenProjectDlg {
         console.log("converted projectRootPath : " + this.projectPath);
 
         try {
+
+            let isProject = <boolean>JSON.parse( await this.dataService.isProject(this.projectPath).toPromise());
+
+            if(!isProject) {
+                this.msgService.setMessage(this.projectPath + " is not a project!");
+                this.msgService.showMessage();
+                return;
+            }
+
             var t0 = performance.now();
             // the following should return an instance of class Project
             this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectPath).toPromise());
