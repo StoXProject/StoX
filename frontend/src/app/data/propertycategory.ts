@@ -1,7 +1,7 @@
 import { PropertyItem } from './propertyitem';
 
 export class PropertyCategory {
-    category: string;
+    groupName: string;   // groupName: string;
     displayName: string;
     properties: PropertyItem[];
 }

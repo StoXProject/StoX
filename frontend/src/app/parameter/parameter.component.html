@@ -21,11 +21,22 @@
                 <tr>
                     <td pResizableColumn>
                         <div>
-                            {{propertyItem.name}}
+                            {{propertyItem.displayName}}
                         </div>
                     </td>
                     <td pResizableColumn [ngSwitch]="propertyItem.type"> 
-                        <div *ngSwitchCase="'character'">{{propertyItem.value}}</div>
+                        <div *ngSwitchCase="'character'">
+                            
+                            <div *ngIf="propertyItem.possibleValues.length > 0">
+                                    {{propertyItem.value}}
+                            </div>
+            
+                            <div *ngIf="propertyItem.possibleValues.length == 0">
+                                {{propertyItem.value}}
+                            </div>   
+                                                
+                        </div>
+
                         <div *ngSwitchCase="'logical'">
                              {{propertyItem.value}}  
                             <!--<select [(ngModel)]="parameter['value']"
@@ -33,10 +44,11 @@
                                 <option *ngFor="let bool of getMetParameterValueList()" [ngValue]="bool.name">
                                     {{bool.name}}</option>
                             </select>-->
-                            <input type="checkbox"  [checked]="propertyItem.value == 'true' ? true : false"  
+                            <input type="checkbox"  [checked]="propertyItem.value == true ? true : false"  
                             (change)="propertyItem.value = $event.target.checked ? 'true' : 'false'; onChanged(propertyItem)" 
                             style="vertical-align: middle !important;"/>
                         </div>
+                        <!--<div *ngSwitchDefault>{{propertyItem.value}}</div>-->
                     </td>
                 </tr>
             </ng-template>
