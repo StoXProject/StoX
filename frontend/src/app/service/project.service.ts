@@ -11,26 +11,25 @@ import { DataService } from './data.service';
 })
 export class ProjectService {
   projects: Project[] = [];
-  selectedProject: Project = null; 
+  selectedProject: Project = null;
 
   models: Model[];
   selectedModel: Model = null;
 
   processes: Process[];
   selectedProcess: Process = null; // the selected process by user
-  activeProcessId: string = null; // the last run process id
-  runningProcess: Process = null; // the last run process id
+  activeProcess: Process = null; // the last run-ok process
+  runFailedProcess: Process = null; // the last run-failed process
+  runningProcess: Process = null; // current running process
 
   propertyCategories: PropertyCategory[] = [];
-  
+
   constructor(private dataService: DataService) {
     this.initData();
     // this.setSelectedProject(this.getProjects()[0]);
   }
-  
-  getProcess(processId: string): Process {
-    return this.processes.find(p => p.processID === processId);
-  }
+
+
 
   hasProject(project: Project): boolean {
     var projectPath = project.projectPath;
@@ -77,7 +76,7 @@ export class ProjectService {
       // set project path and model name as parameter here
       this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
       var t1 = performance.now();
-      
+
       console.log("Call to dataService.getProcessesInModel(...) took " + (t1 - t0) + " milliseconds.");
 
       console.log("nr of processes : " + this.processes.length);
@@ -97,9 +96,9 @@ export class ProjectService {
     this.setSelectedModel("Baseline");
 
     // console.log("selected project changed 2 : " + this.selectedProject.projectName);
-    
+
     let jsonString = JSON.stringify(project);
-    let status = <string> await this.dataService.updateActiveProject(jsonString).toPromise();
+    let status = <string>await this.dataService.updateActiveProject(jsonString).toPromise();
     console.log(status);
   }
 
@@ -110,14 +109,14 @@ export class ProjectService {
   async setSelectedProcess(process: Process) {
     this.selectedProcess = process;
 
-    if(this.getSelectedProject() != null && 
-    this.getSelectedProcess() != null && 
-    this.getSelectedModel() != null) {
+    if (this.getSelectedProject() != null &&
+      this.getSelectedProcess() != null &&
+      this.getSelectedModel() != null) {
       // propertyCategories: PropertyCategory[];
 
-      this.propertyCategories = <PropertyCategory[]>JSON.parse( await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise());
+      this.propertyCategories = <PropertyCategory[]>JSON.parse(await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise());
       console.log("this.propertyCategories.length : " + this.propertyCategories.length);
-    } 
+    }
   }
 
   getProjects(): Project[] {
@@ -150,7 +149,7 @@ export class ProjectService {
     }
     return [];
   }
-  
+
   async initData() {
 
     console.log(" initData() - class ProjectService: ");
@@ -175,14 +174,14 @@ export class ProjectService {
     //   { projectName: 'Tobis 2021', projectPath: '.' }
     // ];
 
-     let jsonString = <string> await this.dataService.readActiveProject().toPromise();
-     let activeProject: Project  = <Project>JSON.parse(jsonString);
+    let jsonString = <string>await this.dataService.readActiveProject().toPromise();
+    let activeProject: Project = <Project>JSON.parse(jsonString);
 
-     if (!this.isEmpty(activeProject)) {
-        this.projects = [ {projectName: activeProject.projectName, projectPath: activeProject.projectPath}];
-        console.log("active project : " + activeProject.projectName);
-        this.setSelectedProject(activeProject);
-     }
+    if (!this.isEmpty(activeProject)) {
+      this.projects = [{ projectName: activeProject.projectName, projectPath: activeProject.projectPath }];
+      console.log("active project : " + activeProject.projectName);
+      this.setSelectedProject(activeProject);
+    }
   }
 
   /*
@@ -190,16 +189,40 @@ export class ProjectService {
     true: undefined, null, "", [], {}
     false: true, false, 1, 0, -1, "foo", [1, 2, 3], { foo: 1 }
   */
- isEmpty (value): boolean {
+  isEmpty(value): boolean {
     return (
       // null or undefined
       (value == null) ||
-  
+
       // has length and it's zero
       (value.hasOwnProperty('length') && value.length === 0) ||
-  
+
       // is an Object and has no keys
       (value.constructor === Object && Object.keys(value).length === 0)
     )
-  }  
+  }
+  getProcessIdx(process: Process): number {
+    return this.processes.findIndex(p => p === process);
+  }
+  getActiveProcessIdx(): number {
+    return this.getProcessIdx(this.activeProcess);
+  }
+
+  isRun(process : Process) {
+    return this.getProcessIdx(process) <= this.getActiveProcessIdx();
+  }
+  
+  getProcessById(processId: string): Process {
+    return this.processes.find(p => p.processID === processId);
+  }
+
+  getProcess(idx: number): Process {
+    var p: Process = this.processes[idx];
+    if (p == null) {
+      throw "getProcess(idx) called with idx=" + idx;
+    }
+    return this.processes[idx];
+  }
+
+
 }

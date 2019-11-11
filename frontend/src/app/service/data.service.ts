@@ -1,9 +1,10 @@
 import { Injectable, ɵCompiler_compileModuleAndAllComponentsAsync__POST_R3__ } from '@angular/core';
 
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
+import { rotateWithoutConstraints } from 'ol/interaction/Interaction';
 
 @Injectable({
   providedIn: 'root'
@@ -122,12 +123,12 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
-  closeProject(projectPath: string, save: Boolean): Observable<any> { 
+  closeProject(projectPath: string, save: Boolean): Observable<any> {
     const formData = new FormData();
     formData.set('projectPath', "'" + projectPath + "'");
     formData.set('save', "'" + save + "'");
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/closeProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  } 
+  }
 
   getProcessProperties(projectPath: string, modelName: string, processID: string): Observable<any> {
     const formData = new FormData();
@@ -145,31 +146,47 @@ export class DataService {
   public static getURL(host: string, port: number, api: string) {
     return "http://" + host + ":" + port + "/" + api;
   }
-  public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<any> {
+  public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<HttpResponse<any>> {
     return this.httpClient.post(DataService.getURL(host, port, api), body,
       {
-        observe: 'body',
+        observe: 'response', // 'body' or 'response'
         // headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
         responseType: <any>responseType
       })
       .pipe(tap(_ => _, error => this.handleError(error)));
   }
 
-  public get(host: string, port: number, api: string, responseType: string = 'text'): Observable<any> {
-    return this.httpClient.get(DataService.getURL(host, port, api), { observe: 'body', responseType: <any>responseType }).pipe(tap(_ => _, error => this.handleError(error)));
+  public get(host: string, port: number, api: string, responseType: string = 'text'): Observable<HttpResponse<any>> {
+    return this.httpClient
+      .get(DataService.getURL(host, port, api), { observe: 'response', responseType: <any>responseType })
+      .pipe(tap(_ => _, error => this.handleError(error)))
   }
 
-  public postLocalNode(api: string, body: any, responseType: string = 'text'): Observable<any> {
-    return this.post(DataService.LOCALHOST, DataService.NODE_PORT, api, body, responseType);
+  public getBody(host: string, port: number, api: string, responseType: string = 'text'): Observable<any> {
+    return this.get(host, port, api, responseType)
+      .pipe(map(_ => _.body));
   }
 
-  public getLocalNode(api: string, responseType: string = 'text'): Observable<any> {
-    return this.get(DataService.LOCALHOST, DataService.NODE_PORT, api, responseType);
+  public postLocalNode(api: string, body: any, responseType: string = 'text'): Observable<HttpResponse<any>> {
+    return this.post(DataService.LOCALHOST, DataService.NODE_PORT, api, body, responseType)
+      .pipe(map(_ => _.body));
   }
 
-  public postLocalOCPU(rPackage: string, rFunctionName: string, body: any, responseType: string = 'text', parseJSON: boolean = false, endPoint: string = 'json'): Observable<any> {
+  public getLocalNode(api: string, responseType: string = 'text'): Observable<HttpResponse<any>> {
+    return this.get(DataService.LOCALHOST, DataService.NODE_PORT, api, responseType)
+      .pipe(map(_ => _.body));
+  }
+
+  public postLocalOCPU(rPackage: string, rFunctionName: string, body: any, responseType: string = 'text',
+    parseJSON: boolean = false, endPoint: string = 'json'): Observable<HttpResponse<any>> {
     return this.post(DataService.LOCALHOST, DataService.OCPU_PORT, 'ocpu/library/' + rPackage + '/R/' + rFunctionName
-      + "/" + endPoint + "?auto_unbox=true", body, responseType)
+      + "/" + endPoint + "?auto_unbox=true", body, responseType); // maps response to unparsed JSON
+  }
+
+  public postLocalOCPUBody(rPackage: string, rFunctionName: string, body: any, responseType: string = 'text',
+    parseJSON: boolean = false, endPoint: string = 'json'): Observable<any> {
+    return this.postLocalOCPU(rPackage, rFunctionName, body, responseType, parseJSON, endPoint)
+      .pipe(map(_ => _.body))
       .pipe(map(_ => parseJSON ? endPoint == "json" ? JSON.parse(_) : _ : _)); // maps response to unparsed JSON
   }
 
@@ -198,12 +215,13 @@ export class DataService {
   }
 
   getgeojson(): Observable<string> {
-    return this.postLocalOCPU('tests', 'test_geojson_polygon', {}, 'text', true);
+    return this.postLocalOCPUBody('tests', 'test_geojson_polygon', {}, 'text', true);
   }
 
   getjsonfromfile(): Observable<string> {
-    return this.postLocalOCPU('tests', 'test_geojson_points', {}, 'text', true);
+    return this.postLocalOCPUBody('tests', 'test_geojson_points', {}, 'text', true);
   }
+
 
   runModel(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<string> {
     //console.log(" projectPath : " + projectPath + ", modelName : " + modelName + ", startProcess : " + startProcess + ", endProcess:" + endProcess);
@@ -217,7 +235,18 @@ export class DataService {
     formData.set('what', what);
     formData.set('args', args);
     // runFunction wraps a doCall with what/args and exception handling that returns a list.
-    return this.postLocalOCPU('RstoxFramework', 'runFunction', formData, 'text', true, "json");
+    return <any>this.postLocalOCPU('RstoxFramework', 'runFunction', formData, 'text', true, "json")
+      .pipe(map(async res => {
+        let jsr: any = JSON.parse(res.body);
+        // Get the OCPU-sinked R messages from session file (message) and put it int the result.
+        let sessionId: string = res.headers.get("x-ocpu-session");
+        let msg : string[] = <string[]>await this.post(DataService.LOCALHOST, DataService.OCPU_PORT, 'ocpu/tmp/' + sessionId + '/messages/json?auto_unbox=TRUE', {}, 'text')
+          .pipe(map(_ => JSON.parse(_.body))).toPromise(); 
+        console.log(msg);
+        let r2 : any = JSON.parse(res.body);
+        r2.messages = msg;
+        return r2;
+      }));
     /*
         formData.set('projectPath', "'" + projectPath + "'");
         formData.set('modelName', "'" + modelName + "'");

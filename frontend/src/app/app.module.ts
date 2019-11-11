@@ -8,6 +8,7 @@ import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
 import { MessageDlg } from './message/MessageDlg';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
+import { UserLogComponent } from './output/userlog/userlog.component';
 import { MapComponent } from './map/map.component';
 import { FormsModule } from '@angular/forms';
 import { ProcessComponent } from './process/process.component';
@@ -85,7 +86,8 @@ import { RunComponent } from './run/run.component';
     ProcessComponent,
     ParameterComponent,
     ModelComponent,
-    RunComponent
+    RunComponent,
+    UserLogComponent,
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },

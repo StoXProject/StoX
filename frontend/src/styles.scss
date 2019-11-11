@@ -284,7 +284,7 @@ $nodata: #acacac;
 }
 
 .mapicon:after {
-  @include icon_content("\f0ac", 0.4rem, rgb(21, 40, 216));
+  @include icon_content("\f0ac", 0.5rem, rgb(21, 40, 216));
   top: 20%;
   left: 20%;
 }
@@ -336,6 +336,10 @@ $nodata: #acacac;
 .runstatusfailedicon:after {
   @include icon_content("\f0c8", 0.4rem, rgb(247, 128, 59), true);
   top: 68%;
+}
+
+.blink {
+  animation: blink 500ms infinite steps(1);
 }
 // <!--Set the needle point in the middle of the symbol (translate(x, y), then its easier to relate to main symbol-->
 // <style>
