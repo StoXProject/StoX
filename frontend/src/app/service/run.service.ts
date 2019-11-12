@@ -13,47 +13,33 @@ import { DataService } from '../service/data.service';
  * Manage Run process logic
  */
 export class RunService {
-    constructor(private projectService: ProjectService, private dataService: DataService) {
-    }
-    getProcessIdx(processId: string): number {
-        return this.projectService.processes.findIndex(p => p.processID === processId);
+    constructor(private ps: ProjectService, private dataService: DataService) {
     }
 
-    getProcess(idx: number): Process {
-        var p: Process = this.projectService.processes[idx];
-        if (p == null) {
-            throw "getProcess(idx) called with idx=" + idx;
-        }
-        return this.projectService.processes[idx];
-    }
-
-    getActiveProcessIdx(): number {
-        return this.getProcessIdx(this.projectService.activeProcessId);
-    }
     canRun(): Boolean {
-        return this.projectService.processes.length > 0;
+        return this.ps.processes.length > 0;
     }
     run() {
-        let idx: number = this.getActiveProcessIdx() === null ||
-            this.getActiveProcessIdx() == this.projectService.processes.length - 1 ? 0 :
-            this.getActiveProcessIdx() + 1 ;
-        this.runProcessIdx(idx, this.projectService.processes.length - 1);
+        let idx: number = this.ps.getActiveProcessIdx() === null ||
+            this.ps.getActiveProcessIdx() == this.ps.processes.length - 1 ? 0 :
+            this.ps.getActiveProcessIdx() + 1;
+        this.runProcessIdx(idx, this.ps.processes.length - 1);
         // If the active process is the last, use the first.
         // Run from next to the active to the last process
     }
 
     runFromHere(processIdx: number) {
         // Run from the active to the last process
-        this.runProcessIdx(processIdx, this.projectService.processes.length - 1);
+        this.runProcessIdx(processIdx, this.ps.processes.length - 1);
     }
     runThis(processIdx: number) {
         // Run from this to this process
         this.runProcessIdx(processIdx, processIdx);
     }
     getRunNextIdx(): number {
-        return this.projectService.processes.length == 0 || this.getActiveProcessIdx() === null ||
-            this.getActiveProcessIdx() < this.projectService.processes.length - 1 ?
-            null : this.getActiveProcessIdx() + 1;
+        return this.ps.processes.length == 0 || this.ps.getActiveProcessIdx() === null ||
+            this.ps.getActiveProcessIdx() < this.ps.processes.length - 1 ?
+            null : this.ps.getActiveProcessIdx() + 1;
     }
     canRunNext(): Boolean {
         return this.getRunNextIdx() != null;
@@ -66,12 +52,12 @@ export class RunService {
         // Run from the next to the next process.
     }
     getRunToHereIndexFrom(): number {
-        return this.projectService.processes.length == 0 ? null : this.getActiveProcessIdx() == null ? 0 : this.getActiveProcessIdx() + 1;
+        return this.ps.processes.length == 0 ? null : this.ps.getActiveProcessIdx() == null ? 0 : this.ps.getActiveProcessIdx() + 1;
     }
     getRunToHereIndexTo(processIdx: number): number {
-        return this.projectService.processes.length == 0 ||
-            this.getActiveProcessIdx() == null || processIdx <= this.getActiveProcessIdx() ||
-            processIdx > this.projectService.processes.length - 1 ? null : processIdx;
+        return this.ps.processes.length == 0 ||
+            this.ps.getActiveProcessIdx() == null || processIdx <= this.ps.getActiveProcessIdx() ||
+            processIdx > this.ps.processes.length - 1 ? null : processIdx;
     }
 
     canRunToHere(processIdx: number) {
@@ -91,17 +77,26 @@ export class RunService {
     }
 
     async runProcessIdx(iFrom: number, iTo: number) {
+        this.ps.runFailedProcess = null;
         for (var i = iFrom; i <= iTo; i++) {
-            let p = this.getProcess(i);
-            this.projectService.runningProcess = p;
+            let p = this.ps.getProcess(i);
+            this.ps.runningProcess = p;
             console.log("Run process " + p.processName + " with id " + p.processID);
-            let s : string = await this.dataService.runModel(this.projectService.selectedProject.projectPath, this.projectService.selectedModel.modelName, i + 1, i + 1).toPromise();
+            let s: any = await this.dataService.runModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, i + 1, i + 1).toPromise();
+
             console.log(s);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
-            this.projectService.activeProcessId = p.processID;
+            if (typeof(s) == "object" && Object.entries(s).length == 0) {
+                // getting empty object {} when interrupted by error
+                this.ps.runFailedProcess = p;
+                break;
+            } else { // empty/missing result
+                // ok update active process id and continue the loop
+                this.ps.activeProcess = p;
+            }
         }
-        this.projectService.runningProcess = null;
+        this.ps.runningProcess = null;
     }
     runModel(idx) {
 

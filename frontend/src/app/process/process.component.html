@@ -1,58 +1,17 @@
-<!--<p-tabView>
-    <p-tabPanel *ngFor="let model of ps.getModels()" header="{{model.displayName}}" [selected]="model.modelName === 'Baseline'">
-        --given optionLabel, the items are of type SelectItem and has a 'value' property for the object-->
-<!--     <p-toolbar>
-            <div>
-
-                <button pButton type="button"><img src="./assets/images/run16.png" /></button>
-               <button pButton type="button" label="Upload" icon="pi pi-upload" class="ui-button-success"></button> -->
-<!--     </div>
-        </p-toolbar>
-
-       <p-listbox [options]="ps.getProcesses(model.modelName)" [(ngModel)]="ps.selectedProcess" optionLabel="processName">
-            <ng-template let-process pTemplate="item">
-                <p-contextMenu></p-contextMenu> -->
-<!--<div [contextMenu]="basicMenu" [contextMenuSubject]="process.value">
-                    <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
-                    <span *ngIf="process.value.breakingui">
-                        <img src="./assets/images/break.png" width="8" style="margin-bottom:12px; margin-left:-16px;">
-                        <span style="margin-left:8px;"></span>
-                    </span>
-                    <span style="margin-left:16px;">{{process.value.name}}</span>
-                 </div>
-            </ng-template>
-        </p-listbox>-->
-<!-- </p-tabPanel>
-</p-tabView>-->
-
 <p-listbox #listBox [options]="ps.processes" [(ngModel)]="selectedProcesses"
     (onChange)="onSelectedProcessesChanged($event)" multiple="false" optionLabel="processName"
     (contextmenu)="openCm($event, cm)">
     <ng-template let-process pTemplate="item">
-        <!--  <p-contextMenu></p-contextMenu> -->
-        <!--   <ng-template [ngIf]="process.value.processID===ps.activeProcessId; else staticProcessItem">
-                <span class="fa-stack" style="vertical-align: middle;">
-                    <i class="fa fa-circle fa-stack-1x"
-                        style="font-size: 0.8em;  color:rgb(243, 240, 85) !important;"></i>
-                    <i class="fa fa-cog fa-stack-1x fa-spin"
-                        style="font-size: 1.2em;  color:rgb(145, 173, 131) !important;  text-shadow: 1px 1px 1px #000000 !important;"></i>
-                </span>
-            </ng-template>-->
         <span class="rib fa processicon" [ngClass]="{'fa-spin': process.value===ps.runningProcess}">
             <span *ngIf="process.value.hasProcessData" class="absa interactiveicon"></span>
-            <span *ngIf="process.value.canShowInMap" class="absa mapicon"></span>
+            <span *ngIf="process.value != ps.runningProcess && process.value.canShowInMap" class="absa mapicon"></span>
         </span>
         <span class="rib fa emptyicon">
             <span *ngIf="process.value.hasError" class="absa processmodelerroricon"></span>
-            <span class="absa runstatusfailedicon"></span>
+            <span *ngIf="process.value===ps.runFailedProcess" class="absa runstatusfailedicon"></span>
+            <span *ngIf="ps.isRun(process.value)" class="absa runstatusokicon"></span>
         </span>
-        <!-- <img src="./assets/images/process.png" width="16" style="margin-bottom:2px;">
-            <span *ngIf="process.value.processName== 'ReadBiotic'">
-                <img src="./assets/images/break.png" width="8" style="margin-bottom:12px; margin-left:-16px;">
-                <span style="margin-left:8px;"></span>
-            </span>-->
         <span style="display:inline-block; line-height:1.1;">{{process.value.processName}}</span>
-
     </ng-template>
 </p-listbox>
 <p-contextMenu #cm [model]="contextMenu"></p-contextMenu>
