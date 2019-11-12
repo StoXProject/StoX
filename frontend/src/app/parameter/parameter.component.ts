@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 //import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProjectService } from '../service/project.service';
+import { PropertyItem } from '../data/propertyitem';
+import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from '../service/data.service';
 
 @Component({
@@ -42,7 +44,7 @@ export class ParameterComponent implements OnInit {
 
 
   //  booleanForm: FormGroup;
-  constructor(public ps: ProjectService) { }
+  constructor(public ps: ProjectService, private dataService: DataService) { }
 
   async ngOnInit() {
 /*    let a = [];
@@ -58,7 +60,32 @@ export class ParameterComponent implements OnInit {
     return [{ name: false }, { name: true }];
   }
 
-  onChanged(o: any) {
-    console.log("parameter " + o.name + " is changed to " + o.value);
+  async onChanged(category: PropertyCategory, pi: PropertyItem) {
+    console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
+
+    // groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string
+    if(this.ps.getSelectedProject() != null && this.ps.getSelectedProcess() != null && this.ps.getSelectedModel() != null) {
+        this.ps.propertyCategories = <PropertyCategory[]>JSON.parse( await this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID).toPromise());
+        // await this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID).toPromise();
+    }
   }
+
+  // filterPossibleValues(event) {
+  //   if(this.propertyItem == null) {
+  //     return;
+  //   }
+  //   this.filteredValues = [];
+  //   for(let i = 0; i < this.propertyItem.possibleValues.length; i++) {
+  //       let currentValue = this.propertyItem.possibleValues[i];
+  //       // if(currentValue.toLowerCase().indexOf(event.query.toLowerCase()) == 0) {
+  //       if(currentValue.toLowerCase().startsWith(event.query.toLowerCase())) {  
+  //           this.filteredValues.push(currentValue);
+  //       }
+  //   }
+  // }
+
+  // wrapSelectItems(s: string[]) {
+  //   return s.map(st => { return { label: st, value: st }; })
+  // }
+
 }

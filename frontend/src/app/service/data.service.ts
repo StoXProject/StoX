@@ -144,6 +144,17 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/isProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
+  setProcessPropertyValue(groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string) {
+    const formData = new FormData();
+    formData.set('groupName', "'" + groupName + "'");
+    formData.set('name', "'" + name + "'");
+    formData.set('value', "'" + value + "'");
+    formData.set('projectPath', "'" + projectPath + "'");
+    formData.set('modelName', "'" + modelName + "'");
+    formData.set('processID', "'" + processID + "'");
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/setProcessPropertyValue/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));    
+  }
+
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
   static readonly OCPU_PORT: number = 5307;
