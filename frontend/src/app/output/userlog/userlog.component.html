@@ -1,5 +1,4 @@
-<div style=" user-select: text;">
-    <span style=" user-select: text;">Line 1</span><br>
-    <span>Line 2</span><br>
-    <span>Line 2</span><br>    <span>Line 2</span><br>    <span>Line 2</span><br>    <span>Line 2</span><br>    <span>Line 2</span><br>    <span>Line 2</span><br>    <span>Line 2</span><br>    <span>Line 2</span><br>    <span>Line 2</span><br>
+<button (click)="handleClick($event)" type="button">Button</button>
+<div #scrollMe style="user-select: text;">
+    <span *ngFor="let entry of ds.log" [ngClass]="{errorlog: entry.type===2}">{{entry.log}}<br></span>
 </div>

@@ -5,11 +5,15 @@ import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { rotateWithoutConstraints } from 'ol/interaction/Interaction';
+import { UserLogEntry } from '../data/userlogentry';
+import { UserLogType } from '../enum/enums';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+
+  log: UserLogEntry[] = []; // user log.
 
   // private featuresUrl = '/api/features';
   private geojsonUrl = '/api/geojson';
@@ -228,38 +232,46 @@ export class DataService {
     return this.postLocalOCPUBody('tests', 'test_geojson_points', {}, 'text', true);
   }
 
-
-  runModel(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<string> {
-    //console.log(" projectPath : " + projectPath + ", modelName : " + modelName + ", startProcess : " + startProcess + ", endProcess:" + endProcess);
+  /** runFunction API wrapper - includes logging of user message/warning/errors from R*/
+  runFunction(what: string, argsobj: any): Observable<any> {
+    // runFunction wraps a doCall with what/args and exception handling that returns a list.
     const formData = new FormData();
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/runModel/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-    let args: any = JSON.stringify({
-      "projectPath": projectPath, "modelName": modelName,
-      "startProcess": startProcess, "endProcess": endProcess
-    });
-    let what = "runModel";
+    let args: any = JSON.stringify(argsobj);
     formData.set('what', what);
     formData.set('args', args);
-    // runFunction wraps a doCall with what/args and exception handling that returns a list.
     return <any>this.postLocalOCPU('RstoxFramework', 'runFunction', formData, 'text', true, "json")
       .pipe(map(async res => {
         let jsr: any = JSON.parse(res.body);
         // Get the OCPU-sinked R messages from session file (message) and put it int the result.
+        // The OCPU sink overrides the message stdout, and must be retrieved from the session message file.
         let sessionId: string = res.headers.get("x-ocpu-session");
-        let msg : string[] = <string[]>await this.post(DataService.LOCALHOST, DataService.OCPU_PORT, 'ocpu/tmp/' + sessionId + '/messages/json?auto_unbox=TRUE', {}, 'text')
-          .pipe(map(_ => JSON.parse(_.body))).toPromise(); 
-        console.log(msg);
-        let r2 : any = JSON.parse(res.body);
-        r2.messages = msg;
-        return r2;
+        let msg: string[] = <string[]>await this.post(DataService.LOCALHOST, DataService.OCPU_PORT,
+          'ocpu/tmp/' + sessionId + '/messages/json?auto_unbox=TRUE', {}, 'text')
+          .pipe(map(_ => JSON.parse(_.body))).toPromise();
+        //console.log(msg);
+        let r2: any = JSON.parse(res.body);
+        r2.message = msg;
+        // Now the runFunction result is complete with error, warning and message
+        // deliver the result into the 
+        r2.message.forEach(elm => {
+          this.log.push(new UserLogEntry(UserLogType.MESSAGE, elm));
+        });
+        r2.warning.forEach(elm => {
+          this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
+        });
+        if (typeof (r2.error) == "string") {
+          this.log.push(new UserLogEntry(UserLogType.ERROR, r2.error));
+        }
+        return r2.value;
       }));
-    /*
-        formData.set('projectPath', "'" + projectPath + "'");
-        formData.set('modelName', "'" + modelName + "'");
-        formData.set('startProcess', startProcess + "");
-        formData.set('endProcess', endProcess + "");
-        return this.postLocalOCPU('RstoxFramework', 'runModel', formData, 'text', true, "json");
-    */
+
+  }
+  runModel(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<string> {
+
+    return this.runFunction('runModel', {
+      "projectPath": projectPath, "modelName": modelName,
+      "startProcess": startProcess, "endProcess": endProcess
+    });
   }
 
   setRPath(rpath: string): Observable<any> {

@@ -1,21 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-//import { Project } from '../../data/project';
-import { ProjectService } from '../../service/project.service';
+import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 
+import { DataService } from '../../service/data.service';
+import { UserLogType } from '../../enum/enums'
 
 
 @Component({
-  selector: 'userlog',
-  templateUrl: './userlog.component.html',
-  styleUrls: ['./userlog.component.scss']
+    selector: 'userlog',
+    templateUrl: './userlog.component.html',
+    styleUrls: ['./userlog.component.scss']
 })
 
 export class UserLogComponent implements OnInit {
-//  projects: Project[];
-  constructor(private ps: ProjectService) { 
-  }
+    //  projects: Project[];
+    @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
+    constructor(private ds: DataService) {
+    }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
 
+    handleClick(event: Event) {
+        this.scrollToBottom();
+    }
+    scrollToBottom(): void {
+        try {
+            this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+        } catch (err) { }
+    }
 }

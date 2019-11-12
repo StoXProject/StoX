@@ -87,7 +87,7 @@ export class RunService {
             console.log(s);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
-            if (typeof(s.value) == "object" && Object.entries(s.value).length == 0) {
+            if (typeof(s) == "object" && Object.entries(s).length == 0) {
                 // getting empty object {} when interrupted by error
                 this.ps.runFailedProcess = p;
                 break;

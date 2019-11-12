@@ -23,7 +23,7 @@ export class ProjectService {
   runningProcess: Process = null; // current running process
 
   propertyCategories: PropertyCategory[] = [];
-
+  userlog : string[] = [];
   constructor(private dataService: DataService) {
     this.initData();
     // this.setSelectedProject(this.getProjects()[0]);
