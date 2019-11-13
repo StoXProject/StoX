@@ -7,6 +7,7 @@ import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { rotateWithoutConstraints } from 'ol/interaction/Interaction';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
+import { RunResult } from '../data/runresult';
 
 @Injectable({
   providedIn: 'root'
@@ -252,7 +253,7 @@ export class DataService {
     formData.set('args', args);
     return <any>this.postLocalOCPU('RstoxFramework', 'runFunction', formData, 'text', true, "json")
       .pipe(map(async res => {
-        let jsr: any = JSON.parse(res.body);
+        //let jsr: RunResult = JSON.parse(res.body);
         // Get the OCPU-sinked R messages from session file (message) and put it int the result.
         // The OCPU sink overrides the message stdout, and must be retrieved from the session message file.
         let sessionId: string = res.headers.get("x-ocpu-session");
@@ -260,17 +261,20 @@ export class DataService {
           'ocpu/tmp/' + sessionId + '/messages/json?auto_unbox=TRUE', {}, 'text')
           .pipe(map(_ => JSON.parse(_.body))).toPromise();
         //console.log(msg);
-        let r2: any = JSON.parse(res.body);
+        let r2: RunResult = JSON.parse(res.body);
         r2.message = msg;
         // Now the runFunction result is complete with error, warning and message
         // deliver the result into the 
+        r2.message = typeof (r2.message) == "string" ? [r2.message] : r2.message; // auto_unbox 1elm-array-fix
         r2.message.forEach(elm => {
           this.log.push(new UserLogEntry(UserLogType.MESSAGE, elm));
         });
+        r2.warning = typeof (r2.warning) == "string" ? [r2.warning] : r2.warning; // auto_unbox 1elm-array-fix
         r2.warning.forEach(elm => {
           this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
         });
-        if (typeof (r2.error) == "string") {
+        r2.error = typeof (r2.error) == "object" ? null : r2.error; // null-object {}->null
+        if (r2.error != null) {
           this.log.push(new UserLogEntry(UserLogType.ERROR, r2.error));
         }
         return r2.value;

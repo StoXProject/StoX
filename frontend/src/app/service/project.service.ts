@@ -23,7 +23,7 @@ export class ProjectService {
   runningProcess: Process = null; // current running process
 
   propertyCategories: PropertyCategory[] = [];
-  userlog : string[] = [];
+  userlog: string[] = [];
   constructor(private dataService: DataService) {
     this.initData();
     // this.setSelectedProject(this.getProjects()[0]);
@@ -118,11 +118,16 @@ export class ProjectService {
       this.getSelectedModel() != null) {
       // propertyCategories: PropertyCategory[];
       var t0 = performance.now();
-      this.propertyCategories = <PropertyCategory[]>JSON.parse( await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise());
+      this.propertyCategories = <PropertyCategory[]>JSON.parse(await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise());
       var t1 = performance.now();
       console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
       // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
-    } 
+      this.propertyCategories.forEach(pc => pc.properties.forEach(p => {
+        // auto_unbox 1elm-array-fix. (1-elm array is autounboxed like r strings to javascript string)
+        // autounboxing is applied to avoid r strings to become javascript array.
+        p.possibleValues = typeof (p.possibleValues) == "string" ? [p.possibleValues] : p.possibleValues;
+      }));
+    }
   }
 
   getProjects(): Project[] {
@@ -207,17 +212,17 @@ export class ProjectService {
       (value.constructor === Object && Object.keys(value).length === 0)
     )
   }
-  getProcessIdx(process: Process): number {
+  public getProcessIdx(process: Process): number {
     return this.processes.findIndex(p => p === process);
   }
-  getActiveProcessIdx(): number {
+  public getActiveProcessIdx(): number {
     return this.getProcessIdx(this.activeProcess);
   }
 
-  isRun(process : Process) {
+  isRun(process: Process) {
     return this.getProcessIdx(process) <= this.getActiveProcessIdx();
   }
-  
+
   getProcessById(processId: string): Process {
     return this.processes.find(p => p.processID === processId);
   }

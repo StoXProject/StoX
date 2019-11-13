@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit } from
 import { Process } from '../data/process';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
+import { RunService } from '../service/run.service';
 import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "ng-keyboard-shortcuts";
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
@@ -21,30 +22,23 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   //selectedProcesses: Process[];
   contextMenu: MenuItem[];
 
-  constructor(private ps: ProjectService) {
+  constructor(private ps: ProjectService, private rs: RunService) {
   }
-
-
-
-  // @ViewChild('listBox', { static: true }) accessor: Listbox;
-  // @ViewChild('listBox', { static: false, read: NgModel }) model: NgModel;
-  //@ViewChild(ProcessComponent, { static: true }) myFormComponent: ProcessComponent;
 
   async ngOnInit() {
     //this.ngDoCheck();
     this.contextMenu = [{ label: "Run from here   " }];
   }
 
-
-  //@ViewChild(ContextMenuComponent, { static: false }) public basicMenu: ContextMenuComponent;
-
   @ViewChild('input', { static: false }) input: ElementRef;
   ngAfterViewInit(): void {
     this.shortcuts.push(
       {
-        key: "ctrl + t",
-        preventDefault: true,
-        command: e => console.log("clicked ", e.key)
+        key: "ctrl + f6",
+        // preventDefault: true,
+        command: e => {
+          this.runToHere();
+        }
       }
     );
 
@@ -62,7 +56,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     //console.log("selected processes name " + this.ps.getSelectedProcess().processName);
   }
   runToHere() {
-    console.log(this.ps.getSelectedProcess());
+    this.rs.runToHere(this.ps.getProcessIdx(this.ps.getSelectedProcess()))
   }
   prepCm() {
     this.contextMenu = [
