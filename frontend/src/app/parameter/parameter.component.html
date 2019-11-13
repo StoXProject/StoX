@@ -7,6 +7,7 @@
 </ag-grid-angular>
 -->
 <p-accordion multiple="true" expandIcon="pi pi-fw pi-caret-down" collapseIcon="pi pi-fw pi-caret-right">
+        <MessageDlg></MessageDlg>    
     <p-accordionTab *ngFor="let category of ps.propertyCategories" header="{{category.displayName}}" selected="true">
 
         <!--<div *ngFor="let col of cols"> {{rowData2[col.field]}}
@@ -49,7 +50,7 @@
                             (change)="propertyItem.value = $event.target.checked ? 'true' : 'false'; onChanged(category, propertyItem)" 
                             style="vertical-align: middle !important;"/>
                         </div>
-                        <!--<div *ngSwitchDefault>{{propertyItem.value}}</div>-->
+                        <div *ngSwitchDefault>{{propertyItem.value}}</div>
                     </td>
                 </tr>
             </ng-template>
