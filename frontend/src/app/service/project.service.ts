@@ -79,6 +79,10 @@ export class ProjectService {
 
       console.log("Call to dataService.getProcessesInModel(...) took " + (t1 - t0) + " milliseconds.");
 
+      // if(this.processes.length > 0) {
+      //   this.setSelectedProcess(this.processes[0]);
+      // }
+
       console.log("nr of processes : " + this.processes.length);
     }
   }

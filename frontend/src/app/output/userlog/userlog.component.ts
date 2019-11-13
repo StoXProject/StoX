@@ -13,7 +13,7 @@ import { UserLogType } from '../../enum/enums'
 export class UserLogComponent implements OnInit {
     //  projects: Project[];
     @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
-    constructor(private ds: DataService) {
+    constructor(public ds: DataService) {
     }
 
     ngOnInit() {

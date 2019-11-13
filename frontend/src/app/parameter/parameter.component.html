@@ -7,6 +7,7 @@
 </ag-grid-angular>
 -->
 <p-accordion multiple="true" expandIcon="pi pi-fw pi-caret-down" collapseIcon="pi pi-fw pi-caret-right">
+        <MessageDlg></MessageDlg>    
     <p-accordionTab *ngFor="let category of ps.propertyCategories" header="{{category.displayName}}" selected="true">
 
         <!--<div *ngFor="let col of cols"> {{rowData2[col.field]}}
@@ -25,30 +26,31 @@
                         </div>
                     </td>
                     <td pResizableColumn [ngSwitch]="propertyItem.type"> 
-                        <div *ngSwitchCase="'character'">
-                            
+                        <div *ngSwitchCase="'character'">                            
                             <div *ngIf="propertyItem.possibleValues.length > 0">
-                                    {{propertyItem.value}}
+                                <select (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem);">
+                                    <option *ngFor="let verdi of propertyItem.possibleValues" value="{{verdi}}" selected="propertyItem.value == {{verdi}} ? true : false">{{verdi}}</option>
+                                </select>
                             </div>
             
                             <div *ngIf="propertyItem.possibleValues.length == 0">
                                 {{propertyItem.value}}
-                            </div>   
-                                                
+                            </div>               
                         </div>
 
-                        <div *ngSwitchCase="'logical'">
-                             {{propertyItem.value}}  
-                            <!--<select [(ngModel)]="parameter['value']"
+                        <div *ngSwitchCase="'logical'">   
+                            <!--
+                                {{propertyItem.value}} 
+                                <select [(ngModel)]="parameter['value']"
                                 style="width:100% !important; border:none !important;">
                                 <option *ngFor="let bool of getMetParameterValueList()" [ngValue]="bool.name">
                                     {{bool.name}}</option>
                             </select>-->
                             <input type="checkbox"  [checked]="propertyItem.value == true ? true : false"  
-                            (change)="propertyItem.value = $event.target.checked ? 'true' : 'false'; onChanged(propertyItem)" 
+                            (change)="propertyItem.value = $event.target.checked ? 'true' : 'false'; onChanged(category, propertyItem)" 
                             style="vertical-align: middle !important;"/>
                         </div>
-                        <!--<div *ngSwitchDefault>{{propertyItem.value}}</div>-->
+                        <div *ngSwitchDefault>{{propertyItem.value}}</div>
                     </td>
                 </tr>
             </ng-template>
