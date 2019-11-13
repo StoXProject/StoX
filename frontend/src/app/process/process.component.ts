@@ -14,14 +14,14 @@ import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angul
   templateUrl: './process.component.html',
   styleUrls: ['./process.component.scss']
 })
-export class ProcessComponent implements OnInit/*, DoCheck*/   {
+export class ProcessComponent implements OnInit/*, DoCheck*/ {
   shortcuts: ShortcutInput[] = [];
 
-  processes: Process[];
-  selectedProcesses: Process[];
+  //processes: Process[];
+  //selectedProcesses: Process[];
   contextMenu: MenuItem[];
 
-  constructor(private dataService: DataService, public ps: ProjectService) {
+  constructor(private ps: ProjectService) {
   }
 
 
@@ -59,23 +59,27 @@ export class ProcessComponent implements OnInit/*, DoCheck*/   {
   }
 
   onSelectedProcessesChanged(event) {
-    // can be array of selected processes
-    console.log("selected processes name " + this.selectedProcesses[0].processName);
-    console.log("selected processes id " + this.selectedProcesses[0].processID);
-    this.ps.setSelectedProcess(this.selectedProcesses[0]);
+    //console.log("selected processes name " + this.ps.getSelectedProcess().processName);
   }
-  
+  runToHere() {
+    console.log(this.ps.getSelectedProcess());
+  }
   prepCm() {
     this.contextMenu = [
-      { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { } },
+      { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.runToHere(); } },
       { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } },
+      {
+        label: 'View output', icon: 'rib absa emptyicon', items: [{ label: 'sub1', icon: 'rib absa emptyicon' },
+        { label: 'sub2', icon: 'rib absa emptyicon' }]
+      },
       { label: 'Move up', icon: 'rib absa emptyicon', command: (event) => { } },
       { label: 'Move down', icon: 'rib absa emptyicon', command: (event) => { } },
       { label: 'Add process', icon: 'rib absa addprocessicon', command: (event) => { } }
     ];
   }
-  openCm(event, cm) {
-    console.log("preparing context menu" + event.target);
+  openCm(event, cm, process: Process) {
+    this.ps.selectedProcess = process;
+    console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
     this.prepCm();

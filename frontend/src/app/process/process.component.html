@@ -1,17 +1,19 @@
-<p-listbox #listBox [options]="ps.processes" [(ngModel)]="selectedProcesses"
-    (onChange)="onSelectedProcessesChanged($event)" multiple="false" optionLabel="processName"
-    (contextmenu)="openCm($event, cm)">
+<p-listbox #listBox [options]="ps.processes" [(ngModel)]="ps.selectedProcess"
+    (onChange)="onSelectedProcessesChanged($event)"  optionLabel="processName">
     <ng-template let-process pTemplate="item">
-        <span class="rib fa processicon" [ngClass]="{'fa-spin': process.value===ps.runningProcess}">
-            <span *ngIf="process.value.hasProcessData" class="absa interactiveicon"></span>
-            <span *ngIf="process.value != ps.runningProcess && process.value.canShowInMap" class="absa mapicon"></span>
-        </span>
-        <span class="rib fa emptyicon">
-            <span *ngIf="process.value.hasError" class="absa processmodelerroricon"></span>
-            <span *ngIf="process.value===ps.runFailedProcess" class="absa runstatusfailedicon"></span>
-            <span *ngIf="ps.isRun(process.value)" class="absa runstatusokicon"></span>
-        </span>
-        <span style="display:inline-block; line-height:1.1;">{{process.value.processName}}</span>
+        <div (contextmenu)="openCm($event, cm, process.value)">
+            <span class="rib fa processicon" [ngClass]="{'fa-spin': process.value===ps.runningProcess}">
+                <span *ngIf="process.value.hasProcessData" class="absa interactiveicon"></span>
+                <span *ngIf="process.value != ps.runningProcess && process.value.canShowInMap"
+                    class="absa mapicon"></span>
+            </span>
+            <span class="rib fa emptyicon">
+                <span *ngIf="process.value.hasError" class="absa processmodelerroricon"></span>
+                <span *ngIf="process.value===ps.runFailedProcess" class="absa runstatusfailedicon"></span>
+                <span *ngIf="ps.isRun(process.value)" class="absa runstatusokicon"></span>
+            </span>
+            <span style="display:inline-block; line-height:1.1;">{{process.value.processName}}</span>
+        </div>
     </ng-template>
 </p-listbox>
 <p-contextMenu #cm [model]="contextMenu"></p-contextMenu>
