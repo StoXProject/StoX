@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RunService } from '../service/run.service';
+
+
 @Component({
   selector: 'app-run',
   templateUrl: './run.component.html',
@@ -28,18 +30,18 @@ export class RunComponent implements OnInit {
       case "runfromhere": return "Run from here"
       case "runto": return "Run to here" // or "Run this if selected process < active process"
       case "reset": return "Reset model"
-      case "addprocess": return "Add process" 
+      case "addprocess": return "Add process"
       default:
         throw "getActionTooltip(cmd) called with cmd=" + cmd;
     }
   }
   public getActionEnabled(cmd: string): boolean {
     switch (cmd) {
-      case "run": return true; // or "Continue model" if active process > -1
-      case "runnext": return true;
-      case "runfromhere": return true;
+      case "run": return this.runService.canRun(); // or "Continue model" if active process > -1
+      case "runnext": return this.runService.canRunNext();
+      case "runfromhere": return this.runService.canRunNext();
       case "runto": return false; // or "Run this if selected process < active process"
-      case "reset": return true;
+      case "reset": return this.runService.canReset();
       case "addprocess": return true;
       default:
         throw "getActionEnabled(cmd) called with cmd=" + cmd;
@@ -48,11 +50,10 @@ export class RunComponent implements OnInit {
   async handleClick(command) {
     //console.log(command)
     switch (command) {
-      case "run":
-        this.runService.run();
-        //console.log('Done!'); 
-        break;
-
+      case "run": return this.runService.run();
+      case "reset": return this.runService.reset();
+      case "runnext": return this.runService.runNext();
+      case "runfromhere": return this.runService.runFromHere();
     }
   }
 }

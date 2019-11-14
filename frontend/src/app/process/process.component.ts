@@ -8,7 +8,7 @@ import { ContextMenuModule } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
 
-import { SelectItem, Listbox } from 'primeng/primeng';
+import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'app-process',
@@ -22,7 +22,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   //selectedProcesses: Process[];
   contextMenu: MenuItem[];
 
-  constructor(private ps: ProjectService, private rs: RunService) {
+  constructor(private ds: DataService, private ps: ProjectService, private rs: RunService) {
   }
 
   async ngOnInit() {
@@ -58,18 +58,23 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   runToHere() {
     this.rs.runToHere(this.ps.getProcessIdx(this.ps.getSelectedProcess()))
   }
-  prepCm() {
+  async prepCm() {
+    let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.getSelectedProject().projectPath,
+      this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
     this.contextMenu = [
       { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.runToHere(); } },
-      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } },
-      {
-        label: 'View output', icon: 'rib absa emptyicon', items: [{ label: 'sub1', icon: 'rib absa emptyicon' },
-        { label: 'sub2', icon: 'rib absa emptyicon' }]
-      },
+      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } }];
+    if (tables.length > 0) {
+      this.contextMenu.push({
+        label: 'View output', icon: 'rib absa emptyicon', items:
+          tables.map(e => { return { label: e, icon: 'rib absa emptyicon' }; })
+      });
+    }
+    this.contextMenu.push(
       { label: 'Move up', icon: 'rib absa emptyicon', command: (event) => { } },
       { label: 'Move down', icon: 'rib absa emptyicon', command: (event) => { } },
       { label: 'Add process', icon: 'rib absa addprocessicon', command: (event) => { } }
-    ];
+    );
   }
   openCm(event, cm, process: Process) {
     this.ps.selectedProcess = process;

@@ -158,7 +158,7 @@ export class DataService {
     formData.set('projectPath', "'" + projectPath + "'");
     formData.set('modelName', "'" + modelName + "'");
     formData.set('processID', "'" + processID + "'");
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/setProcessPropertyValue/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));    
+    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/setProcessPropertyValue/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
   static readonly LOCALHOST: string = 'localhost';
@@ -266,9 +266,12 @@ export class DataService {
         // Now the runFunction result is complete with error, warning and message
         // deliver the result into the 
         r2.message = typeof (r2.message) == "string" ? [r2.message] : r2.message; // auto_unbox 1elm-array-fix
-        r2.message.forEach(elm => {
-          this.log.push(new UserLogEntry(UserLogType.MESSAGE, elm));
-        });
+        r2.message
+          .filter(elm => elm.startsWith("StoX: "))
+          .map(elm => elm.slice("StoX: ".length))
+          .forEach(elm => {
+            this.log.push(new UserLogEntry(UserLogType.MESSAGE, elm));
+          });
         r2.warning = typeof (r2.warning) == "string" ? [r2.warning] : r2.warning; // auto_unbox 1elm-array-fix
         r2.warning.forEach(elm => {
           this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
@@ -287,6 +290,15 @@ export class DataService {
       "projectPath": projectPath, "modelName": modelName,
       "startProcess": startProcess, "endProcess": endProcess
     });
+  }
+
+  getProcessOutputTableNames(projectPath: string, modelName: string, processID: string): Observable<string[]> {
+    return this.runFunction('getProcessOutputTableNames', {
+      "projectPath": projectPath, "modelName": modelName,
+      "processID": processID
+    }).pipe(map(val => {
+      return typeof (val) == "string" ? [val] : val; // null-object {}->null
+    }));
   }
 
   setRPath(rpath: string): Observable<any> {
