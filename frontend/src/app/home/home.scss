@@ -1,9 +1,23 @@
 @charset "UTF-8";
-@import "../../assets/hi-theme-bootstrap/variables";
+
+$stoxColor: #9cc6f0;
 
 .nav-link {
   padding: 3px 0 0 0;
 }
+
+.navbar {
+  background-image: linear-gradient(to bottom, darken($stoxColor, 15%) , lighten($stoxColor, 15%)); 
+}
+.stox-logo {
+  background-image: radial-gradient(lighten($stoxColor, 20%), lighten($stoxColor, 5%), $stoxColor);
+  border: 1px solid lighten($stoxColor, 4%);
+  border-radius:5px;
+  box-shadow: 0.8px 0.8px darken($stoxColor, 10%); 
+  //box-shadow:20px 20px 50px 15px grey;  
+}
+
+
 
 /*
 .menu-container{

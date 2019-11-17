@@ -53,35 +53,41 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   }
 
   onSelectedProcessesChanged(event) {
-    //console.log("selected processes name " + this.ps.getSelectedProcess().processName);
+    this.ps.onSelectedProcessChanged(); 
   }
   runToHere() {
     this.rs.runToHere(this.ps.getProcessIdx(this.ps.getSelectedProcess()))
   }
   async prepCm() {
-    let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.getSelectedProject().projectPath,
-      this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
-    this.contextMenu = [
+    // comment: add list of outputtablenames to runModel result.
+    let m: MenuItem[] = [];
+    m.push(
       { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.runToHere(); } },
-      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } }];
-    if (tables.length > 0) {
-      this.contextMenu.push({
-        label: 'View output', icon: 'rib absa emptyicon', items:
-          tables.map(e => { return { label: e, icon: 'rib absa emptyicon' }; })
-      });
+      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } });
+    if (this.ps.isRun(this.ps.selectedProcess)) {
+      let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.getSelectedProject().projectPath,
+        this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
+      tables = typeof (tables) == "string" ? [tables] : tables; // 1 elm array fix
+      if (tables.length > 0) {
+        m.push({
+          label: 'View output', icon: 'rib absa emptyicon', items:
+            tables.map(e => { return { label: e, icon: 'rib absa emptyicon', command: (event) => { } }; })
+        });
+      }
     }
-    this.contextMenu.push(
+    m.push(
       { label: 'Move up', icon: 'rib absa emptyicon', command: (event) => { } },
       { label: 'Move down', icon: 'rib absa emptyicon', command: (event) => { } },
       { label: 'Add process', icon: 'rib absa addprocessicon', command: (event) => { } }
     );
+    this.contextMenu = m;
   }
-  openCm(event, cm, process: Process) {
+  async openCm(event, cm, process: Process) {
     this.ps.selectedProcess = process;
     console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
-    this.prepCm();
+    await this.prepCm();
     cm.show(event);
     return false;
   }

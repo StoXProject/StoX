@@ -110,9 +110,11 @@ export class ProjectService {
   getSelectedProcess(): Process {
     return this.selectedProcess;
   }
-
-  async setSelectedProcess(process: Process) {
+  setSelectedProcess(process: Process) {
     this.selectedProcess = process;
+  }
+  
+  async onSelectedProcessChanged() {
 
     if (this.getSelectedProject() != null &&
       this.getSelectedProcess() != null &&

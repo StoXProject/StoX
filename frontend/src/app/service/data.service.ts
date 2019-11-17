@@ -296,9 +296,7 @@ export class DataService {
     return this.runFunction('getProcessOutputTableNames', {
       "projectPath": projectPath, "modelName": modelName,
       "processID": processID
-    }).pipe(map(val => {
-      return typeof (val) == "string" ? [val] : val; // null-object {}->null
-    }));
+    });
   }
 
   setRPath(rpath: string): Observable<any> {
