@@ -3,8 +3,9 @@
 <CreateProjectDialog></CreateProjectDialog>
 <OpenProjectDlg></OpenProjectDlg>
 <nav class="navbar navbar-dark bg-primary d-flex justify-content-between" style="height:3rem; z-index:100">
-	<a routerLink="" class="hi-logo logo-sm">
-		<svg height="35" width="120">
+	<a class="stox-logo" style="height:100%; width:120px;">
+		<img src="./assets/images/stox.svg" style="height:100%;width:100%">
+		<!--<svg height="35" width="120">
 			<defs>
 				<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
 					<stop offset="0%" style="stop-color:#5ba2e9;stop-opacity:1" />
@@ -13,7 +14,7 @@
 			</defs>
 			<ellipse cx="60" cy="16" rx="60" ry="16" fill="url(#grad1)" />
 			<text fill="#ffffff" font-size="25" font-family="Verdana" x="30" y="25">{{title}}</text>
-		</svg>
+		</svg>-->
 	</a>
 	<p-menu #menu popup="popup" [model]="items"></p-menu>
 	<button type="button" (click)="menu.toggle($event)" pButton icon="pi pi-bars"></button>
@@ -26,10 +27,10 @@
 				<as-split-area size=30 style="overflow:hidden">
 					<app-project></app-project>
 				</as-split-area>
-				<as-split-area size=70 style="overflow:hidden">
-					<app-model></app-model>
-					<app-run></app-run>
-					<app-process></app-process>
+				<as-split-area size=70 style="overflow:hidden;">
+					<div style="height:1.5rem; width:100%;"><app-model></app-model></div>
+					<div style="height:1.7rem; width:100%;"><app-run></app-run> </div>
+					<div style="height: calc(100% - (1.5rem + 1.7rem)); width:100%;"><app-process></app-process></div>
 				</as-split-area>
 			</as-split>
 		</as-split-area>
@@ -40,12 +41,13 @@
 				</as-split-area>
 				<as-split-area size="25">
 					<p-tabView>
-						<p-tabPanel header="User log" style="overflow-y:hidden;">
-							<userlog></userlog>
+						<p-tabPanel header="User log">
+							<userlog style="height:inherit; width:inherit;"></userlog>
 						</p-tabPanel>
 						<p-tabPanel header="Graph">
 						</p-tabPanel>
 						<p-tabPanel header="Output">
+							<output style="height:100%; width:100%;"></output>
 						</p-tabPanel>
 						<p-tabPanel header="Stratum/PSU">
 						</p-tabPanel>

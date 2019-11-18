@@ -1,12 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 /* You can add global styles to this file, and also import other style files */
 @import "assets/hi-theme-primeng/hi-primeng.scss";
-@import "assets/hi-theme-bootstrap/hi-bootstrap.scss";
+
 //@import "~ag-grid-community/dist/styles/ag-grid.css";
 //@import "~ag-grid-community/dist/styles/ag-theme-balham.css";
 
 $fontSize: 0.8rem;
 $menuColor: rgb(240, 240, 240);
+
 
 .title {
   margin-top: 1rem;
@@ -48,6 +49,15 @@ $nodata: #acacac;
   height: 100% !important;
   box-sizing: content-box !important;
   border: none !important;
+  .ui-listbox-list-wrapper {
+    width: 100% !important;
+    height: 100% !important; 
+    .ui-listbox-list {
+      width: 100% !important;
+      height: 100% !important; 
+      overflow-y:scroll !important;
+    }
+  }
 }
 .ui-listbox-item {
   padding-left: 0.4rem !important;
@@ -68,10 +78,11 @@ $nodata: #acacac;
   width: 100% !important;
   //height: 100% !important;
   //box-sizing: content-box;
-  border: 1px solid #d3d4d4  !important;
+  border: 1px solid #d3d4d4 !important;
   user-select: none !important;
   color: black !important;
   //display: inline-block;
+
 
   .ui-tabmenu-nav {
     background-color: rgb(240, 240, 240) !important;
@@ -81,8 +92,8 @@ $nodata: #acacac;
     white-space: nowrap;
     border: none !important;
     overflow: hidden;
-    line-height:0;  
-    padding: 1px !important; 
+    line-height: 0;
+    padding: 1px !important;
     .ui-tabmenuitem {
       padding: 0 !important;
       margin: 0 !important;
@@ -92,7 +103,7 @@ $nodata: #acacac;
       background-color: rgb(240, 240, 240) !important;
       display: inline-block;
       float: none;
-      line-height:1rem; 
+      line-height: 1rem;
       .ui-menuitem-link {
         padding: 0.1em 0.4em !important;
         margin: 0 !important;
@@ -100,18 +111,31 @@ $nodata: #acacac;
         .ui-menuitem-text {
           color: black !important;
           font-weight: 600;
-          font-size:0.75rem;
+          font-size: 0.75rem;
         }
       }
     }
   }
 }
 .ui-contextmenu .ui-menuitem-link {
-  padding: 0 !important ;
+  padding: 0 20px 0 0 !important ;
   text-decoration: none !important;
-  .ui-menuitem-text{
-    font-size:0.75rem;
+  .ui-menuitem-text {
+    font-size: 0.75rem;
   }
+}
+.ui-menuitem-link {
+  //white-space: nowrap !important;
+  //display: inline-block !important;
+}
+.ui-submenu-list {
+  //padding: 0 20px 0 0 !important ;
+  width: unset !important;
+  bottom: unset !important;
+  white-space: nowrap !important;
+  //height:unset !important;
+  //top:-250% !important;
+  left: 100% !important;
 }
 
 .ui-toolbar {
@@ -121,7 +145,7 @@ $nodata: #acacac;
   vertical-align: middle;
   line-height: 0;
   //height: 25px;
- // padding-left: 10px !important;
+  // padding-left: 10px !important;
   white-space: nowrap;
   overflow: hidden;
   button {
@@ -142,7 +166,7 @@ $nodata: #acacac;
   user-select: none !important;
 
   .ui-tabview-title {
-    font-size:0.75rem;
+    font-size: 0.75rem;
   }
   .ui-tabview-nav {
     background-color: rgb(240, 240, 240) !important;
@@ -151,18 +175,27 @@ $nodata: #acacac;
     // inline/nowrap
     white-space: nowrap;
     overflow: hidden;
+    margin-bottom: 0px !important; 
     li {
       display: inline;
       float: none;
     }
   }
-  .ui-tabview-panels {
+
+  .ui-tabview-panel {
+    //padding: 0;
+    width:inherit;
+    height:100%;
+  }
+    .ui-tabview-panels {
     padding: 0px !important;
+    width: 100% !important;
+    //display: table-cell !important;
     //border: 1px solid rgb(137, 140, 149);
     //box-sizing: content-box;
     height: calc(100% - 1.5rem);
     //width: 100%;
-    overflow-y: scroll;
+    //overflow-y: scroll;
     .ui-tabview-panel {
       //padding: 0;
       //height:100%;
@@ -224,27 +257,28 @@ $nodata: #acacac;
 }*/
 
 //.ui-widget, .ui-widget .ui-widget {    font-size: $fontSize !important;}
-.ui-listbox .ui-listbox-list-wrapper {
-  overflow: hidden;
-}
 
+.as-split-area {
+  overflow-y: hidden !important;
+}
 .rib {
   position: relative;
   display: inline-block;
-  font-size:1rem !important; 
+  font-size: 1rem !important;
   text-align: center;
-  width:1rem;  
+  width: 1rem;
 }
 
 .ritc {
   position: relative;
-  display: table-cell !important; 
+  display: table-cell !important;
 }
 
 .toolbar-button {
-  width:1rem;  font-size:1rem !important;
+  width: 1rem;
+  font-size: 1rem !important;
 }
- 
+
 .absa:after {
   position: absolute;
   top: 50%;
@@ -263,13 +297,13 @@ $nodata: #acacac;
   }
 }
 
-.processicon:before { 
+.processicon:before {
   @include icon_content("\f013", 1rem, rgb(145, 173, 131), true);
-  left:0px;
-  top:0px;
-  position:relative;
+  left: 0px;
+  top: 0px;
+  position: relative;
 }
- 
+
 .addprocessicon:before {
   @include icon_content("\f013", 1rem, rgb(145, 173, 131), true);
 }
@@ -298,8 +332,8 @@ $nodata: #acacac;
   background-clip: text;
   top: 0%;
   left: 0%;
-  //transform: translate(-50%,  -50%); // needle pinned at the center of the overlay symbol 
-  position:relative;
+  //transform: translate(-50%,  -50%); // needle pinned at the center of the overlay symbol
+  position: relative;
 }
 
 .runicon:after {
@@ -307,7 +341,7 @@ $nodata: #acacac;
   left: 55%;
 }
 .runnexticon:before {
-  @include icon_content("\f064",1rem, rgb(33, 122, 196)); // 051?
+  @include icon_content("\f064", 1rem, rgb(33, 122, 196)); // 051?
 }
 .runnexticon:after {
   @include icon_content("\f013", 0.3rem, rgb(33, 122, 196)); // 051?
@@ -331,7 +365,7 @@ $nodata: #acacac;
   top: 25%;
 }
 .runstatusokicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(107,195,195), true);
+  @include icon_content("\f0c8", 0.4rem, rgb(107, 195, 195), true);
   top: 68%;
 }
 .runstatusfailedicon:after {
@@ -377,3 +411,15 @@ $nodata: #acacac;
 //    <span class="absa ov2"></span>
 //    <span class="absa ov3"></span>
 // </span>
+.bg-primary {
+  background-color:#9cc6f0 !important
+}
+.navbar {
+  border-bottom:#9cc6f0 !important
+}
+
+.as-split-gutter-icon {
+  background-color: #e9f3fc !important;
+  border: 1px solid lighten(#e9f3fc, 4%);
+  box-shadow: 1px 1px darken(#e9f3fc, 10%); 
+}
