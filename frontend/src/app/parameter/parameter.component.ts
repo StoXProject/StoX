@@ -39,7 +39,7 @@ export class ParameterComponent implements OnInit {
 
   async onChanged(category: PropertyCategory, pi: PropertyItem) {
     console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
-
+    //return;
     // groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string
     if(this.ps.getSelectedProject() != null && this.ps.getSelectedProcess() != null && this.ps.getSelectedModel() != null) {
        try {
