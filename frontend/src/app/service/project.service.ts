@@ -12,6 +12,7 @@ import { DataService } from './data.service';
 export class ProjectService {
   projects: Project[] = [];
   selectedProject: Project = null;
+  map : Map<string, string>; 
 
   models: Model[];
   selectedModel: Model = null;
@@ -27,6 +28,7 @@ export class ProjectService {
   userlog: string[] = [];
   constructor(private dataService: DataService) {
     this.initData();
+    //this.map.set("3", "2");
     // this.setSelectedProject(this.getProjects()[0]);
   }
 
@@ -113,7 +115,7 @@ export class ProjectService {
   setSelectedProcess(process: Process) {
     this.selectedProcess = process;
   }
-  
+
   async onSelectedProcessChanged() {
 
     if (this.getSelectedProject() != null &&

@@ -293,7 +293,8 @@ export class DataService {
   }
 
   getProcessOutputTableNames(projectPath: string, modelName: string, processID: string): Observable<string[]> {
-    return this.runFunction('getProcessOutputTableNames', {
+
+  return this.runFunction('getProcessOutputTableNames', {
       "projectPath": projectPath, "modelName": modelName,
       "processID": processID
     });
