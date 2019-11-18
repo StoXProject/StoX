@@ -24,35 +24,44 @@ export class ParameterComponent implements OnInit {
   constructor(private msgService: MessageService, public ps: ProjectService, private dataService: DataService) { }
 
   async ngOnInit() {
-/*    let a = [];
-    for (let i = 0; i < 2; i++) {
-      let j = { name: null };
-      a.push(j);
-      j.name = 'test' + i;
-    }
-    console.log(a[0].name + a[1].name);*/
+    /*    let a = [];
+        for (let i = 0; i < 2; i++) {
+          let j = { name: null };
+          a.push(j);
+          j.name = 'test' + i;
+        }
+        console.log(a[0].name + a[1].name);*/
   }
 
   getMetParameterValueList(): any[] {
     return [{ name: false }, { name: true }];
   }
 
-  async onChanged(category: PropertyCategory, pi: PropertyItem) {
+  onChanged(category: PropertyCategory, pi: PropertyItem) {
     console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
     //return;
     // groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string
-    if(this.ps.getSelectedProject() != null && this.ps.getSelectedProcess() != null && this.ps.getSelectedModel() != null) {
-       try {
-          this.ps.propertyCategories = <PropertyCategory[]>JSON.parse( await this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID).toPromise());
-          // await this.dataService.set ProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID).toPromise();
-       } catch(error) {
-          console.log(error.error);
-          var firstLine = error.error.split('\n', 1)[0];
-          this.msgService.setMessage(firstLine);
-          this.msgService.showMessage();    
-          return;
-       }
-     
+    if (this.ps.getSelectedProject() != null && this.ps.getSelectedProcess() != null && this.ps.getSelectedModel() != null) {
+      try {
+        this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID)
+          .toPromise().then(s => { 
+            let p = <PropertyCategory[]>JSON.parse(s);
+            console.log(p)
+            this.ps.propertyCategories = p; 
+            
+          });
+        //<PropertyCategory[]>JSON.parse( await )
+
+        // await this.dataService.set ProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID).toPromise();
+        // await this.dataService.set ProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID).toPromise();
+      } catch (error) {
+        console.log(error.error);
+        var firstLine = error.error.split('\n', 1)[0];
+        this.msgService.setMessage(firstLine);
+        this.msgService.showMessage();
+        return;
+      }
+
     }
   }
 
