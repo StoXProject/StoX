@@ -28,8 +28,8 @@
                     <td pResizableColumn [ngSwitch]="propertyItem.type"> 
                         <div *ngSwitchCase="'character'">                            
                             <div *ngIf="propertyItem.possibleValues.length > 0">
-                                <select (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem);">
-                                    <option *ngFor="let verdi of propertyItem.possibleValues" value="{{verdi}}" selected="propertyItem.value == {{verdi}} ? true : false">{{verdi}}</option>
+                                <select (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)">
+                                    <option *ngFor="let verdi of propertyItem.possibleValues" value="{{verdi}}">{{verdi}}</option>
                                 </select>
                             </div>
             
