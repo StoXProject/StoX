@@ -1,5 +1,5 @@
-<p-tabView scrollable="true">
-    <p-tabPanel *ngFor="let tab of ['Tes dflkaj sdfølja sdøflj sdlft', 'Test2', 'asfasdfasdfbsadf sd fhajksdh fklashd fkjas df', 'ashfjkhasdkjfh asd fakjsdh fkljashd f']" header="{{tab}}" > 
+<p-tabView>
+    <p-tabPanel *ngFor="let tab of ['Test', 'Test2']" header="{{tab}}" [selected]="tab === 'Test'"> 
        <div style="user-select: text; height:inherit; width:inherit; overflow:scroll;">
             <span>
                 sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
