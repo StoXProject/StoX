@@ -22,7 +22,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   //selectedProcesses: Process[];
   contextMenu: MenuItem[];
 
-  constructor(private ds: DataService, private ps: ProjectService, private rs: RunService) {
+  constructor(private ds: DataService, public ps: ProjectService, private rs: RunService) {
   }
 
   async ngOnInit() {
