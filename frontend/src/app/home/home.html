@@ -28,9 +28,15 @@
 					<app-project></app-project>
 				</as-split-area>
 				<as-split-area size=70 style="overflow:hidden;">
-					<div style="height:1.5rem; width:100%;"><app-model></app-model></div>
-					<div style="height:1.7rem; width:100%;"><app-run></app-run> </div>
-					<div style="height: calc(100% - (1.5rem + 1.7rem)); width:100%;"><app-process></app-process></div>
+					<div style="height:1.2rem; width:100%;">
+						<app-model></app-model>
+					</div>
+					<div style="height:1.7rem; width:100%;">
+						<app-run></app-run>
+					</div>
+					<div style="height: calc(100% - (1.2rem + 1.7rem)); width:100%;">
+						<app-process></app-process>
+					</div>
 				</as-split-area>
 			</as-split>
 		</as-split-area>
@@ -40,7 +46,17 @@
 					<app-map class="map"></app-map>
 				</as-split-area>
 				<as-split-area size="25">
-					<p-tabView>
+					<mat-tab-group>
+						<mat-tab label="User log">
+							<userlog style="height:inherit; width:inherit;"></userlog>
+						</mat-tab>
+						<mat-tab label="Output">
+							<output style="height:100%; width:100%;"></output>
+						</mat-tab>
+						<mat-tab label="Graph"> </mat-tab>
+						<mat-tab label="PSU"> </mat-tab>
+					</mat-tab-group>
+					<!--					<p-tabView>
 						<p-tabPanel header="User log">
 							<userlog style="height:inherit; width:inherit;"></userlog>
 						</p-tabPanel>
@@ -51,7 +67,7 @@
 						</p-tabPanel>
 						<p-tabPanel header="Stratum/PSU">
 						</p-tabPanel>
-					</p-tabView>
+					</p-tabView>-->
 				</as-split-area>
 			</as-split>
 		</as-split-area>

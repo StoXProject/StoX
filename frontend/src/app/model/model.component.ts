@@ -49,12 +49,7 @@ export class ModelComponent implements OnInit {
   //     };
   //   }
   // }
-  async activateMenu() {
-    // console.log(this.menu['activeItem'].label);
-    // console.log("this.currentLabel : " + this.currentLabel);
-    if (this.menu['activeItem'].label != this.currentLabel) {
-      this.ps.setSelectedModel(this.menu['activeItem'].label);
-    }
-    this.currentLabel = this.menu['activeItem'].label;
+  async activateMenu(model: Model) {
+    this.ps.setSelectedModel(model.modelName);
   }
 }

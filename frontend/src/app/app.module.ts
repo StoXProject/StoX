@@ -44,6 +44,8 @@ import { KeyboardShortcutsModule }     from 'ng-keyboard-shortcuts';
 import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} from '@angular/common';
 import { ModelComponent } from './model/model.component';
 import { RunComponent } from './run/run.component';
+import {MatTabsModule} from '@angular/material/tabs';
+
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
 @NgModule({
@@ -73,7 +75,8 @@ import { RunComponent } from './run/run.component';
     ContextMenuModule,
     KeyboardShortcutsModule.forRoot(),
     RouterModule.forRoot([] ), 
-     MenuModule//, PanelMenuModule
+     MenuModule,//, PanelMenuModule
+     MatTabsModule
   ],
   declarations: [
     HomeComponent,

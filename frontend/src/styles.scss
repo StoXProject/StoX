@@ -1,13 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 /* You can add global styles to this file, and also import other style files */
 @import "assets/hi-theme-primeng/hi-primeng.scss";
+//@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+//@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
+//@import '~@angular/material/prebuilt-themes/purple-green.css';
 
 //@import "~ag-grid-community/dist/styles/ag-grid.css";
 //@import "~ag-grid-community/dist/styles/ag-theme-balham.css";
 
 $fontSize: 0.8rem;
 $menuColor: rgb(240, 240, 240);
-
 
 .title {
   margin-top: 1rem;
@@ -51,11 +54,11 @@ $nodata: #acacac;
   border: none !important;
   .ui-listbox-list-wrapper {
     width: 100% !important;
-    height: 100% !important; 
+    height: 100% !important;
     .ui-listbox-list {
       width: 100% !important;
-      height: 100% !important; 
-      overflow-y:scroll !important;
+      height: 100% !important;
+      overflow-y: scroll !important;
     }
   }
 }
@@ -82,7 +85,6 @@ $nodata: #acacac;
   user-select: none !important;
   color: black !important;
   //display: inline-block;
-
 
   .ui-tabmenu-nav {
     background-color: rgb(240, 240, 240) !important;
@@ -175,7 +177,7 @@ $nodata: #acacac;
     // inline/nowrap
     white-space: nowrap;
     overflow: hidden;
-    margin-bottom: 0px !important; 
+    margin-bottom: 0px !important;
     li {
       display: inline;
       float: none;
@@ -184,10 +186,10 @@ $nodata: #acacac;
 
   .ui-tabview-panel {
     //padding: 0;
-    width:inherit;
-    height:100%;
+    width: inherit;
+    height: 100%;
   }
-    .ui-tabview-panels {
+  .ui-tabview-panels {
     padding: 0px !important;
     width: 100% !important;
     //display: table-cell !important;
@@ -412,14 +414,59 @@ $nodata: #acacac;
 //    <span class="absa ov3"></span>
 // </span>
 .bg-primary {
-  background-color:#9cc6f0 !important
+  background-color: #9cc6f0 !important;
 }
 .navbar {
-  border-bottom:#9cc6f0 !important
+  border-bottom: #9cc6f0 !important;
 }
 
 .as-split-gutter-icon {
   background-color: #e9f3fc !important;
   border: 1px solid lighten(#e9f3fc, 4%);
-  box-shadow: 1px 1px darken(#e9f3fc, 10%); 
+  box-shadow: 1px 1px darken(#e9f3fc, 10%);
+}
+
+.mat-ink-bar {
+  background-color: #c0c0c0 !important;
+}
+.mat-tab-header-pagination {
+  background-color:  lighten(#f0f0f0, 4%) !important;
+}
+
+.mat-tab-links {
+  width:100%;
+}
+.mat-tab-labels, .mat-tab-links {
+  background-color: #e5e5e5 !important;
+}
+.mat-tab-label,.mat-tab-link {
+  padding: 0 10px !important;
+  height: 1.2rem !important;
+  line-height: 1.2rem !important;
+  color:black !important;
+  background-color: #f0f0f0 !important;
+  min-width: auto !important;
+  border: 1px solid darken(#f0f0f0, 4%);
+  //box-shadow: 1px 1px darken(#f0f0f0, 10%);
+  text-decoration: none !important;
+}
+.mat-tab-label-content {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+}
+.mat-tab-body-wrapper {
+  height: calc(100% - 1.2rem) !important;
+}
+
+.mat-tab-group {
+  height: 100% !important; 
+}
+
+.mat-tab-body {
+  height: 100% !important; 
+}
+.mat-tab-body-content {
+  height: 100% !important; 
+  line-height: 1.2rem !important;
+  overflow:hidden !important;;
 }
