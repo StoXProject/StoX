@@ -443,12 +443,15 @@ $nodata: #acacac;
   padding: 0 10px !important;
   height: 1.2rem !important;
   line-height: 1.2rem !important;
+  opacity: 1.0 !important;
   color:black !important;
   background-color: #f0f0f0 !important;
   min-width: auto !important;
   border: 1px solid darken(#f0f0f0, 4%);
   //box-shadow: 1px 1px darken(#f0f0f0, 10%);
   text-decoration: none !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
 }
 .mat-tab-label-content {
   font-size: 0.75rem !important;
