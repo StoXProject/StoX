@@ -20,7 +20,7 @@ var properties = {
 //props = JSON.parse("from file")
 
 
-// var rspawn = child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(5307)\"");
+// var rspawn = child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(5307)\"");
 
 // grab the packages we need
 var express = require('express');
@@ -42,7 +42,7 @@ const { app, BrowserWindow, Menu } = require('electron')
 function createWindow() {
 
   child_process = require('child_process');
-  rspawn = child_process.exec("RScript -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error: any, stdout: any, stderr: any) => {
+  rspawn = child_process.exec("Rscript -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error: any, stdout: any, stderr: any) => {
     if (error) {
       console.error(`exec error: ${error}`);
       return;
@@ -52,12 +52,12 @@ function createWindow() {
 
       if (stdout !== null && stdout.includes("FALSE")) {
         console.log("opencpu is not installed, and is try to install it now ...");
-        child_process.execSync("RScript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+        child_process.execSync("Rscript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
         console.log("Starting opencpu ...");
-        child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxFramework'), workers = 3)\"");
+        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxFramework'), workers = 3)\"");
       } else if (stdout !== null && stdout.includes("TRUE")) {
         console.log("Starting opencpu ...");
-        child_process.exec("RScript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxFramework'), workers = 3)\"");
+        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxFramework'), workers = 3)\"");
       }
     }
   });
@@ -324,7 +324,7 @@ server.post('/rpath', function (req: any, res: any) {
   properties.rPath = req.body.rpath;
   console.log('rpath ' + properties.rPath);
 
-  var command = properties.rPath == "" || properties.rPath == null ? "RScript" : properties.rPath + "/" + "RScript";
+  var command = properties.rPath == "" || properties.rPath == null ? "Rscript" : properties.rPath + "/" + "Rscript";
 
   console.log('command : ' + command);
 
