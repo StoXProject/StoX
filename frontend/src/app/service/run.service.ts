@@ -104,18 +104,18 @@ export class RunService {
             let p = processes[i];
             this.ps.runningProcessId = p.processID;
             console.log("Run process " + p.processName + " with id " + p.processID);
-            let s: any = await this.dataService.runModel(projectPath, modelName, i + 1, i + 1).toPromise();
+            let res: string[] = await this.dataService.runModel(projectPath, modelName, i + 1, i + 1).toPromise();
 
-            console.log(s);
+            console.log(res);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
-            if (typeof (s) == "object" && Object.entries(s).length == 0) {
+            if (res.length == 0) {
                 // getting empty object {} when interrupted by error
                 this.ps.runFailedProcessId = p.processID;
                 break;
             } else { // empty/missing result
                 // ok update active process id and continue the loop
-                this.ps.activeProcessId = p.processID;
+                this.ps.activeProcessId = res[0]; // get first element in array
             }
         }
         this.ps.runningProcessId = null;

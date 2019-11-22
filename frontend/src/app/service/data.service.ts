@@ -265,26 +265,24 @@ export class DataService {
         r2.message = msg;
         // Now the runFunction result is complete with error, warning and message
         // deliver the result into the 
-        r2.message = typeof (r2.message) == "string" ? [r2.message] : r2.message; // auto_unbox 1elm-array-fix
         r2.message
           .filter(elm => elm.startsWith("StoX: "))
           .map(elm => elm.slice("StoX: ".length))
           .forEach(elm => {
             this.log.push(new UserLogEntry(UserLogType.MESSAGE, elm));
           });
-        r2.warning = typeof (r2.warning) == "string" ? [r2.warning] : r2.warning; // auto_unbox 1elm-array-fix
         r2.warning.forEach(elm => {
           this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
         });
-        r2.error = typeof (r2.error) == "object" ? null : r2.error; // null-object {}->null
-        if (r2.error != null) {
-          this.log.push(new UserLogEntry(UserLogType.ERROR, r2.error));
-        }
+        r2.error.forEach(elm => {
+          this.log.push(new UserLogEntry(UserLogType.ERROR, elm));
+        });
         return r2.value;
       }));
 
   }
-  runModel(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<string> {
+
+  runModel(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<string[]> {
 
     return this.runFunction('runModel', {
       "projectPath": projectPath, "modelName": modelName,
@@ -293,12 +291,25 @@ export class DataService {
   }
 
   getProcessOutputTableNames(projectPath: string, modelName: string, processID: string): Observable<string[]> {
-
-  return this.runFunction('getProcessOutputTableNames', {
+    return this.runFunction('getProcessOutputTableNames', {
       "projectPath": projectPath, "modelName": modelName,
       "processID": processID
     });
   }
+  
+  getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<string[]> {
+    return this.runFunction('getProcessOutput', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "tableName": tableName,
+      "flatten": "TRUE",
+      "pretty": "TRUE",
+      "drop": "TRUE"
+    });
+  }
+
+
 
   setRPath(rpath: string): Observable<any> {
     return this.postLocalNode('rpath', { rpath: rpath });

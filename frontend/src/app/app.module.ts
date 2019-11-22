@@ -45,6 +45,7 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} fr
 import { ModelComponent } from './model/model.component';
 import { RunComponent } from './run/run.component';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
@@ -76,7 +77,8 @@ import {MatTabsModule} from '@angular/material/tabs';
     KeyboardShortcutsModule.forRoot(),
     RouterModule.forRoot([] ), 
      MenuModule,//, PanelMenuModule
-     MatTabsModule
+     MatTabsModule,MatToolbarModule
+
   ],
   declarations: [
     HomeComponent,

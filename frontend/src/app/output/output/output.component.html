@@ -1,63 +1,13 @@
-<mat-tab-group>
-    <mat-tab label="First fasdm, ">
+<mat-tab-group [@.disabled]="true">
+    <mat-tab label="test">
         <div style="user-select: text; height:inherit; width:inherit; overflow:scroll;">
-            <span>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-            </span>
+            <pre style="white-space: pre;">{{["hklkjlkj", "kjlkj"].join("\n")}}</pre>
         </div>
     </mat-tab>
-    <mat-tab label="Second">
-        <div style="user-select: text; height:inherit; width:inherit; overflow:scroll;">
-            <span>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-                sdfkljasøkl flasj følkajs dfølkja sdøflkj asølkdfj asølkjdf ølasjkd følkajs df<br>
-            </span>
-        </div>
+    <mat-tab *ngFor="let item of ps.outputTables" label="{{item.table}}">
+        <div style="user-select: text; height:inherit; width:inherit; overflow:scroll; 
+        white-space: pre; font-family:'Courier New', Courier, monospace;">{{item.output.join("\n")}}</div>
     </mat-tab>
-    <mat-tab label="Thirdasdfa"> Content 3 </mat-tab>
-    <mat-tab label="Thirasdfd"> Content 3 </mat-tab>
-    <mat-tab label="Thiasdfrd"> Content 3 </mat-tab>
-    <mat-tab label="Tasdfhasdfird"> Content 3 </mat-tab>
-    <mat-tab label="Tasdfhird"> Content 3 </mat-tab>
-    <mat-tab label="Thsdfird"> Content 3 </mat-tab>
-    <mat-tab label="Thsdfasdird"> Content 3 </mat-tab>
-    <mat-tab label="Tfasdfhird"> Content 3 </mat-tab>
-    <mat-tab label="Thasdfird"> Content 3 </mat-tab>
-    <mat-tab label="Thasdfird"> Content 3 </mat-tab>
-    <mat-tab label="Thasdfird"> Content 3 </mat-tab>
-    <mat-tab label="Tsdfhird"> Content 3 </mat-tab>
-    <mat-tab label="Thdfird"> Content 3 </mat-tab>
 </mat-tab-group>
 
 <!--<p-tabView>
