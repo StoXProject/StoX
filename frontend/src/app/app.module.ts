@@ -14,39 +14,39 @@ import { MapComponent } from './map/map.component';
 import { FormsModule } from '@angular/forms';
 import { ProcessComponent } from './process/process.component';
 import { TabViewModule } from 'primeng/primeng';
-import { ListboxModule} from 'primeng/listbox';
-import { TabMenuModule} from 'primeng/tabmenu';
-import { ToolbarModule} from 'primeng/toolbar';
+import { ListboxModule } from 'primeng/listbox';
+import { TabMenuModule } from 'primeng/tabmenu';
+import { ToolbarModule } from 'primeng/toolbar';
 import { AngularSplitModule } from 'angular-split';
-import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ParameterComponent } from './parameter/parameter.component';
 //import { AgGridModule } from 'ag-grid-angular';
 import { AngularResizedEventModule } from 'angular-resize-event';
 
-import { HttpClientModule }    from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 
-import {AccordionModule} from 'primeng/accordion';
-import {CheckboxModule} from 'primeng/checkbox';
-import {ButtonModule} from 'primeng/button';
-import {DialogModule} from 'primeng/dialog';
-import {DropdownModule} from 'primeng/primeng';
+import { AccordionModule } from 'primeng/accordion';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/primeng';
 //import {RouterModule } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import {MenuModule } from 'primeng/menu';
-import {PanelMenuModule } from 'primeng/primeng';
-import {InputTextModule} from 'primeng/inputtext';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { MenuModule } from 'primeng/menu';
+import { PanelMenuModule } from 'primeng/primeng';
+import { InputTextModule } from 'primeng/inputtext';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/components/table/table';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService }  from './in-memory-data.service';
+import { InMemoryDataService } from './in-memory-data.service';
 import { ContextMenuModule } from 'primeng/contextmenu';
-import { KeyboardShortcutsModule }     from 'ng-keyboard-shortcuts';
-import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy} from '@angular/common';
+import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
+import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ModelComponent } from './model/model.component';
 import { RunComponent } from './run/run.component';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatToolbarModule} from '@angular/material/toolbar';
-
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
 @NgModule({
@@ -66,7 +66,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     /*HttpClientInMemoryWebApiModule.forRoot(
       InMemoryDataService, { dataEncapsulation: false }
     ),*/
-    AccordionModule, 
+    AccordionModule,
     CheckboxModule,
     BrowserAnimationsModule,
     TableModule,
@@ -75,9 +75,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     ToolbarModule,
     ContextMenuModule,
     KeyboardShortcutsModule.forRoot(),
-    RouterModule.forRoot([] ), 
-     MenuModule,//, PanelMenuModule
-     MatTabsModule,MatToolbarModule
+    RouterModule.forRoot([]),
+    MenuModule,//, PanelMenuModule
+    MatTabsModule, MatToolbarModule, MatButtonModule
 
   ],
   declarations: [

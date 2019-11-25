@@ -1,27 +1,34 @@
 #mapcontainer {
-    //border:solid; border-width:1px;
-    width:100%;
-    height:100%;
-  }
-  
-  #map {
-    //border:solid; border-width:1px;
-    width:100%;
-    height: calc(100% - 12px);
-    background: rgb(176, 203, 222);
-  }
-  #mapstatus {
-    //border:solid; border-width:1px;
-    width:100%;
-    height:12px; 
-    font-size:0.5rem;
-  }
-  
+  //border:solid; border-width:1px;
+  width: 100%;
+  height: 100%;
+}
+
+#map {
+  //border:solid; border-width:1px;
+  width: 100%;
+  height: calc(100% - (12px + 1.5rem));
+  background: #adcff1;
+}
+#mapstatus {
+  //border:solid; border-width:1px;
+  width: 100%;
+  height: 12px;
+  font-size: 0.5rem;
+}
+
+#toolbar {
+  //border:solid; border-width:1px;
+  width: 100%;
+  height: 1.5rem;
+  font-size: 0.5rem;
+}
+
 #info {
-    position: absolute;
-    height: 1px;
-    width: 1px;
-    /*z-index: 100;*/
-    color:red;
-    background-color: rgb(146, 39, 39);
-  }
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  /*z-index: 100;*/
+  color: red;
+  background-color: rgb(146, 39, 39);
+}

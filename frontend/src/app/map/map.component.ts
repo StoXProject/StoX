@@ -56,10 +56,10 @@ export class MapComponent implements OnInit {
     });*/
     var style = new Style({
       fill: new Fill({
-        color: 'rgb(255, 255, 255)'
+        color: '#e9f3fc'
       }),
       stroke: new Stroke({
-        color: 'rgb(210, 236, 249)',
+        color: '#849fb9',
         width: 1
       })
     });
@@ -130,7 +130,7 @@ export class MapComponent implements OnInit {
       target: 'map',
       layers: [this.vector],
       view: this.view,
-      controls: defaultControls().extend([mousePositionControl])
+      controls: [mousePositionControl]//defaultControls().extend([mousePositionControl])
     });
 
     // var f1 = new Feature({ id: 's1', geometry: new Point(fromLonLat([4, 60], proj)) });
