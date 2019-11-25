@@ -46,7 +46,7 @@
 					<app-map class="map"></app-map>
 				</as-split-area>
 				<as-split-area size="25">
-					<mat-tab-group>
+					<mat-tab-group [@.disabled]="true">
 						<mat-tab label="User log">
 							<userlog style="height:inherit; width:inherit;"></userlog>
 						</mat-tab>

@@ -1,8 +1,11 @@
 <div id="mapcontainer">
+	<mat-toolbar id="toolbar">
+		<button mat-raised-button>foo</button>
+	</mat-toolbar>
 	<div id="map" (resized)="onResized($event)">
 		<div id="info"></div>
 	</div>
 	<div id="mapstatus">
-    <div id="mouse-position"></div>
-  </div>
+		<div id="mouse-position"></div>
+	</div>
 </div>

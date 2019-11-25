@@ -12,7 +12,7 @@ import { DataService } from './data.service';
 export class ProjectService {
   projects: Project[] = [];
   selectedProject: Project = null;
-  map : Map<string, string>; 
+  outputTables: { table: string, output: string[]}[] = [];
 
   models: Model[];
   selectedModel: Model = null;
@@ -23,12 +23,16 @@ export class ProjectService {
   activeProcessId: string = null; // the last run-ok process
   runFailedProcessId: string = null; // the last run-failed process
   runningProcessId: string = null; // current running process
-
+ 
   propertyCategories: PropertyCategory[] = [];
   userlog: string[] = [];
   constructor(private dataService: DataService) {
     this.initData();
-    //this.map.set("3", "2");
+    this.outputTables.push({table:"1", output:["2"]})
+    this.outputTables.push({table:"2", output:["3"]})
+    
+    //this.outputTables.forEach(e=>console.log(e.table + "->" + e.output));
+    //Array.from(this.outputTables).forEach((key, val) => console.log(key + "->" + val));
     // this.setSelectedProject(this.getProjects()[0]);
   }
 
@@ -128,7 +132,6 @@ export class ProjectService {
       console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
       // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
       this.propertyCategories.forEach(pc => pc.properties.forEach(p => {
-        // auto_unbox 1elm-array-fix. (1-elm array is autounboxed like r strings to javascript string)
         // autounboxing is applied to avoid r strings to become javascript array.
         p.possibleValues = typeof (p.possibleValues) == "string" ? [p.possibleValues] : p.possibleValues;
       }));

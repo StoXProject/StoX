@@ -66,14 +66,16 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
       { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } });
     if (this.ps.isRun(this.ps.selectedProcess)) {
       let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.getSelectedProject().projectPath,
-        this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise().then(e=>{return e;});
-      tables = typeof (tables) == "string" ? [tables] : tables; // 1 elm array fix
+        this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
       if (tables.length > 0) {
         m.push({
           label: 'View output', icon: 'rib absa emptyicon', items:
             tables.map(e => {
               return {
-                label: e, icon: 'rib absa emptyicon', command: (event) => {
+                label: e, icon: 'rib absa emptyicon', command: async (event) => {
+                  let out: string[] = await this.ds.getProcessOutput(this.ps.getSelectedProject().projectPath,
+                    this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, e).toPromise();
+                  this.ps.outputTables.push({ table: e, output: out });
                   console.log("view output " + e);
                 }
               };
