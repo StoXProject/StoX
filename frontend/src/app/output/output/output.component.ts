@@ -12,7 +12,7 @@ import { getListeners } from 'ol/events';
 })
 
 export class OutputComponent implements OnInit {
-    constructor(private ps : ProjectService){
+    constructor(public ps : ProjectService){
     }
     ngOnInit() {
     }
