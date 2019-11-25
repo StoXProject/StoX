@@ -52,6 +52,12 @@
                                 (change)="propertyItem.value = $event.target.checked ? 'true' : 'false'; onChanged(category, propertyItem)"
                                 style="vertical-align: middle !important;" />
                         </div>
+                        <div *ngSwitchCase="'double'">
+                            <input type="number" step="any" value="{{propertyItem.value}}" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)">
+                        </div>
+                        <div *ngSwitchCase="'integer'">
+                            <input type="number" step="1" value="{{propertyItem.value}}" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)">
+                        </div>                        
                         <div *ngSwitchDefault>{{propertyItem.value}}</div>
                     </td>
                 </tr>
