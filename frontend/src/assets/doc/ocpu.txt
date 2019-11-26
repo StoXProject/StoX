@@ -6,7 +6,17 @@ runFunction
 POST 
 ../library/RstoxFramework/R/runFunction/json?auto_unbox=TRUE
 
-what/args
+closeProject
+'{
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2",
+"save":"FALSE"
+}'
+
+openProject
+'{
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2"
+}'
+
 runModel
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
@@ -16,7 +26,6 @@ runModel
 "save":"FALSE"
 }'
 
-what/args	
 getProcessOutputTableNames
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
@@ -24,7 +33,6 @@ getProcessOutputTableNames
 "processID":"P001"
 }'
 
-what/args
 getProcessOutput
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
@@ -36,7 +44,6 @@ getProcessOutput
 "drop":"TRUE"
 }'
 
-what/args	
 getProcessOutput
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
@@ -48,7 +55,12 @@ getProcessOutput
 "drop":"TRUE"
 }'
 
-what/args
+getMapData
+'{
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3", 
+"modelName":"Baseline"
+}'
+
 getMapData
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
@@ -56,7 +68,6 @@ getMapData
 "processID":"P001"
 }'
 
-what/args
 getInteractiveMode
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
@@ -64,11 +75,11 @@ getInteractiveMode
 "processID":"P001"
 }'
 
-what/args
 getProcessPropertySheet
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
 "modelName":"Baseline", 
 "processID":"P001"
 }'
+
 
