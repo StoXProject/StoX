@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { DataService } from '../service/data.service';
+import { RunService } from '../service/run.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service'
 import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService'
@@ -18,7 +19,7 @@ export class HomeComponent {
   constructor(private rConnectionDlgService: RConnectionDlgService, 
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
-    private dataService: DataService) {
+    private dataService: DataService, private runService: RunService) {
       // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
@@ -106,12 +107,12 @@ export class HomeComponent {
     },
     {
       label: 'Mapmode stratum', command: e => {
-        this.dataService.setMapMode('stratum');
+        this.runService.setIAMode('stratum');
       }
     },
     {
       label: 'Mapmode station', command: e => {
-        this.dataService.setMapMode('station');
+        this.runService.setIAMode('station');
       }
     }
 

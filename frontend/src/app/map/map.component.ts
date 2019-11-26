@@ -29,6 +29,7 @@ import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 
 import { DataService } from '../service/data.service';
+import { RunService } from '../service/run.service';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
@@ -48,7 +49,7 @@ export class MapComponent implements OnInit {
   vector: Vector;
   view: OlView;
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private rs: RunService) { }
 
   async ngOnInit() {
     /*this.source = new OlXYZ({
@@ -166,7 +167,7 @@ export class MapComponent implements OnInit {
 
     // this works (polygon)
     //var st: string = <string>await this.dataService.getgeojson().toPromise();
-    this.dataService.getMapModeObs().subscribe(mapMode => {
+    this.rs.getIAModeObs().subscribe(mapMode => {
       switch (mapMode) {
         case "station": {
           var layers: Layer[] = [

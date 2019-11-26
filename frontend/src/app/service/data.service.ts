@@ -19,28 +19,14 @@ export class DataService {
   // private featuresUrl = '/api/features';
   private geojsonUrl = '/api/geojson';
   private jsonfromfile = '/api/jsonfromfile';
-  private mapModeObs = new Observable<string>();
-  private mapModeSubject = new Subject<string>();
+
   //private activeProcess: number = 1;
   //private activeProcessInterval: Observable<number>; // clients can subscribe to this observable and thus poll its status.
 
   constructor(private httpClient: HttpClient) {
-    this.mapModeObs = this.mapModeSubject.asObservable();
-    this.mapModeObs.subscribe((newVal) => {
-      console.log(newVal);
-    });
-    this.mapModeSubject.next('stratum');
-    //this.mapModeSubject.next('2');
-    //const first = ;
-    //this.activeProcessInterval = interval(50).pipe(mapTo(this.activeProcess));
   }
 
-  getMapModeObs(): Observable<string> {
-    return this.mapModeObs;
-  }
-  setMapMode(mapMode: string) {
-    this.mapModeSubject.next(mapMode);
-  }
+
   /*getActiveProcessInterval(): Observable<number> {
     return this.activeProcessInterval;
   }*/
@@ -81,12 +67,12 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/remove.packages/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
- /* makeItFail(): Observable<any> {
-    const formData = new FormData();
-    formData.set('iProcess', '1');
-    formData.set('iTable', 'mission');
-    return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  }*/
+  /* makeItFail(): Observable<any> {
+     const formData = new FormData();
+     formData.set('iProcess', '1');
+     formData.set('iTable', 'mission');
+     return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+   }*/
 
   getAvailableTemplates(): Observable<any> {
     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getAvailableTemplatesDescriptions/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
@@ -136,13 +122,13 @@ export class DataService {
   }
 
   getProcessProperties(projectPath: string, modelName: string, processID: string): Observable<any> {
-    return this.runProcessFunc<any>("getProcessPropertySheet", projectPath, modelName, processID); 
-   /* const formData = new FormData();
-    // projectPath, modelName, processID
-    formData.set('projectPath', "'" + projectPath + "'");
-    formData.set('modelName', "'" + modelName + "'");
-    formData.set('processID', "'" + processID + "'");
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessPropertySheet/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));*/
+    return this.runProcessFunc<any>("getProcessPropertySheet", projectPath, modelName, processID);
+    /* const formData = new FormData();
+     // projectPath, modelName, processID
+     formData.set('projectPath', "'" + projectPath + "'");
+     formData.set('modelName', "'" + modelName + "'");
+     formData.set('processID', "'" + processID + "'");
+     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessPropertySheet/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));*/
   }
 
   isProject(projectPath: string): Observable<any> {
@@ -257,21 +243,23 @@ export class DataService {
         //let jsr: RunResult = JSON.parse(res.body);
         // Get the OCPU-sinked R messages from session file (message) and put it int the result.
         // The OCPU sink overrides the message stdout, and must be retrieved from the session message file.
-        let sessionId: string = res.headers.get("x-ocpu-session");
-        let msg: string[] = <string[]>await this.post(DataService.LOCALHOST, DataService.OCPU_PORT,
-          'ocpu/tmp/' + sessionId + '/messages/json?auto_unbox=TRUE', {}, 'text')
-          .pipe(map(_ => JSON.parse(_.body))).toPromise();
-        //console.log(msg);
         let r2: RunResult = JSON.parse(res.body);
-        r2.message = msg;
-        // Now the runFunction result is complete with error, warning and message
-        // deliver the result into the 
-        r2.message
-          .filter(elm => elm.startsWith("StoX: "))
-          .map(elm => elm.slice("StoX: ".length))
-          .forEach(elm => {
-            this.log.push(new UserLogEntry(UserLogType.MESSAGE, elm));
-          });
+        //r2.message = [];
+        /* let sessionId: string = res.headers.get("x-ocpu-session");
+         let msg: string[] = <string[]>await this.post(DataService.LOCALHOST, DataService.OCPU_PORT,
+           'ocpu/tmp/' + sessionId + '/messages/json?auto_unbox=TRUE', {}, 'text')
+           .pipe(map(_ => JSON.parse(_.body))).toPromise();
+         //console.log(msg);
+ 
+         r2.message = msg;
+         // Now the runFunction result is complete with error, warning and message
+         // deliver the result into the 
+         r2.message
+           .filter(elm => elm.startsWith("StoX: "))
+           .map(elm => elm.slice("StoX: ".length))
+           .forEach(elm => {
+             this.log.push(new UserLogEntry(UserLogType.MESSAGE, elm));
+           });*/
         r2.warning.forEach(elm => {
           this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
         });
@@ -290,6 +278,7 @@ export class DataService {
       "startProcess": startProcess, "endProcess": endProcess
     });
   }
+
   runProcessFunc<R>(func: string, projectPath: string, modelName: string, processID: string): Observable<R> {
     return this.runFunction(func, {
       "projectPath": projectPath, "modelName": modelName, "processID": processID
@@ -300,8 +289,8 @@ export class DataService {
     return this.runProcessFunc<string[]>('getProcessOutputTableNames', projectPath, modelName, processID);
   }
 
-  getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {
-    return this.runProcessFunc<string>('getInteractiveMode', projectPath, modelName, processID);
+  getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string[]> {
+    return this.runProcessFunc<string[]>('getInteractiveMode', projectPath, modelName, processID);
   }
 
   getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<string[]> {
