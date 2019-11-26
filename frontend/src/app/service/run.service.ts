@@ -5,7 +5,9 @@ import { Process } from '../data/process';
 import { Model } from '../data/model';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
-
+import { Observable, Subject, of, interval, merge } from 'rxjs';
+import { UserLogEntry } from '../data/userlogentry';
+import { UserLogType } from '../enum/enums';
 @Injectable({
     providedIn: 'root'
 })
@@ -13,7 +15,23 @@ import { DataService } from '../service/data.service';
  * Manage Run process logic
  */
 export class RunService {
+    private iaMode = new Observable<string>();
+    private iaSubject = new Subject<string>();
+
     constructor(private ps: ProjectService, private dataService: DataService) {
+        this.iaMode = this.iaSubject.asObservable();
+        this.iaMode.subscribe((newVal) => {
+            console.log(newVal);
+        });
+        //this.iaSubject.next('stratum');
+    }
+
+    getIAModeObs(): Observable<string> {
+        return this.iaMode;
+    }
+
+    setIAMode(iaMode: string) {
+        this.iaSubject.next(iaMode);
     }
 
     canRun(): boolean {
@@ -104,9 +122,10 @@ export class RunService {
             let p = processes[i];
             this.ps.runningProcessId = p.processID;
             console.log("Run process " + p.processName + " with id " + p.processID);
+            this.dataService.log.push( new UserLogEntry(UserLogType.MESSAGE, "Process " + p.processName)); 
             let res: string[] = await this.dataService.runModel(projectPath, modelName, i + 1, i + 1).toPromise();
 
-            console.log(res);
+            console.log("run result: " + res);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
             if (res.length == 0) {
@@ -116,6 +135,15 @@ export class RunService {
             } else { // empty/missing result
                 // ok update active process id and continue the loop
                 this.ps.activeProcessId = res[0]; // get first element in array
+                // get the interactive mode:
+
+                console.log("asking for ia mode");
+                let ia: string[] = await this.dataService.getInteractiveMode(projectPath, modelName, this.ps.activeProcessId).toPromise();
+                console.log("ia mode " + ia);
+                if (ia.length > 0) {
+                    this.setIAMode(ia.length > 0 ? ia[0] : "");
+                }
+                //console.log("interactive mode:" + ia);
             }
         }
         this.ps.runningProcessId = null;
