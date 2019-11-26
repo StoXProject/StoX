@@ -29,7 +29,8 @@ export class CreateProjectDialog {
 
     async initData() {
         console.log("start initData");
-        this.templates = <Template[]> JSON.parse( await this.dataService.getAvailableTemplates().toPromise());
+        // this.templates = <Template[]> JSON.parse( await this.dataService.getAvailableTemplates().toPromise());
+        this.templates = <Template[]> await this.dataService.getAvailableTemplates().toPromise();
         console.log("templates retrieved: " + this.templates.length);
         this.projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
         console.log("project root path retrieved: " + this.projectRootPath);

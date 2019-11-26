@@ -75,7 +75,9 @@ export class ProjectService {
     if (this.selectedProject != null) {
       var t0 = performance.now();
       // set project path and model name as parameter here
-      this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
+      // this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
+      this.processes = <Process[]> await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise();
+      
       var t1 = performance.now();
 
       console.log("Call to dataService.getProcessesInModel(...) took " + (t1 - t0) + " milliseconds.");

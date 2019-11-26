@@ -90,9 +90,9 @@ export class OpenProjectDlg {
                 this.ps.setSelectedProject(this.project);            
             }
 
-        } catch(error) {
-            console.log(error.error);
-            var firstLine = error.error.split('\n', 1)[0];
+        } catch(error) { 
+            console.log(error); 
+            var firstLine = error;//.error.split('\n', 1)[0];
             this.msgService.setMessage(firstLine);
             this.msgService.showMessage();            
             return;            
