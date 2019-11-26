@@ -89,22 +89,34 @@ export class DataService {
   }*/
 
   getAvailableTemplates(): Observable<any> {
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getAvailableTemplatesDescriptions/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getAvailableTemplatesDescriptions/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  
+    return this.runFunction('getAvailableTemplatesDescriptions', {});  
   }
 
   createProject(projectPath: string, templateName: string): Observable<any> {
-    const formData = new FormData();
-    formData.set('projectPath', "'" + projectPath + "'");
-    formData.set('template', "'" + templateName + "'");
+    // const formData = new FormData();
+    // formData.set('projectPath', "'" + projectPath + "'");
+    // formData.set('template', "'" + templateName + "'");
 
-    // formData.set('ow', 'FALSE');
-    // formData.set('showWarnings', 'FALSE');
-    // formData.set('open', 'TRUE');
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/createProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    // // formData.set('ow', 'FALSE');
+    // // formData.set('showWarnings', 'FALSE');
+    // // formData.set('open', 'TRUE');
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/createProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  
+    return this.runFunction('createProject', {
+      "projectPath": projectPath,
+      "template": templateName,
+      "ow": "FALSE",
+      "showWarnings": "FALSE",
+      "open": "TRUE"
+    });
   }
 
   getModelInfo(): Observable<any> {
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getModelInfo/json?auto_unbox=true", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getModelInfo/json?auto_unbox=true", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  
+    return this.runFunction('getModelInfo', {});
   }
 
   // getTestProcesses(): Observable<any> {
@@ -116,23 +128,37 @@ export class DataService {
 
   getProcessesInModel(projectPath: string, modelName: string): Observable<any> {
     console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
-    const formData = new FormData();
-    formData.set('projectPath', "'" + projectPath + "'");
-    formData.set('modelName', "'" + modelName + "'");
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    // const formData = new FormData();
+    // formData.set('projectPath', "'" + projectPath + "'");
+    // formData.set('modelName', "'" + modelName + "'");
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  
+    return this.runFunction('getProcessTable', {
+      "projectPath": projectPath,
+      "modelName": modelName
+    });  
   }
 
   openProject(projectPath: string): Observable<any> {
-    const formData = new FormData();
-    formData.set('projectPath', "'" + projectPath + "'");
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    // const formData = new FormData();
+    // formData.set('projectPath', "'" + projectPath + "'");
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  
+    return this.runFunction('openProject', {
+      "projectPath": projectPath
+    });  
   }
 
   closeProject(projectPath: string, save: Boolean): Observable<any> {
-    const formData = new FormData();
-    formData.set('projectPath', "'" + projectPath + "'");
-    formData.set('save', "'" + save + "'");
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/closeProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    // const formData = new FormData();
+    // formData.set('projectPath', "'" + projectPath + "'");
+    // formData.set('save', "'" + save + "'");
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/closeProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  
+    return this.runFunction('closeProject', {
+      "projectPath": projectPath,
+      "save": save
+    });
   }
 
   getProcessProperties(projectPath: string, modelName: string, processID: string): Observable<any> {
@@ -146,20 +172,33 @@ export class DataService {
   }
 
   isProject(projectPath: string): Observable<any> {
-    const formData = new FormData();
-    formData.set('projectPath', "'" + projectPath + "'");
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/isProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    // const formData = new FormData();
+    // formData.set('projectPath', "'" + projectPath + "'");
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/isProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  
+    return this.runFunction('isProject', {
+      "projectPath": projectPath
+    });  
   }
 
-  setProcessPropertyValue(groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string) {
-    const formData = new FormData();
-    formData.set('groupName', "'" + groupName + "'");
-    formData.set('name', "'" + name + "'");
-    formData.set('value', "'" + value + "'");
-    formData.set('projectPath', "'" + projectPath + "'");
-    formData.set('modelName', "'" + modelName + "'");
-    formData.set('processID', "'" + processID + "'");
-    return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/setProcessPropertyValue/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  setProcessPropertyValue(groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string): Observable<any> {
+    // const formData = new FormData();
+    // formData.set('groupName', "'" + groupName + "'");
+    // formData.set('name', "'" + name + "'");
+    // formData.set('value', "'" + value + "'");
+    // formData.set('projectPath', "'" + projectPath + "'");
+    // formData.set('modelName', "'" + modelName + "'");
+    // formData.set('processID', "'" + processID + "'");
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/setProcessPropertyValue/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  
+    return this.runFunction('setProcessPropertyValue', {
+      "groupName": groupName,
+      "name": name,
+      "value": value,
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID
+    });
   }
 
   static readonly LOCALHOST: string = 'localhost';

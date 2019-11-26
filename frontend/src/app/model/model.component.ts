@@ -19,7 +19,8 @@ export class ModelComponent implements OnInit {
   async ngOnInit() {
     // initialize MODELS and populate menu items
     var t0 = performance.now();
-    this.models = <Model[]>JSON.parse(await this.dataService.getModelInfo().toPromise());
+    // this.models = <Model[]>JSON.parse(await this.dataService.getModelInfo().toPromise());
+    this.models = <Model[]> await this.dataService.getModelInfo().toPromise();
     var t1 = performance.now();
     console.log("Call to dataService.getModelInfo() took " + (t1 - t0) + " milliseconds.");
     this.ps.setModels(this.models);
@@ -50,6 +51,9 @@ export class ModelComponent implements OnInit {
   //   }
   // }
   async activateMenu(model: Model) {
-    this.ps.setSelectedModel(model.modelName);
+    if( model.modelName != this.currentLabel) {
+      this.ps.setSelectedModel(model.modelName);
+      this.currentLabel = model.modelName;
+    }
   }
 }

@@ -45,8 +45,9 @@ export class ParameterComponent implements OnInit {
       try {
         this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID)
           .toPromise().then(s => { 
-            let p = <PropertyCategory[]>JSON.parse(s);
-            console.log(p)
+            // let p = <PropertyCategory[]>JSON.parse(s);
+            let p = s;
+            console.log(p);
             this.ps.propertyCategories = p; 
             
             this.ps.propertyCategories.forEach(pc => pc.properties.forEach(p => {
