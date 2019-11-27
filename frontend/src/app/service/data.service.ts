@@ -304,18 +304,19 @@ export class DataService {
            });*/
         if (dothrow) {
           if (r2.error.length > 0) {
-            throw(r2.error[0]);
+            throw (r2.error[0]);
           }
-          if (r2.warning.length > 0) {
+          /*if (r2.warning.length > 0) {
              throw(r2.warning[0]); 
-          }
+          }*/
+        } else {
+          r2.warning.forEach(elm => {
+            this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
+          });
+          r2.error.forEach(elm => {
+            this.log.push(new UserLogEntry(UserLogType.ERROR, elm));
+          });
         }
-        r2.warning.forEach(elm => {
-          this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
-        });
-        r2.error.forEach(elm => {
-          this.log.push(new UserLogEntry(UserLogType.ERROR, elm));
-        });
         return r2.value;
       }));
   }

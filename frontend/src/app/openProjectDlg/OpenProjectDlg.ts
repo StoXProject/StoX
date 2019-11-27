@@ -47,7 +47,7 @@ export class OpenProjectDlg {
 
         try {
 
-            let isProject = <boolean>JSON.parse( await this.dataService.isProject(this.projectPath).toPromise());
+            let isProject = <boolean>await this.dataService.isProject(this.projectPath).toPromise();
 
             if(!isProject) {
                 this.msgService.setMessage(this.projectPath + " is not a project!");
@@ -57,7 +57,7 @@ export class OpenProjectDlg {
 
             var t0 = performance.now();
             // the following should return an instance of class Project
-            this.project = <Project>JSON.parse( await this.dataService.openProject(this.projectPath).toPromise());
+            this.project = <Project>await this.dataService.openProject(this.projectPath).toPromise();
             var t1 = performance.now();
             console.log("Call to dataService.openProject(...) took " + (t1 - t0) + " milliseconds.");
             console.log("returned projectName - projectPath : " + this.project.projectName + " - " + this.project.projectPath);
