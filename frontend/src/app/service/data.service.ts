@@ -113,7 +113,7 @@ export class DataService {
   // }
 
   getProcessesInModel(projectPath: string, modelName: string): Observable<any> {
-    console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
+    //console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
     // formData.set('modelName', "'" + modelName + "'");

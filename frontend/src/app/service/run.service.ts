@@ -23,7 +23,7 @@ export class RunService {
     constructor(private ps: ProjectService, private dataService: DataService) {
         this.iaMode = this.iaSubject.asObservable();
         this.iaMode.subscribe((newVal) => {
-            console.log(newVal);
+      //      console.log(newVal);
         });
         //this.iaSubject.next('stratum');
     }
@@ -123,11 +123,11 @@ export class RunService {
         for (var i = iFrom; i <= iTo; i++) {
             let p = processes[i];
             this.ps.runningProcessId = p.processID;
-            console.log("Run process " + p.processName + " with id " + p.processID);
+            //console.log("Run process " + p.processName + " with id " + p.processID);
             this.dataService.log.push( new UserLogEntry(UserLogType.MESSAGE, "Process " + p.processName)); 
             let res: RunModelResult = await this.dataService.runModel(projectPath, modelName, i + 1, i + 1).toPromise();
 
-            console.log("run result: " + res);
+            //console.log("run result: " + res);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
             if (res.activeProcessID.length == 0) {

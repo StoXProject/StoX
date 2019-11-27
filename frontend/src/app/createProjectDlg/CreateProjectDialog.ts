@@ -22,21 +22,21 @@ export class CreateProjectDialog {
     }
 
     ngOnInit() {
-        console.log("start ngOnInit");
+        //console.log("start ngOnInit");
         this.initData();
-        console.log("end ngOnInit");
+        //console.log("end ngOnInit");
     }
 
     async initData() {
-        console.log("start initData");
+        //console.log("start initData");
         // this.templates = <Template[]> JSON.parse( await this.dataService.getAvailableTemplates().toPromise());
         this.templates = <Template[]> await this.dataService.getAvailableTemplates().toPromise();
-        console.log("templates retrieved: " + this.templates.length);
+        //console.log("templates retrieved: " + this.templates.length);
         this.projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
-        console.log("project root path retrieved: " + this.projectRootPath);
+        //console.log("project root path retrieved: " + this.projectRootPath);
         // this.project = <string>await this.dataService.getProjectPath().toPromise();
         // console.log("project path retrieved: " + this.project);
-        console.log("end initData");
+        //console.log("end initData");
     }  
 
     async browse() {

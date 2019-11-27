@@ -23,7 +23,7 @@ export class OpenProjectDlg {
 
     async ngOnInit() {  
         this.projectPath = <string>await this.dataService.getProjectRootPath().toPromise();
-        console.log("project root path retrieved: " + this.projectPath);
+       // console.log("project root path retrieved: " + this.projectPath);
     }
 
     async browse() {  

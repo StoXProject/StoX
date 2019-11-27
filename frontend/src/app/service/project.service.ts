@@ -47,7 +47,7 @@ export class ProjectService {
     // if (event.value.projectName) {
     // }
 
-    console.log("selected project changed 1 : " + this.selectedProject.projectName);
+   console.log("selected project changed : " + this.selectedProject.projectName);
 
     // the following is implemented in setSelctedProject
     // set selected model to 'Baseline'
@@ -73,20 +73,20 @@ export class ProjectService {
     this.propertyCategories = [];
 
     if (this.selectedProject != null) {
-      var t0 = performance.now();
+      //var t0 = performance.now();
       // set project path and model name as parameter here
       // this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
       this.processes = <Process[]> await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise();
       
-      var t1 = performance.now();
+      //var t1 = performance.now();
 
-      console.log("Call to dataService.getProcessesInModel(...) took " + (t1 - t0) + " milliseconds.");
+      //console.log("Call to dataService.getProcessesInModel(...) took " + (t1 - t0) + " milliseconds.");
 
       // if(this.processes.length > 0) {
       //   this.setSelectedProcess(this.processes[0]);
       // }
 
-      console.log("nr of processes : " + this.processes.length);
+      //console.log("nr of processes : " + this.processes.length);
     }
   }
 
@@ -106,7 +106,7 @@ export class ProjectService {
 
     let jsonString = JSON.stringify(project);
     let status = <string>await this.dataService.updateActiveProject(jsonString).toPromise();
-    console.log(status);
+    //console.log(status);
   }
 
   getSelectedProcess(): Process {
@@ -167,7 +167,7 @@ export class ProjectService {
 
   async initData() {
 
-    console.log(" initData() - class ProjectService: ");
+    //console.log(" initData() - class ProjectService: ");
 
     // this.projects = [
     //   { projectName: 'Gytetokt 2004', projectPath: '.' },
@@ -194,7 +194,7 @@ export class ProjectService {
 
     if (!this.isEmpty(activeProject)) {
       this.projects = [{ projectName: activeProject.projectName, projectPath: activeProject.projectPath }];
-      console.log("active project : " + activeProject.projectName);
+    //  console.log("active project : " + activeProject.projectName);
       this.setSelectedProject(activeProject);
     }
   }
