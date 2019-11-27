@@ -93,9 +93,9 @@ export class DataService {
     return this.runFunctionThrow('createProject', {
       "projectPath": projectPath,
       "template": templateName,
-      "ow": "FALSE",
-      "showWarnings": "FALSE",
-      "open": "TRUE"
+      "ow": false,
+      "showWarnings": false, 
+      "open": true 
     }, true);
   }
 
