@@ -82,4 +82,11 @@ getProcessPropertySheet
 "processID":"P001"
 }'
 
-
+createProject
+'{
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/project79", 
+"template":"Test3.0", 
+"ow": "FALSE",       
+"showWarnings": "FALSE",   
+"open": "TRUE"
+}'

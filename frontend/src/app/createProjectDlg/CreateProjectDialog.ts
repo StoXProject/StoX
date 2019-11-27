@@ -81,7 +81,7 @@ export class CreateProjectDialog {
 
         try {
             var t0 = performance.now();
-            let project = <Project> JSON.parse( await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
+            let project = <Project> await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise();
             var t1 = performance.now();
             console.log("Call to dataService.createProject(...) took " + (t1 - t0) + " milliseconds.");
             console.log("projectCreated : " + project.projectName);
@@ -93,8 +93,8 @@ export class CreateProjectDialog {
                 this.ps.setSelectedProject(project);
             }
         } catch(error) {
-            console.log(error.error);
-            var firstLine = error.error.split('\n', 1)[0];
+            console.log(error);
+            var firstLine = error;
             this.msgService.setMessage(firstLine);
             this.msgService.showMessage();            
             return;

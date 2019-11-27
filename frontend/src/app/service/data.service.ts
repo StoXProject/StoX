@@ -90,13 +90,13 @@ export class DataService {
     // // formData.set('open', 'TRUE');
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/createProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
-    return this.runFunction('createProject', {
+    return this.runFunctionThrow('createProject', {
       "projectPath": projectPath,
       "template": templateName,
       "ow": "FALSE",
       "showWarnings": "FALSE",
       "open": "TRUE"
-    });
+    }, true);
   }
 
   getModelInfo(): Observable<any> {
