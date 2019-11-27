@@ -8,6 +8,8 @@ import { DataService } from '../service/data.service';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
+import { RunModelResult } from './../data/runresult';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -123,25 +125,25 @@ export class RunService {
             this.ps.runningProcessId = p.processID;
             console.log("Run process " + p.processName + " with id " + p.processID);
             this.dataService.log.push( new UserLogEntry(UserLogType.MESSAGE, "Process " + p.processName)); 
-            let res: string[] = await this.dataService.runModel(projectPath, modelName, i + 1, i + 1).toPromise();
+            let res: RunModelResult = await this.dataService.runModel(projectPath, modelName, i + 1, i + 1).toPromise();
 
             console.log("run result: " + res);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
-            if (res.length == 0) {
+            if (res.activeProcessID.length == 0) {
                 // getting empty object {} when interrupted by error
                 this.ps.runFailedProcessId = p.processID;
                 break;
             } else { // empty/missing result
                 // ok update active process id and continue the loop
-                this.ps.activeProcessId = res[0]; // get first element in array
+                this.ps.activeProcessId = res.activeProcessID; // get first element in array
                 // get the interactive mode:
 
-                console.log("asking for ia mode");
-                let ia: string[] = await this.dataService.getInteractiveMode(projectPath, modelName, this.ps.activeProcessId).toPromise();
-                console.log("ia mode " + ia);
+                //console.log("asking for ia mode");
+                let ia: string = res.interactiveMode;//await this.dataService.getInteractiveMode(projectPath, modelName, this.ps.activeProcessId).toPromise();
+                //console.log("ia mode " + ia);
                 if (ia.length > 0) {
-                    this.setIAMode(ia.length > 0 ? ia[0] : "");
+                    this.setIAMode(ia);
                 }
                 //console.log("interactive mode:" + ia);
             }
