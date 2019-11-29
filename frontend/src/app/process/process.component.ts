@@ -76,7 +76,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
                   let out: string[] = await this.ds.getProcessOutput(this.ps.getSelectedProject().projectPath,
                     this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, e).toPromise();
                   this.ps.outputTables.push({ table: e, output: out });
-                  console.log("view output " + e);
+                 // console.log("view output " + e);
                 }
               };
             })
@@ -92,7 +92,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   }
   async openCm(event, cm, process: Process) {
     this.ps.selectedProcess = process;
-    console.log("selecting process " + process.processID + " in contextmenu handler");
+    //console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
     await this.prepCm();

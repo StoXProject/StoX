@@ -1,6 +1,11 @@
 export class RunResult {
-    value: string;
+    value: any;
     message: string[];
     warning: string[];
     error: string[];
+}
+
+export class RunModelResult {
+    activeProcessID: string;
+    interactiveMode: string
 }

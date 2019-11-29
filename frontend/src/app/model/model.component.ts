@@ -18,15 +18,15 @@ export class ModelComponent implements OnInit {
   @ViewChild('menuItems', { static: false }) menu: MenuItem[];
   async ngOnInit() {
     // initialize MODELS and populate menu items
-    var t0 = performance.now();
+    //var t0 = performance.now();
     // this.models = <Model[]>JSON.parse(await this.dataService.getModelInfo().toPromise());
     this.models = <Model[]> await this.dataService.getModelInfo().toPromise();
-    var t1 = performance.now();
-    console.log("Call to dataService.getModelInfo() took " + (t1 - t0) + " milliseconds.");
+    //var t1 = performance.now();
+    //console.log("Call to dataService.getModelInfo() took " + (t1 - t0) + " milliseconds.");
     this.ps.setModels(this.models);
-    console.log("models " + this.models);
+    //console.log("models " + this.models);
     this.models.forEach(m => this.items.push({ label: m.displayName }));
-    console.log("items " + this.items);
+    //console.log("items " + this.items);
     this.ps.setSelectedModel('Baseline');
 
     // if(this.ps.getSelectedProject != null) {

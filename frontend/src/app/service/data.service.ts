@@ -7,7 +7,7 @@ import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { rotateWithoutConstraints } from 'ol/interaction/Interaction';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
-import { RunResult } from '../data/runresult';
+import { RunResult, RunModelResult } from '../data/runresult';
 
 @Injectable({
   providedIn: 'root'
@@ -113,7 +113,7 @@ export class DataService {
   // }
 
   getProcessesInModel(projectPath: string, modelName: string): Observable<any> {
-    console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
+    //console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
     // formData.set('modelName', "'" + modelName + "'");
@@ -288,6 +288,7 @@ export class DataService {
     let args: any = JSON.stringify(argsobj);
     formData.set('what', what);
     formData.set('args', args);
+    console.log(what + "(" + args + ")");
     return <any>this.postLocalOCPU('RstoxFramework', 'runFunction', formData, 'text', true, "json")
       .pipe(map(async res => {
         //let jsr: RunResult = JSON.parse(res.body);
@@ -329,11 +330,12 @@ export class DataService {
       }));
   }
 
-  runModel(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<string[]> {
+  runModel(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<RunModelResult> {
 
     return this.runFunction('runModel', {
       "projectPath": projectPath, "modelName": modelName,
-      "startProcess": startProcess, "endProcess": endProcess
+      "startProcess": startProcess, "endProcess": endProcess,
+      "save":false
     });
   }
 
@@ -347,8 +349,8 @@ export class DataService {
     return this.runProcessFunc<string[]>('getProcessOutputTableNames', projectPath, modelName, processID);
   }
 
-  getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string[]> {
-    return this.runProcessFunc<string[]>('getInteractiveMode', projectPath, modelName, processID);
+  getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {
+    return this.runProcessFunc<string>('getInteractiveMode', projectPath, modelName, processID);
   }
 
   getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<string[]> {
@@ -357,9 +359,9 @@ export class DataService {
       "modelName": modelName,
       "processID": processID,
       "tableName": tableName,
-      "flatten": "TRUE",
-      "pretty": "TRUE",
-      "drop": "TRUE"
+      "flatten": true,
+      "pretty": true,
+      "drop": true
     });
   }
 
