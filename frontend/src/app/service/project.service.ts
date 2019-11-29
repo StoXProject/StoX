@@ -5,6 +5,7 @@ import { Process } from '../data/process';
 import { Model } from '../data/model';
 import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
+import { ProcessProperties } from '../data/ProcessProperties';
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +26,9 @@ export class ProjectService {
   runningProcessId: string = null; // current running process
 
   propertyCategories: PropertyCategory[] = [];
-  userlog: string[] = [];
   helpContent: string = "";
+  processProperties: ProcessProperties = null;
+  userlog: string[] = [];
   constructor(private dataService: DataService) {
     this.initData();
   }
@@ -71,7 +73,7 @@ export class ProjectService {
     //   console.log("selected model : " + this.selectedModel.modelName);
     // }
 
-    this.propertyCategories = [];
+    this.initializeProperties();
 
     if (this.selectedProject != null) {
       //var t0 = performance.now();
@@ -119,24 +121,37 @@ export class ProjectService {
 
   async onSelectedProcessChanged() {
 
+    this.initializeProperties();
+    
     if (this.getSelectedProject() != null &&
       this.getSelectedProcess() != null &&
       this.getSelectedModel() != null) {
       // propertyCategories: PropertyCategory[];
       var t0 = performance.now();
-      this.propertyCategories = <PropertyCategory[]>await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise();
+      this.processProperties = <ProcessProperties>await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise();
       var t1 = performance.now();
       console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
       // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
-      this.propertyCategories.forEach(pc => pc.properties.forEach(p => {
-        // autounboxing is applied to avoid r strings to become javascript array.
-        p.possibleValues = typeof (p.possibleValues) == "string" ? [p.possibleValues] : p.possibleValues;
-      }));
+      // this.propertyCategories.forEach(pc => pc.properties.forEach(p => {
+      //   // autounboxing is applied to avoid r strings to become javascript array.
+      //   p.possibleValues = typeof (p.possibleValues) == "string" ? [p.possibleValues] : p.possibleValues;
+      // }));
 
-      this.helpContent = <string> JSON.parse(await this.dataService.getHelp("help", "html").toPromise());
-      // this.helpContent = await this.dataService.getHelp("help", "html").toPromise();
-      console.log("this.helpContent : " + this.helpContent);
+      if(this.processProperties != null) {
+        this.helpContent = this.processProperties.help;
+        this.propertyCategories = this.processProperties.propertySheet;
+      }
+
+      // this.helpContent = <string> await this.dataService.getFunctionHelpAsHtml("DefineStrata").toPromise();
+      // // this.helpContent = await this.dataService.getHelp("help", "html").toPromise();
+      // console.log("this.helpContent : " + this.helpContent);
     }
+  }
+
+  async initializeProperties() {
+    this.processProperties = null;
+    this.propertyCategories = [];
+    this.helpContent = "";  
   }
 
   getProjects(): Project[] {

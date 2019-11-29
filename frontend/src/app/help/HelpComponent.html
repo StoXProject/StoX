@@ -2,7 +2,7 @@
     <p-tabPanel header="Function description">
         <ng-template pTemplate="content">
             <!-- Content to Lazy Load {{ps.helpContent}} -->
-            <div [innerHTML]="ps.helpContent"></div>
+            <div [innerHTML]="ps.helpContent" style="overflow:scroll;height:inherit;"></div>
         </ng-template>
     </p-tabPanel>
 </p-tabView>

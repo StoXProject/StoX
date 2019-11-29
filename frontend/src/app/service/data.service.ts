@@ -193,7 +193,18 @@ export class DataService {
     formData.set('help_type', "'" + help_type + "'");
     // return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/help/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
     return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/help/print", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  
   }
+
+  getFunctionHelpAsHtml(functionName: string /*, packageName: string, outfile: string */): Observable<any> {
+    
+    return this.runFunction('getFunctionHelpAsHtml', {
+      "functionName": functionName
+      /* , 
+      // "packageName": packageName, 
+      // "outfile": outfile */
+    });
+  }  
 
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
