@@ -50,6 +50,7 @@ export class ParameterComponent implements OnInit {
             // let p: ProcessProperties = s;
             // console.log(p);
             this.ps.propertyCategories = s.propertySheet;
+            this.ps.helpContent = s.help;
           });
 
         //<PropertyCategory[]>JSON.parse( await )
