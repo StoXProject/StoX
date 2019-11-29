@@ -187,6 +187,14 @@ export class DataService {
     });
   }
 
+  getHelp(topic: string, help_type: string): Observable<any> {
+    const formData = new FormData();
+    formData.set('topic', "'" + topic + "'");
+    formData.set('help_type', "'" + help_type + "'");
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/help/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+    return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/help/print", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  }
+
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
   static readonly OCPU_PORT: number = 5307;
