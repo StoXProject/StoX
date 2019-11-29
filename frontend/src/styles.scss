@@ -375,6 +375,10 @@ $nodata: #acacac;
   top: 68%;
 }
 
+.editicon:before {
+  @include icon_content("\f040", 0.7rem, rgb(19, 40, 58));
+}
+
 .blink {
   animation: blink 500ms infinite steps(1);
 }

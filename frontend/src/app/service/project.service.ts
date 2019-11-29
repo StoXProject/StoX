@@ -122,7 +122,7 @@ export class ProjectService {
       this.getSelectedModel() != null) {
       this.propertyCategories = <PropertyCategory[]>await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise();
 
-      this.helpContent = <string> JSON.parse(await this.dataService.getHelp("help", "html").toPromise());
+      //this.helpContent = <string> JSON.parse(await this.dataService.getHelp("help", "html").toPromise());
       // this.helpContent = await this.dataService.getHelp("help", "html").toPromise();
       console.log("this.helpContent : " + this.helpContent);
     }
