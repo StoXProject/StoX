@@ -50,7 +50,7 @@ export class ProjectService {
     // if (event.value.projectName) {
     // }
 
-   console.log("selected project changed : " + this.selectedProject.projectName);
+    console.log("selected project changed : " + this.selectedProject.projectName);
 
     // the following is implemented in setSelctedProject
     // set selected model to 'Baseline'
@@ -79,8 +79,8 @@ export class ProjectService {
       //var t0 = performance.now();
       // set project path and model name as parameter here
       // this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
-      this.processes = <Process[]> await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise();
-      
+      this.processes = <Process[]>await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise();
+
       //var t1 = performance.now();
 
       //console.log("Call to dataService.getProcessesInModel(...) took " + (t1 - t0) + " milliseconds.");
@@ -127,10 +127,10 @@ export class ProjectService {
       this.getSelectedProcess() != null &&
       this.getSelectedModel() != null) {
       // propertyCategories: PropertyCategory[];
-      var t0 = performance.now();
+      // var t0 = performance.now();
       this.processProperties = <ProcessProperties>await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise();
-      var t1 = performance.now();
-      console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
+      // var t1 = performance.now();
+      // console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
       // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
       // this.propertyCategories.forEach(pc => pc.properties.forEach(p => {
       //   // autounboxing is applied to avoid r strings to become javascript array.
@@ -214,7 +214,7 @@ export class ProjectService {
 
     if (!this.isEmpty(activeProject)) {
       this.projects = [{ projectName: activeProject.projectName, projectPath: activeProject.projectPath }];
-    //  console.log("active project : " + activeProject.projectName);
+      //  console.log("active project : " + activeProject.projectName);
       this.setSelectedProject(activeProject);
     }
   }
