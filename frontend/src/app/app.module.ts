@@ -10,6 +10,7 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
 import { UserLogComponent } from './output/userlog/userlog.component';
 import { OutputComponent } from './output/output/output.component';
+import {HelpComponent} from './help/HelpComponent'
 import { MapComponent } from './map/map.component';
 import { FormsModule } from '@angular/forms';
 import { ProcessComponent } from './process/process.component';
@@ -94,7 +95,8 @@ import { MatButtonModule } from '@angular/material/button';
     ModelComponent,
     RunComponent,
     UserLogComponent,
-    OutputComponent
+    OutputComponent,
+    HelpComponent
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },

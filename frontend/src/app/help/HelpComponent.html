@@ -1,0 +1,8 @@
+<p-tabView>
+    <p-tabPanel header="Function description">
+        <ng-template pTemplate="content">
+            <!-- Content to Lazy Load {{ps.helpContent}} -->
+            <div [innerHTML]="ps.helpContent"></div>
+        </ng-template>
+    </p-tabPanel>
+</p-tabView>

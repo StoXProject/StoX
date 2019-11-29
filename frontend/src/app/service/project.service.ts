@@ -26,6 +26,7 @@ export class ProjectService {
 
   propertyCategories: PropertyCategory[] = [];
   userlog: string[] = [];
+  helpContent: string = "";
   constructor(private dataService: DataService) {
     this.initData();
   }
@@ -131,6 +132,10 @@ export class ProjectService {
         // autounboxing is applied to avoid r strings to become javascript array.
         p.possibleValues = typeof (p.possibleValues) == "string" ? [p.possibleValues] : p.possibleValues;
       }));
+
+      this.helpContent = <string> JSON.parse(await this.dataService.getHelp("help", "html").toPromise());
+      // this.helpContent = await this.dataService.getHelp("help", "html").toPromise();
+      console.log("this.helpContent : " + this.helpContent);
     }
   }
 
