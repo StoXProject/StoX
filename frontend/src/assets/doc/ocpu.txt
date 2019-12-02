@@ -8,22 +8,22 @@ POST
 
 closeProject
 '{
-"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2",
-"save":"FALSE"
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3",
+"save":false
 }'
 
 openProject
 '{
-"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2"
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3"
 }'
 
 runModel
 '{
-"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3", 
 "modelName":"Baseline", 
-"startProcess":2, 
-"endProcess":2, 
-"save":"FALSE"
+"startProcess":1, 
+"endProcess":1, 
+"save":false
 }'
 
 getProcessOutputTableNames
@@ -39,9 +39,13 @@ getProcessOutput
 "modelName":"Baseline", 
 "processID":"P003",
 "tableName":"StratumArea",
-"flatten":"TRUE",
-"pretty":"TRUE",
-"drop":"TRUE"
+"flatten":true,
+"pretty":true,
+"linesPerPage":20,
+"pageindex":1,
+"collapse":"b",
+"na":"-",
+"drop":true
 }'
 
 getProcessOutput
