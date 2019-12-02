@@ -40,8 +40,7 @@
   "devDependencies": {
     "electron": "^6.1.5",
     "electron-installer-dmg": "^3.0.0",
-    "electron-packager": "^14.0.6",
-    "electron-winstaller": "^4.0.0",
-    "electron-wix-msi": "^2.2.0"
+    "electron-packager": "^13.1.1",
+    "electron-winstaller": "^4.0.0"
   }
 }
