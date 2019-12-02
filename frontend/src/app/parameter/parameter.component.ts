@@ -3,6 +3,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ProjectService } from '../service/project.service';
 import { PropertyItem } from '../data/propertyitem';
 import { PropertyCategory } from '../data/propertycategory';
+import {ProcessProperties} from '../data/ProcessProperties'
 import { DataService } from '../service/data.service';
 import { MessageService } from '../message/MessageService';
 // import {MessageService} from 'primeng/api';
@@ -44,11 +45,12 @@ export class ParameterComponent implements OnInit {
     if (this.ps.getSelectedProject() != null && this.ps.getSelectedProcess() != null && this.ps.getSelectedModel() != null) {
       try {
         this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID)
-          .toPromise().then(s => {
+          .toPromise().then((s: ProcessProperties) => {
             // let p = <PropertyCategory[]>JSON.parse(s);
-            let p = s;
-            console.log(p);
-            this.ps.propertyCategories = p;
+            // let p: ProcessProperties = s;
+            // console.log(p);
+            this.ps.propertyCategories = s.propertySheet;
+            this.ps.helpContent = s.help;
           });
 
         //<PropertyCategory[]>JSON.parse( await )
