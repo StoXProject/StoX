@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { OpenProjectDlgService } from './OpenProjectDlgService';
-import { DataService } from '../service/data.service'; 
-import { ProjectService } from '../service/project.service'; 
+import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
 import { MessageService } from '../message/MessageService';
 import { Project } from '../data/project';
 
@@ -10,37 +10,38 @@ import { Project } from '../data/project';
     templateUrl: './OpenProjectDlg.html',
     styleUrls: []
 })
-export class OpenProjectDlg { 
+export class OpenProjectDlg {
 
     project: Project;
 
-    projectPath: string; 
+    projectPath: string;
 
-    constructor(public service: OpenProjectDlgService, 
+    constructor(public service: OpenProjectDlgService,
         private msgService: MessageService,
-        private dataService: DataService, private ps: ProjectService) {       
+        private dataService: DataService, private ps: ProjectService) {
     }
 
-    async ngOnInit() {  
+    async ngOnInit() {
         this.projectPath = <string>await this.dataService.getProjectRootPath().toPromise();
-       // console.log("project root path retrieved: " + this.projectPath);
+        // console.log("project root path retrieved: " + this.projectPath);
     }
 
-    async browse() {  
-        console.log("browse");
+    async browse() {
+        console.log("B rowse"); 
         this.projectPath = await this.dataService.browse(this.projectPath).toPromise();
+        console.log("this.projectPath: " + this.projectPath);
     }
 
     async apply() {
         console.log("start apply");
 
-        if(!this.projectPath) {
+        if (!this.projectPath) {
             this.msgService.setMessage("Project folder is empty!");
-            this.msgService.showMessage();            
+            this.msgService.showMessage();
             return;
         }
-        console.log("projectRootPath : " + this.projectPath);   
-        
+        console.log("projectRootPath : " + this.projectPath);
+
         this.projectPath = this.projectPath.replace(/\\/g, "/");
 
         console.log("converted projectRootPath : " + this.projectPath);
@@ -49,7 +50,7 @@ export class OpenProjectDlg {
 
             let isProject = <boolean>await this.dataService.isProject(this.projectPath).toPromise();
 
-            if(!isProject) {
+            if (!isProject) {
                 this.msgService.setMessage(this.projectPath + " is not a project!");
                 this.msgService.showMessage();
                 return;
@@ -64,9 +65,9 @@ export class OpenProjectDlg {
 
             // console.log("projects length : " + this.ps.projects.length);
 
-            if(this.project != null) {
+            if (this.project != null) {
 
-                if(this.ps.getSelectedProject() != null) {
+                if (this.ps.getSelectedProject() != null) {
                     if (this.ps.getSelectedProject().projectPath.valueOf() == this.project.projectPath.valueOf()) {
                         let projectName = this.ps.getSelectedProject().projectName;
                         this.msgService.setMessage("Project with name " + projectName + " is already open!");
@@ -83,19 +84,19 @@ export class OpenProjectDlg {
                 }
 
                 // this.projectService.PROJECTS.push(this.project);
-                this.ps.projects =  [{projectName:this.project.projectName, projectPath: this.project.projectPath}]; 
+                this.ps.projects = [{ projectName: this.project.projectName, projectPath: this.project.projectPath }];
 
                 // console.log("projects length : " + this.ps.projects.length);
 
-                this.ps.setSelectedProject(this.project);            
+                this.ps.setSelectedProject(this.project);
             }
 
-        } catch(error) { 
-            console.log(error); 
+        } catch (error) {
+            console.log(error);
             var firstLine = error;//.error.split('\n', 1)[0];
             this.msgService.setMessage(firstLine);
-            this.msgService.showMessage();            
-            return;            
+            this.msgService.showMessage();
+            return;
         }
 
         this.service.display = false;

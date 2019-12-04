@@ -82,14 +82,14 @@ function createWindow() {
     require('electron').dialog.showOpenDialog(mainWindow, {
       title: 'Select a folder', defaultPath: /*require('os').homedir()*/ req.body.defaultpath,
       properties: [/*'openFile'*/'openDirectory']
-    }, (folderPath: any) => {
-      if (!folderPath || !folderPath.length) {
+    }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
+      if (!object.filePaths || !object.filePaths.length) {
         console.log("You didn't select a folder");
         return;
       }
       console.log("You did select a folder");
-      console.log(folderPath[0]);
-      res.send(folderPath[0]);
+      console.log(object.filePaths[0]);
+      res.send(object.filePaths[0]);
     });
   });
 
