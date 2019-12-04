@@ -7,6 +7,7 @@ import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
+import { ProcessOutput } from '../data/processoutput';
 
 import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
@@ -73,10 +74,9 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
             tables.map(e => {
               return {
                 label: e, icon: 'rib absa emptyicon', command: async (event) => {
-                  let out: string[] = await this.ds.getProcessOutput(this.ps.getSelectedProject().projectPath,
+                  let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.getSelectedProject().projectPath,
                     this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, e).toPromise();
                   this.ps.outputTables.push({ table: e, output: out });
-                 // console.log("view output " + e);
                 }
               };
             })

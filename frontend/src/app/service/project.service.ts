@@ -6,14 +6,14 @@ import { Model } from '../data/model';
 import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
 import { ProcessProperties } from '../data/ProcessProperties';
-
+import { ProcessOutput } from '../data/processoutput';
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
   projects: Project[] = [];
   selectedProject: Project = null;
-  outputTables: { table: string, output: string[] }[] = [];
+  outputTables: { table: string, output: ProcessOutput }[] = [];
 
   models: Model[];
   selectedModel: Model = null;
@@ -122,7 +122,7 @@ export class ProjectService {
   async onSelectedProcessChanged() {
 
     this.initializeProperties();
-    
+
     if (this.getSelectedProject() != null &&
       this.getSelectedProcess() != null &&
       this.getSelectedModel() != null) {
@@ -137,7 +137,7 @@ export class ProjectService {
       //   p.possibleValues = typeof (p.possibleValues) == "string" ? [p.possibleValues] : p.possibleValues;
       // }));
 
-      if(this.processProperties != null) {
+      if (this.processProperties != null) {
         this.helpContent = this.processProperties.help;
         this.propertyCategories = this.processProperties.propertySheet;
       }
@@ -151,7 +151,7 @@ export class ProjectService {
   async initializeProperties() {
     this.processProperties = null;
     this.propertyCategories = [];
-    this.helpContent = "";  
+    this.helpContent = "";
   }
 
   getProjects(): Project[] {

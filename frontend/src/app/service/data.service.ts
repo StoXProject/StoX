@@ -6,6 +6,7 @@ import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { rotateWithoutConstraints } from 'ol/interaction/Interaction';
 import { UserLogEntry } from '../data/userlogentry';
+import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
 import { RunResult, RunModelResult } from '../data/runresult';
 
@@ -94,8 +95,8 @@ export class DataService {
       "projectPath": projectPath,
       "template": templateName,
       "ow": false,
-      "showWarnings": false, 
-      "open": true 
+      "showWarnings": false,
+      "open": true
     }, true);
   }
 
@@ -193,11 +194,11 @@ export class DataService {
   //   formData.set('help_type', "'" + help_type + "'");
   //   // return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/help/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   //   return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/help/print", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  
+
   // }
 
   // getFunctionHelpAsHtml(functionName: string /*, packageName: string, outfile: string */): Observable<any> {
-    
+
   //   return this.runFunction('getFunctionHelpAsHtml', {
   //     "functionName": functionName
   //     /* , 
@@ -346,7 +347,7 @@ export class DataService {
     return this.runFunction('runModel', {
       "projectPath": projectPath, "modelName": modelName,
       "startProcess": startProcess, "endProcess": endProcess,
-      "save":false
+      "save": false
     });
   }
 
@@ -364,7 +365,7 @@ export class DataService {
     return this.runProcessFunc<string>('getInteractiveMode', projectPath, modelName, processID);
   }
 
-  getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<string[]> {
+  getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<ProcessOutput> {
     return this.runFunction('getProcessOutput', {
       "projectPath": projectPath,
       "modelName": modelName,
@@ -372,8 +373,13 @@ export class DataService {
       "tableName": tableName,
       "flatten": true,
       "pretty": true,
+      "linesPerPage": 2000,
+      "pageindex": 1,
+      "columnSeparator": " ",
+      "na": "-",
       "drop": true
     });
+
   }
 
 

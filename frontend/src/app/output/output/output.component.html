@@ -1,7 +1,7 @@
 <mat-tab-group [@.disabled]="true">
     <mat-tab *ngFor="let item of ps.outputTables" label="{{item.table}}">
         <div style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
-        white-space: pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">{{item.output.join("\n")}}</div>
+        white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">{{item.output.data.join('\n')}}</div>
     </mat-tab>
 </mat-tab-group>
 
