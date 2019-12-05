@@ -8,7 +8,7 @@
     "start": "tsc && electron ./build/index.js",
     "start-dev": "tsc-node-dev --respawn --transpileOnly ./index.ts && electron ./build/index.js",
     "package-win": "tsc && electron-packager . stox --platform win32 --arch x64 --out dist/ --overwrite  --asar --icon=assets/stox_icon.ico",
-    "package-mac": "electron-packager . stox --platform darwin --arch x64 --out dist/ --overwrite",
+    "package-mac": "tsc && electron-packager . stox --platform darwin --arch x64 --out dist/ --overwrite",
     "installer-win": "node installers/windows/createinstaller.js",
     "installer-mac": "electron-installer-dmg . stoxdmg",
     "package-and-installer-win": "npm run package-win && npm run installer-win",

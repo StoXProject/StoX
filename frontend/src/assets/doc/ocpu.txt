@@ -63,21 +63,15 @@ getProcessOutput
 getMapData
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3", 
-"modelName":"Baseline"
-}'
-
-getMapData
-'{
-"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
 "modelName":"Baseline", 
-"processID":"P001"
+"processID":"P002"
 }'
 
 getInteractiveMode
 '{
-"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3", 
 "modelName":"Baseline", 
-"processID":"P001"
+"processID":"P006"
 }'
 
 getProcessPropertySheet

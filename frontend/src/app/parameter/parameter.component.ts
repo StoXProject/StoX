@@ -42,9 +42,9 @@ export class ParameterComponent implements OnInit {
     console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
     //return;
     // groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string
-    if (this.ps.getSelectedProject() != null && this.ps.getSelectedProcess() != null && this.ps.getSelectedModel() != null) {
+    if (this.ps.getSelectedProject() != null && this.ps.selectedProcess != null && this.ps.getSelectedModel() != null) {
       try {
-        this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID)
+        this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.selectedProcess.processID)
           .toPromise().then((s: ProcessProperties) => {
             // let p = <PropertyCategory[]>JSON.parse(s);
             // let p: ProcessProperties = s;

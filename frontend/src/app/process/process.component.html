@@ -1,5 +1,4 @@
-<p-listbox #listBox [options]="ps.processes" [(ngModel)]="ps.selectedProcess"
-    (onChange)="onSelectedProcessesChanged($event)"  optionLabel="processName">
+<p-listbox #listBox [options]="ps.processes" [(ngModel)]="ps.selectedProcess" optionLabel="processName">
     <ng-template let-process pTemplate="item">
         <div (contextmenu)="openCm($event, cm, process.value)">
             <span class="rib fa processicon" [ngClass]="{'fa-spin': process.value===ps.getRunningProcess()}">

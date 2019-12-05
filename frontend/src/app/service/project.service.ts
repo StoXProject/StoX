@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, SecurityContext } from '@angular/core';
 //import { Observable, of } from 'rxjs';
 import { Project } from '../data/project';
 import { Process } from '../data/process';
@@ -7,6 +7,8 @@ import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
 import { ProcessProperties } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
+//import { DomSanitizer } from '@angular/platform-browser';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,17 +21,17 @@ export class ProjectService {
   selectedModel: Model = null;
 
   processes: Process[];
-  selectedProcess: Process = null; // the selected process by user
+  private m_selectedProcess: Process = null; // the selected process by user
   activeModelName: string = null; // the last run model
   activeProcessId: string = null; // the last run-ok process
   runFailedProcessId: string = null; // the last run-failed process
   runningProcessId: string = null; // current running process
 
   propertyCategories: PropertyCategory[] = [];
-  helpContent: string = "";
+  private m_helpContent: string = "";
   processProperties: ProcessProperties = null;
   userlog: string[] = [];
-  constructor(private dataService: DataService) {
+  constructor(private dataService: DataService/*, private sanitizer: DomSanitizer*/) {
     this.initData();
   }
 
@@ -80,7 +82,9 @@ export class ProjectService {
       // set project path and model name as parameter here
       // this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
       this.processes = <Process[]>await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise();
-
+      if(this.processes.length > 0) {
+        this.selectedProcess = this.processes[0]; 
+      }
       //var t1 = performance.now();
 
       //console.log("Call to dataService.getProcessesInModel(...) took " + (t1 - t0) + " milliseconds.");
@@ -112,23 +116,35 @@ export class ProjectService {
     //console.log(status);
   }
 
-  getSelectedProcess(): Process {
-    return this.selectedProcess;
+  public get selectedProcess() : Process {
+    return this.m_selectedProcess;
   }
-  setSelectedProcess(process: Process) {
-    this.selectedProcess = process;
+  public set selectedProcess(process: Process) {
+    console.log("setSelectedProcess");
+    this.m_selectedProcess = process;
+    this.onSelectedProcessChanged();
   }
+
+  public get helpContent() : string {
+    return this.m_helpContent;
+  }
+
+  public set helpContent(content : string) {
+    this.m_helpContent = content;
+  }
+  
+
 
   async onSelectedProcessChanged() {
 
     this.initializeProperties();
 
     if (this.getSelectedProject() != null &&
-      this.getSelectedProcess() != null &&
+      this.selectedProcess != null &&
       this.getSelectedModel() != null) {
       // propertyCategories: PropertyCategory[];
       // var t0 = performance.now();
-      this.processProperties = <ProcessProperties>await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.getSelectedProcess().processID).toPromise();
+      this.processProperties = <ProcessProperties>await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.selectedProcess.processID).toPromise();
       // var t1 = performance.now();
       // console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
       // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
@@ -138,7 +154,7 @@ export class ProjectService {
       // }));
 
       if (this.processProperties != null) {
-        this.helpContent = this.processProperties.help;
+        this.m_helpContent = this.processProperties.help;
         this.propertyCategories = this.processProperties.propertySheet;
       }
 
@@ -151,7 +167,7 @@ export class ProjectService {
   async initializeProperties() {
     this.processProperties = null;
     this.propertyCategories = [];
-    this.helpContent = "";
+    this.m_helpContent = "";
   }
 
   getProjects(): Project[] {

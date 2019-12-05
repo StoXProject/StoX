@@ -53,14 +53,12 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     //p.breakingui = !p.breakingui
   }
 
-  onSelectedProcessesChanged(event) {
-    this.ps.onSelectedProcessChanged();
-  }
+
   runToHere() {
-    this.rs.runToHere(this.ps.getProcessIdx(this.ps.getSelectedProcess()))
+    this.rs.runToHere(this.ps.getProcessIdx(this.ps.selectedProcess))
   }
   async prepCm() {
-    // comment: add list of outputtablenames to runModel result.
+    // comment: add list of outputtablenames to runModel result. 
     let m: MenuItem[] = [];
     m.push(
       { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.runToHere(); } },

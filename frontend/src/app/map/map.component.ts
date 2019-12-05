@@ -29,6 +29,7 @@ import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 
 import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
 import { RunService } from '../service/run.service';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
@@ -49,7 +50,7 @@ export class MapComponent implements OnInit {
   vector: Vector;
   view: OlView;
 
-  constructor(private dataService: DataService, private rs: RunService) { }
+  constructor(private dataService: DataService, private ps : ProjectService, private rs: RunService) { }
 
   async ngOnInit() {
     /*this.source = new OlXYZ({
@@ -167,11 +168,12 @@ export class MapComponent implements OnInit {
 
     // this works (polygon)
     //var st: string = <string>await this.dataService.getgeojson().toPromise();
-    this.rs.getIAModeObs().subscribe(mapMode => {
+    this.rs.getIAModeObs().subscribe(async mapMode => {
       switch (mapMode) {
         case "station": {
+          let str : string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
           var layers: Layer[] = [
-            MapSetup.getGeoJSONLayerFromURL("station", '/assets/test/station_test.json', MapSetup.getStationPointStyle(), false)
+            MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, MapSetup.getStationPointStyle(), false)
             //            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false),
             //            MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
 
@@ -181,9 +183,10 @@ export class MapComponent implements OnInit {
           break;
         }
         case "stratum": {
+          let str : string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
           var layers: Layer[] = [
+            MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, s2, false)
             //            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/station_test.json', MapSetup.getStationPointStyle(), false)
-            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
             //            MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
 
           ];

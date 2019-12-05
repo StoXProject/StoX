@@ -52,14 +52,13 @@ export class MapSetup {
      * @param style 
      * @param selectable 
      */
-    static getGeoJSONLayerFromURL(name: string, url: string, style: Style, selectable: boolean): Layer {
+    static getGeoJSONLayerFromFeatureString(name: string, feat : string, proj : string, style: Style, selectable: boolean): Layer {
         var s: Source = new Source({
             format: new GeoJSON(),
-            /*features: (new GeoJSON).readFeatures(JSON.parse(st), {
-              defaultDataProjection: 'EPSG:4326',
+            features: (new GeoJSON).readFeatures(JSON.parse(feat), {
+              dataProjection: 'EPSG:4326',
               featureProjection: proj
-            })*/
-            url: url
+            })
         });
         var v: Vector = new Vector({
             source: s,
