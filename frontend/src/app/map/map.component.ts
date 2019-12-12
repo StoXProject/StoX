@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
@@ -22,7 +22,7 @@ import { Fill, Stroke, Style, RegularShape } from 'ol/style';
 import { mapToMapExpression } from '@angular/compiler/src/render3/util';
 
 import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
-import Select from 'ol/interaction/Select';
+import { Select, Draw, Modify, Snap } from 'ol/interaction';
 import { ResizedEvent } from 'angular-resize-event';
 import { defaults as defaultControls } from 'ol/control';
 import MousePosition from 'ol/control/MousePosition';
@@ -34,6 +34,7 @@ import { RunService } from '../service/run.service';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
+import VectorSource from 'ol/source/Vector';
 
 @Component({
   selector: 'app-map',
@@ -49,29 +50,67 @@ export class MapComponent implements OnInit {
   // layer: OlTileLayer;
   vector: Vector;
   view: OlView;
+  stationLayer: Layer = null;
+  stratumLayer: Layer = null;
+  stratumSelect: Select;
+  stratumModify: Modify;
 
-  constructor(private dataService: DataService, private ps : ProjectService, private rs: RunService) { }
+  private m_Tool: string = "";
+  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService) { }
+  /*@HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    console.log(event);
+    
+    // if (event.keyCode === KEY_CODE.RIGHT_ARROW) {
+    //   this.increment();
+    // }
+
+    // if (event.keyCode === KEY_CODE.LEFT_ARROW) {
+    //   this.decrement();
+    // }
+  }*/
+  tools = [
+    { tool: "freemove", iclass: "freemoveicon" },
+    { tool: "stratum-edit", iclass: "editicon" },
+    { tool: "stratum-add", iclass: "addicon" },
+    { tool: "stratum-delete", iclass: "deleteicon" }/*,
+    { tool: "stratum-delete", iclass: "editicon" }*/
+    
+  ];
+  public getToolEnabled(tool: string): boolean {
+    switch (tool) {
+      case "stratum-edit": return true; // or "Continue model" if active process > -1
+    }
+  }
+
+  // set accessor for tool
+  set tool(tool: string) {
+    this.m_Tool = tool;
+    console.log("setting tool: " + tool);
+    switch (tool) {
+      case "stratum-edit":
+        this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
+        break;
+    }
+  }
+
+  // get accessor for tool
+  get tool(): string {
+    return this.m_Tool;
+  }
 
   async ngOnInit() {
-    /*this.source = new OlXYZ({
-      url: 'http://tile.osm.org/{z}/{x}/{y}.png'
-    });*/
-    var style = new Style({
-      fill: new Fill({
-        color: '#e9f3fc'
-      }),
-      stroke: new Stroke({
-        color: '#849fb9',
-        width: 1
-      })
-    });
-    let myProjectionName = 'EPSG:9820';
+
     const proj4 = (proj4x as any).default;
     // Two example-projections (2nd is included anyway)
 
+    // Lambert Azimuthal Equal Area
     proj4.defs('EPSG:9820', '+proj=laea +lat_0=60 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+    // World Miller Cylindrical
     proj4.defs('ESRI:54003', '+proj=mill +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R_A +datum=WGS84 +units=m +no_defs');
+    // Sea Ice Polar Stereographic
     proj4.defs('EPSG:3411', '+proj=stere +lat_0=90 +lat_ts=70 +lon_0=10 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs');
+
     /*<Projection id="EPSG:3411"   proj4="+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs"/>
     <Projection id="EPSG:3412"   proj4="+proj=stere +lat_0=-90 +lat_ts=-70 +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs"/>
     <Projection id="EPSG:3575"   proj4="+proj=laea +lat_0=90 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"/>
@@ -104,7 +143,7 @@ export class MapComponent implements OnInit {
         }),
         overlaps: false,
       }),
-      style: style
+      style: MapSetup.getMapStyle()
     });
 
 
@@ -118,80 +157,37 @@ export class MapComponent implements OnInit {
       projection: proj,
       zoom: 4.9,
     });
-    var mousePositionControl = new MousePosition({
-      coordinateFormat: createStringXY(4),
-      projection: 'EPSG:4326',
-      // comment the following two lines to have the mouse position
-      // be placed within the map.
-      className: 'custom-mouse-position',
-      target: document.getElementById('mouse-position'),
-      undefinedHTML: '&nbsp;'
-    });
 
     this.map = new OlMap({
       target: 'map',
-      layers: [this.vector],
+      layers: [MapSetup.getGridLayer(proj), this.vector],
       view: this.view,
-      controls: [mousePositionControl]//defaultControls().extend([mousePositionControl])
+      controls: [MapSetup.getMousePositionControl()]
     });
+    this.stratumSelect = MapSetup.createStratumSelectInteraction();
+    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect);
 
-    // var f1 = new Feature({ id: 's1', geometry: new Point(fromLonLat([4, 60], proj)) });
-    // var f2 = new Feature({ id: 's2', geometry: new Point(fromLonLat([3, 59], proj)) });
-    /*
-    var Ftrs: Feature[] = [];// = new Array();
-
-    for (var i = 0; i < 12; i++) {
-      var lon = 0 + Math.random() * 10;
-      var lat = 55 + Math.random() * 20;
-      var f = new Feature({ geometry: new Point(fromLonLat([lon, lat], proj)) });
-      f.setId('s' + i); 
-      f.setProperties({'description': s + " description"});
-      Ftrs[i] = f;
-      // console.log( Ftrs[i].getId());
-    }  */
-
-
-    var s2 = new Style({
-      stroke: new Stroke({
-        color: 'blue',
-        width: 3
-      }),
-      fill: new Fill({
-        color: 'rgba(0, 0, 255, 0.1)'
-      })
-    });
-
-    /* // this works (points) */
-    //const subscribe = this.dataService.getActiveProcessInterval().subscribe(val => if((val == 2)console.log(val));
-
-    //var st: string = <string>await this.dataService.getjsonfromfile().toPromise();
-
-    // this works (polygon)
-    //var st: string = <string>await this.dataService.getgeojson().toPromise();
     this.rs.getIAModeObs().subscribe(async mapMode => {
       switch (mapMode) {
+        case "reset": {
+          if (this.stationLayer != null) {
+            this.map.removeLayer(this.stationLayer);
+          }
+          if (this.stratumLayer != null) {
+            this.map.removeLayer(this.stratumLayer);
+          }
+          break;
+        }
         case "station": {
-          let str : string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          var layers: Layer[] = [
-            MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, MapSetup.getStationPointStyle(), false)
-            //            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false),
-            //            MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
-
-          ];
-          layers.forEach(layer => this.map.addLayer(layer));
-
+          let str: string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+          this.stationLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, MapSetup.getStationPointStyle(), false);
+          this.map.addLayer(this.stationLayer);
           break;
         }
         case "stratum": {
-          let str : string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          var layers: Layer[] = [
-            MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, s2, false)
-            //            MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/station_test.json', MapSetup.getStationPointStyle(), false)
-            //            MapSetup.getGeoJSONLayerFromURL("acoustic", '/assets/test/acoustic_test.json', MapSetup.getAcousticPointStyle(), true)
-
-          ];
-          layers.forEach(layer => this.map.addLayer(layer));
-
+          let str: string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+          this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, MapSetup.getStratumStyle(), false)
+          this.map.addLayer(this.stratumLayer);
           break;
         }
         default: {
@@ -202,7 +198,7 @@ export class MapComponent implements OnInit {
 
     var selected = [];
 
-    this.map.on('singleclick', e => {
+    /*this.map.on('singleclick', e => {
       console.log("shift " + shiftKeyOnly(e));
       this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
         var selIndex = selected.indexOf(f);
@@ -218,9 +214,12 @@ export class MapComponent implements OnInit {
           (<Feature>f).setStyle(null);
         }
       });
+    });*/
+
+    this.map.on('change', function (evt) {
+      console.info(evt);
+      // console.info(evt.originalEvent.keyIdentifier);
     });
-
-
     /*
     //this.map.on('click', this.onClick());
     var selectClick = new Select({

@@ -378,6 +378,18 @@ $nodata: #acacac;
 .editicon:before {
   @include icon_content("\f040", 0.7rem, rgb(19, 40, 58));
 }
+.freemoveicon:before {
+  @include icon_content("\f0b2", 0.7rem, rgb(19, 40, 58));
+}
+
+.addicon:before {
+  @include icon_content("\f067", 0.8rem, rgb(129, 133, 194), true);
+}
+
+.deleteicon:before {
+  @include icon_content("\f068", 0.8rem, rgb(206, 127, 127), true);
+}
+
 
 .blink {
   animation: blink 500ms infinite steps(1);
@@ -486,6 +498,9 @@ $nodata: #acacac;
   padding: 3px 3px !important;
 
 }
-.mat-raised-button {
+.mat-raised-button, .mat-button-toggle-label-content {
   padding: 0 0 !important;
+}
+.mat-button-toggle-label-content {
+  line-height: 1.2rem !important;
 }

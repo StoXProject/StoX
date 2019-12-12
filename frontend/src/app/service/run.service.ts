@@ -26,6 +26,7 @@ export class RunService {
       //      console.log(newVal);
         });
         //this.iaSubject.next('stratum');
+        this.reset();
     }
 
     getIAModeObs(): Observable<string> {
@@ -105,12 +106,13 @@ export class RunService {
             (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null) &&
             this.ps.activeModelName != null && this.ps.selectedModel.modelName === this.ps.activeModelName;
     }
-    reset() {
+        reset() {
         this.ps.runningProcessId = null;
         this.ps.activeModelName = null;
         this.ps.activeProcessId = null;
         this.ps.runFailedProcessId = null;
         this.dataService.log.length = 0;
+        this.iaSubject.next('reset'); // reset interactive mode set to reset
     }
 
     async runProcessIdx(iFrom: number, iTo: number) {

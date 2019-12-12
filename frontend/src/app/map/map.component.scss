@@ -8,8 +8,38 @@
   //border:solid; border-width:1px;
   width: 100%;
   height: calc(100% - (12px + 1.5rem));
-  background: #adcff1;
+  background: white;
+  //cursor: crosshair;
+  //background: #adcff1;
 }
+.stratum-edit {
+  cursor: crosshair;
+}
+
+.stratum {
+  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYAgMAAACdGdVrAAAAAXNSR0IB2cksfwAAAAlQTFRFDw8PAABn9vb2cjKVngAAAAN0Uk5T/wD/aewfvgAAAFhJREFUeJw9zLEJwDAQA0Cl+BE0gDvjKZw2VQj2SB7EncmU+bcgag6EENgjMJFEFoViiCmWeCmGmGI1UBy+ROOJknuQLwbJgcGeEXTHSx803vCLn7rxl419Mg4osi3k2GYAAAAASUVORK5CYII="), auto;
+}
+
+.acousticPSU {
+  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYAgMAAACdGdVrAAAAAXNSR0IB2cksfwAAAAlQTFRFDw8PAABn9vb2cjKVngAAAAN0Uk5T/wD/aewfvgAAAFhJREFUeJw9zLEJwDAQA0Cl+BE0gDvjKZw2VQj2SB7EncmU+bcgag6EENgjMJFEFoViiCmWeCmGmGI1UBy+ROOJknuQLwbJgcGeEXTHSx803vCLn7rxl419Mg4osi3k2GYAAAAASUVORK5CYII="), auto;
+}
+
+.sweptAreaPSU {
+  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYAgMAAACdGdVrAAAAAXNSR0IB2cksfwAAAAlQTFRFDw8PAABn9vb2cjKVngAAAAN0Uk5T/wD/aewfvgAAAFhJREFUeJw9zLEJwDAQA0Cl+BE0gDvjKZw2VQj2SB7EncmU+bcgag6EENgjMJFEFoViiCmWeCmGmGI1UBy+ROOJknuQLwbJgcGeEXTHSx803vCLn7rxl419Mg4osi3k2GYAAAAASUVORK5CYII="), auto;
+}
+
+.assignment {
+  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYAgMAAACdGdVrAAAAAXNSR0IB2cksfwAAAAlQTFRFDw8PAABn9vb2cjKVngAAAAN0Uk5T/wD/aewfvgAAAFhJREFUeJw9zLEJwDAQA0Cl+BE0gDvjKZw2VQj2SB7EncmU+bcgag6EENgjMJFEFoViiCmWeCmGmGI1UBy+ROOJknuQLwbJgcGeEXTHSx803vCLn7rxl419Mg4osi3k2GYAAAAASUVORK5CYII="), auto;
+}
+
+.station {
+  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYAgMAAACdGdVrAAAAAXNSR0IB2cksfwAAAAlQTFRFDw8PAABn9vb2cjKVngAAAAN0Uk5T/wD/aewfvgAAAFhJREFUeJw9zLEJwDAQA0Cl+BE0gDvjKZw2VQj2SB7EncmU+bcgag6EENgjMJFEFoViiCmWeCmGmGI1UBy+ROOJknuQLwbJgcGeEXTHSx803vCLn7rxl419Mg4osi3k2GYAAAAASUVORK5CYII="), auto;
+}
+
+.edsu {
+  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYAgMAAACdGdVrAAAAAXNSR0IB2cksfwAAAAlQTFRFDw8PAABn9vb2cjKVngAAAAN0Uk5T/wD/aewfvgAAAFhJREFUeJw9zLEJwDAQA0Cl+BE0gDvjKZw2VQj2SB7EncmU+bcgag6EENgjMJFEFoViiCmWeCmGmGI1UBy+ROOJknuQLwbJgcGeEXTHSx803vCLn7rxl419Mg4osi3k2GYAAAAASUVORK5CYII="), auto;
+}
+
 #mapstatus {
   //border:solid; border-width:1px;
   width: 100%;
@@ -22,6 +52,8 @@
   width: 100%;
   height: 1.5rem;
   font-size: 0.5rem;
+  line-height: 1rem;
+
 }
 
 #info {
