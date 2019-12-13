@@ -1,6 +1,12 @@
-<div id="mapcontainer">
+<div id="mapcontainer"[ngClass]="tool">
 	<mat-toolbar id="toolbar">
-		<button mat-raised-button><span class="rib absa editicon toolbar-button"></span></button>
+		<mat-button-toggle-group [(ngModel)]="tool">
+			<ng-container *ngFor="let t of tools">
+				<mat-button-toggle value="{{t.tool}}" [ngClass]="{disabled: !getToolEnabled(t.tool)}">
+					<span class="rib absa {{t.iclass}} toolbar-button"></span>
+				</mat-button-toggle>
+			</ng-container>
+		</mat-button-toggle-group>
 	</mat-toolbar>
 	<div id="map" (resized)="onResized($event)">
 		<div id="info"></div>

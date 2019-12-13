@@ -155,8 +155,7 @@ export class ProjectService {
       // }));
 
       if (this.processProperties != null) {
-        // this.m_helpContent = this.processProperties.help;
-        this.m_helpContent = this.processProperties.help; // this.sanitizer.bypassSecurityTrustHtml(this.processProperties.help);
+        this.helpContent = this.processProperties.help;
         this.propertyCategories = this.processProperties.propertySheet;
       }
 

@@ -48,6 +48,7 @@ import { RunComponent } from './run/run.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
 @NgModule({
@@ -78,7 +79,7 @@ import { MatButtonModule } from '@angular/material/button';
     KeyboardShortcutsModule.forRoot(),
     RouterModule.forRoot([]),
     MenuModule,//, PanelMenuModule
-    MatTabsModule, MatToolbarModule, MatButtonModule
+    MatTabsModule, MatToolbarModule, MatButtonModule,MatButtonToggleModule
 
   ],
   declarations: [
