@@ -1,5 +1,5 @@
 import { Injectable, SecurityContext } from '@angular/core';
-//import { Observable, of } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Project } from '../data/project';
 import { Process } from '../data/process';
 import { Model } from '../data/model';
@@ -30,7 +30,9 @@ export class ProjectService {
   runningProcessId: string = null; // current running process
 
   propertyCategories: PropertyCategory[] = [];
-  private m_helpContent: string = "" // SafeHtml = this.sanitizer.bypassSecurityTrustHtml("");
+  private m_helpContent: string = "";
+  private m_helpContentSubject = new Subject<string>();
+
   processProperties: ProcessProperties = null;
   userlog: string[] = [];
   constructor(private dataService: DataService /*, public sanitizer: DomSanitizer*/) {
@@ -84,8 +86,8 @@ export class ProjectService {
       // set project path and model name as parameter here
       // this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
       this.processes = <Process[]>await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise();
-      if(this.processes.length > 0) {
-        this.selectedProcess = this.processes[0]; 
+      if (this.processes.length > 0) {
+        this.selectedProcess = this.processes[0];
       }
       //var t1 = performance.now();
 
@@ -118,7 +120,7 @@ export class ProjectService {
     //console.log(status);
   }
 
-  public get selectedProcess() : Process {
+  public get selectedProcess(): Process {
     return this.m_selectedProcess;
   }
   public set selectedProcess(process: Process) {
@@ -127,14 +129,21 @@ export class ProjectService {
     this.onSelectedProcessChanged();
   }
 
-  public get helpContent() : string {
+  public get helpContent(): string {
     return this.m_helpContent;
   }
 
-  public set helpContent(content : string) {
+  // Set accessor for help content
+  public set helpContent(content: string) {
     this.m_helpContent = content;
+    // Propagate help content through subject.
+    this.m_helpContentSubject.next(this.m_helpContent);
   }
-  
+
+  public get helpContentSubject(): Subject<string> {
+    return this.m_helpContentSubject;
+  }
+
 
 
   async onSelectedProcessChanged() {

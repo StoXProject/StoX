@@ -167,7 +167,7 @@ export class MapComponent implements OnInit {
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect);
 
-    this.rs.getIAModeObs().subscribe(async mapMode => {
+    this.rs.iaModeSubject.subscribe(async mapMode => {
       switch (mapMode) {
         case "reset": {
           if (this.stationLayer != null) {

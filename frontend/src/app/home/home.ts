@@ -107,12 +107,12 @@ export class HomeComponent {
     },
     {
       label: 'Mapmode stratum', command: e => {
-        this.runService.setIAMode('stratum');
+        this.runService.iaMode = 'stratum';
       }
     },
     {
       label: 'Mapmode station', command: e => {
-        this.runService.setIAMode('station');
+        this.runService.iaMode = 'station';
       }
     }
 

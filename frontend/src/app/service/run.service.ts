@@ -17,24 +17,30 @@ import { RunModelResult } from './../data/runresult';
  * Manage Run process logic
  */
 export class RunService {
-    private iaMode = new Observable<string>();
-    private iaSubject = new Subject<string>();
+    private m_iaMode: string;
+    private m_iaModeSubject = new Subject<string>();
 
     constructor(private ps: ProjectService, private dataService: DataService) {
-        this.iaMode = this.iaSubject.asObservable();
-        this.iaMode.subscribe((newVal) => {
-      //      console.log(newVal);
+        //this.iaMode = this.iaSubject.asObservable();
+        this.m_iaModeSubject.subscribe({
+            next: (newVal) => {
+                //      console.log(newVal);
+            }
         });
         //this.iaSubject.next('stratum');
         this.reset();
     }
 
-    getIAModeObs(): Observable<string> {
-        return this.iaMode;
+    get iaModeSubject(): Subject<string> {
+        return this.m_iaModeSubject;
     }
 
-    setIAMode(iaMode: string) {
-        this.iaSubject.next(iaMode);
+    set iaMode(iaMode: string) {
+        this.m_iaMode = iaMode;
+        this.m_iaModeSubject.next(iaMode); // propagate event
+    }
+    get iaMode(): string {
+        return this.m_iaMode;
     }
 
     canRun(): boolean {
@@ -106,13 +112,13 @@ export class RunService {
             (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null) &&
             this.ps.activeModelName != null && this.ps.selectedModel.modelName === this.ps.activeModelName;
     }
-        reset() {
+    reset() {
         this.ps.runningProcessId = null;
         this.ps.activeModelName = null;
         this.ps.activeProcessId = null;
         this.ps.runFailedProcessId = null;
         this.dataService.log.length = 0;
-        this.iaSubject.next('reset'); // reset interactive mode set to reset
+        this.m_iaModeSubject.next('reset'); // reset interactive mode set to reset
     }
 
     async runProcessIdx(iFrom: number, iTo: number) {
@@ -126,7 +132,7 @@ export class RunService {
             let p = processes[i];
             this.ps.runningProcessId = p.processID;
             //console.log("Run process " + p.processName + " with id " + p.processID);
-            this.dataService.log.push( new UserLogEntry(UserLogType.MESSAGE, "Process " + p.processName)); 
+            this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "Process " + p.processName));
             let res: RunModelResult = await this.dataService.runModel(projectPath, modelName, i + 1, i + 1).toPromise();
 
             //console.log("run result: " + res);
@@ -145,7 +151,7 @@ export class RunService {
                 let ia: string = res.interactiveMode;//await this.dataService.getInteractiveMode(projectPath, modelName, this.ps.activeProcessId).toPromise();
                 //console.log("ia mode " + ia);
                 if (ia.length > 0) {
-                    this.setIAMode(ia);
+                    this.iaMode = ia;
                 }
                 //console.log("interactive mode:" + ia);
             }
