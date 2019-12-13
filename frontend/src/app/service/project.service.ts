@@ -19,6 +19,7 @@ export class ProjectService {
   outputTables: { table: string, output: ProcessOutput }[] = [];
 
   models: Model[];
+  
   selectedModel: Model = null;
 
   processes: Process[];
