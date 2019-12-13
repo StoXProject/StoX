@@ -1,9 +1,14 @@
 <p-tabView>
     <p-tabPanel header="Function description">
         <ng-template pTemplate="content">
-            <!-- Content to Lazy Load {{ps.helpContent}} -->
-            <!--TODO: Have to apply explicity sanatizing for trusted content to avoid core.js to sanatize-->
-             <div [innerHTML]="ps.helpContent" style="overflow:scroll;height:inherit;"></div>
+            <!--{{ps.helpContent}} -->
+            <!--TODO: Have to apply explicity sanatizing for trusted content to avoid core.js to sanatize
+             <div #vc></div>
+                
+             <div [innerHTML]="ps.helpContent" style="overflow:scroll;height:inherit;"></div>-->
+
+             <div #vc></div>
+             `
         </ng-template>
     </p-tabPanel>
 </p-tabView>

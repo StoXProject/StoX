@@ -8,6 +8,7 @@ import { DataService } from './data.service';
 import { ProcessProperties } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
 //import { DomSanitizer } from '@angular/platform-browser';
+// import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root'
@@ -28,10 +29,10 @@ export class ProjectService {
   runningProcessId: string = null; // current running process
 
   propertyCategories: PropertyCategory[] = [];
-  private m_helpContent: string = "";
+  private m_helpContent: string = "" // SafeHtml = this.sanitizer.bypassSecurityTrustHtml("");
   processProperties: ProcessProperties = null;
   userlog: string[] = [];
-  constructor(private dataService: DataService/*, private sanitizer: DomSanitizer*/) {
+  constructor(private dataService: DataService /*, public sanitizer: DomSanitizer*/) {
     this.initData();
   }
 
@@ -154,7 +155,8 @@ export class ProjectService {
       // }));
 
       if (this.processProperties != null) {
-        this.m_helpContent = this.processProperties.help;
+        // this.m_helpContent = this.processProperties.help;
+        this.m_helpContent = this.processProperties.help; // this.sanitizer.bypassSecurityTrustHtml(this.processProperties.help);
         this.propertyCategories = this.processProperties.propertySheet;
       }
 
@@ -167,7 +169,9 @@ export class ProjectService {
   async initializeProperties() {
     this.processProperties = null;
     this.propertyCategories = [];
-    this.m_helpContent = "";
+    this.m_helpContent = ""; // this.sanitizer.bypassSecurityTrustHtml("<html><body><a nohref onclick='HelpComponent.myClickHandler();return false;'>Click me</a></body></html>");
+    // this.m_helpContent = "<html><body><a href='#' click='myClickHandler($event)'>Click me</a></body></html>";
+    // this.m_helpContent = this.sanitizer.bypassSecurityTrustHtml("");
   }
 
   getProjects(): Project[] {
