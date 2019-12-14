@@ -139,7 +139,7 @@ export class ProjectService {
 
       var matches = content.match(/href=\"\.\.\/\.\.\/[a-z]+[0-9]*[a-z]*\/html\/[a-z]+[0-9]*[a-z]*\.html\"/ig);
       
-      console.log(matches);
+      console.log("matches : " + matches);
 
       if(matches != null) {
         
