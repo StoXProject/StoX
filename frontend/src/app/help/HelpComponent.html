@@ -4,11 +4,10 @@
             <!--{{ps.helpContent}} -->
             <!--TODO: Have to apply explicity sanatizing for trusted content to avoid core.js to sanatize
              <div #vc></div>
-                
              <div [innerHTML]="ps.helpContent" style="overflow:scroll;height:inherit;"></div>-->
+             
+             <div style="overflow:scroll;height:inherit;"><div #vc></div></div>
 
-             <div #vc></div>
-             `
         </ng-template>
     </p-tabPanel>
 </p-tabView>
