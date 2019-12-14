@@ -137,33 +137,28 @@ export class ProjectService {
   public set helpContent(content: string) {
     if(content != null) {
 
-      // var result = content.match(/href=\\"\.\.\/\.\./gi); 
-      
-      // console.log("new help : " + content);
-      // console.log("match result : " + result);
-
-      // let str = "I love JavaScript";
-
       var matches = content.match(/href=\"\.\.\/\.\.\/[a-z]+[0-9]*[a-z]*\/html\/[a-z]+[0-9]*[a-z]*\.html\"/ig);
       
       console.log(matches);
 
       if(matches != null) {
-        let i;
-        for ( i = 0; i < matches.length; i++) {
-          console.log(matches[i]);
-          var parameters = matches[i].split("/");
-          console.log(parameters);
-          var parameter1 = parameters[2];
-          var objectWithExtension = parameters[4];
+        
+        for (let i = 0; i < matches.length; i++) {
+          
+          var firstSplits = matches[i].split("/");
+          var parameter1 = firstSplits[2];
+          var lastInSplits = firstSplits[4];
+          var secondSplits = lastInSplits.split(".");
+          var parameter2 = secondSplits[0];
+
+          console.log("current match : " + matches[i]);
+          console.log("firstSplits : " + firstSplits);          
           console.log("parameter1 : " + parameter1);
-          console.log("objectWithExtension : " + objectWithExtension);
-
-          var objects = objectWithExtension.split(".");
-
-          var parameter2 = objects[0];
-
+          console.log("lastInSplits : " + lastInSplits);          
           console.log("parameter2 : " + parameter2);
+
+          // construct a string using parameter1 and parameter2
+          // replace matches[i] in content with constructed string
 
         }
       }
