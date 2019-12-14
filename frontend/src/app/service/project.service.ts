@@ -139,6 +139,7 @@ export class ProjectService {
 
       var matches = content.match(/href=\"\.\.\/\.\.\/[a-z]+[0-9]*[a-z]*\/html\/[a-z]+[0-9]*[a-z]*\.html\"/ig);
       
+      console.log("help content before replace : " + content);
       console.log("matches : " + matches);
 
       if(matches != null) {
@@ -160,7 +161,13 @@ export class ProjectService {
           // construct a string using parameter1 and parameter2
           // replace matches[i] in content with constructed string
 
+          // string to replace is of form (click)="onClick('parameter1', 'parameter2')" href="#"
+
+          var toReplace = "(click)=\"onClick('" + parameter1 + "' , '" + parameter2 + "')\" href=\"#\"";
+          content = content.replace(matches[i], toReplace);
         }
+
+        console.log("help content after replace : " + content);
       }
 
       this.m_helpContent = content;
