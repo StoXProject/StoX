@@ -188,6 +188,15 @@ export class DataService {
     });
   }
 
+  getObjectHelpAsHtml(packageName: string, objectName: string): Observable<any> {
+    
+    return this.runFunction('getObjectHelpAsHtml', {
+      "packageName": packageName, 
+      "objectName": objectName
+    });
+  }
+
+
   // getHelp(topic: string, help_type: string): Observable<any> {
   //   const formData = new FormData();
   //   formData.set('topic', "'" + topic + "'");

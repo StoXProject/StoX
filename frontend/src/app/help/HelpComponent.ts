@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit } from '@angular/core';
 import { ProjectService } from '../service/project.service';
+import { DataService } from '../service/data.service';
 
 import { Compiler, ComponentRef, Injector, NgModule, NgModuleRef, ViewContainerRef } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -26,7 +27,7 @@ export class HelpComponent {
 
   constructor(private compiler: Compiler,
     private injector: Injector,
-    private moduleRef: NgModuleRef<any>, public ps: ProjectService
+    private moduleRef: NgModuleRef<any>, private ps: ProjectService, private dataService: DataService
   ) {
 
     ps.helpContentSubject.subscribe((helpContent) => {
@@ -71,6 +72,7 @@ export class HelpComponent {
       this.onClick = (t1, t2) => {
         console.log(t1);
         console.log(t2);
+        this.dataService.getObjectHelpAsHtml(t1, t2).toPromise().then((help) => this.ps.helpContent=help);
       };
     }
     const tmpCmp = Component({ template, styles })(new TmpCmpConstructor().constructor);
@@ -79,7 +81,7 @@ export class HelpComponent {
     const tmpModule = NgModule({
       imports: [CommonModule],
       declarations: [tmpCmp /*, HelloComponent */],
-      // providers: [] - e.g. if your dynamic component needs any service, provide it here.
+      providers: [DataService]  // - e.g. if your dynamic component needs any service, provide it here.
     })(class { });
 
     // Now compile this module and component, and inject it into that #vc in your current component template.
