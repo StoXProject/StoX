@@ -188,7 +188,7 @@ export class DataService {
     });
   }
 
-  getObjectHelpAsHtml(packageName: string, objectName: string): Observable<any> {
+  getObjectHelpAsHtml(packageName: string, objectName: string): Observable<string> {
     
     return this.runFunction('getObjectHelpAsHtml', {
       "packageName": packageName, 
