@@ -2,7 +2,7 @@
 	<mat-toolbar id="toolbar">
 		<mat-button-toggle-group [(ngModel)]="tool">
 			<ng-container *ngFor="let t of tools">
-				<mat-button-toggle value="{{t.tool}}" [ngClass]="{disabled: !getToolEnabled(t.tool)}">
+				<mat-button-toggle value="{{t.tool}}" [disabled]="!getToolEnabled(t.tool)" [ngClass]="{disableButton: !getToolEnabled(t.tool)}">
 					<span class="rib absa {{t.iclass}} toolbar-button"></span>
 				</mat-button-toggle>
 			</ng-container>

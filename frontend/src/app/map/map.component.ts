@@ -56,7 +56,8 @@ export class MapComponent implements OnInit {
   stratumModify: Modify;
 
   private m_Tool: string = "";
-  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService) { }
+  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService) { 
+  }
   /*@HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     console.log(event);
@@ -75,12 +76,17 @@ export class MapComponent implements OnInit {
     { tool: "stratum-add", iclass: "addicon" },
     { tool: "stratum-delete", iclass: "deleteicon" }/*,
     { tool: "stratum-delete", iclass: "editicon" }*/
-    
+
   ];
   public getToolEnabled(tool: string): boolean {
     switch (tool) {
-      case "stratum-edit": return true; // or "Continue model" if active process > -1
+      case "freemove" : return true;
+      case "stratum-edit":
+      case "stratum-add":
+      case "stratum-delete":
+        return this.rs.iaMode == "stratum"; // or "Continue model" if active process > -1
     }
+    return false;
   }
 
   // set accessor for tool
@@ -180,13 +186,13 @@ export class MapComponent implements OnInit {
         }
         case "station": {
           let str: string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.stationLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, MapSetup.getStationPointStyle(), false);
+          this.stationLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStationPointStyle()], false);
           this.map.addLayer(this.stationLayer);
           break;
         }
         case "stratum": {
           let str: string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, MapSetup.getStratumStyle(), false)
+          this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStratumStyle()], false)
           this.map.addLayer(this.stratumLayer);
           break;
         }
