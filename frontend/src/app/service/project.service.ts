@@ -8,6 +8,7 @@ import { DataService } from './data.service';
 import { ProcessProperties } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
 //import { DomSanitizer } from '@angular/platform-browser';
+// import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class ProjectService {
   outputTables: { table: string, output: ProcessOutput }[] = [];
 
   models: Model[];
+  
   selectedModel: Model = null;
 
   processes: Process[];
@@ -33,7 +35,7 @@ export class ProjectService {
 
   processProperties: ProcessProperties = null;
   userlog: string[] = [];
-  constructor(private dataService: DataService/*, private sanitizer: DomSanitizer*/) {
+  constructor(private dataService: DataService /*, public sanitizer: DomSanitizer*/) {
     this.initData();
   }
 
@@ -133,9 +135,45 @@ export class ProjectService {
 
   // Set accessor for help content
   public set helpContent(content: string) {
-    this.m_helpContent = content;
-    // Propagate help content through subject.
-    this.m_helpContentSubject.next(this.m_helpContent);
+    if(content != null) {
+
+      var matches = content.match(/href=\"\.\.\/\.\.\/[a-z]+[0-9]*[a-z]*\/html\/[a-z]+[0-9]*[a-z]*\.html\"/ig);
+      
+      console.log("help content before replace : " + content);
+      console.log("matches : " + matches);
+
+      if(matches != null) {
+        
+        for (let i = 0; i < matches.length; i++) {
+          
+          var firstSplits = matches[i].split("/");
+          var parameter1 = firstSplits[2];
+          var lastInSplits = firstSplits[4];
+          var secondSplits = lastInSplits.split(".");
+          var parameter2 = secondSplits[0];
+
+          console.log("current match : " + matches[i]);
+          console.log("firstSplits : " + firstSplits);          
+          console.log("parameter1 : " + parameter1);
+          console.log("lastInSplits : " + lastInSplits);          
+          console.log("parameter2 : " + parameter2);
+
+          // construct a string using parameter1 and parameter2
+          // replace matches[i] in content with constructed string
+
+          // string to replace is of form (click)="onClick('parameter1', 'parameter2')" href="#"
+
+          var toReplace = "(click)=\"onClick('" + parameter1 + "' , '" + parameter2 + "')\" href=\"#\"";
+          content = content.replace(matches[i], toReplace);
+        }
+
+        console.log("help content after replace : " + content);
+      }
+
+      this.m_helpContent = content;
+      // Propagate help content through subject.
+      this.m_helpContentSubject.next(this.m_helpContent);
+    }
   }
 
   public get helpContentSubject(): Subject<string> {
@@ -176,7 +214,9 @@ export class ProjectService {
   async initializeProperties() {
     this.processProperties = null;
     this.propertyCategories = [];
-    this.m_helpContent = "";
+    this.m_helpContent = ""; // this.sanitizer.bypassSecurityTrustHtml("<html><body><a nohref onclick='HelpComponent.myClickHandler();return false;'>Click me</a></body></html>");
+    // this.m_helpContent = "<html><body><a href='#' click='myClickHandler($event)'>Click me</a></body></html>";
+    // this.m_helpContent = this.sanitizer.bypassSecurityTrustHtml("");
   }
 
   getProjects(): Project[] {
