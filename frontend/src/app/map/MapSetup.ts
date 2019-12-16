@@ -1,8 +1,10 @@
-import { Fill, Stroke, Style, RegularShape } from 'ol/style';
+import { Fill, Stroke, Style, RegularShape, Circle, Icon } from 'ol/style';
+import { Coordinate } from 'ol/coordinate';
 import { Layer, Vector } from 'ol/layer';
 import BaseObject from 'ol/Object';
 import { Vector as VectorSource } from 'ol/source';
-import {GeoJSON} from 'ol/format';
+import { GeoJSON } from 'ol/format';
+import { MultiPoint } from 'ol/geom';
 import * as Color from 'color';
 import { Button } from 'primeng/button';
 import MousePosition from 'ol/control/MousePosition';
@@ -18,7 +20,7 @@ export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
     public static DISTANCE_POINT_ANYSELECTED_COLOR: string = 'rgb(166, 200, 176)';
     public static DISTANCE_ABSENCE_POINT_COLOR: string = 'rgb(253, 244, 247)';
-    public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 240)';
+    public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226)';
     public static BG_COLOR = 'rgb(252, 255, 198)';
     static darken(c: string, f: number): string {
         return Color.rgb(Math.trunc(Color(c).red() * f), Math.trunc(Color(c).green() * f), Math.trunc(Color(c).blue() * f)).string();
@@ -35,21 +37,30 @@ export class MapSetup {
         });
     }
     static getPointStyle(fillColor: string, size: number): Style {
+        var svg = '<svg width="120" height="120" version="1.1" xmlns="http://www.w3.org/2000/svg">'
+            + '<rect width="300" height="300" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />'
+            + '</svg>';
 
-        return new Style({
+        var style = new Style({
+            image: new Icon({
+                opacity: 1,
+                src: 'data:image/svg+xml;utf8,' + svg,
+                scale: 1.0
+            })
+        });
+        return style;
+        /*return new Style({
             image: new RegularShape({
                 fill: new Fill({ color: fillColor }),
                 stroke: new Stroke({
-                    color: MapSetup.darken(fillColor, 0.9),
-                    width: 1.2/*,
-                    lineCap:"butt",
-                    lineJoin:"bevel"*/
+                    color: MapSetup.darken(fillColor, 0.7),
+                    width: 1.2
                 }),
                 points: size,
                 radius: size,
                 angle: Math.PI / size
             })
-        });
+        });*/
     }
 
     static getAcousticPointStyle(): Style {
@@ -62,7 +73,7 @@ export class MapSetup {
         return this.getPointStyle(this.DISTANCE_POINT_ANYSELECTED_COLOR, 6);
     }
     static getStationPointStyle(): Style {
-        return this.getPointStyle(this.STATION_POINT_COLOR, 8);
+        return this.getPointStyle(this.STATION_POINT_COLOR, 4);
     }
     static getPolygonStyle(fillColor: string, strokeColor: string, strokeWidth: number): Style {
         return new Style({
@@ -77,6 +88,15 @@ export class MapSetup {
     }
     static getStratumStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.05)', 'rgba(0, 0, 0, 0.2)', 1);
+    }
+    static getStratumNodeStyle(): Style {
+        let s: Style = MapSetup.getPointStyle("rgba(255, 0, 0, 0.7)", 4);
+        s.setGeometry(f => {
+            var coordinates: Coordinate[] = [].concat(...(<Point>f.getGeometry()).getCoordinates());
+            return new MultiPoint(coordinates);
+        })
+        return s;
+
     }
     static getStratumSelectStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(255, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 2);
@@ -100,7 +120,7 @@ export class MapSetup {
             layers: function (layer) {
                 return layer.get('name') == 'stratum';
             },
-            style: this.getStratumSelectStyle(),
+            style: [this.getStratumSelectStyle(), MapSetup.getStratumNodeStyle()],
             multi: false
         });
     }
@@ -109,10 +129,10 @@ export class MapSetup {
      * getGEOJSONLayerFromURL - create a GEOJSON layer
      * @param name 
      * @param url 
-     * @param style 
+     * @param styles 
      * @param selectable 
      */
-    static getGeoJSONLayerFromFeatureString(name: string, feat: string, proj: string, style: Style, selectable: boolean): Layer {
+    static getGeoJSONLayerFromFeatureString(name: string, feat: string, proj: string, styles: Style[], selectable: boolean): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
             features: (new GeoJSON).readFeatures(JSON.parse(feat), {
@@ -122,7 +142,7 @@ export class MapSetup {
         });
         var v: Vector = new Vector({
             source: s,
-            style: style,
+            style: styles,
         });
         s.on("addfeature", ft => {
             ft.feature.set("layer", v);
@@ -132,7 +152,7 @@ export class MapSetup {
         // Set layer properties
         v.set("selectable", selectable);
         v.set("name", name);
-        v.set("style", style);
+        v.set("style", styles);
         // Create a feature->layer link
         //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));
         return v;
