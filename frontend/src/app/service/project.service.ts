@@ -137,7 +137,7 @@ export class ProjectService {
   public set helpContent(content: string) {
     if(content != null) {
 
-      var matches = content.match(/href=\"\.\.\/\.\.\/[a-z]+[0-9]*[a-z]*\/html\/[a-z]+[0-9]*[a-z]*\.html\"/ig);
+      var matches = content.match(/href=\"\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html\"/ig);
       
       console.log("help content before replace : " + content);
       console.log("matches : " + matches);
