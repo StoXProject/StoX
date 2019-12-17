@@ -31,11 +31,10 @@ export class HelpComponent {
   ) {
 
     ps.helpContentSubject.subscribe((helpContent) => {
-      this.createComponentFromRaw(helpContent);
+      this.createComponentFromRaw(helpContent, this.ps, this.dataService);
       console.log("helpContent changed");
     }
     );
-
   }
 
   // ngAfterViewInit() {
@@ -55,9 +54,8 @@ export class HelpComponent {
 
   //   // this.createComponentFromRaw(this.ps.helpContent);
   // }
-
-  // Here we create the component.
-  private createComponentFromRaw(template: string) {
+   // Here we create the component.
+  private createComponentFromRaw(template: string, ps: ProjectService, dataService: DataService) {
     if (this.cmpRef) {
       this.cmpRef.destroy();
     }
@@ -67,12 +65,13 @@ export class HelpComponent {
     // Now we create a new component. It has that template, and we can even give it data.
     const styles = [];
     function TmpCmpConstructor() {
+
       // this.data = { some: 'data' };
       // this.getX = () => 'X';
-      this.onClick = (t1, t2) => {
+      this.onClick = async (t1, t2) => {
         console.log(t1);
         console.log(t2);
-        this.dataService.getObjectHelpAsHtml(t1, t2).toPromise().then((help) => this.ps.helpContent=help);
+        ps.helpContent = await dataService.getObjectHelpAsHtml(t1, t2).toPromise();
       };
     }
     const tmpCmp = Component({ template, styles })(new TmpCmpConstructor().constructor);
@@ -81,7 +80,7 @@ export class HelpComponent {
     const tmpModule = NgModule({
       imports: [CommonModule],
       declarations: [tmpCmp /*, HelloComponent */],
-      providers: [DataService]  // - e.g. if your dynamic component needs any service, provide it here.
+      // providers: [] - e.g. if your dynamic component needs any service, provide it here.
     })(class { });
 
     // Now compile this module and component, and inject it into that #vc in your current component template.
