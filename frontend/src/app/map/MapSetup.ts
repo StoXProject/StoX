@@ -37,8 +37,8 @@ export class MapSetup {
         });
     }
     static getPointStyle(fillColor: string, size: number): Style {
-        var svg = '<svg width="120" height="120" version="1.1" xmlns="http://www.w3.org/2000/svg">'
-            + '<rect width="300" height="300" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />'
+        var svg = '<svg width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">'
+            + '<rect width="20" height="20" style="fill:rgb(56, 141, 226);stroke-width:3;stroke:rgb(0,0,0)" />'
             + '</svg>';
 
         var style = new Style({
