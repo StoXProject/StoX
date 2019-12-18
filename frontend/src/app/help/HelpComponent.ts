@@ -1,16 +1,22 @@
-import { Component, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit } from '@angular/core';
+import {
+  Component, Renderer2, ElementRef, Inject, HostListener/*, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit, OnDestroy,
+  AfterContentInit, ComponentFactoryResolver, Input, Injectable, Compiler, 
+  ComponentRef, Injector, NgModule, NgModuleRef, ViewContainerRef*/
+} from '@angular/core';
+//import { BrowserModule } from '@angular/platform-browser';
 import { ProjectService } from '../service/project.service';
-import { DataService } from '../service/data.service';
+//import { DataService } from '../service/data.service';
 
-import { Compiler, ComponentRef, Injector, NgModule, NgModuleRef, ViewContainerRef } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
+//import { CommonModule } from "@angular/common";
+//import { RouterModule } from "@angular/router";
 
 @Component({
   selector: 'app-help',
   templateUrl: './HelpComponent.html',
   styleUrls: []
 })
+
+// https://stackblitz.com/edit/angular-dynamic-content-viewer?file=app%2Fdynamic-content-viewer.ts
 export class HelpComponent {
 
   // constructor(public ps: ProjectService) {
@@ -21,41 +27,39 @@ export class HelpComponent {
 
   // }
 
-  @ViewChild('vc', { read: ViewContainerRef, static: false }) vc: ViewContainerRef;
+  //@ViewChild('vc', { read: ViewContainerRef, static: false }) vc: ViewContainerRef;
 
-  private cmpRef: ComponentRef<any>;
-
-  constructor(private compiler: Compiler,
-    private injector: Injector,
-    private moduleRef: NgModuleRef<any>, private ps: ProjectService, private dataService: DataService
+  //private cmpRef: ComponentRef<any>;
+  elementRef: ElementRef;
+  constructor(private ps: ProjectService,/*, private dataService: DataService*/
+    private renderer: Renderer2, @Inject(ElementRef) elementRef: ElementRef
   ) {
-
+    this.elementRef = elementRef;
     ps.helpContentSubject.subscribe((helpContent) => {
-      this.createComponentFromRaw(helpContent, this.ps, this.dataService);
+     // this.elementRef.nativeElement.querySelector('a').addEventListener('click', this.onClick.bind(this));
+      /*for (var i = 0; i < anchors.length; i++) {
+        this.renderer.listen(anchors[i], 'onclick', function ($event) {
+          this.functionToCall($event.target);
+        });
+      };*/
+      //this.addComponent(helpContent, this.ps, this.dataService);
       console.log("helpContent changed");
     }
     );
+    //this.renderer.listen()
+  }
+  onClick(target) {
+    console.log("click:" + target);
+
   }
 
-  // ngAfterViewInit() {
-  //   // Here, get your HTML from backend.
-  //   this.createComponentFromRaw(`<!DOddfsdfCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0Strict//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"><html><head></head>
-  //   <body><div style="border: 1px solid blue; margin: 5px; padding: 5px">
-  //   <h3>Start Raw Component ... </h3> 
+  /*@HostListener('document:click', ['$event'])
+  clickout(event) {
+    console.log("clicked " + event); 
+  }*/
 
-  //   <a (click)="onC('test')" href="#">test</a> &nbsp; &nbsp;&nbsp;&nbsp;
-  //   <a (click)="onC('test2')" href="#">test2</a> 
-
-  //   </div></body></html>`);
-
-  //   // console.log("this.ps.helpContent : " + this.ps.helpContent);
-
-  //   // // this.createComponentFromRaw("`" + this.ps.helpContent + "`"); 
-
-  //   // this.createComponentFromRaw(this.ps.helpContent);
-  // }
-   // Here we create the component.
-  private createComponentFromRaw(template: string, ps: ProjectService, dataService: DataService) {
+  // Here we create the component.
+  /*private addComponent(template: string, ps: ProjectService, dataService: DataService) {
     if (this.cmpRef) {
       this.cmpRef.destroy();
     }
@@ -63,41 +67,38 @@ export class HelpComponent {
     // As you see, it has an (existing) angular component `some-component` and it injects it [data]
 
     // Now we create a new component. It has that template, and we can even give it data.
-    const styles = [];
-    function TmpCmpConstructor() {
-
-      // this.data = { some: 'data' };
-      // this.getX = () => 'X';
-      this.onClick = async (t1, t2) => {
+    @Component({ 
+      template: template
+    })
+    class DynamicComponent {
+      constructor() { }
+      /*async onClick(t1, t2) {
         console.log(t1);
         console.log(t2);
         ps.helpContent = await dataService.getObjectHelpAsHtml(t1, t2).toPromise();
-      };
-    }
-    const tmpCmp = Component({ template, styles })(new TmpCmpConstructor().constructor);
+      };*/
+  /*}
+  // Now, also create a dynamic module.
+  @NgModule({
+    imports: [BrowserModule],
+    declarations: [DynamicComponent /*, HelloComponent *///],
+  // providers: [] - e.g. if your dynamic component needs any service, provide it here.
+  /* })
+   class DynamicComponentModule { }
 
-    // Now, also create a dynamic module.
-    const tmpModule = NgModule({
-      imports: [CommonModule],
-      declarations: [tmpCmp /*, HelloComponent */],
-      // providers: [] - e.g. if your dynamic component needs any service, provide it here.
-    })(class { });
+   // Now compile this module and component, and inject it into that #vc in your current component template.
+   const mod = this.compiler.compileModuleAndAllComponentsSync(DynamicComponentModule);
+   const factory = mod.componentFactories.find((comp) =>
+     comp.componentType === DynamicComponent
+   );
+   this.cmpRef = this.vc.createComponent(factory);
+ }
 
-    // Now compile this module and component, and inject it into that #vc in your current component template.
-    this.compiler.compileModuleAndAllComponentsAsync(tmpModule)
-      .then((factories) => {
-        const f = factories.componentFactories[0];
-        this.cmpRef = f.create(this.injector, [], null, this.moduleRef);
-        this.cmpRef.instance.name = 'my-dynamic-component';
-        this.vc.insert(this.cmpRef.hostView);
-      });
-  }
-
-  // Cleanup properly. You can add more cleanup-related stuff here.
-  ngOnDestroy() {
-    if (this.cmpRef) {
-      this.cmpRef.destroy();
-    }
-  }
+ // Cleanup properly. You can add more cleanup-related stuff here.
+ ngOnDestroy() {
+   if (this.cmpRef) {
+     this.cmpRef.destroy();
+   }
+ }*/
 
 }

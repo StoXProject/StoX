@@ -163,14 +163,12 @@ export class ProjectService {
 
           // string to replace is of form (click)="onClick('parameter1', 'parameter2')" href="#"
 
-          var toReplace = "(click)=\"onClick('" + parameter1 + "' , '" + parameter2 + "')\" href=\"#\"";
-          content = content.replace(matches[i], toReplace);
+          var toReplace = "onclick=\"onHelpClicked('" + parameter1 + "' , '" + parameter2 + "')\" href=\"#\"";
+          content = content.replace(matches[i], toReplace); 
         }
-
-        console.log("help content after replace : " + content);
       }
 
-      this.m_helpContent = content;
+      this.m_helpContent = content; 
       // Propagate help content through subject.
       this.m_helpContentSubject.next(this.m_helpContent);
     }
