@@ -31,7 +31,6 @@ export class ProjectService {
 
   propertyCategories: PropertyCategory[] = [];
   private m_helpContent: string = "";
-  private m_helpContentSubject = new Subject<string>();
 
   processProperties: ProcessProperties = null;
   userlog: string[] = [];
@@ -135,50 +134,8 @@ export class ProjectService {
 
   // Set accessor for help content
   public set helpContent(content: string) {
-   /* if(content != null) {
-
-      var matches = content.match(/href=\"\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html\"/ig);
-      
-      console.log("help content before replace : " + content);
-      console.log("matches : " + matches);
-
-      if(matches != null) {
-        
-        for (let i = 0; i < matches.length; i++) {
-          
-          var firstSplits = matches[i].split("/");
-          var parameter1 = firstSplits[2];
-          var lastInSplits = firstSplits[4];
-          var secondSplits = lastInSplits.split(".");
-          var parameter2 = secondSplits[0];
-
-          console.log("current match : " + matches[i]);
-          console.log("firstSplits : " + firstSplits);          
-          console.log("parameter1 : " + parameter1);
-          console.log("lastInSplits : " + lastInSplits);          
-          console.log("parameter2 : " + parameter2);
-
-          // construct a string using parameter1 and parameter2
-          // replace matches[i] in content with constructed string
-
-          // string to replace is of form (click)="onClick('parameter1', 'parameter2')" href="#"
-
-          var toReplace = "onclick=\"onHelpClicked('" + parameter1 + "' , '" + parameter2 + "')\" href=\"#\"";
-          content = content.replace(matches[i], toReplace); 
-        }
-      }*/
-
       this.m_helpContent = content; 
-      // Propagate help content through subject.
-     // this.m_helpContentSubject.next(this.m_helpContent);
-    //}
   }
-
-  public get helpContentSubject(): Subject<string> {
-    return this.m_helpContentSubject;
-  }
-
-
 
   async onSelectedProcessChanged() {
 
