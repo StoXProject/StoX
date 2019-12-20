@@ -135,7 +135,7 @@ export class ProjectService {
 
   // Set accessor for help content
   public set helpContent(content: string) {
-    if(content != null) {
+   /* if(content != null) {
 
       var matches = content.match(/href=\"\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html\"/ig);
       
@@ -166,12 +166,12 @@ export class ProjectService {
           var toReplace = "onclick=\"onHelpClicked('" + parameter1 + "' , '" + parameter2 + "')\" href=\"#\"";
           content = content.replace(matches[i], toReplace); 
         }
-      }
+      }*/
 
       this.m_helpContent = content; 
       // Propagate help content through subject.
-      this.m_helpContentSubject.next(this.m_helpContent);
-    }
+     // this.m_helpContentSubject.next(this.m_helpContent);
+    //}
   }
 
   public get helpContentSubject(): Subject<string> {

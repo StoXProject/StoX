@@ -10,7 +10,7 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
 import { UserLogComponent } from './output/userlog/userlog.component';
 import { OutputComponent } from './output/output/output.component';
-import {HelpComponent} from './help/HelpComponent'
+import {HelpComponent, HTMLContentHandler, SanitizeHtmlPipe} from './help/HelpComponent'
 import { MapComponent } from './map/map.component';
 import { FormsModule } from '@angular/forms';
 import { ProcessComponent } from './process/process.component';
@@ -97,7 +97,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     RunComponent,
     UserLogComponent,
     OutputComponent,
-    HelpComponent
+    HelpComponent, HTMLContentHandler, SanitizeHtmlPipe
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },

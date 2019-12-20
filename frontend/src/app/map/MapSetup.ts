@@ -15,6 +15,8 @@ import { fromLonLat } from 'ol/proj';
 import { rgb } from 'color-convert/conversions';
 import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
+import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
@@ -101,14 +103,16 @@ export class MapSetup {
     static getStratumSelectStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(255, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 2);
     }
-    static createStratumModifyInteraction(select: Select) {
+    static createStratumModifyInteraction(select: Select, dataService: DataService, ps : ProjectService) {
         let m: Modify = new Modify({
             features: select.getFeatures()/*,
             deleteCondition: e => singleClick(e) && shiftKeyOnly(e)*/
         })
         m.on('modifyend', function (e) {
             // Add the features back to API.
-            console.log((new GeoJSON()).writeFeatures(e.features.getArray()));
+            let s = (new GeoJSON()).writeFeatures(e.features.getArray());
+            console.log(s);
+            dataService.modifyStratum(s, ps.selectedProject.projectName, ps.selectedModel.modelName, ps.activeProcessId);
             console.log("modifyend features:", e.features.getArray());
         });
         return m;

@@ -373,8 +373,13 @@ export class DataService {
   getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {
     return this.runProcessFunc<string>('getInteractiveMode', projectPath, modelName, processID);
   }
+  
   getMapData(projectPath: string, modelName: string, processID: string): Observable<string> {
     return this.runProcessFunc<string>('getMapData', projectPath, modelName, processID);
+  }
+
+  modifyStratum(stratum : string, projectPath: string, modelName: string, processID: string): Observable<string> {
+    return this.runProcessFunc<string>('modifyStratum', projectPath, modelName, processID);
   }
 
   getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<ProcessOutput> {
