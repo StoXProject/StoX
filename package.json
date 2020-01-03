@@ -13,7 +13,7 @@
     "installer-mac": "electron-installer-dmg . stoxdmg",
     "package-and-installer-win": "npm run package-win && npm run installer-win",
     "package-and-installer-sign-win": "npm run package-win && npm run signstox && npm run installer-win && npm run signinstaller",
-    "build-frontend": "cd frontend && npm install && ng build --prod --base-href && cd ..",
+    "build-frontend": "cd frontend && npm install && ng build --prod --base-href --aot=true --aot=true --build--optimizer=true && cd ..",
     "signstox": "signtool.exe sign /a ./dist/stox-win32-x64/stox.exe",
     "signinstaller": "signtool.exe sign /a ./dist/windows-installer/stoxInstaller.exe",
     "tsc": "tsc"

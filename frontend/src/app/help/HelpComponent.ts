@@ -1,103 +1,77 @@
-import { Component, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit } from '@angular/core';
+import { Component, Directive, HostListener, Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
 
-import { Compiler, ComponentRef, Injector, NgModule, NgModuleRef, ViewContainerRef } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
+/**
+ * Declare a angular sanitizing pipe to bypass trusted html, and skip sanitizing and warning.
+ * This is ok for help html that is trusted through APIs.
+ */
+@Pipe({
+  name: 'sanitizeHtml'
+})
+export class SanitizeHtmlPipe implements PipeTransform {
+  constructor(private _sanitizer: DomSanitizer) { }
+
+  transform(value: string): SafeHtml {
+    return this._sanitizer.bypassSecurityTrustHtml(value);
+  }
+}
+
+/**
+ * Help Content Handler class representing div with directive helpContent and innerhtml
+ * This class will listen on DOM event click at the innerhtml.
+ * Clicking hrefs will be prevented by default and stopped propagation in a synch. onClick handler
+ * The help content will be updated based on packagename and objectName. Since the onClick must be synch,
+ * the api route must handle the result asynch, and not synch as in async/await.
+ */
+@Directive({
+  selector: "[helpContent]"
+})
+export class HelpContentHandler {
+
+  constructor(private ps: ProjectService, private dataService: DataService) {
+  }
+
+  /**
+   * DOM click event handler. The HOST is the element the helpContent directive is attached to.
+   * @param elm 
+   */
+  @HostListener("click", ["$event.target"]) onClick(elm: HTMLElement) {
+    if (elm.tagName.toUpperCase() == "A") { // handle element <a>
+      let hRefAttr : Attr = elm.attributes["href"]; 
+      if (hRefAttr != null) {
+        this.updateHelpContentByHref(hRefAttr.value);
+        return false; // prevent default and stop propagation in a synchr. manner
+      }
+    }
+    return true; // allow default handler and up-propagation
+  }
+
+  /**
+   * Rstox help hyper links contains package/object info.
+   * When the href is clicked, this function will call the API and update help content.
+   * async update of helpcontent via then operator
+   * @param hRef on the form ../../packageName/html/objectName.html
+   */
+  private updateHelpContentByHref(hRef: string) {
+    var matches = hRef.match(/\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html/ig);
+    if (matches != null && matches.length == 1) {
+      var splitElms = matches[0].split("/");
+      var packageName = splitElms[2];
+      var fileName = splitElms[4];
+      var fileNameElms = fileName.split(".");
+      var objectName = fileNameElms[0];
+      this.dataService.getObjectHelpAsHtml(packageName, objectName).toPromise().then(s =>this.ps.helpContent = s) 
+    }
+  }
+}
 
 @Component({
   selector: 'app-help',
   templateUrl: './HelpComponent.html',
-  styleUrls: []
+  styleUrls: [],
 })
 export class HelpComponent {
-
-  // constructor(public ps: ProjectService) {
-
-  // }
-
-  // async ngOnInit() { 
-
-  // }
-
-  @ViewChild('vc', { read: ViewContainerRef, static: false }) vc: ViewContainerRef;
-
-  private cmpRef: ComponentRef<any>;
-
-  constructor(private compiler: Compiler,
-    private injector: Injector,
-    private moduleRef: NgModuleRef<any>, private ps: ProjectService, private dataService: DataService
-  ) {
-
-    ps.helpContentSubject.subscribe((helpContent) => {
-      this.createComponentFromRaw(helpContent, this.ps, this.dataService);
-      console.log("helpContent changed");
-    }
-    );
-  }
-
-  // ngAfterViewInit() {
-  //   // Here, get your HTML from backend.
-  //   this.createComponentFromRaw(`<!DOddfsdfCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0Strict//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"><html><head></head>
-  //   <body><div style="border: 1px solid blue; margin: 5px; padding: 5px">
-  //   <h3>Start Raw Component ... </h3> 
-
-  //   <a (click)="onC('test')" href="#">test</a> &nbsp; &nbsp;&nbsp;&nbsp;
-  //   <a (click)="onC('test2')" href="#">test2</a> 
-
-  //   </div></body></html>`);
-
-  //   // console.log("this.ps.helpContent : " + this.ps.helpContent);
-
-  //   // // this.createComponentFromRaw("`" + this.ps.helpContent + "`"); 
-
-  //   // this.createComponentFromRaw(this.ps.helpContent);
-  // }
-   // Here we create the component.
-  private createComponentFromRaw(template: string, ps: ProjectService, dataService: DataService) {
-    if (this.cmpRef) {
-      this.cmpRef.destroy();
-    }
-    // Let's say your template looks like `<h2><some-component [data]="data"></some-component>`
-    // As you see, it has an (existing) angular component `some-component` and it injects it [data]
-
-    // Now we create a new component. It has that template, and we can even give it data.
-    const styles = [];
-    function TmpCmpConstructor() {
-
-      // this.data = { some: 'data' };
-      // this.getX = () => 'X';
-      this.onClick = async (t1, t2) => {
-        console.log(t1);
-        console.log(t2);
-        ps.helpContent = await dataService.getObjectHelpAsHtml(t1, t2).toPromise();
-      };
-    }
-    const tmpCmp = Component({ template, styles })(new TmpCmpConstructor().constructor);
-
-    // Now, also create a dynamic module.
-    const tmpModule = NgModule({
-      imports: [CommonModule],
-      declarations: [tmpCmp /*, HelloComponent */],
-      // providers: [] - e.g. if your dynamic component needs any service, provide it here.
-    })(class { });
-
-    // Now compile this module and component, and inject it into that #vc in your current component template.
-    this.compiler.compileModuleAndAllComponentsAsync(tmpModule)
-      .then((factories) => {
-        const f = factories.componentFactories[0];
-        this.cmpRef = f.create(this.injector, [], null, this.moduleRef);
-        this.cmpRef.instance.name = 'my-dynamic-component';
-        this.vc.insert(this.cmpRef.hostView);
-      });
-  }
-
-  // Cleanup properly. You can add more cleanup-related stuff here.
-  ngOnDestroy() {
-    if (this.cmpRef) {
-      this.cmpRef.destroy();
-    }
-  }
-
+  constructor(private ps: ProjectService, ) { }
 }

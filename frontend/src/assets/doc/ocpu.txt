@@ -6,16 +6,14 @@ runFunction
 POST 
 ../library/RstoxFramework/R/runFunction/json?auto_unbox=TRUE
 
+    {"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3","modelName":"Baseline","startProcess":2,"endProcess":2,"save":false}
+
 closeProject
-'{
-"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3",
-"save":false
-}'
+{"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3",
+"save":false}
 
 openProject
-'{
-"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3"
-}'
+{"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3"}
 
 runModel
 '{

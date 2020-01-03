@@ -171,7 +171,7 @@ export class MapComponent implements OnInit {
       controls: [MapSetup.getMousePositionControl()]
     });
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
-    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect);
+    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps);
 
     this.rs.iaModeSubject.subscribe(async mapMode => {
       switch (mapMode) {
