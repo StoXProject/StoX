@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home';
 import { RConnectionDlg } from './dlg/RConnectionDlg';
 import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
 import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
+import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
 import { MessageDlg } from './message/MessageDlg';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
@@ -30,6 +31,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+import {PanelModule} from 'primeng/panel';
 import { DropdownModule } from 'primeng/primeng';
 //import {RouterModule } from '@angular/router';
 import { RouterModule } from '@angular/router';
@@ -57,6 +59,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     ButtonModule,
     InputTextModule,
     DialogModule,
+    PanelModule,
     DropdownModule,
     FormsModule,
     TabViewModule,
@@ -87,6 +90,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     RConnectionDlg,
     CreateProjectDialog,
     OpenProjectDlg,
+    ExpressionBuilderDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,

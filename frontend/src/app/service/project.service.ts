@@ -139,8 +139,8 @@ export class ProjectService {
 
       var matches = content.match(/href=\"\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html\"/ig);
       
-      console.log("help content before replace : " + content);
-      console.log("matches : " + matches);
+      // console.log("help content before replace : " + content);
+      // console.log("matches : " + matches);
 
       if(matches != null) {
         
@@ -152,11 +152,11 @@ export class ProjectService {
           var secondSplits = lastInSplits.split(".");
           var parameter2 = secondSplits[0];
 
-          console.log("current match : " + matches[i]);
-          console.log("firstSplits : " + firstSplits);          
-          console.log("parameter1 : " + parameter1);
-          console.log("lastInSplits : " + lastInSplits);          
-          console.log("parameter2 : " + parameter2);
+          // console.log("current match : " + matches[i]);
+          // console.log("firstSplits : " + firstSplits);          
+          // console.log("parameter1 : " + parameter1);
+          // console.log("lastInSplits : " + lastInSplits);          
+          // console.log("parameter2 : " + parameter2);
 
           // construct a string using parameter1 and parameter2
           // replace matches[i] in content with constructed string
@@ -167,7 +167,7 @@ export class ProjectService {
           content = content.replace(matches[i], toReplace);
         }
 
-        console.log("help content after replace : " + content);
+        // console.log("help content after replace : " + content);
       }
 
       this.m_helpContent = content;
