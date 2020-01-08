@@ -1,5 +1,5 @@
 import { ExpressionBuilderDlgService } from './ExpressionBuilderDlgService';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({
     selector: 'ExpressionBuilderDlg',
@@ -7,6 +7,11 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: []
   })
 export class ExpressionBuilderDlg  implements OnInit {
+
+    expression: string = "";
+
+    @Output() messageEvent = new EventEmitter<string>();
+
     constructor(public service: ExpressionBuilderDlgService) {
         console.log("start ExpressionBuilderDlg constructor");
     }
@@ -18,6 +23,9 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     async apply() {
         console.log("start ExpressionBuilderDlg.apply()");
+
+        // this.messageEvent.emit(this.expression);
+
         this.service.display = false;
     }
 }
