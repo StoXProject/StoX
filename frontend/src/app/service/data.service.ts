@@ -378,8 +378,16 @@ export class DataService {
     return this.runProcessFunc<string>('getMapData', projectPath, modelName, processID);
   }
 
-  modifyStratum(stratum : string, projectPath: string, modelName: string, processID: string): Observable<string> {
-    return this.runProcessFunc<string>('modifyStratum', projectPath, modelName, processID);
+  modifyStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<string> {
+    return this.runFunction('modifyStratum', { "stratum" : stratum,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
+  addStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<string> {
+    return this.runFunction('addStratum', { "stratum" : stratum,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
   }
 
   getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<ProcessOutput> {

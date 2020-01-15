@@ -11,6 +11,7 @@ import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
+import GeometryType from 'ol/geom/GeometryType';
 import { fromLonLat } from 'ol/proj';
 import { rgb } from 'color-convert/conversions';
 import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
@@ -22,7 +23,8 @@ export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
     public static DISTANCE_POINT_ANYSELECTED_COLOR: string = 'rgb(166, 200, 176)';
     public static DISTANCE_ABSENCE_POINT_COLOR: string = 'rgb(253, 244, 247)';
-    public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226)';
+    public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
+    public static POINT_OUTLINE_COLOR: string = 'rgb(0, 0, 0, 0.3)';
     public static BG_COLOR = 'rgb(252, 255, 198)';
     static darken(c: string, f: number): string {
         return Color.rgb(Math.trunc(Color(c).red() * f), Math.trunc(Color(c).green() * f), Math.trunc(Color(c).blue() * f)).string();
@@ -38,9 +40,10 @@ export class MapSetup {
             })
         });
     }
-    static getPointStyle(fillColor: string, size: number): Style {
-        var svg = '<svg width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">'
-            + '<rect width="20" height="20" style="fill:rgb(56, 141, 226);stroke-width:3;stroke:rgb(0,0,0)" />'
+    static getPointStyle(fillColor: string, outlineColor : string, size: number): Style {
+        var svg = '<svg width="' + size + 'px" height="' + size + 'px" version="1.1" xmlns="http://www.w3.org/2000/svg">'
+            + '<rect width="' + size + 'px" height="' + size + 'px" style="fill:' + fillColor + 
+            ';stroke-width:3;stroke:' + outlineColor + '" />'
             + '</svg>';
 
         var style = new Style({
@@ -66,16 +69,16 @@ export class MapSetup {
     }
 
     static getAcousticPointStyle(): Style {
-        return this.getPointStyle(this.DISTANCE_POINT_COLOR, 6);
+        return this.getPointStyle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleSelected(): Style {
-        return this.getPointStyle(MapSetup.darken(this.DISTANCE_POINT_ANYSELECTED_COLOR, 0.5), 6);
+        return this.getPointStyle(MapSetup.darken(this.DISTANCE_POINT_ANYSELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleAnySelected(): Style {
-        return this.getPointStyle(this.DISTANCE_POINT_ANYSELECTED_COLOR, 6);
+        return this.getPointStyle(this.DISTANCE_POINT_ANYSELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
     static getStationPointStyle(): Style {
-        return this.getPointStyle(this.STATION_POINT_COLOR, 4);
+        return this.getPointStyle(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
     }
     static getPolygonStyle(fillColor: string, strokeColor: string, strokeWidth: number): Style {
         return new Style({
@@ -92,7 +95,7 @@ export class MapSetup {
         return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.05)', 'rgba(0, 0, 0, 0.2)', 1);
     }
     static getStratumNodeStyle(): Style {
-        let s: Style = MapSetup.getPointStyle("rgba(255, 0, 0, 0.7)", 4);
+        let s: Style = MapSetup.getPointStyle("rgba(255, 0, 0, 0.7)", MapSetup.POINT_OUTLINE_COLOR, 6);
         s.setGeometry(f => {
             var coordinates: Coordinate[] = [].concat(...(<Point>f.getGeometry()).getCoordinates());
             return new MultiPoint(coordinates);
@@ -103,17 +106,21 @@ export class MapSetup {
     static getStratumSelectStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(255, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 2);
     }
-    static createStratumModifyInteraction(select: Select, dataService: DataService, ps : ProjectService) {
+    static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, proj : string) {
         let m: Modify = new Modify({
             features: select.getFeatures()/*,
-            deleteCondition: e => singleClick(e) && shiftKeyOnly(e)*/
+                        deleteCondition: e => singleClick(e) && shiftKeyOnly(e)*/
         })
-        m.on('modifyend', function (e) {
+        m.on('modifyend', async function (e) {
             // Add the features back to API.
-            let s = (new GeoJSON()).writeFeatures(e.features.getArray());
-            console.log(s);
-            dataService.modifyStratum(s, ps.selectedProject.projectName, ps.selectedModel.modelName, ps.activeProcessId);
-            console.log("modifyend features:", e.features.getArray());
+            let s : string = (new GeoJSON()).writeFeatures(e.features.getArray(), { featureProjection:proj, dataProjection: 'EPSG:4326' });
+            /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:4326',
+            })*/
+            //console.log(s);
+            let res : string = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            console.log("res :" + res); 
         });
         return m;
     }
@@ -127,6 +134,24 @@ export class MapSetup {
             style: [this.getStratumSelectStyle(), MapSetup.getStratumNodeStyle()],
             multi: false
         });
+    }
+    static createStratumDrawInteraction(source: VectorSource, dataService: DataService, ps: ProjectService, proj : string) {
+        let d: Draw = new Draw({
+            source: source, 
+            type: GeometryType.POLYGON
+        })
+        d.on('drawend', async function (e) {
+            // Add the features back to API.
+            let s : string = (new GeoJSON()).writeFeatures([e.feature], { featureProjection:proj, dataProjection: 'EPSG:4326' });
+            /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:4326',
+            })*/
+            console.log("get a name of the strata");
+            //let res : string = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            //console.log("res :" + res); 
+        });
+        return d;
     }
 
     /**
