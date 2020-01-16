@@ -1,32 +1,62 @@
-<p-dialog header="Expression Builder" [(visible)]="service.display" [modal]="true" [responsive]="true"
-[style]="{width: '800px', minWidth: '400px', height: '600px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
+<p-dialog header="Expression table dialog" [(visible)]="service.display" [modal]="true" [responsive]="true"
+[style]="{width: '800px', minWidth: '400px', maxHeight: '600px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
 
-    <div class="p-grid p-align-start">
-        <div class="p-col-12">
-            <p-panel header="Expression">
-                <input type="text" pInputText style="width: 100%"/>
-            </p-panel>
-        </div>
-        <div class="p-col-4">
-            <p-panel header="Expression Elements">
-                Content
-            </p-panel>
-        </div>
-        <div class="p-col-4">
-            <p-panel header="Expression Categories">
-                Content
-            </p-panel>
-        </div>
-        <div class="p-col-4">
-            <p-panel header="Expression Values">
-                Content
-            </p-panel>
-        </div>
-    </div>
+    <button mat-raised-button (click)="addRow()">Add</button> &nbsp;
+    <button mat-raised-button (click)="removeSelectedRows()">Delete</button>
+
+    <div class="example-container mat-elevation-z8">
+        <mat-table #table [dataSource]="dataSource">
+      
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+      
+            <!-- Checkbox Column -->
+            <ng-container matColumnDef="select">
+            <mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()">
+                </mat-checkbox>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null"
+                            [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+            </mat-cell>
+            </ng-container>
+
+            <!-- tableName Column -->
+            <ng-container matColumnDef="tableName">
+                <mat-header-cell *matHeaderCellDef> Table Name </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <mat-form-field floatLabel="never">
+                        <mat-select [(value)]="element.tableName" placeholder="choose table">
+                            <mat-option>None</mat-option>
+                            <mat-option value="Yes">Yes</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Expression Column -->
+            <ng-container matColumnDef="expression">
+                <mat-header-cell *matHeaderCellDef> Expression </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <mat-form-field floatLabel="never">
+                        <input matInput placeholder="Expression" [value]="element.expression" [(ngModel)]="element.expression">
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>            
+      
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+      </div>
 
     <p-footer>
         <button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
             class="ui-button-secondary"></button>
-        <button type="button" pButton icon="pi pi-check" (click)="apply()" label="OK"></button>
+        <button type="button" pButton  (click)="apply()" label="Save"></button>
     </p-footer>
 </p-dialog>
