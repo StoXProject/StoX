@@ -57,7 +57,7 @@ export class MapComponent implements OnInit {
   stratumDraw: Draw;
 
   private m_Tool: string = "";
-  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService, private dialog : MatDialog) {
+  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService, private dialog: MatDialog) {
   }
   /*@HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -85,7 +85,7 @@ export class MapComponent implements OnInit {
       case "stratum-edit":
       case "stratum-add":
       case "stratum-delete":
-        return this.rs.iaMode == "stratum"; // or "Continue model" if active process > -1
+        return this.rs.iaMode == "stratum" && this.map != null && this.map.getInteractions() != null; // or "Continue model" if active process > -1
     }
     return false;
   }
@@ -99,7 +99,9 @@ export class MapComponent implements OnInit {
         this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
         break;
       case "stratum-add":
-        this.map.getInteractions().extend([this.stratumDraw]);        
+        if (this.map != null && this.map.getInteractions() != null && this.stratumDraw != null) {
+          this.map.getInteractions().extend([this.stratumDraw]);
+        }
         //console.log("add stratum");//this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
         break;
     }

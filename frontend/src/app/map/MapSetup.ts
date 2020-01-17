@@ -20,7 +20,8 @@ import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
 import { MatDialog } from '@angular/material';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
-import {Color}from './Color';
+import { Color } from './Color';
+import { clone } from 'ol/extent';
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
@@ -147,24 +148,31 @@ export class MapSetup {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
             })*/
+
             console.log("get a name of the strata");
             const dialogRef = dialog.open(StratumNameDlgComponent, {
                 width: '250px',
                 disableClose: true,
                 data: { stratum: '' }
             });
+            let f: Feature = e.feature.clone(); // survive event e change after subdialog by cloning feature
+            let strataName: any = await dialogRef.afterClosed().toPromise();
+            /*            let f2 : Feature = (new GeoJSON).readFeatures(JSON.parse(stratum), {
+                            dataProjection: 'EPSG:4326',
+                            featureProjection: proj
+                        })*/
+            if (typeof (strataName) == 'string') {
+                console.log("converting " + strataName);
+                // a valid stratum name has been entered
+                f.setId(strataName);
+                f.setProperties({ 'polygonName': strataName });
+                let stratum: string = (new GeoJSON()).writeFeatures([f], { featureProjection: proj, dataProjection: 'EPSG:4326' });
+                console.log(stratum);
+                //source.getFeatures().map(f => f.getId())
+                //e.setId(33); // find the max id + 1
+                let res: string = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            }            //console.log("res :" + res); 
 
-            dialogRef.afterClosed().subscribe(async result => {
-                if (typeof (result) == 'string') {
-                    // a valid stratum name has been entered
-                    let f: Feature = e.feature;
-                    f.setProperties({ 'polygonName': result });
-                    source.getFeatures().map(f => f.getId())
-                    //e.setId(33); // find the max id + 1
-                    let stratum: string = (new GeoJSON()).writeFeatures([e.feature], { featureProjection: proj, dataProjection: 'EPSG:4326' });
-                    let res: string = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-                }            //console.log("res :" + res); 
-            });
         });
         return d;
     }
