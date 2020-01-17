@@ -6,6 +6,7 @@ import { RunService } from '../service/run.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service'
 import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService'
+import {ExpressionBuilderDlgService} from '../expressionBuilder/ExpressionBuilderDlgService'
 import { MenuItem } from 'primeng/api';
 
 @Component({
@@ -19,7 +20,7 @@ export class HomeComponent {
   constructor(private rConnectionDlgService: RConnectionDlgService, 
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
-    private dataService: DataService, private runService: RunService) {
+    private dataService: DataService, private runService: RunService, private expressionBuilderDlgService: ExpressionBuilderDlgService ) {
       // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
@@ -33,6 +34,9 @@ export class HomeComponent {
     },
     {
       label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
+    },    
+    {
+      label: 'Expression builder...', command: e => this.expressionBuilderDlgService.showDialog()
     },    
     {
       label: 'Test...', command: e => {

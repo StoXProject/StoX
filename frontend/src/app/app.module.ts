@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home';
 import { RConnectionDlg } from './dlg/RConnectionDlg';
 import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
 import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
+import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
 import { MessageDlg } from './message/MessageDlg';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
@@ -30,6 +31,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+import {PanelModule} from 'primeng/panel';
 import { DropdownModule } from 'primeng/primeng';
 //import {RouterModule } from '@angular/router';
 import { RouterModule } from '@angular/router';
@@ -60,12 +62,103 @@ import {
 import { StratumNameDlgComponent } from './dlg/stratum-name-dlg/stratum-name-dlg.component';
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
+import {
+  MatAutocompleteModule,
+  MatBadgeModule,
+  MatBottomSheetModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatChipsModule,
+  MatDatepickerModule,
+  MatDialogModule,
+  MatDividerModule,
+  MatExpansionModule,
+  MatFormFieldModule,
+  MatGridListModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
+  MatMenuModule,
+  MatNativeDateModule,
+  MatPaginatorModule,
+  MatProgressBarModule,
+  MatProgressSpinnerModule,
+  MatRadioModule,
+  MatRippleModule,
+  MatSelectModule,
+  MatSidenavModule,
+  MatSliderModule,
+  MatSlideToggleModule,
+  MatSnackBarModule,
+  MatSortModule,
+  MatStepperModule,
+  MatTableModule,
+  MatTooltipModule,
+  MatTreeModule,
+} from '@angular/material';
+@NgModule({
+  exports: [
+    // CDK
+    // A11yModule,
+    // BidiModule,
+    // ObserversModule,
+    // OverlayModule,
+    // PlatformModule,
+    // PortalModule,
+    // ScrollDispatchModule,
+    // CdkStepperModule,
+    // CdkTableModule,
+    // CdkTreeModule,
+    
+    // Material
+    MatAutocompleteModule,
+    MatBadgeModule,
+    MatBottomSheetModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatGridListModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatNativeDateModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatRippleModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSliderModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
+    MatSortModule,
+    MatStepperModule,
+    MatTableModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    MatTreeModule,
+  ]
+})
+export class MaterialModule {}
+
 @NgModule({
   imports: [
+    MaterialModule,
     BrowserModule,
     ButtonModule,
     InputTextModule,
     DialogModule,
+    PanelModule,
     DropdownModule,
     FormsModule,
     TabViewModule,
@@ -98,6 +191,7 @@ import { StratumNameDlgComponent } from './dlg/stratum-name-dlg/stratum-name-dlg
     RConnectionDlg,
     CreateProjectDialog,
     OpenProjectDlg,
+    ExpressionBuilderDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,
