@@ -35,7 +35,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
-
+import { MatDialog } from '@angular/material';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -57,7 +57,7 @@ export class MapComponent implements OnInit {
   stratumDraw: Draw;
 
   private m_Tool: string = "";
-  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService) {
+  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService, private dialog : MatDialog) {
   }
   /*@HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -198,7 +198,7 @@ export class MapComponent implements OnInit {
         case "stratum": {
           let str: string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
           this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStratumStyle()], false)
-          this.stratumDraw = MapSetup.createStratumDrawInteraction(<VectorSource>this.stratumLayer.getSource(), this.dataService, this.ps, proj);
+          this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>this.stratumLayer.getSource(), this.dataService, this.ps, proj);
           this.map.addLayer(this.stratumLayer);
           break;
         }

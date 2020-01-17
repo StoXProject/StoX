@@ -5,7 +5,7 @@ import BaseObject from 'ol/Object';
 import { Vector as VectorSource } from 'ol/source';
 import { GeoJSON } from 'ol/format';
 import { MultiPoint } from 'ol/geom';
-import * as Color from 'color';
+
 import { Button } from 'primeng/button';
 import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
@@ -13,11 +13,14 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import GeometryType from 'ol/geom/GeometryType';
 import { fromLonLat } from 'ol/proj';
-import { rgb } from 'color-convert/conversions';
+//import { rgb } from 'color-convert/conversions';
 import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
+import { MatDialog } from '@angular/material';
+import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
+import {Color}from './Color';
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
@@ -26,23 +29,21 @@ export class MapSetup {
     public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
     public static POINT_OUTLINE_COLOR: string = 'rgb(0, 0, 0, 0.3)';
     public static BG_COLOR = 'rgb(252, 255, 198)';
-    static darken(c: string, f: number): string {
-        return Color.rgb(Math.trunc(Color(c).red() * f), Math.trunc(Color(c).green() * f), Math.trunc(Color(c).blue() * f)).string();
-    }
+
     static getMapStyle() {
         return new Style({
             fill: new Fill({
                 color: 'rgb(252, 255, 198)'
             }),
             stroke: new Stroke({
-                color: this.darken(MapSetup.BG_COLOR, 0.87),
+                color: Color.darken(MapSetup.BG_COLOR, 0.87),
                 width: 1
             })
         });
     }
-    static getPointStyle(fillColor: string, outlineColor : string, size: number): Style {
+    static getPointStyle(fillColor: string, outlineColor: string, size: number): Style {
         var svg = '<svg width="' + size + 'px" height="' + size + 'px" version="1.1" xmlns="http://www.w3.org/2000/svg">'
-            + '<rect width="' + size + 'px" height="' + size + 'px" style="fill:' + fillColor + 
+            + '<rect width="' + size + 'px" height="' + size + 'px" style="fill:' + fillColor +
             ';stroke-width:3;stroke:' + outlineColor + '" />'
             + '</svg>';
 
@@ -72,7 +73,7 @@ export class MapSetup {
         return this.getPointStyle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleSelected(): Style {
-        return this.getPointStyle(MapSetup.darken(this.DISTANCE_POINT_ANYSELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
+        return this.getPointStyle(Color.darken(this.DISTANCE_POINT_ANYSELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleAnySelected(): Style {
         return this.getPointStyle(this.DISTANCE_POINT_ANYSELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
@@ -106,21 +107,21 @@ export class MapSetup {
     static getStratumSelectStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(255, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 2);
     }
-    static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, proj : string) {
+    static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, proj: string) {
         let m: Modify = new Modify({
             features: select.getFeatures()/*,
                         deleteCondition: e => singleClick(e) && shiftKeyOnly(e)*/
         })
         m.on('modifyend', async function (e) {
             // Add the features back to API.
-            let s : string = (new GeoJSON()).writeFeatures(e.features.getArray(), { featureProjection:proj, dataProjection: 'EPSG:4326' });
+            let s: string = (new GeoJSON()).writeFeatures(e.features.getArray(), { featureProjection: proj, dataProjection: 'EPSG:4326' });
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
             })*/
             //console.log(s);
-            let res : string = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-            console.log("res :" + res); 
+            let res: string = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            console.log("res :" + res);
         });
         return m;
     }
@@ -135,21 +136,35 @@ export class MapSetup {
             multi: false
         });
     }
-    static createStratumDrawInteraction(source: VectorSource, dataService: DataService, ps: ProjectService, proj : string) {
+    static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource, dataService: DataService, ps: ProjectService, proj: string) {
         let d: Draw = new Draw({
-            source: source, 
+            source: source,
             type: GeometryType.POLYGON
         })
         d.on('drawend', async function (e) {
             // Add the features back to API.
-            let s : string = (new GeoJSON()).writeFeatures([e.feature], { featureProjection:proj, dataProjection: 'EPSG:4326' });
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
             })*/
             console.log("get a name of the strata");
-            //let res : string = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-            //console.log("res :" + res); 
+            const dialogRef = dialog.open(StratumNameDlgComponent, {
+                width: '250px',
+                disableClose: true,
+                data: { stratum: '' }
+            });
+
+            dialogRef.afterClosed().subscribe(async result => {
+                if (typeof (result) == 'string') {
+                    // a valid stratum name has been entered
+                    let f: Feature = e.feature;
+                    f.setProperties({ 'polygonName': result });
+                    source.getFeatures().map(f => f.getId())
+                    //e.setId(33); // find the max id + 1
+                    let stratum: string = (new GeoJSON()).writeFeatures([e.feature], { featureProjection: proj, dataProjection: 'EPSG:4326' });
+                    let res: string = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+                }            //console.log("res :" + res); 
+            });
         });
         return d;
     }
