@@ -164,7 +164,7 @@ export class MapSetup {
             if (typeof (strataName) == 'string') {
                 console.log("converting " + strataName);
                 // a valid stratum name has been entered
-                f.setId(strataName);
+                f.setId(1000);
                 f.setProperties({ 'polygonName': strataName });
                 let stratum: string = (new GeoJSON()).writeFeatures([f], { featureProjection: proj, dataProjection: 'EPSG:4326' });
                 console.log(stratum);
