@@ -504,3 +504,7 @@ $nodata: #acacac;
 .mat-button-toggle-label-content {
   line-height: 1.2rem !important;
 }
+
+.cdk-overlay-container {
+  z-index: 20000 !important;
+}
