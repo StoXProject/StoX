@@ -1,18 +1,37 @@
 import { DataService } from './../service/data.service';
 import { ProjectService } from './../service/project.service';
 import { Injectable } from '@angular/core';
+import { TableExpression } from '../data/tableexpression';
+// import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
   })
 export class ExpressionBuilderDlgService {
 
-    tableNames: string[] = [];
+    public tableNames: string[] = [];
 
     constructor(private dataService: DataService, private ps: ProjectService) {}
 
     public display: boolean = false;
+
+    currentTableExpression: TableExpression = null;
+
+    setCurrentTableExpression(tableExpression: TableExpression) {
+        this.currentTableExpression = tableExpression;
+    }
+
+    getCurrentTableExpression(): TableExpression {
+        return this.currentTableExpression;
+    }
+
+    // private messageSource = new BehaviorSubject('default message');
+    // currentMessage = this.messageSource.asObservable();  
   
+    // changeMessage(tableExpression: TableExpression) {
+    //     this.messageSource.next(tableExpression);
+    // }
+
     async showDialog() {
         console.log("in ExpressionBuilderDlgService.showDialog()");
 

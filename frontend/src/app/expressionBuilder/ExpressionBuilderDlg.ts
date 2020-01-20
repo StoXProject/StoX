@@ -4,6 +4,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { MatTableDataSource } from '@angular/material';
 import { TableExpression } from '../data/tableexpression';
 import { SelectionModel } from '@angular/cdk/collections';
+import { MessageService } from '../message/MessageService';
 
 @Component({
     selector: 'ExpressionBuilderDlg',
@@ -24,7 +25,7 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     @Output() messageEvent = new EventEmitter<string>();
 
-    constructor(public service: ExpressionBuilderDlgService, ) {
+    constructor(public service: ExpressionBuilderDlgService, private msgService: MessageService) {
         console.log("start ExpressionBuilderDlg constructor");
         // this.tableExpressions = Object.assign( ELEMENT_DATA);
         this.dataSource = new MatTableDataSource(this.tableExpressions);
@@ -45,7 +46,7 @@ export class ExpressionBuilderDlg  implements OnInit {
     // }
 
     addRow() {
-        this.dataSource.data.push({tableName: "new table", expression: "new expression"});
+        this.dataSource.data.push({tableName: null, expression: null});
         this.dataSource.filter = "";
     }    
 
@@ -66,6 +67,14 @@ export class ExpressionBuilderDlg  implements OnInit {
         return numSelected === numRows;
     }
 
+    atLeastOneSelected() {
+        return this.selection.selected.length > 0;
+    }
+
+    isOnlyOneSelected() {
+        return this.selection.selected.length === 1;
+    }
+
     /** Selects all rows if they are not all selected; otherwise clear selection. */
     masterToggle() {
     this.isAllSelected() ?
@@ -73,10 +82,52 @@ export class ExpressionBuilderDlg  implements OnInit {
         this.dataSource.data.forEach(row => this.selection.select(row));
     }
 
+    areTableNamesUnique() {
+        var tmpArr = [];
+        for(var obj in this.tableExpressions) {
+          if(tmpArr.indexOf(this.tableExpressions[obj].tableName) < 0){ 
+            tmpArr.push(this.tableExpressions[obj].tableName);
+          } else {
+            return false; // Duplicate value for tableName found
+          }
+        }
+        return true; // No duplicate values found for tableName
+     }
+
+     short(param: string): string {
+        if(param.length > 43) {
+            let i = param.indexOf('/');
+            return param.substr(0, 27) + "..." + param.substr(i+1);
+        } else {
+            return param;
+        }
+     }
+
+     buildExpression() {
+
+     }
+
     async apply() {
         console.log("start ExpressionBuilderDlg.apply()");
 
+        // check if there is empty field in dialog
+        for(let i=0; i< this.tableExpressions.length; i++) {
+            if(this.tableExpressions[i].tableName == null || this.tableExpressions[i].expression == null) {
+                // show the message that one or more fields are empty
+                this.msgService.setMessage("One or more fields are empty!");
+                this.msgService.showMessage();
+                return;
+            }
+        }
+
         // check for uniqueness of tableName in array
+        if(!this.areTableNamesUnique()) {
+            this.msgService.setMessage("Table or file names are not unique!");
+            this.msgService.showMessage();
+            return;
+        }
+
+
         // combine all expressions in array tableExpressions into combinedExpression
         // emit combinedExpression to other components
         // this.messageEvent.emit(this.combinedExpression);
