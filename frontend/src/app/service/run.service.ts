@@ -138,7 +138,7 @@ export class RunService {
             //console.log("run result: " + res);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
-            if (res.activeProcessID.length == 0) {
+            if (typeof(res.activeProcessID) == 'undefined') {
                 // getting empty object {} when interrupted by error
                 this.ps.runFailedProcessId = p.processID;
                 break;

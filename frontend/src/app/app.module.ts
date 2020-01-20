@@ -47,10 +47,16 @@ import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ModelComponent } from './model/model.component';
 import { RunComponent } from './run/run.component';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {
+  MatTabsModule,
+  MatButtonModule,
+  MatToolbarModule,
+  MatButtonToggleModule,
+  MatCommonModule,
+} from '@angular/material';
+
+
+import { StratumNameDlgComponent } from './dlg/stratum-name-dlg/stratum-name-dlg.component';
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
 import {
@@ -172,9 +178,11 @@ export class MaterialModule {}
     KeyboardShortcutsModule.forRoot(),
     RouterModule.forRoot([]),
     MenuModule,//, PanelMenuModule
-    MatTabsModule, MatToolbarModule, MatButtonModule,MatButtonToggleModule
-
+    MatTabsModule, MatToolbarModule, MatButtonModule,MatButtonToggleModule, MatCommonModule, 
+    MatFormFieldModule,
+    MatInputModule,MatDialogModule,
   ],
+  entryComponents: [StratumNameDlgComponent],
   declarations: [
     HomeComponent,
     RConnectionDlg,
@@ -191,7 +199,7 @@ export class MaterialModule {}
     RunComponent,
     UserLogComponent,
     OutputComponent,
-    HelpComponent, HelpContentHandler, SanitizeHtmlPipe
+    HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },

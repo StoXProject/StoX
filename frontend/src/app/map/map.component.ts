@@ -35,7 +35,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
-
+import { MatDialog } from '@angular/material';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -54,9 +54,10 @@ export class MapComponent implements OnInit {
   stratumLayer: Layer = null;
   stratumSelect: Select;
   stratumModify: Modify;
+  stratumDraw: Draw;
 
   private m_Tool: string = "";
-  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService) { 
+  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService, private dialog: MatDialog) {
   }
   /*@HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -80,11 +81,11 @@ export class MapComponent implements OnInit {
   ];
   public getToolEnabled(tool: string): boolean {
     switch (tool) {
-      case "freemove" : return true;
+      case "freemove": return true;
       case "stratum-edit":
       case "stratum-add":
       case "stratum-delete":
-        return this.rs.iaMode == "stratum"; // or "Continue model" if active process > -1
+        return this.rs.iaMode == "stratum" && this.map != null && this.map.getInteractions() != null; // or "Continue model" if active process > -1
     }
     return false;
   }
@@ -96,6 +97,12 @@ export class MapComponent implements OnInit {
     switch (tool) {
       case "stratum-edit":
         this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
+        break;
+      case "stratum-add":
+        if (this.map != null && this.map.getInteractions() != null && this.stratumDraw != null) {
+          this.map.getInteractions().extend([this.stratumDraw]);
+        }
+        //console.log("add stratum");//this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
         break;
     }
   }
@@ -171,7 +178,7 @@ export class MapComponent implements OnInit {
       controls: [MapSetup.getMousePositionControl()]
     });
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
-    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps);
+    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, proj);
 
     this.rs.iaModeSubject.subscribe(async mapMode => {
       switch (mapMode) {
@@ -193,6 +200,7 @@ export class MapComponent implements OnInit {
         case "stratum": {
           let str: string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
           this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStratumStyle()], false)
+          this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>this.stratumLayer.getSource(), this.dataService, this.ps, proj);
           this.map.addLayer(this.stratumLayer);
           break;
         }

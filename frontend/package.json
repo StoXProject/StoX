@@ -22,7 +22,6 @@
     "@angular/platform-browser-dynamic": "^8.2.14",
     "@angular/router": "^8.2.14",
     "@ng-bootstrap/ng-bootstrap": "^5.1.4",
-    "@types/color": "^3.0.0",
     "@types/ol": "^5.3.6",
     "ag-grid-angular": "^21.2.2",
     "ag-grid-community": "^21.2.1",
@@ -32,10 +31,9 @@
     "angular-splitter": "^1.0.1",
     "bootstrap-scss": "^4.4.0",
     "chart.js": "^2.9.3",
-    "color": "^3.1.2",
     "core-js": "^3.4.5",
     "font-awesome": "^4.7.0",
-    "ng-keyboard-shortcuts": "^8.0.0",
+    "ng-keyboard-shortcuts": "^8.2.5",
     "ngx-contextmenu": "^5.2.0",
     "npm-update-all": "^1.0.1",
     "ol": "^6.1.1",
@@ -50,7 +48,7 @@
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.800.6",
+    "@angular-devkit/build-angular": "^0.803.23",
     "@angular/cli": "^8.3.20",
     "@angular/compiler-cli": "^8.2.14",
     "@angular/language-service": "^8.2.14",
