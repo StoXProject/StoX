@@ -22,6 +22,7 @@ import { MatDialog } from '@angular/material';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { Color } from './Color';
 import { clone } from 'ol/extent';
+import { ProcessResult } from '../data/runresult';
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
@@ -121,7 +122,8 @@ export class MapSetup {
                 featureProjection: 'EPSG:4326',
             })*/
             //console.log(s);
-            let res: string = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            let res: ProcessResult = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            ps.activeProcessId = res.activeProcessID; // reset active processid
             console.log("res :" + res);
         });
         return m;
@@ -137,7 +139,8 @@ export class MapSetup {
             multi: false
         });
     }
-    static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource, dataService: DataService, ps: ProjectService, proj: string) {
+    static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource,
+        dataService: DataService, ps: ProjectService, proj: string) {
         let d: Draw = new Draw({
             source: source,
             type: GeometryType.POLYGON
@@ -164,13 +167,14 @@ export class MapSetup {
             if (typeof (strataName) == 'string') {
                 console.log("converting " + strataName);
                 // a valid stratum name has been entered
-                f.setId(1000);
+                f.setId(Math.max(...source.getFeatures().map(f2 => f2.getId() != null ? +f2.getId() : 0)) + 1);
                 f.setProperties({ 'polygonName': strataName });
                 let stratum: string = (new GeoJSON()).writeFeatures([f], { featureProjection: proj, dataProjection: 'EPSG:4326' });
                 console.log(stratum);
                 //source.getFeatures().map(f => f.getId())
                 //e.setId(33); // find the max id + 1
-                let res: string = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+                let res: ProcessResult = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+                ps.activeProcessId = res.activeProcessID; // reset active processid
             }            //console.log("res :" + res); 
 
         });
