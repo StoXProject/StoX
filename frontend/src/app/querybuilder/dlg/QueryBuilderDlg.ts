@@ -60,46 +60,47 @@ export class QueryBuilderDlg {
             {field: 'school', operator: 'is null', entity: 'nonphysical'},
             {field: 'notes', operator: '=', entity: 'nonphysical'}
           ]
-        }
+        },
+        {field: 'age', operator: '=', value: 40},
       ]
     };
   
-    public entityConfig: QueryBuilderConfig = {
-      entities: {
-        physical: {name: 'Physical Attributes'},
-        nonphysical: {name: 'Nonphysical Attributes'}
-      },
-      fields: {
-        age: {name: 'Age', type: 'number', entity: 'physical'},
-        gender: {
-          name: 'Gender',
-          entity: 'physical',
-          type: 'category',
-          options: [
-            {name: 'Male', value: 'm'},
-            {name: 'Female', value: 'f'}
-          ]
-        },
-        name: {name: 'Name', type: 'string', entity: 'nonphysical'},
-        notes: {name: 'Notes', type: 'textarea', operators: ['=', '!='], entity: 'nonphysical'},
-        educated: {name: 'College Degree?', type: 'boolean', entity: 'nonphysical'},
-        birthday: {name: 'Birthday', type: 'date', operators: ['=', '<=', '>'],
-          defaultValue: (() => new Date()), entity: 'nonphysical'
-        },
-        school: {name: 'School', type: 'string', nullable: true, entity: 'nonphysical'},
-        occupation: {
-          name: 'Occupation',
-          entity: 'nonphysical',
-          type: 'category',
-          options: [
-            {name: 'Student', value: 'student'},
-            {name: 'Teacher', value: 'teacher'},
-            {name: 'Unemployed', value: 'unemployed'},
-            {name: 'Scientist', value: 'scientist'}
-          ]
-        }
-      }
-    };
+    // public entityConfig: QueryBuilderConfig = {
+    //   entities: {
+    //     physical: {name: 'Physical Attributes'},
+    //     nonphysical: {name: 'Nonphysical Attributes'}
+    //   },
+    //   fields: {
+    //     age: {name: 'Age', type: 'number', entity: 'physical'},
+    //     gender: {
+    //       name: 'Gender',
+    //       entity: 'physical',
+    //       type: 'category',
+    //       options: [
+    //         {name: 'Male', value: 'm'},
+    //         {name: 'Female', value: 'f'}
+    //       ]
+    //     },
+    //     name: {name: 'Name', type: 'string', entity: 'nonphysical'},
+    //     notes: {name: 'Notes', type: 'textarea', operators: ['=', '!='], entity: 'nonphysical'},
+    //     educated: {name: 'College Degree?', type: 'boolean', entity: 'nonphysical'},
+    //     birthday: {name: 'Birthday', type: 'date', operators: ['=', '<=', '>'],
+    //       defaultValue: (() => new Date()), entity: 'nonphysical'
+    //     },
+    //     school: {name: 'School', type: 'string', nullable: true, entity: 'nonphysical'},
+    //     occupation: {
+    //       name: 'Occupation',
+    //       entity: 'nonphysical',
+    //       type: 'category',
+    //       options: [
+    //         {name: 'Student', value: 'student'},
+    //         {name: 'Teacher', value: 'teacher'},
+    //         {name: 'Unemployed', value: 'unemployed'},
+    //         {name: 'Scientist', value: 'scientist'}
+    //       ]
+    //     }
+    //   }
+    // };
   
     public config: QueryBuilderConfig = {
       fields: {
@@ -146,13 +147,13 @@ export class QueryBuilderDlg {
       this.currentConfig = this.config;
     }
   
-    switchModes(event: Event) {
-      this.currentConfig = (<HTMLInputElement>event.target).checked ? this.entityConfig : this.config;
-    }
+    // switchModes(event: Event) {
+    //   this.currentConfig = (<HTMLInputElement>event.target).checked ? this.entityConfig : this.config;
+    // }
   
-    changeDisabled(event: Event) {
-      (<HTMLInputElement>event.target).checked ? this.queryCtrl.disable() : this.queryCtrl.enable();
-    }
+    // changeDisabled(event: Event) {
+    //   (<HTMLInputElement>event.target).checked ? this.queryCtrl.disable() : this.queryCtrl.enable();
+    // }
   
     apply() {
   
