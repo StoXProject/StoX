@@ -8,7 +8,7 @@ import { rotateWithoutConstraints } from 'ol/interaction/Interaction';
 import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
-import { RunResult, RunModelResult } from '../data/runresult';
+import { RunResult, RunModelResult, ProcessResult } from '../data/runresult';
 
 @Injectable({
   providedIn: 'root'
@@ -378,13 +378,13 @@ export class DataService {
     return this.runProcessFunc<string>('getMapData', projectPath, modelName, processID);
   }
 
-  modifyStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<string> {
+  modifyStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
     return this.runFunction('modifyStratum', { "stratum" : stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
 
-  addStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<string> {
+  addStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
     return this.runFunction('addStratum', { "stratum" : stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });

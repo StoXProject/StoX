@@ -277,6 +277,9 @@ export class ProjectService {
   public getActiveProcessIdx(): number {
     return this.getProcessIdxByProcessesAndId(this.processes, this.activeProcessId);
   }
+  public getSelectedProcessIdx(): number {
+    return this.selectedProcess != null ? this.getProcessIdxByProcessesAndId(this.processes, this.selectedProcess.processID) : null;
+  }
   public getActiveProcessIdxByProcesses(processes: Process[]): number {
     return this.getProcessIdxByProcessesAndId(processes, this.activeProcessId);
   }

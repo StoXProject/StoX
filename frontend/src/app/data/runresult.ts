@@ -5,7 +5,9 @@ export class RunResult {
     error: string[];
 }
 
-export class RunModelResult {
+export class ProcessResult {
     activeProcessID: string;
+}
+export class RunModelResult extends ProcessResult {
     interactiveMode: string
 }

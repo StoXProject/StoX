@@ -65,6 +65,13 @@ getMapData
 "processID":"P002"
 }'
 
+getAcousticPSUData
+'{
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3", 
+"modelName":"Baseline", 
+"processID":"P007"
+}'
+
 getInteractiveMode
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3", 

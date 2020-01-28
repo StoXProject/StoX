@@ -38,7 +38,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
         key: "ctrl + f6",
         // preventDefault: true,
         command: e => {
-          this.runToHere();
+          this.rs.runToHere();
         }
       }
     );
@@ -54,14 +54,15 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   }
 
 
-  runToHere() {
-    this.rs.runToHere(this.ps.getProcessIdx(this.ps.selectedProcess))
-  }
   async prepCm() {
     // comment: add list of outputtablenames to runModel result. 
     let m: MenuItem[] = [];
+    if (this.rs.canRunFromHere()) {
+      m.push(
+        { label: 'Run from here', icon: 'rib absa runfromhereicon', command: (event) => { this.rs.runFromHere(); } });
+    }
     m.push(
-      { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.runToHere(); } },
+      { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } },
       { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } });
     if (this.ps.isRun(this.ps.selectedProcess)) {
       let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.getSelectedProject().projectPath,

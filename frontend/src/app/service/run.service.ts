@@ -76,6 +76,11 @@ export class RunService {
     canRunNext(): boolean {
         return this.canRun() && this.getRunNextIdx() != null;
     }
+    canRunFromHere(): boolean {
+        return this.canRun() && this.ps.getSelectedProcessIdx() != null &&
+            (this.ps.getSelectedProcessIdx() == 0 || this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1);
+    }
+
     runNext() {
         let idx: number = this.getRunNextIdx();
         if (idx != null) {
@@ -83,24 +88,29 @@ export class RunService {
         }
         // Run from the next to the next process.
     }
+
     getRunToHereIndexFrom(): number {
-        return this.ps.processes.length == 0 ? null : this.ps.getActiveProcessIdx() == null ? 0 : this.ps.getActiveProcessIdx() + 1;
-    }
-    getRunToHereIndexTo(processIdx: number): number {
-        return this.ps.processes.length == 0 ||
-            this.ps.getActiveProcessIdx() == null || processIdx <= this.ps.getActiveProcessIdx() ||
-            processIdx > this.ps.processes.length - 1 ? null : processIdx;
+        return this.ps.processes.length == 0 || this.ps.getSelectedProcessIdx() == null ? null :
+            this.ps.getActiveProcessIdx() == null ? 0 : Math.min(this.ps.getActiveProcessIdx() + 1,
+                this.ps.getSelectedProcessIdx());
     }
 
-    canRunToHere(processIdx: number): boolean {
-        let idxFrom: number = this.getRunToHereIndexFrom();
-        let idxTo: number = this.getRunToHereIndexTo(processIdx);
-        return this.canRun() && idxFrom != null && idxTo != null;
+    getRunToHereIndexTo(): number {
+        return this.ps.getSelectedProcessIdx() != null ? this.ps.getSelectedProcessIdx() : null;
     }
 
-    runToHere(processIdx: number) {
+    canRunToHere(): boolean {
+        return this.ps.getSelectedProcessIdx() != null;
+    }
+    canRunThis(): boolean {
         let idxFrom: number = this.getRunToHereIndexFrom();
-        let idxTo: number = this.getRunToHereIndexTo(processIdx);
+        let idxTo: number = this.getRunToHereIndexTo();
+        return idxFrom != null && idxTo != null && idxFrom == idxTo;
+    }
+
+    runToHere() {
+        let idxFrom: number = this.getRunToHereIndexFrom();
+        let idxTo: number = this.getRunToHereIndexTo();
         if (idxFrom != null && idxTo != null) {
             this.runProcessIdx(idxFrom, idxTo);
         }
@@ -138,7 +148,7 @@ export class RunService {
             //console.log("run result: " + res);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
-            if (typeof(res.activeProcessID) == 'undefined') {
+            if (typeof (res.activeProcessID) == 'undefined') {
                 // getting empty object {} when interrupted by error
                 this.ps.runFailedProcessId = p.processID;
                 break;
