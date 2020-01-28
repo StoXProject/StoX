@@ -4,9 +4,11 @@ import { Observable, of } from 'rxjs';
 import { DataService } from '../service/data.service';
 import { RunService } from '../service/run.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
-import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service'
-import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService'
-import {ExpressionBuilderDlgService} from '../expressionBuilder/ExpressionBuilderDlgService'
+import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
+import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
+import { ExpressionBuilderDlgService } from '../expressionBuilder/ExpressionBuilderDlgService';
+// import { QueryBuilderDlgService } from '../querybuilder/QueryBuilderDlgService';
+import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { MenuItem } from 'primeng/api';
 
 @Component({
@@ -20,7 +22,11 @@ export class HomeComponent {
   constructor(private rConnectionDlgService: RConnectionDlgService, 
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
-    private dataService: DataService, private runService: RunService, private expressionBuilderDlgService: ExpressionBuilderDlgService ) {
+    private dataService: DataService, private runService: RunService, 
+    private expressionBuilderDlgService: ExpressionBuilderDlgService,
+    private testDlgService: QueryBuilderDlgService
+    /*,
+    private quBuilderDlgService: QueryBuilderDlgService */) {
       // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
@@ -37,6 +43,12 @@ export class HomeComponent {
     },    
     {
       label: 'Expression builder...', command: e => this.expressionBuilderDlgService.showDialog()
+    },    
+    // {
+    //   label: 'Query builder...', command: e => this.quBuilderDlgService.showDialog()
+    // },    
+    {
+      label: 'Test dialog...', command: e => this.testDlgService.showDialog()
     },    
     {
       label: 'Test...', command: e => {

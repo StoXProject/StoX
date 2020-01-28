@@ -1,6 +1,7 @@
 <p-dialog header="Expression table dialog" [(visible)]="service.display" [modal]="true" [responsive]="true"
 [style]="{width: '800px', minWidth: '400px', maxHeight: '600px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
-<MessageDlg></MessageDlg>
+    <MessageDlg></MessageDlg>
+
     <button mat-raised-button (click)="addRow()">Add</button> &nbsp;
     <button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;
     <button mat-raised-button [disabled]="!isOnlyOneSelected()" (click)="buildExpression()">Expression</button>
@@ -54,7 +55,7 @@
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
         </mat-table>
-      </div>
+    </div>
 
     <p-footer>
         <button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"

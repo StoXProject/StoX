@@ -6,6 +6,8 @@ import { RConnectionDlg } from './dlg/RConnectionDlg';
 import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
 import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
 import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
+import { QueryBuilderDlg } from './querybuilder/dlg/QueryBuilderDlg';
+// import { QueryBuilderDlg } from './querybuilder/QueryBuilderDlg';
 import { MessageDlg } from './message/MessageDlg';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
@@ -13,7 +15,7 @@ import { UserLogComponent } from './output/userlog/userlog.component';
 import { OutputComponent } from './output/output/output.component';
 import {HelpComponent, HelpContentHandler, SanitizeHtmlPipe} from './help/HelpComponent'
 import { MapComponent } from './map/map.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProcessComponent } from './process/process.component';
 import { TabViewModule } from 'primeng/primeng';
 import { ListboxModule } from 'primeng/listbox';
@@ -93,6 +95,11 @@ import {
   MatTooltipModule,
   MatTreeModule,
 } from '@angular/material';
+
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module';
+
 @NgModule({
   exports: [
     // CDK
@@ -181,6 +188,19 @@ export class MaterialModule {}
     MatTabsModule, MatToolbarModule, MatButtonModule,MatButtonToggleModule, MatCommonModule, 
     MatFormFieldModule,
     MatInputModule,MatDialogModule,
+
+    ReactiveFormsModule,
+    NoopAnimationsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatSelectModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatRadioModule,
+    MatIconModule,
+    MatCardModule,
+    QueryBuilderModule  
   ],
   entryComponents: [StratumNameDlgComponent],
   declarations: [
@@ -189,6 +209,8 @@ export class MaterialModule {}
     CreateProjectDialog,
     OpenProjectDlg,
     ExpressionBuilderDlg,
+    QueryBuilderDlg,
+    // QueryBuilderDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,
