@@ -42,13 +42,10 @@ export class HomeComponent {
       label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
     },    
     {
-      label: 'Expression builder...', command: e => this.expressionBuilderDlgService.showDialog()
-    },    
-    // {
-    //   label: 'Query builder...', command: e => this.quBuilderDlgService.showDialog()
-    // },    
+      label: 'Test expression builder...', command: e => this.expressionBuilderDlgService.showDialog()
+    },
     {
-      label: 'Test dialog...', command: e => this.testDlgService.showDialog()
+      label: 'Test query builder...', command: e => this.testDlgService.showDialog()
     },    
     {
       label: 'Test...', command: e => {

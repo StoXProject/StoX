@@ -1,4 +1,4 @@
-<p-dialog header="Test dialog" [(visible)]="service.display" [modal]="true" [responsive]="true"
+<p-dialog header="Query builder dialog" [(visible)]="service.display" [modal]="true" [responsive]="true"
     [style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
     
     <h2>Vanilla</h2>
@@ -37,6 +37,8 @@
   
       <textarea class="output">{{query | json}}</textarea>
     </div>
+
+    <!--
     <br>
     <h2>Custom Material</h2>
     <br>
@@ -146,8 +148,7 @@
           placeholder="Custom Textarea"></textarea>
       </div>
 	</query-builder>	
-	
-
+-->
 		
     <p-footer>
 		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
