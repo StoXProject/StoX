@@ -48,11 +48,12 @@
     <query-builder [(ngModel)]='query' [config]='currentConfig' [allowRuleset]='allowRuleset' [allowCollapse]='allowCollapse' [persistValueOnFieldChange]='persistValueOnFieldChange'>
       <ng-container *queryButtonGroup="let ruleset; let addRule=addRule; let addRuleSet=addRuleSet; let removeRuleSet=removeRuleSet">
         <button type="button" mat-icon-button color="primary" (click)="addRule()">
-          <mat-icon>add</mat-icon></button>
+          <mat-icon>+ Rule</mat-icon></button>
         <button type="button" mat-icon-button color="primary" *ngIf="addRuleSet" (click)="addRuleSet()">
-          <mat-icon>add_circle_outline</mat-icon></button>
+          <mat-icon>+ Ruleset</mat-icon></button>
         <button type="button" mat-icon-button color="accent" *ngIf="removeRuleSet" (click)="removeRuleSet()">
-          <mat-icon>remove_circle_outline</mat-icon></button>
+          <mat-icon>- Ruleset</mat-icon></button>
+          <mat-checkbox [(ngModel)]="ruleset.negate" *ngIf="removeRuleSet">negate</mat-checkbox>
       </ng-container>
       <ng-container *queryArrowIcon>
         <mat-icon ngClass="mat-arrow-icon">chevron_right</mat-icon>
@@ -61,6 +62,7 @@
         <button type="button" mat-icon-button color="accent" (click)="removeRule(rule)">
           <mat-icon>remove</mat-icon>
         </button>
+        <mat-checkbox [(ngModel)]="rule.negate">negate</mat-checkbox>
       </ng-container>
       <ng-container *querySwitchGroup="let ruleset; let onChange=onChange">
         <mat-radio-group *ngIf="ruleset" [(ngModel)]="ruleset.condition" (ngModelChange)="onChange($event)">

@@ -29,14 +29,24 @@
                         <div *ngSwitchCase="'character'">
                             <div *ngIf="propertyItem.possibleValues.length > 0">
                                 <select
-                                    (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" style="width:100%;">
+                                    (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
+                                    style="width:100%;">
                                     <option *ngFor="let verdi of propertyItem.possibleValues" value="{{verdi}}"
                                         [selected]="verdi === propertyItem.value">{{verdi}}</option>
                                 </select>
                             </div>
 
                             <div *ngIf="propertyItem.possibleValues.length == 0">
-                                {{propertyItem.value}}
+
+                                <div [ngSwitch]="propertyItem.format">
+                                    <div *ngSwitchCase="'filterExpressionTable'">
+                                        <input style="width:calc(100% - 22px);" type="text" pInputText
+                                            [(ngModel)]="filterExpression" />
+                                        <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
+                                            (click)="filter(propertyItem)"></button>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
@@ -53,11 +63,15 @@
                                 style="vertical-align: middle !important;" />
                         </div>
                         <div *ngSwitchCase="'double'">
-                            <input type="number" step="any" value="{{propertyItem.value}}" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" style="width:100%;">
+                            <input type="number" step="any" value="{{propertyItem.value}}"
+                                (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
+                                style="width:100%;">
                         </div>
                         <div *ngSwitchCase="'integer'">
-                            <input type="number" step="1" value="{{propertyItem.value}}" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" style="width:100%;">
-                        </div>                        
+                            <input type="number" step="1" value="{{propertyItem.value}}"
+                                (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
+                                style="width:100%;">
+                        </div>
                         <div *ngSwitchDefault>{{propertyItem.value}}</div>
                     </td>
                 </tr>

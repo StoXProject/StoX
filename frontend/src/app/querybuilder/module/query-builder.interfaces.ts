@@ -2,12 +2,14 @@ import { ValidationErrors } from '@angular/forms';
 
 export interface RuleSet {
   condition: string;
+  negate?: boolean;
   rules: Array<RuleSet | Rule>;
   collapsed?: boolean;
   isChild?: boolean;
 }
 
 export interface Rule {
+  negate?: boolean;
   field: string;
   value?: any;
   operator?: string;

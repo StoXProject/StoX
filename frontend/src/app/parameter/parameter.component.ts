@@ -87,4 +87,7 @@ export class ParameterComponent implements OnInit {
   //   return s.map(st => { return { label: st, value: st }; })
   // }
 
+  filter(pi: PropertyItem) {
+
+  }
 }
