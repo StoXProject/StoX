@@ -56,7 +56,7 @@ export class MapComponent implements OnInit {
   stratumModify: Modify;
   stratumDraw: Draw;
 
-  private m_Tool: string = "";
+  private m_Tool: string = "freemove";
   constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService, private dialog: MatDialog) {
   }
   /*@HostListener('window:keyup', ['$event'])
@@ -83,9 +83,11 @@ export class MapComponent implements OnInit {
     switch (tool) {
       case "freemove": return true;
       case "stratum-edit":
+        return this.rs.iaMode == "stratum" && this.stratumLayer != null /**stratum layer is initiated */;
       case "stratum-add":
+        return this.rs.iaMode == "stratum" && this.stratumLayer != null && this.stratumDraw != null;
       case "stratum-delete":
-        return this.rs.iaMode == "stratum" && this.map != null && this.map.getInteractions() != null; // or "Continue model" if active process > -1
+        return this.rs.iaMode == "stratum" && this.stratumLayer != null /**stratum layer is initiated */;
     }
     return false;
   }
@@ -94,6 +96,9 @@ export class MapComponent implements OnInit {
   set tool(tool: string) {
     this.m_Tool = tool;
     console.log("setting tool: " + tool);
+    if (this.stratumDraw != null) {
+      this.map.getInteractions().remove(this.stratumDraw);
+    }
     switch (tool) {
       case "stratum-edit":
         this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
@@ -104,6 +109,8 @@ export class MapComponent implements OnInit {
         }
         //console.log("add stratum");//this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
         break;
+      default:
+
     }
   }
 
@@ -198,6 +205,9 @@ export class MapComponent implements OnInit {
           break;
         }
         case "stratum": {
+          if (this.stratumLayer != null) {
+            this.map.removeLayer(this.stratumLayer);
+          }
           let str: string = await this.dataService.getMapData(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
           this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStratumStyle()], false)
           this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>this.stratumLayer.getSource(), this.dataService, this.ps, proj);
