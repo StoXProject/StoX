@@ -3,8 +3,7 @@ import { ExpressionBuilderDlg } from './../../expressionBuilder/ExpressionBuilde
 import { FormBuilder, FormControl } from '@angular/forms';
 import { QueryBuilderClassNames, QueryBuilderConfig } from '../module/query-builder.interfaces';
 import { Component, OnInit } from '@angular/core';
-import { QueryBuilderDlgService } from './QueryBuilderDlgService'; 
-import { JsonPipe } from '@angular/common';
+import { QueryBuilderDlgService } from './QueryBuilderDlgService';
 
 @Component({
     selector: 'TestDlg',
@@ -15,6 +14,7 @@ export class QueryBuilderDlg {
 
 
     // constructor(public service: TestDlgService) {
+      // styleUrls: ['./QueryBuilderDlg.css']
     // }
 
     async ngOnInit() {
