@@ -1,7 +1,7 @@
-// /deep/ html {
-//     font: 14px sans-serif;
-//     margin: 30px;
-//   }
+:host /deep/ html {
+    font: 14px sans-serif;
+    margin: 30px;
+  }
 
   .mat-icon-button {
     outline: none;

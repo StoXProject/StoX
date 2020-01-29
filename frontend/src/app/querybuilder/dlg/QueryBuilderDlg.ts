@@ -9,7 +9,7 @@ import { JsonPipe } from '@angular/common';
 @Component({
     selector: 'TestDlg',
     templateUrl: './QueryBuilderDlg.html',
-    styleUrls: ['./QueryBuilderDlg.scss']
+    styleUrls: ['./QueryBuilderDlg.css']
 })
 export class QueryBuilderDlg {
 
@@ -160,8 +160,10 @@ export class QueryBuilderDlg {
   
     apply() {
 
-      this.exprBuilderDlgService.getCurrentTableExpression().expression = JSON.stringify(this.query); 
-  
+      if(this.exprBuilderDlgService.getCurrentTableExpression() != null) {
+        this.exprBuilderDlgService.getCurrentTableExpression().expression = JSON.stringify(this.query);
+      }
+       
       this.service.display = false;
     }
 }
