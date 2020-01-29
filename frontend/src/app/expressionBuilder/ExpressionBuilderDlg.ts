@@ -1,5 +1,6 @@
 
 import { ExpressionBuilderDlgService } from './ExpressionBuilderDlgService';
+import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { MatTableDataSource } from '@angular/material';
 import { TableExpression } from '../data/tableexpression';
@@ -25,8 +26,9 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     @Output() messageEvent = new EventEmitter<string>();
 
-    constructor(public service: ExpressionBuilderDlgService, private msgService: MessageService) {
-        console.log("start ExpressionBuilderDlg constructor");
+    constructor(public service: ExpressionBuilderDlgService, private msgService: MessageService
+        , private quBuilderService: QueryBuilderDlgService ) {
+        // console.log("start ExpressionBuilderDlg constructor");
         // this.tableExpressions = Object.assign( ELEMENT_DATA);
         this.dataSource = new MatTableDataSource(this.tableExpressions);
     }
@@ -104,6 +106,24 @@ export class ExpressionBuilderDlg  implements OnInit {
      }
 
      buildExpression() {
+
+        // check if current table name is given in the current row
+        let currentTableExpression: TableExpression;
+        currentTableExpression = this.selection.selected[0];
+
+        if(currentTableExpression != null && currentTableExpression.tableName == null) {
+            this.msgService.setMessage("Table name is not given in selected row!");
+            this.msgService.showMessage();
+            return;            
+        }
+
+        console.log("current table name : " + currentTableExpression.tableName);
+
+        this.service.setCurrentTableExpression(currentTableExpression);
+
+
+        // show query builder
+        this.quBuilderService.showDialog();
 
      }
 
