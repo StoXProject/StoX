@@ -9,7 +9,7 @@ import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
 import { RunResult, RunModelResult, ProcessResult } from '../data/runresult';
-
+import { AcousticPSU } from '../data/processdata';
 @Injectable({
   providedIn: 'root'
 })
@@ -377,6 +377,11 @@ export class DataService {
   getMapData(projectPath: string, modelName: string, processID: string): Observable<string> {
     return this.runProcessFunc<string>('getMapData', projectPath, modelName, processID);
   }
+
+  getAcousticPSUData(projectPath: string, modelName: string, processID: string): Observable<AcousticPSU> {
+    return this.runProcessFunc<AcousticPSU>('getAcousticPSUData', projectPath, modelName, processID);
+  }
+
 
   modifyStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
     return this.runFunction('modifyStratum', { "stratum" : stratum,

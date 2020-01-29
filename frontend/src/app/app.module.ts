@@ -95,6 +95,7 @@ import {
   MatTooltipModule,
   MatTreeModule,
 } from '@angular/material';
+import { StratumpsuComponent } from './processdata/stratumpsu/stratumpsu.component';
 
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -215,6 +216,7 @@ export class MaterialModule {}
     FileUploadComponent,
     ProjectComponent,
     MapComponent,
+    StratumpsuComponent,
     ProcessComponent,
     ParameterComponent,
     ModelComponent,
