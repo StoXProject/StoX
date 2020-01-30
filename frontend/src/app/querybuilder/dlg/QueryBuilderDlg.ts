@@ -10,7 +10,7 @@ import { QueryBuilderDlgService } from './QueryBuilderDlgService';
     templateUrl: './QueryBuilderDlg.html',
     styleUrls: ['./QueryBuilderDlg.css']
 })
-export class QueryBuilderDlg {
+export class QueryBuilderDlg  implements OnInit {
 
 
     // constructor(public service: TestDlgService) {
@@ -23,32 +23,32 @@ export class QueryBuilderDlg {
 
     public queryCtrl: FormControl;
 
-    public bootstrapClassNames: QueryBuilderClassNames = {
-      removeIcon: 'fa fa-minus',
-      addIcon: 'fa fa-plus',
-      arrowIcon: 'fa fa-chevron-right px-2',
-      button: 'btn',
-      buttonGroup: 'btn-group',
-      rightAlign: 'order-12 ml-auto',
-      switchRow: 'd-flex px-2',
-      switchGroup: 'd-flex align-items-center',
-      switchRadio: 'custom-control-input',
-      switchLabel: 'custom-control-label',
-      switchControl: 'custom-control custom-radio custom-control-inline',
-      row: 'row p-2 m-1',
-      rule: 'border',
-      ruleSet: 'border',
-      invalidRuleSet: 'alert alert-danger',
-      emptyWarning: 'text-danger mx-auto',
-      operatorControl: 'form-control',
-      operatorControlSize: 'col-auto pr-0',
-      fieldControl: 'form-control',
-      fieldControlSize: 'col-auto pr-0',
-      entityControl: 'form-control',
-      entityControlSize: 'col-auto pr-0',
-      inputControl: 'form-control',
-      inputControlSize: 'col-auto'
-    };
+    // public bootstrapClassNames: QueryBuilderClassNames = {
+    //   removeIcon: 'fa fa-minus',
+    //   addIcon: 'fa fa-plus',
+    //   arrowIcon: 'fa fa-chevron-right px-2',
+    //   button: 'btn',
+    //   buttonGroup: 'btn-group',
+    //   rightAlign: 'order-12 ml-auto',
+    //   switchRow: 'd-flex px-2',
+    //   switchGroup: 'd-flex align-items-center',
+    //   switchRadio: 'custom-control-input',
+    //   switchLabel: 'custom-control-label',
+    //   switchControl: 'custom-control custom-radio custom-control-inline',
+    //   row: 'row p-2 m-1',
+    //   rule: 'border',
+    //   ruleSet: 'border',
+    //   invalidRuleSet: 'alert alert-danger',
+    //   emptyWarning: 'text-danger mx-auto',
+    //   operatorControl: 'form-control',
+    //   operatorControlSize: 'col-auto pr-0',
+    //   fieldControl: 'form-control',
+    //   fieldControlSize: 'col-auto pr-0',
+    //   entityControl: 'form-control',
+    //   entityControlSize: 'col-auto pr-0',
+    //   inputControl: 'form-control',
+    //   inputControlSize: 'col-auto'
+    // };
   
     public query = {
       condition: 'and',
@@ -148,6 +148,8 @@ export class QueryBuilderDlg {
       console.log("start QueryBuilderDlg constructor");
       this.queryCtrl = this.formBuilder.control(this.query);
       this.currentConfig = this.config;
+
+      // this.exprBuilderDlgService.currentMessage.subscribe(message => this.currentConfig = message);
     }
   
     // switchModes(event: Event) {
@@ -160,10 +162,14 @@ export class QueryBuilderDlg {
   
     apply() {
 
+      // a call to dataservice to get R expression for this.query
+
       if(this.exprBuilderDlgService.getCurrentTableExpression() != null) {
         this.exprBuilderDlgService.getCurrentTableExpression().expression = JSON.stringify(this.query);
+      
+        // this.exprBuilderDlgService.getCurrentTableExpression().expression = <string> await this.dataService.expression2list(this.query).toPromise();
       }
-       
+
       this.service.display = false;
     }
 }

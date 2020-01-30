@@ -196,6 +196,21 @@ export class DataService {
     });
   }
 
+  getFilterOptions(projectPath: string, modelName: string, processID: string, tableName: string): Observable<string> {
+    
+    return this.runFunction('getFilterOptions', {
+      "projectPath": projectPath, 
+      "modelName": modelName, 
+      "processID": processID, 
+      "tableName": tableName
+    });
+  }
+
+  expression2list(expr: string): Observable<string> {
+    return this.runFunction('expression2list', {
+      "expr": expr 
+    });
+  }
 
   // getHelp(topic: string, help_type: string): Observable<any> {
   //   const formData = new FormData();

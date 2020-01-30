@@ -2,7 +2,8 @@ import { DataService } from './../service/data.service';
 import { ProjectService } from './../service/project.service';
 import { Injectable } from '@angular/core';
 import { TableExpression } from '../data/tableexpression';
-// import { BehaviorSubject } from 'rxjs';
+import { QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -10,6 +11,12 @@ import { TableExpression } from '../data/tableexpression';
 export class ExpressionBuilderDlgService {
 
     public tableNames: string[] = [];
+
+    public config: QueryBuilderConfig;
+
+    private messageSource = new BehaviorSubject(this.config);
+    currentMessage = this.messageSource.asObservable();
+  
 
     constructor(private dataService: DataService, private ps: ProjectService) {}
 
@@ -23,6 +30,12 @@ export class ExpressionBuilderDlgService {
 
     getCurrentTableExpression(): TableExpression {
         return this.currentTableExpression;
+    }
+
+    async updateQueryBuilderConfig() {
+        let configString =  <string> await this.dataService.getFilterOptions(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
+        this.config = JSON.parse(configString);
+        this.messageSource.next(this.config);
     }
 
     // private messageSource = new BehaviorSubject('default message');

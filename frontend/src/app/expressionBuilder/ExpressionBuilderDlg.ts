@@ -123,6 +123,8 @@ export class ExpressionBuilderDlg  implements OnInit {
 
         // get current configuration from R using currentTableExpression.tableName as param
 
+        this.service.updateQueryBuilderConfig();
+
         // set it as a property to QueryBuilderDlg
 
         // let the user get a new page of QueryBuilderDlg shown on screen
