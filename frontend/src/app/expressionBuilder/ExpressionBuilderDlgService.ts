@@ -33,7 +33,7 @@ export class ExpressionBuilderDlgService {
     }
 
     async updateQueryBuilderConfig() {
-        let configString =  <string> await this.dataService.getFilterOptions(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
+        let configString =  <string> await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
         this.config = JSON.parse(configString);
         this.messageSource.next(this.config);
     }
