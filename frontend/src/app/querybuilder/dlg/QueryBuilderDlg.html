@@ -48,11 +48,11 @@
     <query-builder [(ngModel)]='query' [config]='currentConfig' [allowRuleset]='allowRuleset' [allowCollapse]='allowCollapse' [persistValueOnFieldChange]='persistValueOnFieldChange'>
       <ng-container *queryButtonGroup="let ruleset; let addRule=addRule; let addRuleSet=addRuleSet; let removeRuleSet=removeRuleSet">
         <button type="button" mat-icon-button color="primary" (click)="addRule()">
-          <mat-icon>+ Rule</mat-icon></button>
+          <mat-icon>add</mat-icon></button>
         <button type="button" mat-icon-button color="primary" *ngIf="addRuleSet" (click)="addRuleSet()">
-          <mat-icon>+ Ruleset</mat-icon></button>
+          <mat-icon>add_circle_outline</mat-icon></button>
         <button type="button" mat-icon-button color="accent" *ngIf="removeRuleSet" (click)="removeRuleSet()">
-          <mat-icon>- Ruleset</mat-icon></button>
+          <mat-icon>remove_circle_outline</mat-icon></button>
           <mat-checkbox [(ngModel)]="ruleset.negate" *ngIf="removeRuleSet">negate</mat-checkbox>
       </ng-container>
       <ng-container *queryArrowIcon>
