@@ -10,7 +10,7 @@ import { MenuItem } from 'primeng/api';
 })
 export class ModelComponent implements OnInit {
   models: Model[];
-  constructor(private dataService: DataService, private ps: ProjectService) { }
+  constructor(private dataService: DataService, public ps: ProjectService) { }
   //items: MenuItem[] = [];
   currentLabel: string = '';
   // activeItem: MenuItem;
