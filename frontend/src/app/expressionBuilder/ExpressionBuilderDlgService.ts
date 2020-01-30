@@ -35,11 +35,11 @@ export class ExpressionBuilderDlgService {
     async showDialog() {
         console.log("in ExpressionBuilderDlgService.showDialog()");
 
-        // console.log("this.ps.getSelectedProject().projectPath :" + this.ps.getSelectedProject().projectPath);
-        // console.log("this.ps.getSelectedModel().modelName :" + this.ps.getSelectedModel().modelName);
+        // console.log("this.ps.selectedProject.projectPath :" + this.ps.selectedProject.projectPath);
+        // console.log("this.ps.selectedModel.modelName :" + this.ps.selectedModel.modelName);
         // console.log("this.ps.selectedProcess.processID :" + this.ps.selectedProcess.processID);
 
-        this.tableNames = <string[]> await this.dataService.getProcessOutputTableNames(this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.selectedProcess.processID).toPromise();
+        this.tableNames = <string[]> await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
         console.log("this.tableNames : " + this.tableNames);
 
         this.display = true;

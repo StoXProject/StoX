@@ -65,7 +65,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
       { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } },
       { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } });
     if (this.ps.isRun(this.ps.selectedProcess)) {
-      let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.getSelectedProject().projectPath,
+      let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
       if (tables.length > 0) {
         m.push({
@@ -73,7 +73,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
             tables.map(e => {
               return {
                 label: e, icon: 'rib absa emptyicon', command: async (event) => {
-                  let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.getSelectedProject().projectPath,
+                  let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
                     this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, e).toPromise();
                   this.ps.outputTables.push({ table: e, output: out });
                 }

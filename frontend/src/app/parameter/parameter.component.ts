@@ -42,9 +42,9 @@ export class ParameterComponent implements OnInit {
     console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
     //return;
     // groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string
-    if (this.ps.getSelectedProject() != null && this.ps.selectedProcess != null && this.ps.getSelectedModel() != null) {
+    if (this.ps.selectedProject != null && this.ps.selectedProcess != null && this.ps.selectedModel != null) {
       try {
-        this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.selectedProcess.processID)
+        this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID)
           .toPromise().then((s: ProcessProperties) => {
             // let p = <PropertyCategory[]>JSON.parse(s);
             // let p: ProcessProperties = s;
@@ -56,8 +56,8 @@ export class ParameterComponent implements OnInit {
 
         //<PropertyCategory[]>JSON.parse( await )
 
-        // await this.dataService.set ProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID).toPromise();
-        // await this.dataService.set ProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.getSelectedProject().projectPath, this.ps.getSelectedModel().modelName, this.ps.getSelectedProcess().processID).toPromise();
+        // await this.dataService.set ProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getSelectedProcess().processID).toPromise();
+        // await this.dataService.set ProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getSelectedProcess().processID).toPromise();
       } catch (error) {
         console.log(error.error);
         var firstLine = error.error.split('\n', 1)[0];

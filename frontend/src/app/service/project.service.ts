@@ -15,12 +15,12 @@ import { ProcessOutput } from '../data/processoutput';
 })
 export class ProjectService {
   projects: Project[] = [];
-  selectedProject: Project = null;
+  private m_selectedProject: Project = null;
   outputTables: { table: string, output: ProcessOutput }[] = [];
 
   models: Model[];
-  
-  selectedModel: Model = null;
+
+  private m_selectedModel: Model = null;
 
   processes: Process[];
   private m_selectedProcess: Process = null; // the selected process by user
@@ -63,60 +63,37 @@ export class ProjectService {
     // this.setSelectedModel("Baseline"); 
   }
 
-  async setSelectedModel(modelName: string) {
+  set selectedModel(model: Model) {
     if (this.models == null) {
+      console.log("Error. models not set");
       return;
     }
-    for (let i = 0; i < this.models.length; i++) {
-      if (this.models[i].modelName == modelName) {
-        this.selectedModel = this.models[i];
-        break;
-      }
-    }
-
-    // if(this.selectedModel) {
-    //   console.log("selected model : " + this.selectedModel.modelName);
-    // }
-
+    this.m_selectedModel = model;
     this.initializeProperties();
-
+    this.updateProcessList();
+  }
+  async updateProcessList() {
     if (this.selectedProject != null) {
-      //var t0 = performance.now();
-      // set project path and model name as parameter here
-      // this.processes = <Process[]>JSON.parse(await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise());
-      this.processes = <Process[]>await this.dataService.getProcessesInModel(this.selectedProject.projectPath, modelName).toPromise();
+      this.processes = <Process[]>await this.dataService.getProcessesTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
       if (this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
       }
-      //var t1 = performance.now();
-
-      //console.log("Call to dataService.getProcessesInModel(...) took " + (t1 - t0) + " milliseconds.");
-
-      // if(this.processes.length > 0) {
-      //   this.setSelectedProcess(this.processes[0]);
-      // }
-
-      //console.log("nr of processes : " + this.processes.length);
     }
   }
 
-  getSelectedModel() {
-    return this.selectedModel;
+  get selectedModel(): Model {
+    return this.m_selectedModel;
   }
 
-  getSelectedProject(): Project {
-    return this.selectedProject;
+  get selectedProject(): Project {
+    return this.m_selectedProject;
   }
 
-  async setSelectedProject(project: Project) {
-    this.selectedProject = project;
-    this.setSelectedModel("Baseline");
-
-    // console.log("selected project changed 2 : " + this.selectedProject.projectName);
-
+  set selectedProject(project: Project) {
+    this.m_selectedProject = project;
+    this.selectedModel = this.models[0];//("baseline");
     let jsonString = JSON.stringify(project);
-    let status = <string>await this.dataService.updateActiveProject(jsonString).toPromise();
-    //console.log(status);
+    let status = async () => <string>await this.dataService.updateActiveProject(jsonString).toPromise();
   }
 
   public get selectedProcess(): Process {
@@ -134,19 +111,19 @@ export class ProjectService {
 
   // Set accessor for help content
   public set helpContent(content: string) {
-      this.m_helpContent = content; 
+    this.m_helpContent = content;
   }
 
   async onSelectedProcessChanged() {
 
     this.initializeProperties();
 
-    if (this.getSelectedProject() != null &&
+    if (this.selectedProject != null &&
       this.selectedProcess != null &&
-      this.getSelectedModel() != null) {
+      this.selectedModel != null) {
       // propertyCategories: PropertyCategory[];
       // var t0 = performance.now();
-      this.processProperties = <ProcessProperties>await this.dataService.getProcessProperties(this.getSelectedProject().projectPath, this.getSelectedModel().modelName, this.selectedProcess.processID).toPromise();
+      this.processProperties = <ProcessProperties>await this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcess.processID).toPromise();
       // var t1 = performance.now();
       // console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
       // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
@@ -207,35 +184,17 @@ export class ProjectService {
 
   async initData() {
 
-    //console.log(" initData() - class ProjectService: ");
-
-    // this.projects = [
-    //   { projectName: 'Gytetokt 2004', projectPath: '.' },
-    //   { projectName: 'Tobis 2006', projectPath: '.' },
-    //   { projectName: 'Tobis 2007', projectPath: '.' },
-    //   { projectName: 'Tobis 2008', projectPath: '.' },
-    //   { projectName: 'Tobis 2009', projectPath: '.' },
-    //   { projectName: 'Tobis 2010', projectPath: '.' },
-    //   { projectName: 'Tobis 2011', projectPath: '.' },
-    //   { projectName: 'Tobis 2012', projectPath: '.' },
-    //   { projectName: 'Tobis 2013', projectPath: '.' },
-    //   { projectName: 'Tobis 2014', projectPath: '.' },
-    //   { projectName: 'Tobis 2015', projectPath: '.' },
-    //   { projectName: 'Tobis 2016', projectPath: '.' },
-    //   { projectName: 'Tobis 2017', projectPath: '.' },
-    //   { projectName: 'Tobis 2018', projectPath: '.' },
-    //   { projectName: 'Tobis 2019', projectPath: '.' },
-    //   { projectName: 'Tobis 2020', projectPath: '.' },
-    //   { projectName: 'Tobis 2021', projectPath: '.' }
-    // ];
-
     let jsonString = <string>await this.dataService.readActiveProject().toPromise();
     let activeProject: Project = <Project>JSON.parse(jsonString);
+    // Read models and set selected to the first model
+    this.models = <Model[]>await this.dataService.getModelInfo().toPromise();
+    this.setModels(this.models);
+    this.selectedModel = this.models[0];
 
     if (!this.isEmpty(activeProject)) {
       this.projects = [{ projectName: activeProject.projectName, projectPath: activeProject.projectPath }];
       //  console.log("active project : " + activeProject.projectName);
-      this.setSelectedProject(activeProject);
+      this.selectedProject = activeProject;
     }
   }
 

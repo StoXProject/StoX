@@ -67,16 +67,16 @@ export class OpenProjectDlg {
 
             if (this.project != null) {
 
-                if (this.ps.getSelectedProject() != null) {
-                    if (this.ps.getSelectedProject().projectPath.valueOf() == this.project.projectPath.valueOf()) {
-                        let projectName = this.ps.getSelectedProject().projectName;
+                if (this.ps.selectedProject != null) {
+                    if (this.ps.selectedProject.projectPath.valueOf() == this.project.projectPath.valueOf()) {
+                        let projectName = this.ps.selectedProject.projectName;
                         this.msgService.setMessage("Project with name " + projectName + " is already open!");
                         this.msgService.showMessage();
                         return;
                     } else {
                         // close the previous project after saving it if it is edited 
                         var t0 = performance.now();
-                        await this.dataService.closeProject(this.ps.getSelectedProject().projectPath, new Boolean(true)).toPromise();
+                        await this.dataService.closeProject(this.ps.selectedProject.projectPath, new Boolean(true)).toPromise();
                         var t1 = performance.now();
 
                         console.log("Call to dataService.closeProject(...) took " + (t1 - t0) + " milliseconds.");
@@ -88,7 +88,7 @@ export class OpenProjectDlg {
 
                 // console.log("projects length : " + this.ps.projects.length);
 
-                this.ps.setSelectedProject(this.project);
+                this.ps.selectedProject = this.project;
             }
 
         } catch (error) {

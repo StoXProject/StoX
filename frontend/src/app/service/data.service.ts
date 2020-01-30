@@ -113,7 +113,7 @@ export class DataService {
   //   return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessTable/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   // }
 
-  getProcessesInModel(projectPath: string, modelName: string): Observable<any> {
+  getProcessesTable(projectPath: string, modelName: string): Observable<any> {
     //console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
