@@ -37,16 +37,16 @@
                             </div>
 
                             <div *ngIf="propertyItem.possibleValues.length == 0">
-
                                 <div [ngSwitch]="propertyItem.format">
                                     <div *ngSwitchCase="'filterExpressionTable'">
-                                        <input style="width:calc(100% - 22px);" type="text" pInputText
-                                            [(ngModel)]="filterExpression" />
+                                        <input style="width:calc(100% - 22px);" type="text" pInputText                                       
+                                            [(ngModel)]="filterExpression"
+                                            (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="filter(propertyItem)"></button>
                                     </div>
+                                    <div *ngSwitchDefault>{{propertyItem.value}}</div>
                                 </div>
-
                             </div>
                         </div>
 

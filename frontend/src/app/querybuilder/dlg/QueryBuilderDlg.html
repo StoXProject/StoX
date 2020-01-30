@@ -1,6 +1,7 @@
 <p-dialog header="Query builder dialog" [(visible)]="service.display" [modal]="true" [responsive]="true"
     [style]="{width: '800px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
     
+    <!--
     <h2>Vanilla</h2>
     <br>
     <query-builder [formControl]='queryCtrl' [config]='currentConfig' [allowRuleset]='allowRuleset' [allowCollapse]='allowCollapse' [persistValueOnFieldChange]='persistValueOnFieldChange'>
@@ -9,7 +10,7 @@
           placeholder="Custom Textarea"></textarea>
       </ng-container>
     </query-builder>
-    <br>
+    <br>  -->
     <div>
       <!--
       <div class="row">
@@ -24,7 +25,7 @@
           <label><input type="checkbox" (change)=changeDisabled($event)>Disabled</label>
         </div>
       </div>
-    -->
+    
       <div class="row">
         <div class="col-6">
           <label><input type="checkbox" [(ngModel)]='allowRuleset'>Allow Ruleset</label>
@@ -35,14 +36,14 @@
         <div class="col-6">
           <label><input type="checkbox" [(ngModel)]='persistValueOnFieldChange'>Persist Values on Field Change</label>
         </div>
-      </div>
+      </div> -->
   
       <textarea class="output">{{query | json}}</textarea>
     </div>
 
     
     <br>
-    <h2>Custom Material</h2>
+    <h2>Quiery Builder GUI</h2>
     <br>
     <mat-card>
     <query-builder [(ngModel)]='query' [config]='currentConfig' [allowRuleset]='allowRuleset' [allowCollapse]='allowCollapse' [persistValueOnFieldChange]='persistValueOnFieldChange'>
@@ -143,6 +144,8 @@
       </ng-container>
     </query-builder>
     </mat-card>
+    
+    <!--
     <br>
     <h2>Bootstrap</h2>
     <br>
@@ -152,7 +155,7 @@
           placeholder="Custom Textarea"></textarea>
       </div>
 	</query-builder>	
-
+-->
 		
     <p-footer>
 		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
