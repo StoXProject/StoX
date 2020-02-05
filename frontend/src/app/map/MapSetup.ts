@@ -26,6 +26,7 @@ import { ProcessResult } from '../data/runresult';
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
+    public static DISTANCE_LINE_COLOR: string = 'rgb(166, 28, 63)';
     public static DISTANCE_POINT_ANYSELECTED_COLOR: string = 'rgb(166, 200, 176)';
     public static DISTANCE_ABSENCE_POINT_COLOR: string = 'rgb(253, 244, 247)';
     public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
@@ -70,6 +71,14 @@ export class MapSetup {
             })
         });*/
     }
+    static getLineStyle(strokeColor: string, width: number) {
+        return new Style({
+            stroke: new Stroke({
+                color: strokeColor,
+                width: width
+            })
+        });
+    }
 
     static getAcousticPointStyle(): Style {
         return this.getPointStyle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
@@ -82,6 +91,12 @@ export class MapSetup {
     }
     static getStationPointStyle(): Style {
         return this.getPointStyle(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
+    }
+    static getEDSUPointStyle(): Style {
+        return this.getPointStyle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
+    }
+    static getEDSULineStyle(): Style {
+        return this.getLineStyle(Color.darken(this.DISTANCE_LINE_COLOR, 0.9), 2);
     }
     static getPolygonStyle(fillColor: string, strokeColor: string, strokeWidth: number): Style {
         return new Style({

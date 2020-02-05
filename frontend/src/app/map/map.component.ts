@@ -1,10 +1,12 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, HostListener, ElementRef, ViewChild } from '@angular/core';
 
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
 import Source from 'ol/source/Vector';
 import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
+import Overlay from 'ol/Overlay';
+import OverlayPositioning from 'ol/OverlayPositioning';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 //import Projection from 'ol/proj';
@@ -21,7 +23,7 @@ import * as proj4x from 'proj4';
 import { Fill, Stroke, Style, RegularShape } from 'ol/style';
 import { mapToMapExpression } from '@angular/compiler/src/render3/util';
 
-import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
+import { click, singleClick, shiftKeyOnly, platformModifierKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
 import { ResizedEvent } from 'angular-resize-event';
 import { defaults as defaultControls } from 'ol/control';
@@ -36,14 +38,15 @@ import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
 import { MatDialog } from '@angular/material';
+import { MapBrowserPointerEvent } from 'ol';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss']
 })
 
-export class MapComponent implements OnInit {
-
+export class MapComponent implements OnInit, AfterViewInit {
+  @ViewChild('tooltip', { static: false }) tooltip: ElementRef;
   map: OlMap;
   // source: OlXYZ;
   // toposource: VectorSource;
@@ -51,11 +54,13 @@ export class MapComponent implements OnInit {
   vector: Vector;
   view: OlView;
   stationLayer: Layer = null;
+  edsuPointLayer: Layer = null;
+  edsuLineLayer: Layer = null;
   stratumLayer: Layer = null;
   stratumSelect: Select;
   stratumModify: Modify;
   stratumDraw: Draw;
-
+  overlay: Overlay;
   private m_Tool: string = "freemove";
   constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService, private dialog: MatDialog) {
   }
@@ -204,6 +209,13 @@ export class MapComponent implements OnInit {
           this.map.addLayer(this.stationLayer);
           break;
         }
+        case "EDSU": {
+          let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+          this.edsuPointLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getEDSUPointStyle()], false);
+          this.edsuLineLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getEDSULineStyle()], false);
+          this.map.addLayer(this.stationLayer);
+          break;
+        }
         case "stratum": {
           if (this.stratumLayer != null) {
             this.map.removeLayer(this.stratumLayer);
@@ -284,8 +296,17 @@ export class MapComponent implements OnInit {
     this.map.on('click', e => { 
       shiftKeyOnly(e.);
     });*/
+    this.map.on('pointermove', e => this.displayTooltip(e));
   } // end of ngOnInit()
 
+  ngAfterViewInit() {
+    this.overlay = new Overlay({
+      element: this.tooltip.nativeElement,
+      offset: [10, 0],
+      positioning: OverlayPositioning.BOTTOM_LEFT
+    });
+    this.map.addOverlay(this.overlay);
+  }
 
   onClick() {
 
@@ -294,6 +315,20 @@ export class MapComponent implements OnInit {
   onResized(event: ResizedEvent) {
     this.map.updateSize();
   }
+
+  displayTooltip(evt: MapBrowserPointerEvent) {
+    if (!platformModifierKeyOnly(evt)) {
+      this.overlay.setPosition(null); // hide?
+      return; 
+    }
+    var pixel = evt.pixel;
+    var feature = this.map.forEachFeatureAtPixel(pixel, _ => _);
+    this.tooltip.nativeElement.style.display = feature ? '' : 'none';
+    if (feature) {
+      this.overlay.setPosition(evt.coordinate);
+      this.tooltip.nativeElement.innerHTML = 'Cruise: 2005111<br>Serialno: 2831<br>Date: 2005-09-06<br>Time:23:12';
+    }
+  };
 }
 /*
 convert text delimited file with wkt geometry to arced topojson file
