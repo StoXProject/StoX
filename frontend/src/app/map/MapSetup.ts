@@ -206,10 +206,6 @@ export class MapSetup {
     static getGeoJSONLayerFromFeatureString(name: string, feat: string, proj: string, styles: Style[], selectable: boolean): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
-            features: (new GeoJSON).readFeatures(JSON.parse(feat), {
-                dataProjection: 'EPSG:4326',
-                featureProjection: proj
-            })
         });
         var v: Vector = new Vector({
             source: s,
@@ -219,12 +215,17 @@ export class MapSetup {
             ft.feature.set("layer", v);
             //ft.feature.set("feature", ft); // set a reference to itsself
         })
+        s.addFeatures((new GeoJSON).readFeatures(JSON.parse(feat), {
+            dataProjection: 'EPSG:4326',
+            featureProjection: proj
+        }));
 
         // Set layer properties
         v.set("selectable", selectable);
         v.set("name", name);
         v.set("style", styles);
-        // Create a feature->layer link
+        v.set("hasTooltip", true);
+                // Create a feature->layer link
         //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));
         return v;
     }

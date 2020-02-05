@@ -39,6 +39,7 @@ import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
 import { MatDialog } from '@angular/material';
 import { MapBrowserPointerEvent } from 'ol';
+import { isDefined } from '@angular/compiler/src/util';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -316,18 +317,31 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.map.updateSize();
   }
 
+  getTooltip(obj) {
+    let res: string = '';
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key) && typeof (obj[key]) == 'string') {
+        if (res.length > 0) {
+          res += '<br>'
+        }
+        res = res + key + ": " + obj[key];
+      }
+    }
+    return res;
+  }
   displayTooltip(evt: MapBrowserPointerEvent) {
-    if (!platformModifierKeyOnly(evt)) {
-      this.overlay.setPosition(null); // hide?
-      return; 
-    }
     var pixel = evt.pixel;
-    var feature = this.map.forEachFeatureAtPixel(pixel, _ => _);
-    this.tooltip.nativeElement.style.display = feature ? '' : 'none';
-    if (feature) {
-      this.overlay.setPosition(evt.coordinate);
-      this.tooltip.nativeElement.innerHTML = 'Cruise: 2005111<br>Serialno: 2831<br>Date: 2005-09-06<br>Time:23:12';
+    var feature: Feature = <Feature>this.map.forEachFeatureAtPixel(pixel, _ => _);
+    if (platformModifierKeyOnly(evt) && feature) {
+      let layer: Vector = feature.get("layer");
+      if (layer != null && layer.get("hasTooltip")) {
+        this.overlay.setPosition(evt.coordinate);
+        this.tooltip.nativeElement.innerHTML = this.getTooltip(feature.getProperties());
+        this.tooltip.nativeElement.style.display = '';
+        return;
+      }
     }
+    this.tooltip.nativeElement.style.display = 'none';
   };
 }
 /*
