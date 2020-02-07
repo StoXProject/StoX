@@ -23,10 +23,12 @@ import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dl
 import { Color } from './Color';
 import { clone } from 'ol/extent';
 import { ProcessResult } from '../data/runresult';
+import { HTMLUtil } from '../utils/htmlutil'
+import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
-    public static DISTANCE_LINE_COLOR: string = 'rgb(166, 28, 63)';
+   // public static DISTANCE_LINE_COLOR: string = 'rgb(166, 28, 63)';
     public static DISTANCE_POINT_ANYSELECTED_COLOR: string = 'rgb(166, 200, 176)';
     public static DISTANCE_ABSENCE_POINT_COLOR: string = 'rgb(253, 244, 247)';
     public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
@@ -44,11 +46,43 @@ export class MapSetup {
             })
         });
     }
-    static getPointStyle(fillColor: string, outlineColor: string, size: number): Style {
-        var svg = '<svg width="' + size + 'px" height="' + size + 'px" version="1.1" xmlns="http://www.w3.org/2000/svg">'
-            + '<rect width="' + size + 'px" height="' + size + 'px" style="fill:' + fillColor +
-            ';stroke-width:3;stroke:' + outlineColor + '" />'
-            + '</svg>';
+
+
+    static getPointStyleRect(fillColor: string, outlineColor: string, size: number): Style {
+        return MapSetup.getPointStyle(fillColor, outlineColor, 1, { shape: 'rect', width: size, height: size });
+    }
+    static getPointStyleCircle(fillColor: string, outlineColor: string, size: number): Style {
+        return MapSetup.getPointStyle(fillColor, outlineColor, 1, { shape: 'circle', radius: size });
+    }
+    static getPointStyle(fillColor: string, outlineColor: string, strokeWidth : number, symb: MapSymbol): Style {
+        let symbFormatted: string = symb.shape,
+            svgWidth: number = null,
+            svgHeight: number = null,
+            halfStrokeWidth: number = strokeWidth / 2;
+        switch (symb.shape) { // type-guard for algebraic type (discriminant union)
+            case 'rect':
+                symbFormatted += HTMLUtil.formatTagPropPx('x', halfStrokeWidth) +
+                    HTMLUtil.formatTagPropPx('y', halfStrokeWidth) +
+                    HTMLUtil.formatTagPropPx('width', symb.width) +
+                    HTMLUtil.formatTagPropPx('height', symb.height); 
+                svgWidth = symb.width + strokeWidth;
+                svgHeight = symb.height + strokeWidth;
+                break;
+            case 'circle':
+                let cx: number = symb.radius + halfStrokeWidth,
+                    cy: number = cx;
+                symbFormatted += HTMLUtil.formatTagPropPx('cx', cx) +
+                    HTMLUtil.formatTagPropPx('cy', cy) + HTMLUtil.formatTagPropPx('r', symb.radius);
+                svgWidth = symb.radius * 2 + strokeWidth;
+                svgHeight = svgWidth;
+                break;
+        }
+        var svg = '<svg width="' + svgWidth + 'px" height="' + svgHeight + 'px" version="1.1" xmlns="http://www.w3.org/2000/svg">'
+            + '<' + symbFormatted +
+            HTMLUtil.formatTagProp('fill', fillColor) +
+        HTMLUtil.formatTagPropPx('stroke-width', strokeWidth) +
+        HTMLUtil.formatTagProp('stroke', outlineColor) +
+        '/>' + '</svg>';
 
         var style = new Style({
             image: new Icon({
@@ -81,22 +115,22 @@ export class MapSetup {
     }
 
     static getAcousticPointStyle(): Style {
-        return this.getPointStyle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
+        return this.getPointStyleCircle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleSelected(): Style {
-        return this.getPointStyle(Color.darken(this.DISTANCE_POINT_ANYSELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
+        return this.getPointStyleCircle(Color.darken(this.DISTANCE_POINT_ANYSELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleAnySelected(): Style {
-        return this.getPointStyle(this.DISTANCE_POINT_ANYSELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
+        return this.getPointStyleCircle(this.DISTANCE_POINT_ANYSELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
     static getStationPointStyle(): Style {
-        return this.getPointStyle(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
+        return this.getPointStyleRect(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
     }
     static getEDSUPointStyle(): Style {
-        return this.getPointStyle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
+        return this.getPointStyleCircle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
     static getEDSULineStyle(): Style {
-        return this.getLineStyle(Color.darken(this.DISTANCE_LINE_COLOR, 0.9), 2);
+        return this.getLineStyle(Color.darken(this.DISTANCE_POINT_COLOR, 0.9), 2);
     }
     static getPolygonStyle(fillColor: string, strokeColor: string, strokeWidth: number): Style {
         return new Style({
@@ -113,7 +147,7 @@ export class MapSetup {
         return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.05)', 'rgba(0, 0, 0, 0.2)', 1);
     }
     static getStratumNodeStyle(): Style {
-        let s: Style = MapSetup.getPointStyle("rgba(255, 0, 0, 0.7)", MapSetup.POINT_OUTLINE_COLOR, 6);
+        let s: Style = MapSetup.getPointStyleRect("rgba(255, 0, 0, 0.7)", MapSetup.POINT_OUTLINE_COLOR, 6);
         s.setGeometry(f => {
             var coordinates: Coordinate[] = [].concat(...(<Point>f.getGeometry()).getCoordinates());
             return new MultiPoint(coordinates);
@@ -203,7 +237,7 @@ export class MapSetup {
      * @param styles 
      * @param selectable 
      */
-    static getGeoJSONLayerFromFeatureString(name: string, feat: string, proj: string, styles: Style[], selectable: boolean): Layer {
+    static getGeoJSONLayerFromFeatureString(name: string, feat: string, proj: string, styles: Style[], selectable: boolean, layerOrder: number): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
         });
@@ -225,7 +259,8 @@ export class MapSetup {
         v.set("name", name);
         v.set("style", styles);
         v.set("hasTooltip", true);
-                // Create a feature->layer link
+        v.set("layerOrder", layerOrder);
+        // Create a feature->layer link
         //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));
         return v;
     }

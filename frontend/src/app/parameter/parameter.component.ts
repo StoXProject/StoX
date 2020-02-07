@@ -3,7 +3,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ProjectService } from '../service/project.service';
 import { PropertyItem } from '../data/propertyitem';
 import { PropertyCategory } from '../data/propertycategory';
-import {ProcessProperties} from '../data/ProcessProperties'
+import { ProcessProperties } from '../data/ProcessProperties'
 import { DataService } from '../service/data.service';
 import { MessageService } from '../message/MessageService';
 // import {MessageService} from 'primeng/api';
@@ -52,6 +52,11 @@ export class ParameterComponent implements OnInit {
             this.ps.propertyCategories = s.propertySheet;
             // this.ps.helpContent = s.help;
             this.ps.helpContent = s.help; // this.ps.sanitizer.bypassSecurityTrustHtml(s.help);
+
+            // Special case if a property processname is changed, it should update the selected process name
+            if (this.ps.selectedProcess != null && pi.name == 'processName') {
+              this.ps.selectedProcess.processName = pi.value; 
+            }
           });
 
         //<PropertyCategory[]>JSON.parse( await )

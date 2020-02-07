@@ -85,15 +85,21 @@ export class ProjectService {
     return this.m_selectedModel;
   }
 
-  get selectedProject(): Project {
+  public get selectedProject(): Project {
     return this.m_selectedProject;
   }
 
-  set selectedProject(project: Project) {
+  public set selectedProject(project: Project) {
+    this.setSelectedProject(project); // call async method
+  }
+
+  public async setSelectedProject(project: Project) {
     this.m_selectedProject = project;
     this.selectedModel = this.models[0];//("baseline");
     let jsonString = JSON.stringify(project);
-    let status = async () => <string>await this.dataService.updateActiveProject(jsonString).toPromise();
+    console.log("updating ActiveProject with string  " + jsonString)
+    let status = await this.dataService.updateActiveProject(jsonString).toPromise();
+    console.log("status " + status);
   }
 
   public get selectedProcess(): Process {

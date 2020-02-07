@@ -59,7 +59,7 @@
 .maptooltip {
   position: absolute;
 
-  /*z-index: 100;*/ 
+  z-index: 1000000; 
   color: black;
   background-color: rgb(255,255,225);
   border:solid; 

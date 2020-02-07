@@ -158,7 +158,7 @@ export class DataService {
      return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessPropertySheet/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));*/
   }
 
-  isProject(projectPath: string): Observable<any> {
+  isProject(projectPath: string): Observable<boolean> {
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/isProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
@@ -393,8 +393,8 @@ export class DataService {
     return this.runProcessFunc<string>('getInteractiveMode', projectPath, modelName, processID);
   }
   
-  getMapData(projectPath: string, modelName: string, processID: string): Observable<string> {
-    return this.runProcessFunc<string>('getMapData', projectPath, modelName, processID);
+  getMapData(projectPath: string, modelName: string, processID: string): Observable<any> {
+    return this.runProcessFunc<any>('getMapData', projectPath, modelName, processID);
   }
 
   getAcousticPSUData(projectPath: string, modelName: string, processID: string): Observable<AcousticPSU> {

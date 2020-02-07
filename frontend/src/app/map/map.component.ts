@@ -206,15 +206,16 @@ export class MapComponent implements OnInit, AfterViewInit {
         }
         case "station": {
           let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.stationLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStationPointStyle()], false);
+          this.stationLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStationPointStyle()], false, 4);
           this.map.addLayer(this.stationLayer);
           break;
         }
         case "EDSU": {
-          let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.edsuPointLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getEDSUPointStyle()], false);
-          this.edsuLineLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getEDSULineStyle()], false);
-          this.map.addLayer(this.stationLayer);
+          let data: {EDSUPoints: string; EDSULines : string;} = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+          this.edsuLineLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2);
+          this.edsuPointLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, data.EDSUPoints, proj, [MapSetup.getEDSUPointStyle()], false, 3);
+          this.map.addLayer(this.edsuLineLayer);
+          this.map.addLayer(this.edsuPointLayer);
           break;
         }
         case "stratum": {
@@ -222,7 +223,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             this.map.removeLayer(this.stratumLayer);
           }
           let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStratumStyle()], false)
+          this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStratumStyle()], false, 1)
           this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>this.stratumLayer.getSource(), this.dataService, this.ps, proj);
           this.map.addLayer(this.stratumLayer);
           break;
@@ -304,7 +305,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.overlay = new Overlay({
       element: this.tooltip.nativeElement,
       offset: [10, 0],
-      positioning: OverlayPositioning.BOTTOM_LEFT
+      positioning: OverlayPositioning.CENTER_LEFT
     });
     this.map.addOverlay(this.overlay);
   }
@@ -320,7 +321,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   getTooltip(obj) {
     let res: string = '';
     for (var key in obj) {
-      if (obj.hasOwnProperty(key) && typeof (obj[key]) == 'string') {
+      if (obj.hasOwnProperty(key) && typeof (obj[key]) != 'object') {
         if (res.length > 0) {
           res += '<br>'
         }
@@ -331,15 +332,26 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
   displayTooltip(evt: MapBrowserPointerEvent) {
     var pixel = evt.pixel;
-    var feature: Feature = <Feature>this.map.forEachFeatureAtPixel(pixel, _ => _);
-    if (platformModifierKeyOnly(evt) && feature) {
+    var features: Feature[] = [];
+
+    this.map.forEachFeatureAtPixel(pixel, feature => {
       let layer: Vector = feature.get("layer");
       if (layer != null && layer.get("hasTooltip")) {
-        this.overlay.setPosition(evt.coordinate);
-        this.tooltip.nativeElement.innerHTML = this.getTooltip(feature.getProperties());
-        this.tooltip.nativeElement.style.display = '';
-        return;
+        features.push(<Feature>feature)
       }
+    }
+    );
+    features.sort((f1, f2) => {
+      return f2.get("layer").get("layerOrder") - f1.get("layer").get("layerOrder")
+    })
+    let feature: Feature = features.length > 0 ? features[0] : null;
+    if (platformModifierKeyOnly(evt) && feature != null) {
+
+      this.overlay.setPosition(evt.coordinate);
+      this.tooltip.nativeElement.innerHTML = this.getTooltip(feature.getProperties());
+      this.tooltip.nativeElement.style.display = '';
+      return;
+
     }
     this.tooltip.nativeElement.style.display = 'none';
   };

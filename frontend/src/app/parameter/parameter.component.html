@@ -19,7 +19,7 @@
                 </colgroup>
             </ng-template>
             <ng-template pTemplate="body" let-propertyItem>
-                <tr>
+                <tr  style="white-space: nowrap;">
                     <td pResizableColumn>
                         <div>
                             {{propertyItem.displayName}}
@@ -45,7 +45,9 @@
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="filter(propertyItem)"></button>
                                     </div>
-                                    <div *ngSwitchDefault>{{propertyItem.value}}</div>
+                                    <div *ngSwitchDefault><input matInput type="text" value="{{propertyItem.value}}" 
+                                        spellcheck="false" 
+                                        (keyup.enter)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)"/></div>
                                 </div>
                             </div>
                         </div>

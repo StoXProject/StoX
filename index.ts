@@ -116,7 +116,7 @@ function createWindow() {
 }
 
 app.on('ready', function () {
-  console.log("App is ready")
+  console.log("App is ready...")
   if (!setupEvents.handleSquirrelEvent()) {
     createWindow()
   }
