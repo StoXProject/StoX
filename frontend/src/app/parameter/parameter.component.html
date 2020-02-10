@@ -40,14 +40,14 @@
                                 <div [ngSwitch]="propertyItem.format">
                                     <div *ngSwitchCase="'filterExpressionTable'">
                                         <input style="width:calc(100% - 22px);" type="text" pInputText                                       
-                                            [(ngModel)]="filterExpression"
+                                            [(ngModel)]="propertyItem.value"
                                             (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="filter(propertyItem)"></button>
                                     </div>
                                     <div *ngSwitchDefault><input matInput type="text" value="{{propertyItem.value}}" 
                                         spellcheck="false" 
-                                        (keyup.enter)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)"/></div>
+                                        (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)"/></div>
                                 </div>
                             </div>
                         </div>

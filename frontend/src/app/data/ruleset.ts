@@ -1,8 +1,8 @@
 export class RuleBase {
-    negate: boolean;
+    negate?: boolean;
 }
 
-export class Ruleset extends RuleBase {
+export class RuleCollection extends RuleBase {
     condition: string;
     rules: RuleBase[];
 }

@@ -142,7 +142,7 @@ export class QueryBuilderDlg  implements OnInit {
     public persistValueOnFieldChange: boolean = false;
   
     constructor(
-        public service: QueryBuilderDlgService, private formBuilder: FormBuilder, private exprBuilderDlgService: ExpressionBuilderDlgService
+        public service: QueryBuilderDlgService, private formBuilder: FormBuilder, public exprBuilderService: ExpressionBuilderDlgService
     ) 
     {
       console.log("start QueryBuilderDlg constructor");
@@ -164,10 +164,13 @@ export class QueryBuilderDlg  implements OnInit {
 
       // a call to dataservice to get R expression for this.query
 
-      if(this.exprBuilderDlgService.getCurrentTableExpression() != null) {
-        this.exprBuilderDlgService.getCurrentTableExpression().expression = JSON.stringify(this.query);
+      if(this.exprBuilderService.getCurrentTableExpression() != null) {
+
+        // convert this.query to rExpression
+
+        this.exprBuilderService.getCurrentTableExpression().expression = JSON.stringify(this.query);
       
-        // this.exprBuilderDlgService.getCurrentTableExpression().expression = <string> await this.dataService.expression2list(this.query).toPromise();
+        // this.exprBuilderService.getCurrentTableExpression().expression = <string> await this.dataService.expression2list(this.query).toPromise();
       }
 
       this.service.display = false;

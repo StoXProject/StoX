@@ -14,7 +14,7 @@ import { MessageService } from '../message/MessageService';
   })
 export class ExpressionBuilderDlg  implements OnInit {
 
-    tableExpressions: TableExpression[] = [];
+    // tableExpressions: TableExpression[] = [];
     combinedExpression: string = "";
 
     // tableName: string = "";
@@ -30,7 +30,7 @@ export class ExpressionBuilderDlg  implements OnInit {
         , private quBuilderService: QueryBuilderDlgService ) {
         // console.log("start ExpressionBuilderDlg constructor");
         // this.tableExpressions = Object.assign( ELEMENT_DATA);
-        this.dataSource = new MatTableDataSource(this.tableExpressions);
+        this.dataSource = new MatTableDataSource(this.service.tableExpressions);
     }
 
     async ngOnInit() {
@@ -54,10 +54,10 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     removeSelectedRows() {
         this.selection.selected.forEach(item => {
-          let index: number = this.tableExpressions.findIndex(d => d === item);
-          console.log(this.tableExpressions.findIndex(d => d === item));
-          this.tableExpressions.splice(index,1)
-          this.dataSource = new MatTableDataSource<TableExpression>(this.tableExpressions);
+          let index: number = this.service.tableExpressions.findIndex(d => d === item);
+          console.log(this.service.tableExpressions.findIndex(d => d === item));
+          this.service.tableExpressions.splice(index,1)
+          this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
         });
         this.selection = new SelectionModel<TableExpression>(true, []);
     }   
@@ -86,9 +86,9 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     areTableNamesUnique() {
         var tmpArr = [];
-        for(var obj in this.tableExpressions) {
-          if(tmpArr.indexOf(this.tableExpressions[obj].tableName) < 0){ 
-            tmpArr.push(this.tableExpressions[obj].tableName);
+        for(var obj in this.service.tableExpressions) {
+          if(tmpArr.indexOf(this.service.tableExpressions[obj].tableName) < 0){ 
+            tmpArr.push(this.service.tableExpressions[obj].tableName);
           } else {
             return false; // Duplicate value for tableName found
           }
@@ -125,6 +125,8 @@ export class ExpressionBuilderDlg  implements OnInit {
 
         // this.service.updateQueryBuilderConfig();
 
+        // this.service.updateQuery();
+
         // set it as a property to QueryBuilderDlg
 
         // let the user get a new page of QueryBuilderDlg shown on screen
@@ -138,8 +140,8 @@ export class ExpressionBuilderDlg  implements OnInit {
         console.log("start ExpressionBuilderDlg.apply()");
 
         // check if there is empty field in dialog
-        for(let i=0; i< this.tableExpressions.length; i++) {
-            if(this.tableExpressions[i].tableName == null || this.tableExpressions[i].expression == null) {
+        for(let i=0; i< this.service.tableExpressions.length; i++) {
+            if(this.service.tableExpressions[i].tableName == null || this.service.tableExpressions[i].expression == null) {
                 // show the message that one or more fields are empty
                 this.msgService.setMessage("One or more fields are empty!");
                 this.msgService.showMessage();
@@ -159,13 +161,15 @@ export class ExpressionBuilderDlg  implements OnInit {
         // emit combinedExpression to other components
         // this.messageEvent.emit(this.combinedExpression);
 
+        // this.service.getCurrentPropertyItem().value = combinedExpression;
+
         this.service.display = false;
     }
 }
 
-const ELEMENT_DATA: TableExpression[] = [
-    { tableName: 'Table 1', expression: 'Expression 1' },
-    { tableName: 'Table 2', expression: 'Expression 2' },
-    { tableName: 'Table 3', expression: 'Expression 3' },
+// const ELEMENT_DATA: TableExpression[] = [
+//     { tableName: 'Table 1', expression: 'Expression 1' },
+//     { tableName: 'Table 2', expression: 'Expression 2' },
+//     { tableName: 'Table 3', expression: 'Expression 3' },
      
-  ];
+//   ];
