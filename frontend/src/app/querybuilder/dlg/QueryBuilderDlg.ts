@@ -2,6 +2,7 @@ import { ExpressionBuilderDlgService } from './../../expressionBuilder/Expressio
 import { ExpressionBuilderDlg } from './../../expressionBuilder/ExpressionBuilderDlg';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { QueryBuilderClassNames, QueryBuilderConfig } from '../module/query-builder.interfaces';
+import { RuleSet } from '../module/query-builder.interfaces';
 import { Component, OnInit } from '@angular/core';
 import { QueryBuilderDlgService } from './QueryBuilderDlgService';
 import { DataService } from '../../service/data.service';
@@ -51,7 +52,7 @@ export class QueryBuilderDlg  implements OnInit {
     //   inputControlSize: 'col-auto'
     // };
   
-    public query = {
+    public query: RuleSet = {
       condition: 'and',
       rules: [
         {field: 'age', operator: '<='},
