@@ -96,10 +96,8 @@ export class ParameterComponent implements OnInit {
 
   filter(pi: PropertyItem) {
     // set this pi as the current PropertyItem in ExpressionBuilderService
+    this.exprBuilderService.setCurrentPropertyItem(pi);
 
-    
-
-    
     // run ExpressionBuilderService.showDialog() to show Expression builder dialog
     this.exprBuilderService.showDialog();
 

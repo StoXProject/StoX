@@ -10,6 +10,8 @@ import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
 import { RunResult, RunModelResult, ProcessResult } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
+import { RuleSet } from '../querybuilder/module/query-builder.interfaces';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -206,15 +208,20 @@ export class DataService {
     });
   }
 
-  expression2list(expr: string): Observable<string> {
+  expression2list(expr: string): Observable<any> {
+
     return this.runFunction('expression2list', {
       "expr": expr 
     });
   }
 
-  json2expression() {
+  json2expression(query: RuleSet): Observable<string> {
     
+    return this.runFunction('json2expression', {
+      "json": query 
+    });   
   }
+
 
   // getHelp(topic: string, help_type: string): Observable<any> {
   //   const formData = new FormData();

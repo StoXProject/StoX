@@ -47,13 +47,18 @@ export class ExpressionBuilderDlgService {
 
     async updateQueryBuilderConfig() {
         let configString =  <string> await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
+        
+        console.log("configString : " + configString);
+
         this.config = JSON.parse(configString);
         // this.messageSource.next(this.config);
 
         if(this.currentTableExpression.expression != null) {
             // build query object from rExpression
-
             // instantiate this.query object
+            this.query = <RuleSet> await this.dataService.expression2list(this.currentTableExpression.expression).toPromise();
+        } else {
+            this.query = null;
         }
     }
 
