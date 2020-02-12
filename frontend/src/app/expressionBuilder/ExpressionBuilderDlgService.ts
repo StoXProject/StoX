@@ -14,14 +14,14 @@ export class ExpressionBuilderDlgService {
 
     public tableNames: string[] = [];
 
-    public config: QueryBuilderConfig;
+    public config: QueryBuilderConfig = <QueryBuilderConfig>{};
     public query: RuleSet = <RuleSet>{};
 
-    // private configSource = new BehaviorSubject(this.config);
-    // currentConfig = this.configSource.asObservable();
+    private configSource = new BehaviorSubject(this.config);
+    currentConfig = this.configSource.asObservable();
   
-    // private querySource = new BehaviorSubject(this.query);
-    // currentQuery = this.querySource.asObservable();
+    private querySource = new BehaviorSubject(this.query);
+    currentQuery = this.querySource.asObservable();
 
     public display: boolean = false;
 
@@ -51,21 +51,23 @@ export class ExpressionBuilderDlgService {
     async updateQueryBuilderConfig() {
         this.config = <QueryBuilderConfig> await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
         
-        console.log("config : " + this.config);
+        console.log("config : " + JSON.stringify(this.config));
 
-        // this.configSource.next(this.config);
+        this.configSource.next(this.config);
 
         if(this.currentTableExpression.expression != null) {
             // build query object from rExpression
             // instantiate this.query object
             this.query = <RuleSet> await this.dataService.expression2list(this.currentTableExpression.expression).toPromise();
         } else {
-            this.query = <RuleSet>{};
+            // this.query = <RuleSet>{};
+            // this.query.rules = [];
+            this.query = {condition: "and", rules: []};
         }
 
-        console.log("query : " + this.query);
+        console.log("query : " + JSON.stringify(this.query));
 
-        // this.querySource.next(this.query);
+        this.querySource.next(this.query);
     }
 
     async showDialog() {

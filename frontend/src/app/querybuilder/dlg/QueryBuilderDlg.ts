@@ -52,23 +52,23 @@ export class QueryBuilderDlg  implements OnInit {
     //   inputControlSize: 'col-auto'
     // };
   
-    public query: RuleSet = {
-      condition: 'and',
-      rules: [
-        {field: 'age', operator: '<='},
-        {field: 'birthday', operator: '=', value: new Date()},
-        {
-          condition: 'or',
-          rules: [
-            {field: 'gender', operator: '='},
-            {field: 'occupation', operator: 'in'},
-            {field: 'school', operator: 'is null'},
-            {field: 'notes', operator: '='}
-          ]
-        },
-        {field: 'age', operator: '=', value: 40},
-      ]
-    };
+    // public query: RuleSet = {
+    //   condition: 'and',
+    //   rules: [
+    //     {field: 'age', operator: '<='},
+    //     {field: 'birthday', operator: '=', value: new Date()},
+    //     {
+    //       condition: 'or',
+    //       rules: [
+    //         {field: 'gender', operator: '='},
+    //         {field: 'occupation', operator: 'in'},
+    //         {field: 'school', operator: 'is null'},
+    //         {field: 'notes', operator: '='}
+    //       ]
+    //     },
+    //     {field: 'age', operator: '=', value: 40},
+    //   ]
+    // };
   
     // public entityConfig: QueryBuilderConfig = {
     //   entities: {
@@ -107,37 +107,40 @@ export class QueryBuilderDlg  implements OnInit {
     //   }
     // };
   
-    public config: QueryBuilderConfig = {
-      fields: {
-        age: {name: 'Age', type: 'number'},
-        gender: {
-          name: 'Gender',
-          type: 'category',
-          options: [
-            {name: 'Male', value: 'm'},
-            {name: 'Female', value: 'f'}
-          ]
-        },
-        name: {name: 'Name', type: 'string'},
-        notes: {name: 'Notes', type: 'textarea', operators: ['=', '!=']},
-        educated: {name: 'College Degree?', type: 'boolean'},
-        birthday: {name: 'Birthday', type: 'date', operators: ['=', '<=', '>'],
-          defaultValue: (() => new Date())
-        },
-        school: {name: 'School', type: 'string', nullable: true},
-        occupation: {
-          name: 'Occupation',
-          type: 'category',
-          options: [
-            {name: 'Student', value: 'student'},
-            {name: 'Teacher', value: 'teacher'},
-            {name: 'Unemployed', value: 'unemployed'},
-            {name: 'Scientist', value: 'scientist'}
-          ]
-        }
-      }
-    };
-  
+    // public config: QueryBuilderConfig = {
+    //   fields: {
+    //     age: {name: 'Age', type: 'number'},
+    //     gender: {
+    //       name: 'Gender',
+    //       type: 'category',
+    //       options: [
+    //         {name: 'Male', value: 'm'},
+    //         {name: 'Female', value: 'f'}
+    //       ]
+    //     },
+    //     name: {name: 'Name', type: 'string'},
+    //     notes: {name: 'Notes', type: 'textarea', operators: ['=', '!=']},
+    //     educated: {name: 'College Degree?', type: 'boolean'},
+    //     birthday: {name: 'Birthday', type: 'date', operators: ['=', '<=', '>'],
+    //       defaultValue: (() => new Date())
+    //     },
+    //     school: {name: 'School', type: 'string', nullable: true},
+    //     occupation: {
+    //       name: 'Occupation',
+    //       type: 'category',
+    //       options: [
+    //         {name: 'Student', value: 'student'},
+    //         {name: 'Teacher', value: 'teacher'},
+    //         {name: 'Unemployed', value: 'unemployed'},
+    //         {name: 'Scientist', value: 'scientist'}
+    //       ]
+    //     }
+    //   }
+    // };
+
+    public config: QueryBuilderConfig = <QueryBuilderConfig>{};
+    public query: RuleSet = {condition: "and", rules: []};
+
     public currentConfig: QueryBuilderConfig;
     public allowRuleset: boolean = true;
     public allowCollapse: boolean;
@@ -152,13 +155,13 @@ export class QueryBuilderDlg  implements OnInit {
       this.queryCtrl = this.formBuilder.control(this.query);
       this.currentConfig = this.config;
 
-
-      // this.query = exprBuilderService.query;
-      // this.queryCtrl = this.formBuilder.control(this.query);
-      // this.currentConfig = exprBuilderService.config;
-
-      // this.exprBuilderService.currentConfig.subscribe(config => this.currentConfig = config);
-      // this.exprBuilderService.currentQuery.subscribe(query => this.query = query);
+      this.exprBuilderService.currentConfig.subscribe(
+        config => {
+          this.currentConfig = config;    
+          console.log("currentConfig : " + JSON.stringify(this.currentConfig));
+        }
+        );
+      this.exprBuilderService.currentQuery.subscribe(query => this.query = query);
     }
   
     // switchModes(event: Event) {
