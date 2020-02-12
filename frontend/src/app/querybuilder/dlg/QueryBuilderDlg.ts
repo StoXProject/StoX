@@ -2,8 +2,10 @@ import { ExpressionBuilderDlgService } from './../../expressionBuilder/Expressio
 import { ExpressionBuilderDlg } from './../../expressionBuilder/ExpressionBuilderDlg';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { QueryBuilderClassNames, QueryBuilderConfig } from '../module/query-builder.interfaces';
+import { RuleSet } from '../module/query-builder.interfaces';
 import { Component, OnInit } from '@angular/core';
 import { QueryBuilderDlgService } from './QueryBuilderDlgService';
+import { DataService } from '../../service/data.service';
 
 @Component({
     selector: 'TestDlg',
@@ -50,7 +52,7 @@ export class QueryBuilderDlg  implements OnInit {
     //   inputControlSize: 'col-auto'
     // };
   
-    public query = {
+    public query: RuleSet = {
       condition: 'and',
       rules: [
         {field: 'age', operator: '<='},
@@ -142,14 +144,21 @@ export class QueryBuilderDlg  implements OnInit {
     public persistValueOnFieldChange: boolean = false;
   
     constructor(
-        public service: QueryBuilderDlgService, private formBuilder: FormBuilder, private exprBuilderDlgService: ExpressionBuilderDlgService
+        public service: QueryBuilderDlgService, private formBuilder: FormBuilder, 
+        public exprBuilderService: ExpressionBuilderDlgService, private dataService: DataService
     ) 
     {
       console.log("start QueryBuilderDlg constructor");
       this.queryCtrl = this.formBuilder.control(this.query);
       this.currentConfig = this.config;
 
-      // this.exprBuilderDlgService.currentMessage.subscribe(message => this.currentConfig = message);
+
+      // this.query = exprBuilderService.query;
+      // this.queryCtrl = this.formBuilder.control(this.query);
+      // this.currentConfig = exprBuilderService.config;
+
+      // this.exprBuilderService.currentConfig.subscribe(config => this.currentConfig = config);
+      // this.exprBuilderService.currentQuery.subscribe(query => this.query = query);
     }
   
     // switchModes(event: Event) {
@@ -160,14 +169,19 @@ export class QueryBuilderDlg  implements OnInit {
     //   (<HTMLInputElement>event.target).checked ? this.queryCtrl.disable() : this.queryCtrl.enable();
     // }
   
-    apply() {
+    async apply() {
 
       // a call to dataservice to get R expression for this.query
+      // convert this.query to rExpression
+      let rExpression = <string> await this.dataService.json2expression(this.query).toPromise();
 
-      if(this.exprBuilderDlgService.getCurrentTableExpression() != null) {
-        this.exprBuilderDlgService.getCurrentTableExpression().expression = JSON.stringify(this.query);
+      console.log("rExpression : " + rExpression);
+
+      if(this.exprBuilderService.getCurrentTableExpression() != null) {
+
+        this.exprBuilderService.getCurrentTableExpression().expression = rExpression;
       
-        // this.exprBuilderDlgService.getCurrentTableExpression().expression = <string> await this.dataService.expression2list(this.query).toPromise();
+        // this.exprBuilderService.getCurrentTableExpression().expression = <string> await this.dataService.expression2list(this.query).toPromise();
       }
 
       this.service.display = false;

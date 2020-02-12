@@ -1,3 +1,4 @@
+import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBuilderDlgService';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 //import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProjectService } from '../service/project.service';
@@ -22,7 +23,8 @@ export class ParameterComponent implements OnInit {
 
 
   //  booleanForm: FormGroup; private msgService: MessageService,
-  constructor(private msgService: MessageService, public ps: ProjectService, private dataService: DataService) { }
+  constructor(private msgService: MessageService, public ps: ProjectService, 
+    private dataService: DataService, private exprBuilderService: ExpressionBuilderDlgService) { }
 
   async ngOnInit() {
     /*    let a = [];
@@ -93,6 +95,11 @@ export class ParameterComponent implements OnInit {
   // }
 
   filter(pi: PropertyItem) {
+    // set this pi as the current PropertyItem in ExpressionBuilderService
+    this.exprBuilderService.setCurrentPropertyItem(pi);
+
+    // run ExpressionBuilderService.showDialog() to show Expression builder dialog
+    this.exprBuilderService.showDialog();
 
   }
 }
