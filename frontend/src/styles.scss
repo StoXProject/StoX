@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 /* You can add global styles to this file, and also import other style files */
 @import "assets/hi-theme-primeng/hi-primeng.scss";
-@import 'material-icons/iconfont/material-icons.css';
+@import "material-icons/iconfont/material-icons.css";
 //@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 //@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
@@ -69,7 +69,7 @@ $nodata: #acacac;
   padding-bottom: 2px !important;
   padding-right: 0 !important;
   width: 100% !important;
-  font-size: 0.75rem !important;  
+  font-size: 0.75rem !important;
   color: black !important;
   user-select: none;
   line-height: 1.1;
@@ -121,6 +121,9 @@ $nodata: #acacac;
     }
   }
 }
+.ui-treenode-label {
+  padding: 0 !important;
+}
 .ui-contextmenu .ui-menuitem-link {
   padding: 0 20px 0 0 !important ;
   text-decoration: none !important;
@@ -129,8 +132,8 @@ $nodata: #acacac;
   }
 }
 //.ui-menuitem-link {
-  //white-space: nowrap !important;
-  //display: inline-block !important;
+//white-space: nowrap !important;
+//display: inline-block !important;
 //}
 .ui-submenu-list {
   //padding: 0 20px 0 0 !important ;
@@ -318,6 +321,14 @@ $nodata: #acacac;
   left: 80%;
 }
 
+.stratumicon:before {
+  @include icon_content("\f00a", 1rem, rgb(145, 173, 131), true);
+}
+
+.psuicon:before {
+  @include icon_content("\f03a", 1rem, rgb(145, 173, 131), true);
+}
+
 .interactiveicon:after {
   @include icon_content("\f111", 0.34rem, rgb(77, 94, 69));
 }
@@ -392,7 +403,6 @@ $nodata: #acacac;
   @include icon_content("\f068", 0.8rem, rgb(206, 127, 127), true);
 }
 
-
 .blink {
   animation: blink 500ms infinite steps(1);
 }
@@ -448,21 +458,23 @@ $nodata: #acacac;
   background-color: #c0c0c0 !important;
 }
 .mat-tab-header-pagination {
-  background-color:  lighten(#f0f0f0, 4%) !important;
+  background-color: lighten(#f0f0f0, 4%) !important;
 }
 
 .mat-tab-links {
-  width:100%;
+  width: 100%;
 }
-.mat-tab-labels, .mat-tab-links {
+.mat-tab-labels,
+.mat-tab-links {
   background-color: #e5e5e5 !important;
 }
-.mat-tab-label,.mat-tab-link {
+.mat-tab-label,
+.mat-tab-link {
   padding: 0 10px !important;
   height: 1.2rem !important;
   line-height: 1.2rem !important;
-  opacity: 1.0 !important;
-  color:black !important;
+  opacity: 1 !important;
+  color: black !important;
   background-color: #f0f0f0 !important;
   min-width: auto !important;
   border: 1px solid darken(#f0f0f0, 4%);
@@ -480,27 +492,27 @@ $nodata: #acacac;
 }
 
 .mat-tab-group {
-  height: 100% !important; 
+  height: 100% !important;
 }
 
 .mat-tab-body {
-  height: 100% !important; 
+  height: 100% !important;
 }
 .mat-tab-body-content {
-  height: 100% !important; 
+  height: 100% !important;
   line-height: 1.2rem !important;
-  overflow:hidden !important;;
+  overflow: hidden !important;
 }
 
 .mat-button-base {
   line-height: 1.3rem !important;
-  min-width:0px !important;
+  min-width: 0px !important;
 }
 .mat-toolbar {
   padding: 3px 3px !important;
-
 }
-.mat-raised-button, .mat-button-toggle-label-content {
+.mat-raised-button,
+.mat-button-toggle-label-content {
   padding: 0 0 !important;
 }
 .mat-button-toggle-label-content {

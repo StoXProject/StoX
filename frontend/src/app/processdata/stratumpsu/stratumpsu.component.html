@@ -1,1 +1,6 @@
-<p>stratumpsu works!</p>
+<p-tree [value]="files" selectionMode ="single" [(selection)]="selectedFile">
+    <ng-template let-node pTemplate="default">
+        <span (contextmenu)="openCm($event, cm, node)">{{node.label}}</span>
+    </ng-template>
+</p-tree>
+<p-contextMenu #cm [model]="contextMenu" appendTo="body"></p-contextMenu>
