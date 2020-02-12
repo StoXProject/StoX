@@ -49,6 +49,7 @@ import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ModelComponent } from './model/model.component';
 import { RunComponent } from './run/run.component';
+import { TreeModule } from 'primeng/tree';
 import {
   MatTabsModule,
   MatButtonModule,
@@ -182,6 +183,7 @@ export class MaterialModule {}
     ListboxModule,
     TabMenuModule,
     ToolbarModule,
+    TreeModule,
     ContextMenuModule,
     KeyboardShortcutsModule.forRoot(),
     RouterModule.forRoot([]),

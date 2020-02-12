@@ -1,15 +1,18 @@
-export class StratumPSU {
-    stratum : string;
-    psu : string;
+export class Stratum_PSU {
+    Stratum : string;
+    PSU : string;
 }
 
-export class EDSUPSU {
-    psu : string;
-    edsu : string;
+export class EDSU_PSU {
+    PSU : string;
+    EDSU : string;
+}
+export class Stratum {
+    Stratum : string;
 }
 
 export class AcousticPSU {
-    stratumPSU : StratumPSU[];
-    psuEdsu : StratumPSU[];
-    stratum : string[]; // should be array.
+    Stratum_PSU : Stratum_PSU[];
+    EDSU_PSU : EDSU_PSU[];
+    Stratum : Stratum[];
 }
