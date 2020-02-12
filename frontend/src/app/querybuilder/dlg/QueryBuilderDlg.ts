@@ -157,7 +157,8 @@ export class QueryBuilderDlg  implements OnInit {
       // this.queryCtrl = this.formBuilder.control(this.query);
       // this.currentConfig = exprBuilderService.config;
 
-      // this.exprBuilderDlgService.currentMessage.subscribe(message => this.currentConfig = message);
+      // this.exprBuilderService.currentConfig.subscribe(config => this.currentConfig = config);
+      // this.exprBuilderService.currentQuery.subscribe(query => this.query = query);
     }
   
     // switchModes(event: Event) {
@@ -172,8 +173,9 @@ export class QueryBuilderDlg  implements OnInit {
 
       // a call to dataservice to get R expression for this.query
       // convert this.query to rExpression
-
       let rExpression = <string> await this.dataService.json2expression(this.query).toPromise();
+
+      console.log("rExpression : " + rExpression);
 
       if(this.exprBuilderService.getCurrentTableExpression() != null) {
 

@@ -17,9 +17,12 @@ export class ExpressionBuilderDlgService {
     public config: QueryBuilderConfig;
     public query: RuleSet;
 
-    // private messageSource = new BehaviorSubject(this.config);
-    // currentMessage = this.messageSource.asObservable();
+    // private configSource = new BehaviorSubject(this.config);
+    // currentConfig = this.configSource.asObservable();
   
+    // private querySource = new BehaviorSubject(this.query);
+    // currentQuery = this.querySource.asObservable();
+
     public display: boolean = false;
 
     currentTableExpression: TableExpression = null;
@@ -46,12 +49,11 @@ export class ExpressionBuilderDlgService {
     }
 
     async updateQueryBuilderConfig() {
-        let configString =  <string> await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
+        this.config = <QueryBuilderConfig> await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
         
-        console.log("configString : " + configString);
+        console.log("config : " + this.config);
 
-        this.config = JSON.parse(configString);
-        // this.messageSource.next(this.config);
+        // this.configSource.next(this.config);
 
         if(this.currentTableExpression.expression != null) {
             // build query object from rExpression
@@ -60,14 +62,11 @@ export class ExpressionBuilderDlgService {
         } else {
             this.query = null;
         }
-    }
 
-    // private messageSource = new BehaviorSubject('default message');
-    // currentMessage = this.messageSource.asObservable();  
-  
-    // changeMessage(tableExpression: TableExpression) {
-    //     this.messageSource.next(tableExpression);
-    // }
+        console.log("query : " + this.query);
+
+        // this.querySource.next(this.query);
+    }
 
     async showDialog() {
         console.log("in ExpressionBuilderDlgService.showDialog()");
@@ -84,8 +83,6 @@ export class ExpressionBuilderDlgService {
         // let rExpression = this.currentPropertyItem.value;
 
         // build array of tableExpressions from rExpression and let ExpressionBuilderDlg get these as data attributes 
-
-
 
         this.display = true;
     }
