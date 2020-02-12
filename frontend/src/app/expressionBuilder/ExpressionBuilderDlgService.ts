@@ -15,7 +15,7 @@ export class ExpressionBuilderDlgService {
     public tableNames: string[] = [];
 
     public config: QueryBuilderConfig;
-    public query: RuleSet;
+    public query: RuleSet = <RuleSet>{};
 
     // private configSource = new BehaviorSubject(this.config);
     // currentConfig = this.configSource.asObservable();
