@@ -60,7 +60,7 @@ export class ExpressionBuilderDlgService {
             // instantiate this.query object
             this.query = <RuleSet> await this.dataService.expression2list(this.currentTableExpression.expression).toPromise();
         } else {
-            this.query = null;
+            this.query = <RuleSet>{};
         }
 
         console.log("query : " + this.query);
