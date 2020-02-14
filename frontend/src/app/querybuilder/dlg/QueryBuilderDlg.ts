@@ -175,13 +175,16 @@ export class QueryBuilderDlg  implements OnInit {
       // convert this.query to rExpression
       let rExpression = <string> await this.dataService.json2expression(this.query).toPromise();
 
-      console.log("rExpression : " + rExpression);
+      if(rExpression != null) {
+        console.log(rExpression.constructor.name);
+        console.log("rExpression is not null!");
+      }
 
-      if(this.exprBuilderService.getCurrentTableExpression() != null) {
+      console.log("rExpression : '" + rExpression + "'");
 
-        this.exprBuilderService.getCurrentTableExpression().expression = rExpression;
-      
-        // this.exprBuilderService.getCurrentTableExpression().expression = <string> await this.dataService.expression2list(this.query).toPromise();
+      if(this.exprBuilderService.getCurrentTableExpression() != null && rExpression != null) {
+
+        // this.exprBuilderService.getCurrentTableExpression().expression = rExpression;
       }
 
       this.service.display = false;
