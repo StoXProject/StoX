@@ -1,7 +1,6 @@
 import { ExpressionBuilderDlgService } from './../../expressionBuilder/ExpressionBuilderDlgService';
-import { ExpressionBuilderDlg } from './../../expressionBuilder/ExpressionBuilderDlg';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { QueryBuilderClassNames, QueryBuilderConfig } from '../module/query-builder.interfaces';
+import { QueryBuilderConfig } from '../module/query-builder.interfaces';
 import { RuleSet } from '../module/query-builder.interfaces';
 import { Component, OnInit } from '@angular/core';
 import { QueryBuilderDlgService } from './QueryBuilderDlgService';
@@ -13,11 +12,6 @@ import { DataService } from '../../service/data.service';
     styleUrls: ['./QueryBuilderDlg.css']
 })
 export class QueryBuilderDlg  implements OnInit {
-
-
-    // constructor(public service: TestDlgService) {
-      // styleUrls: ['./QueryBuilderDlg.css']
-    // }
 
     async ngOnInit() {
         
@@ -156,10 +150,11 @@ export class QueryBuilderDlg  implements OnInit {
       this.currentConfig = this.config;
 
       this.exprBuilderService.currentConfig.subscribe(
-        config => {
-          this.currentConfig = config;    
-          console.log("currentConfig : " + JSON.stringify(this.currentConfig));
-        }
+          config => {
+            this.adjustConfig(config);
+            this.currentConfig = config;
+            console.log("currentConfig : " + JSON.stringify(this.currentConfig));
+          }
         );
       this.exprBuilderService.currentQuery.subscribe(query => this.query = query);
     }
@@ -173,6 +168,8 @@ export class QueryBuilderDlg  implements OnInit {
     // }
   
     async apply() {
+
+      console.log("current query : " + JSON.stringify(this.query));
 
       // a call to dataservice to get R expression for this.query
       // convert this.query to rExpression
@@ -188,5 +185,35 @@ export class QueryBuilderDlg  implements OnInit {
       }
 
       this.service.display = false;
+    }
+
+    adjustConfig(paramConfig: QueryBuilderConfig) {
+      console.log("adjusted config : ");
+      for(let key in paramConfig) {
+        let value = paramConfig[key];
+        console.log("key : " + key + ", value : " + value);
+        
+        for(let key2 in value) {
+          let value2 = value[key2];
+          console.log("key2 : " + key2 + ", value2 : " + value2);
+
+          for(let key3 in value2) {
+            let value3 = value2[key3];
+            console.log("key3 : " + key3 + ", value3 : " + value3);
+
+            if(key3 == 'options') {
+              let optionsLength = value3.length;
+              console.log("option length : " + optionsLength);
+
+              if(optionsLength > 0) {
+                value2["type"] = "category";
+                console.log("type changed!");
+              } else {
+                console.log("option length : " + optionsLength);
+              }
+            }
+          }
+        }
+      }
     }
 }

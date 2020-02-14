@@ -151,9 +151,9 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   @ContentChild(QueryArrowIconDirective, {static: false}) arrowIconTemplate: QueryArrowIconDirective;
 
   private defaultTemplateTypes: string[] = [
-    'string', 'number', 'time', 'date', 'category', 'boolean', 'multiselect'];
+    'character', 'numeric', 'integer', 'time', 'date', 'category', 'boolean', 'multiselect'];
   private defaultPersistValueTypes: string[] = [
-    'string', 'number', 'time', 'date', 'boolean'];
+    'character', 'numeric', 'integer', 'time', 'date', 'boolean'];
   private defaultEmptyList: any[] = [];
   private operatorsCache: { [key: string]: string[] };
   private inputContextCache = new Map<Rule, InputContext>();

@@ -127,9 +127,11 @@
             <ng-template #defaultInput>
               <div [ngClass]="getClassNames('inputControlSize')" [ngSwitch]="getInputType(rule.field, rule.operator)">
                 <input [ngClass]="getClassNames('inputControl')" [(ngModel)]="rule.value" (ngModelChange)="changeInput()"
-                  [disabled]="disabled" *ngSwitchCase="'string'" type="text">
+                  [disabled]="disabled" *ngSwitchCase="'character'" type="text">
                 <input [ngClass]="getClassNames('inputControl')" [(ngModel)]="rule.value" (ngModelChange)="changeInput()"
-                  [disabled]="disabled" *ngSwitchCase="'number'" type="number">
+                  [disabled]="disabled" *ngSwitchCase="'numeric'" type="number" step="any">
+                  <input [ngClass]="getClassNames('inputControl')" [(ngModel)]="rule.value" (ngModelChange)="changeInput()"
+                  [disabled]="disabled" *ngSwitchCase="'integer'" type="number" step="1"> 
                 <input [ngClass]="getClassNames('inputControl')" [(ngModel)]="rule.value" (ngModelChange)="changeInput()"
                   [disabled]="disabled" *ngSwitchCase="'date'" type="date">
                 <input [ngClass]="getClassNames('inputControl')" [(ngModel)]="rule.value" (ngModelChange)="changeInput()"
