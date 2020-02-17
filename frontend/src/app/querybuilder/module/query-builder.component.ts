@@ -104,8 +104,9 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     inputControlSize: 'q-control-size'
   };
   public defaultOperatorMap: { [key: string]: string[] } = {
-    string: ['=', '!=', 'contains', 'like'],
-    number: ['=', '!=', '>', '>=', '<', '<='],
+    character: ['=', '!=', 'contains', 'like'],
+    numeric: ['=', '!=', '>', '>=', '<', '<='],
+    integer: ['=', '!=', '>', '>=', '<', '<='],
     time: ['=', '!=', '>', '>=', '<', '<='],
     date: ['=', '!=', '>', '>=', '<', '<='],
     category: ['=', '!=', 'in', 'not in'],

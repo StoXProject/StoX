@@ -210,9 +210,10 @@ export class QueryBuilderDlg  implements OnInit {
 
               if(optionsLength > 0) {
                 value2["type"] = "category";
-                console.log("type changed!");
+                console.log("type changed to 'category'!");
               } else {
-                console.log("option length : " + optionsLength);
+                delete value2[key3];      
+                console.log("empty options deleted!");          
               }
             }
           }
