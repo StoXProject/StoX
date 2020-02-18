@@ -183,8 +183,7 @@ export class QueryBuilderDlg  implements OnInit {
       console.log("rExpression : '" + rExpression + "'");
 
       if(this.exprBuilderService.getCurrentTableExpression() != null && rExpression != null) {
-
-        // this.exprBuilderService.getCurrentTableExpression().expression = rExpression;
+        this.exprBuilderService.getCurrentTableExpression().expression = rExpression;
       }
 
       this.service.display = false;
