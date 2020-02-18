@@ -109,7 +109,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     integer: ['=', '!=', '>', '>=', '<', '<='],
     time: ['=', '!=', '>', '>=', '<', '<='],
     date: ['=', '!=', '>', '>=', '<', '<='],
-    category: ['=', '!=', 'in', 'not in'],
+    category: ['=', '!=', '%in%', '%notin%'],
     boolean: ['=']
   };
   @Input() disabled: boolean;
@@ -327,8 +327,8 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
       case 'is null':
       case 'is not null':
         return null;  // No displayed component
-      case 'in':
-      case 'not in':
+      case '%in%':
+      case '%notin%':
         return type === 'category' || type === 'boolean' ? 'multiselect' : type;
       default:
         return type;
