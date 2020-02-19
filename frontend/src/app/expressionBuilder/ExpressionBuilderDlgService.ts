@@ -15,7 +15,7 @@ export class ExpressionBuilderDlgService {
     public tableNames: string[] = [];
 
     public config: QueryBuilderConfig = <QueryBuilderConfig>{};
-    public query: RuleSet = {condition: "and", rules: []};
+    public query: RuleSet = {condition: "&", rules: []};
 
     private configSource = new BehaviorSubject(this.config);
     currentConfig = this.configSource.asObservable();
@@ -55,14 +55,14 @@ export class ExpressionBuilderDlgService {
 
         this.configSource.next(this.config);
 
-        if(this.currentTableExpression.expression != null) {
+        if(this.currentTableExpression.expression != null && this.currentTableExpression.expression.trim() != "") {
             // build query object from rExpression
             // instantiate this.query object
             this.query = <RuleSet> await this.dataService.expression2list(this.currentTableExpression.expression).toPromise();
         } else {
             // this.query = <RuleSet>{};
             // this.query.rules = [];
-            this.query = {condition: "and", rules: []};
+            this.query = {condition: "&", rules: []};
         }
 
         console.log("query : " + JSON.stringify(this.query));

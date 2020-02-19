@@ -113,7 +113,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     boolean: ['=']
   };
   @Input() disabled: boolean;
-  @Input() data: RuleSet = { condition: 'and', rules: [] };
+  @Input() data: RuleSet = { condition: '&', rules: [] };
 
   // For ControlValueAccessor interface
   public onChangeCallback: () => void;
@@ -225,7 +225,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   }
   set value(value: RuleSet) {
     // When component is initialized without a formControl, null is passed to value
-    this.data = value || { condition: 'and', rules: [] };
+    this.data = value || { condition: '&', rules: [] };
     this.handleDataChange();
   }
 
@@ -434,7 +434,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     if (this.config.addRuleSet) {
       this.config.addRuleSet(parent);
     } else {
-      parent.rules = parent.rules.concat([{ condition: 'and', rules: [] }]);
+      parent.rules = parent.rules.concat([{ condition: '&', rules: [] }]);
     }
 
     this.handleTouched();

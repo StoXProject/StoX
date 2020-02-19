@@ -39,12 +39,12 @@
     <div [ngClass]="getClassNames('switchGroup', 'transition')" *ngIf="data">
       <div [ngClass]="getClassNames('switchControl')">
         <input type="radio" [ngClass]="getClassNames('switchRadio')" [(ngModel)]="data.condition" [disabled]=disabled
-          value="and" #andOption />
+          value="&" #andOption />
         <label (click)="changeCondition(andOption.value)" [ngClass]="getClassNames('switchLabel')">AND</label>
       </div>
       <div [ngClass]="getClassNames('switchControl')">
         <input type="radio" [ngClass]="getClassNames('switchRadio')" [(ngModel)]="data.condition" [disabled]=disabled
-          value="or" #orOption />
+          value="|" #orOption />
         <label (click)="changeCondition(orOption.value)" [ngClass]="getClassNames('switchLabel')">OR</label>
       </div>
     </div>

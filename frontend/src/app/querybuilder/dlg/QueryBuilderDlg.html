@@ -67,8 +67,8 @@
       </ng-container>
       <ng-container *querySwitchGroup="let ruleset; let onChange=onChange">
         <mat-radio-group *ngIf="ruleset" [(ngModel)]="ruleset.condition" (ngModelChange)="onChange($event)">
-          <mat-radio-button [style.padding.px]="10" value="and">And</mat-radio-button>
-          <mat-radio-button [style.padding.px]="10" value="or">Or</mat-radio-button>
+          <mat-radio-button [style.padding.px]="10" value="&">And</mat-radio-button>
+          <mat-radio-button [style.padding.px]="10" value="|">Or</mat-radio-button>
         </mat-radio-group>
       </ng-container>
       <ng-container *queryEntity="let rule; let entities=entities; let onChange=onChange">

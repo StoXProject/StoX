@@ -133,7 +133,7 @@ export class QueryBuilderDlg  implements OnInit {
     // };
 
     public config: QueryBuilderConfig = <QueryBuilderConfig>{};
-    public query: RuleSet = {condition: "and", rules: []};
+    public query: RuleSet = {condition: "&", rules: []};
 
     public currentConfig: QueryBuilderConfig;
     public allowRuleset: boolean = true;
@@ -146,6 +146,7 @@ export class QueryBuilderDlg  implements OnInit {
     ) 
     {
       console.log("start QueryBuilderDlg constructor");
+      
       this.queryCtrl = this.formBuilder.control(this.query);
       this.currentConfig = this.config;
 
@@ -156,7 +157,13 @@ export class QueryBuilderDlg  implements OnInit {
             console.log("currentConfig : " + JSON.stringify(this.currentConfig));
           }
         );
-      this.exprBuilderService.currentQuery.subscribe(query => this.query = query);
+
+      this.exprBuilderService.currentQuery.subscribe(
+          query => {
+            this.query = query;
+            console.log("query : " + JSON.stringify(this.query));
+          }
+        );
     }
   
     // switchModes(event: Event) {
@@ -175,12 +182,16 @@ export class QueryBuilderDlg  implements OnInit {
       // convert this.query to rExpression
       let rExpression = <string> await this.dataService.json2expression(this.query).toPromise();
 
-      if(rExpression != null) {
-        console.log(rExpression.constructor.name);
-        console.log("rExpression is not null!");
-      }
+      // if(rExpression != null) {
+      //   console.log(rExpression.constructor.name);
+      //   console.log("rExpression is not null!");
+      // }
 
       console.log("rExpression : '" + rExpression + "'");
+
+      if(rExpression != null && rExpression.trim() == "") {
+        rExpression = null;
+      }
 
       if(this.exprBuilderService.getCurrentTableExpression() != null && rExpression != null) {
         this.exprBuilderService.getCurrentTableExpression().expression = rExpression;
