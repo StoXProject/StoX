@@ -404,10 +404,9 @@ export class DataService {
     return this.runProcessFunc<any>('getMapData', projectPath, modelName, processID);
   }
 
-  getAcousticPSUData(projectPath: string, modelName: string, processID: string): Observable<AcousticPSU> {
-    return this.runProcessFunc<AcousticPSU>('getAcousticPSUData', projectPath, modelName, processID);
+  getInteractiveData(projectPath: string, modelName: string, processID: string): Observable<any> {
+    return this.runProcessFunc<any>('getInteractiveData', projectPath, modelName, processID);
   }
-
 
   modifyStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
     return this.runFunction('modifyStratum', { "stratum" : stratum,
