@@ -104,15 +104,16 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     inputControlSize: 'q-control-size'
   };
   public defaultOperatorMap: { [key: string]: string[] } = {
-    string: ['=', '!=', 'contains', 'like'],
-    number: ['=', '!=', '>', '>=', '<', '<='],
+    character: ['=', '!=', 'contains', 'like'],
+    numeric: ['=', '!=', '>', '>=', '<', '<='],
+    integer: ['=', '!=', '>', '>=', '<', '<='],
     time: ['=', '!=', '>', '>=', '<', '<='],
     date: ['=', '!=', '>', '>=', '<', '<='],
-    category: ['=', '!=', 'in', 'not in'],
+    category: ['=', '!=', '%in%', '%notin%'],
     boolean: ['=']
   };
   @Input() disabled: boolean;
-  @Input() data: RuleSet = { condition: 'and', rules: [] };
+  @Input() data: RuleSet = { condition: '&', rules: [] };
 
   // For ControlValueAccessor interface
   public onChangeCallback: () => void;
@@ -151,9 +152,9 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   @ContentChild(QueryArrowIconDirective, {static: false}) arrowIconTemplate: QueryArrowIconDirective;
 
   private defaultTemplateTypes: string[] = [
-    'string', 'number', 'time', 'date', 'category', 'boolean', 'multiselect'];
+    'character', 'numeric', 'integer', 'time', 'date', 'category', 'boolean', 'multiselect'];
   private defaultPersistValueTypes: string[] = [
-    'string', 'number', 'time', 'date', 'boolean'];
+    'character', 'numeric', 'integer', 'time', 'date', 'boolean'];
   private defaultEmptyList: any[] = [];
   private operatorsCache: { [key: string]: string[] };
   private inputContextCache = new Map<Rule, InputContext>();
@@ -224,7 +225,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   }
   set value(value: RuleSet) {
     // When component is initialized without a formControl, null is passed to value
-    this.data = value || { condition: 'and', rules: [] };
+    this.data = value || { condition: '&', rules: [] };
     this.handleDataChange();
   }
 
@@ -326,8 +327,8 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
       case 'is null':
       case 'is not null':
         return null;  // No displayed component
-      case 'in':
-      case 'not in':
+      case '%in%':
+      case '%notin%':
         return type === 'category' || type === 'boolean' ? 'multiselect' : type;
       default:
         return type;
@@ -433,7 +434,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     if (this.config.addRuleSet) {
       this.config.addRuleSet(parent);
     } else {
-      parent.rules = parent.rules.concat([{ condition: 'and', rules: [] }]);
+      parent.rules = parent.rules.concat([{ condition: '&', rules: [] }]);
     }
 
     this.handleTouched();

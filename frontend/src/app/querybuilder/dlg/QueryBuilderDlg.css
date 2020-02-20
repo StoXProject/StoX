@@ -32,3 +32,8 @@
     width: 100%;
     height: 300px;
   }
+
+  .mat-card {
+    overflow: auto;
+    max-height: 500px;
+  }

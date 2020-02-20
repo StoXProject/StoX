@@ -218,7 +218,7 @@ export class DataService {
   json2expression(query: RuleSet): Observable<string> {
     
     return this.runFunction('json2expression', {
-      "json": query 
+      "json": JSON.stringify(query)
     });   
   }
 
