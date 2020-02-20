@@ -121,8 +121,22 @@ $nodata: #acacac;
     }
   }
 }
-.ui-treenode-label {
+.ui-tree {
+  border: none !important; 
+  margin: 1px !important;
   padding: 0 !important;
+  height:100% !important;
+  width: inherit !important;
+  //overflow-y: scroll;
+}
+.ui-treenode-label,
+.ui-treenode,
+.ui-tree-container {
+  padding: 0 !important;
+}
+
+.ui-treenode-content:focus {
+  outline: none;
 }
 .ui-contextmenu .ui-menuitem-link {
   padding: 0 20px 0 0 !important ;

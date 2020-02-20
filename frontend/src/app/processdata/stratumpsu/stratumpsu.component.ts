@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { TreeNode, MenuItem } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
+import { ProcessDataService } from './../../service/processdata.service'
+import { AcousticPSU, Stratum, Stratum_PSU } from './../../data/processdata'
 
 @Component({
   selector: 'app-stratumpsu',
@@ -9,62 +11,46 @@ import { ContextMenu } from 'primeng/contextmenu';
 })
 export class StratumpsuComponent implements OnInit {
   contextMenu: MenuItem[];
+  nodes: TreeNode[];
+  m_selectedNode: TreeNode;
 
-  constructor() { }
-  files: TreeNode[];
-  m_selectedFile: TreeNode;
-  set selectedFile(val: TreeNode) {
-    this.m_selectedFile = val;
-    console.log("selected file" + val.data);
+  private static asNode(id: string, type: string, children: TreeNode[]): TreeNode {
+    return {
+      "label": id,
+      "data": id,
+      "expandedIcon": "rib absa " + type + "icon",
+      "collapsedIcon": "rib absa " + type + "icon",
+      "children": children
+    };
   }
-  get selectedFile(): TreeNode {
-    return this.m_selectedFile;
+
+  constructor(private pds: ProcessDataService) {
+    pds.acousticPSUSubject.subscribe((data: AcousticPSU) => {
+      // Convert Acoustic PSU to TreeNodes:
+      this.nodes = data.Stratum
+        .map((s: Stratum) => {
+          let psuNodes: TreeNode[] = data.Stratum_PSU
+            .filter((spsu: Stratum_PSU) => spsu.Stratum === s.Stratum)
+            .map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, "psu", []));
+          return StratumpsuComponent.asNode(s.Stratum, "stratum", psuNodes);
+        });
+    })
   }
+
+  // Accessors for selected node
+  set selectedNode(val: TreeNode) {
+    this.m_selectedNode = val;
+    this.pds.selectedPSU = val.data;
+    console.log("selected node" + val.data);
+  }
+
+  get selectedNode(): TreeNode {
+    return this.m_selectedNode;
+  }
+
   ngOnInit() {
-    this.files = [
-      {
-        "label": "Stratum 1",
-        "data": "1",
-        "expandedIcon": "rib absa stratumicon",
-        "collapsedIcon": "rib absa stratumicon",
-        "children": [{
-          "label": "T1",
-          "data": "T1",
-          "expandedIcon": "rib absa psuicon",
-          "collapsedIcon": "rib absa psuicon"
-          //"children": [{"label": "Expenses.doc", "icon": "fa fa-file-word-o", "data": "Expenses Document"}, {"label": "Resume.doc", "icon": "fa fa-file-word-o", "data": "Resume Document"}]
-        },
-        {
-          "label": "T2",
-          "data": "T2",
-          "expandedIcon": "rib absa psuicon",
-          "collapsedIcon": "rib absa psuicon"
-          //"children": [{"label": "Expenses.doc", "icon": "fa fa-file-word-o", "data": "Expenses Document"}, {"label": "Resume.doc", "icon": "fa fa-file-word-o", "data": "Resume Document"}]
-        }]
-      },
-      {
-        "label": "Stratum 2",
-        "data": "2",
-        "expandedIcon": "rib absa stratumicon",
-        "collapsedIcon": "rib absa stratumicon",
-        "children": [{
-          "label": "T3",
-          "data": "T3",
-          "expandedIcon": "rib absa psuicon",
-          "collapsedIcon": "rib absa psuicon"
-          //"children": [{"label": "Expenses.doc", "icon": "fa fa-file-word-o", "data": "Expenses Document"}, {"label": "Resume.doc", "icon": "fa fa-file-word-o", "data": "Resume Document"}]
-        },
-        {
-          "label": "T4",
-          "data": "T4",
-          "expandedIcon": "rib absa psuicon",
-          "collapsedIcon": "rib absa psuicon"
-          //"children": [{"label": "Expenses.doc", "icon": "fa fa-file-word-o", "data": "Expenses Document"}, {"label": "Resume.doc", "icon": "fa fa-file-word-o", "data": "Resume Document"}]
-        }]
-      },
-    ];
-    this.selectedFile = this.files[1];
 
+    this.nodes = [];
   }
   async prepCm(node: TreeNode) {
     // comment: add list of outputtablenames to runModel result. 
@@ -77,12 +63,12 @@ export class StratumpsuComponent implements OnInit {
     this.contextMenu = m;
   }
   async openCm(event, cm: ContextMenu, node: TreeNode) {
-    this.selectedFile = node;
+    this.selectedNode = node;
     //console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
     await this.prepCm(node);
-    if (this.contextMenu.length > 0) { 
+    if (this.contextMenu.length > 0) {
       cm.show(event);
     } else {
       cm.hide();

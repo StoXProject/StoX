@@ -33,6 +33,7 @@ import { createStringXY } from 'ol/coordinate';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
 import { RunService } from '../service/run.service';
+import { ProcessDataService } from '../service/processdata.service';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
@@ -40,6 +41,8 @@ import VectorSource from 'ol/source/Vector';
 import { MatDialog } from '@angular/material';
 import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
+import { EDSU_PSU } from '../data/processdata';
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -63,7 +66,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   stratumDraw: Draw;
   overlay: Overlay;
   private m_Tool: string = "freemove";
-  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService, private dialog: MatDialog) {
+  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
   /*@HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -211,9 +214,9 @@ export class MapComponent implements OnInit, AfterViewInit {
           break;
         }
         case "EDSU": {
-          let data: {EDSUPoints: string; EDSULines : string;} = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+          let data: { EDSUPoints: string; EDSULines: string; } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
           this.edsuLineLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2);
-          this.edsuPointLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, data.EDSUPoints, proj, [MapSetup.getEDSUPointStyle()], false, 3);
+          this.edsuPointLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3);
           this.map.addLayer(this.edsuLineLayer);
           this.map.addLayer(this.edsuPointLayer);
           break;
@@ -233,6 +236,31 @@ export class MapComponent implements OnInit, AfterViewInit {
         }
       }
     })
+
+    this.pds.acousticPSUSubject.subscribe(async acousticPSU => {
+      if (acousticPSU != null) {
+        // Set EDSU features to any-selected (green) to indicate psus independent of selected psu.
+        (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
+          let edsu: string = f.get("EDSU");
+          let selected : boolean = this.pds.acousticPSU.EDSU_PSU.findIndex(edsupsu => edsupsu.EDSU == edsu) > 0 ? true : false;
+          f.set("selected", selected);
+          MapSetup.updateEDSUSelection(f)
+        })
+        //acousticPSU.EDSU_PSU
+      }
+    });
+    this.pds.selectedPSUSubject.subscribe(async psu => {
+      if(psu != null ){
+        let edsupsuFiltered : EDSU_PSU[] = this.pds.acousticPSU.EDSU_PSU.filter(edsupsu => edsupsu.PSU == psu); 
+        (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
+          let edsu: string = f.get("EDSU");
+          // An edsu is focused when it is selected as psu:
+          let edsuPsu : EDSU_PSU = edsupsuFiltered.find(edsupsu => edsupsu.EDSU == edsu);
+          f.set("focused", edsuPsu != null ? true : false);
+          MapSetup.updateEDSUSelection(f)
+        })
+      }
+    });
 
     var selected = [];
 
