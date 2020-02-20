@@ -49,42 +49,56 @@ export class ExpressionBuilderDlgService {
     }
 
     async updateQueryBuilderConfig() {
+
+        console.log("this.tableExpressions : " + JSON.stringify(JSON.stringify(this.tableExpressions)));
+
+        this.query = {condition: "&", rules: []};
+
         this.config = <QueryBuilderConfig> await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
         
-        console.log("config : " + JSON.stringify(this.config));
-
-        this.configSource.next(this.config);
+        // console.log("config : " + JSON.stringify(this.config));
 
         if(this.currentTableExpression.expression != null && this.currentTableExpression.expression.trim() != "") {
             // build query object from rExpression
             // instantiate this.query object
             this.query = <RuleSet> await this.dataService.expression2list(this.currentTableExpression.expression).toPromise();
-        } else {
-            // this.query = <RuleSet>{};
-            // this.query.rules = [];
-            this.query = {condition: "&", rules: []};
-        }
+        } 
+        // else {
+        //     // this.query = <RuleSet>{};
+        //     // this.query.rules = [];
+        //     this.query = {condition: "&", rules: []};
+        // }
 
-        console.log("query : " + JSON.stringify(this.query));
+        // console.log("query : " + JSON.stringify(this.query));
 
+        this.configSource.next(this.config);
         this.querySource.next(this.query);
+    }
+
+    combinedExpression(): string {
+        let combinedTable = {};
+
+        this.tableExpressions.forEach(t=>{combinedTable[t.tableName]= t.expression});
+
+        return JSON.stringify(combinedTable);
     }
 
     async showDialog() {
         console.log("in ExpressionBuilderDlgService.showDialog()");
 
-        // console.log("this.ps.selectedProject.projectPath :" + this.ps.selectedProject.projectPath);
-        // console.log("this.ps.selectedModel.modelName :" + this.ps.selectedModel.modelName);
-        // console.log("this.ps.selectedProcess.processID :" + this.ps.selectedProcess.processID);
-
         this.tableNames = <string[]> await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
         console.log("this.tableNames : " + this.tableNames);
 
-        // this.tableExpressions = [];
+        // build array of tableExpressions from rExpression
 
-        // let rExpression = this.currentPropertyItem.value;
+        console.log("this.currentPropertyItem.value : " + this.currentPropertyItem.value);
 
-        // build array of tableExpressions from rExpression and let ExpressionBuilderDlg get these as data attributes 
+        this.tableExpressions = [];
+        let o = JSON.parse(this.currentPropertyItem.value);
+        let keys = Object.keys(o);
+        keys.forEach(key => { this.tableExpressions.push({tableName: key, expression: o[key]}) });
+
+        console.log("this.tableExpressions.length : " +this.tableExpressions.length);
 
         this.display = true;
     }

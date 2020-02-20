@@ -159,7 +159,9 @@ export class ExpressionBuilderDlg  implements OnInit {
         // emit combinedExpression to other components
         // this.messageEvent.emit(this.combinedExpression);
 
-        // this.service.getCurrentPropertyItem().value = combinedExpression;
+        console.log("this.service.combinedExpression() : " + this.service.combinedExpression());
+
+        // this.service.getCurrentPropertyItem().value = this.service.combinedExpression();
 
         this.service.display = false;
     }

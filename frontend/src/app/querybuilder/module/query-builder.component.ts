@@ -257,7 +257,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
         return queryInput.template;
       } else {
         if (this.defaultTemplateTypes.indexOf(type) === -1) {
-          console.warn(`Could not find template for field with type: ${type}`);
+          // console.warn(`Could not find template for field with type: ${type}`);
         }
         return null;
       }
@@ -319,7 +319,8 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     }
 
     if (!this.config.fields[field]) {
-      throw new Error(`No configuration for field '${field}' could be found! Please add it to config.fields.`);
+      return "No configuration for field '${field}' could be found! Please add it to config.fields.";
+      // throw new Error(`No configuration for field '${field}' could be found! Please add it to config.fields.`);
     }
 
     const type = this.config.fields[field].type;

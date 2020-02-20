@@ -147,23 +147,27 @@ export class QueryBuilderDlg  implements OnInit {
     {
       console.log("start QueryBuilderDlg constructor");
       
-      this.queryCtrl = this.formBuilder.control(this.query);
-      this.currentConfig = this.config;
+      try {
+        this.queryCtrl = this.formBuilder.control(this.query);
+        this.currentConfig = this.config;
 
-      this.exprBuilderService.currentConfig.subscribe(
-          config => {
-            this.adjustConfig(config);
-            this.currentConfig = config;
-            console.log("currentConfig : " + JSON.stringify(this.currentConfig));
-          }
-        );
+        this.exprBuilderService.currentConfig.subscribe(
+            config => {
+              this.adjustConfig(config);
+              this.currentConfig = config;
+              console.log("currentConfig : " + JSON.stringify(this.currentConfig));
+            }
+          );
 
-      this.exprBuilderService.currentQuery.subscribe(
-          query => {
-            this.query = query;
-            console.log("query : " + JSON.stringify(this.query));
-          }
-        );
+        this.exprBuilderService.currentQuery.subscribe(
+            query => {
+              this.query = query;
+              console.log("query : " + JSON.stringify(this.query));
+            }
+          );
+      } catch (error) {
+        console.log(error);
+      }
     }
   
     // switchModes(event: Event) {
@@ -204,26 +208,26 @@ export class QueryBuilderDlg  implements OnInit {
       console.log("adjusted config : ");
       for(let key in paramConfig) {
         let value = paramConfig[key];
-        console.log("key : " + key + ", value : " + value);
+        // console.log("key : " + key + ", value : " + value);
         
         for(let key2 in value) {
           let value2 = value[key2];
-          console.log("key2 : " + key2 + ", value2 : " + value2);
+          // console.log("key2 : " + key2 + ", value2 : " + value2);
 
           for(let key3 in value2) {
             let value3 = value2[key3];
-            console.log("key3 : " + key3 + ", value3 : " + value3);
+            // console.log("key3 : " + key3 + ", value3 : " + value3);
 
             if(key3 == 'options') {
               let optionsLength = value3.length;
-              console.log("option length : " + optionsLength);
+              // console.log("option length : " + optionsLength);
 
               if(optionsLength > 0) {
                 value2["type"] = "category";
-                console.log("type changed to 'category'!");
+                // console.log("type changed to 'category'!");
               } else {
                 delete value2[key3];      
-                console.log("empty options deleted!");          
+                // console.log("empty options deleted!");          
               }
             }
           }
