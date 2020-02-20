@@ -29,6 +29,8 @@ export class ExpressionBuilderDlgService {
     currentPropertyItem: PropertyItem = null;
 
     public tableExpressions: TableExpression[] = [];
+    private tableExpressionsSource = new BehaviorSubject(this.tableExpressions);
+    currentTableExpressionsObservable = this.tableExpressionsSource.asObservable();
     
     constructor(private dataService: DataService, private ps: ProjectService) {}    
 
@@ -50,7 +52,7 @@ export class ExpressionBuilderDlgService {
 
     async updateQueryBuilderConfig() {
 
-        console.log("this.tableExpressions : " + JSON.stringify(JSON.stringify(this.tableExpressions)));
+        // console.log("this.tableExpressions : " + JSON.stringify(JSON.stringify(this.tableExpressions)));
 
         this.query = {condition: "&", rules: []};
 
@@ -94,11 +96,21 @@ export class ExpressionBuilderDlgService {
         console.log("this.currentPropertyItem.value : " + this.currentPropertyItem.value);
 
         this.tableExpressions = [];
-        let o = JSON.parse(this.currentPropertyItem.value);
-        let keys = Object.keys(o);
-        keys.forEach(key => { this.tableExpressions.push({tableName: key, expression: o[key]}) });
+        if(this.currentPropertyItem.value) {
+            let o = JSON.parse(this.currentPropertyItem.value);
+            let keys = Object.keys(o);
+            keys.forEach(
+                key => 
+                { 
+                    this.tableExpressions.push({tableName: key, expression: o[key]});
+                    console.log(key + "=>" + o[key]);
+                }
+            );
 
-        console.log("this.tableExpressions.length : " +this.tableExpressions.length);
+            this.tableExpressionsSource.next(this.tableExpressions);
+
+            console.log("this.tableExpressions.length : " + this.tableExpressions.length);
+        }
 
         this.display = true;
     }

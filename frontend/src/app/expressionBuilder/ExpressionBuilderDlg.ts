@@ -30,9 +30,11 @@ export class ExpressionBuilderDlg  implements OnInit {
         , private quBuilderService: QueryBuilderDlgService ) {
         // console.log("start ExpressionBuilderDlg constructor");
         // this.tableExpressions = Object.assign( ELEMENT_DATA);
-        this.dataSource = new MatTableDataSource(this.service.tableExpressions);
-    }
+        // this.dataSource = new MatTableDataSource(this.service.tableExpressions);
 
+        this.service.currentTableExpressionsObservable.subscribe(te => this.dataSource = new MatTableDataSource<TableExpression>(te));
+    }
+ 
     async ngOnInit() {
         // console.log("start ngOnInit in ExpressionBuilderDlg");
 
@@ -159,9 +161,11 @@ export class ExpressionBuilderDlg  implements OnInit {
         // emit combinedExpression to other components
         // this.messageEvent.emit(this.combinedExpression);
 
-        console.log("this.service.combinedExpression() : " + this.service.combinedExpression());
+        this.combinedExpression = this.service.combinedExpression();
 
-        // this.service.getCurrentPropertyItem().value = this.service.combinedExpression();
+        console.log("this.combinedExpression : " + this.combinedExpression);
+
+        this.service.getCurrentPropertyItem().value = this.combinedExpression;
 
         this.service.display = false;
     }
