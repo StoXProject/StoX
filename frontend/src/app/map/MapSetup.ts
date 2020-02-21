@@ -263,6 +263,7 @@ export class MapSetup {
         selectable: boolean, layerOrder: number): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
+            useSpatialIndex:false
         });
         var v: Vector = new Vector({
             source: s,

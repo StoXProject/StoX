@@ -38,7 +38,7 @@ export class ProcessDataService {
     }
     set acousticPSU(val: AcousticPSU) {
         this.m_acousticPSU = val;
-        this.m_acousticPSUSubject.next("change");
+        this.m_acousticPSUSubject.next("data");
     }
 
     get acousticPSUSubject(): Subject<string> {
@@ -50,7 +50,7 @@ export class ProcessDataService {
     }
     set selectedPSU(val: string) {
         this.m_selectedPSU = val;
-        this.m_acousticPSUSubject.next("change");
+        this.m_acousticPSUSubject.next("selectedpsu");
     }
 
     get selectedPSUSubject(): Subject<string> {

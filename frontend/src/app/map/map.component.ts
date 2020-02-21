@@ -215,7 +215,7 @@ export class MapComponent implements OnInit, AfterViewInit {
         }
         case "EDSU": {
           let data: { EDSUPoints: string; EDSULines: string; } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.edsuLineLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2);
+          this.edsuLineLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode + "line", data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2);
           this.edsuPointLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3);
           this.map.addLayer(this.edsuLineLayer);
           this.map.addLayer(this.edsuPointLayer);
@@ -237,15 +237,25 @@ export class MapComponent implements OnInit, AfterViewInit {
       }
     })
 
-    this.pds.acousticPSUSubject.subscribe(async acousticPSU => {
-      if (acousticPSU != null) {
-        (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
-          let edsu: string = f.get("EDSU");
-          let edsupsu: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu);
-          // Connect EDSU_PSU to feature
-          f.set("edsupsu", edsupsu);
-          MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-        })
+    this.pds.acousticPSUSubject.subscribe(async evt => {
+      switch (evt) {
+        case "data": {
+          (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
+            let edsu: string = f.get("EDSU");
+            let edsupsu: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu);
+            // Connect EDSU_PSU to feature
+            f.set("edsupsu", edsupsu);
+            MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+          })
+          break;
+        }
+        case "selectedpsu": {
+          (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
+            // selected PSU.
+            MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+          })
+          break;
+        }
       }
     });
     /*this.pds.selectedPSUSubject.subscribe(async psu => {
@@ -278,15 +288,27 @@ export class MapComponent implements OnInit, AfterViewInit {
               if (!shiftKeyOnly(e) || prevClickIndex == null) {
                 prevClickIndex = clickedIndex;
               }
+              let fi1 = farr[prevClickIndex];
+              let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
+              let psuToUse: string = edsuPsu1.PSU;
+              if (prevClickIndex == clickedIndex) {
+                psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+              }
               let iFirst = Math.min(prevClickIndex, clickedIndex);
               let iLast = Math.max(prevClickIndex, clickedIndex);
               for (let idx: number = iFirst; idx <= iLast; idx++) {
                 let fi = farr[idx];
                 let edsuPsu: EDSU_PSU = fi.get("edsupsu");
-                edsuPsu.PSU = edsuPsu.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
-                MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+                if (edsuPsu != null) {
+                  edsuPsu.PSU = psuToUse;
+                  MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+                  fi.changed();
+                } else {
+                  console.log(fi)
+                }
               }
-
+              l.changed();
+              (<VectorSource>l.getSource()).changed();
               //(<VectorSource>l.getSource()).getFeatures().findIndex()
             }
           }
