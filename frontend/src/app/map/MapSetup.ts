@@ -27,6 +27,7 @@ import { clone } from 'ol/extent';
 import { ProcessResult } from '../data/runresult';
 import { HTMLUtil } from '../utils/htmlutil'
 import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
+import { EDSU_PSU } from './../data/processdata'
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
@@ -118,10 +119,10 @@ export class MapSetup {
     static getAcousticPointStyle(): Style {
         return this.getPointStyleCircle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
-    static getAcousticPointStyleSelected(): Style {
+    static getAcousticPointStyleFocused(): Style {
         return this.getPointStyleCircle(Color.darken(this.DISTANCE_POINT_SELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
     }
-    static getAcousticPointStyleAnySelected(): Style {
+    static getAcousticPointStyleSelected(): Style {
         return this.getPointStyleCircle(this.DISTANCE_POINT_SELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
     static getStationPointStyle(): Style {
@@ -270,7 +271,9 @@ export class MapSetup {
         s.on("addfeature", evt => {
             evt.feature.set("layer", v);
             evt.feature.set("styleCache", style);
-            evt.feature.set("selection", 0); // selection 0 by default.
+            //evt.feature.set("absent", false); // this property must be provided in geojson
+            MapSetup.updateEDSUSelection(evt.feature, null);
+            //evt.feature.set("selection", 0); // selection 0 by default.
             //ft.feature.set("feature", ft); // set a reference to itsself
         })
         s.addFeatures((new GeoJSON).readFeatures(JSON.parse(feat), {
@@ -361,14 +364,15 @@ export class MapSetup {
         });
 
     }
-    static updateEDSUSelection(f: Feature) {
+    static updateEDSUSelection(f: Feature, selectedPSU) {
         let absent: boolean = f.get("absent");
-        let selected: boolean = f.get("selected");
-        let focused: boolean = f.get("focused");
+        let edsuPsu: EDSU_PSU = f.get("edsupsu");
+        let selected: boolean = edsuPsu != null && edsuPsu.PSU != null && edsuPsu.PSU.length > 0;//f.get("selected");
+        let focused: boolean = selected && selectedPSU != null && edsuPsu.PSU == selectedPSU;
         let selection =
             absent != null && absent ? 3 :
                 focused != null && focused ? 2 :
                     selected != null && selected ? 1 : 0;
-        f.set("selection", selection);
+        f.set("selection", selection); // Set the style selection.
     }
 }

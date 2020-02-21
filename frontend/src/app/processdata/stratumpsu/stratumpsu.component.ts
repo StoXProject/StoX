@@ -25,11 +25,11 @@ export class StratumpsuComponent implements OnInit {
   }
 
   constructor(private pds: ProcessDataService) {
-    pds.acousticPSUSubject.subscribe((data: AcousticPSU) => {
+    pds.acousticPSUSubject.subscribe((data: string) => {
       // Convert Acoustic PSU to TreeNodes:
-      this.nodes = data.Stratum
+      this.nodes = pds.acousticPSU.Stratum
         .map((s: Stratum) => {
-          let psuNodes: TreeNode[] = data.Stratum_PSU
+          let psuNodes: TreeNode[] = pds.acousticPSU.Stratum_PSU
             .filter((spsu: Stratum_PSU) => spsu.Stratum === s.Stratum)
             .map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, "psu", []));
           return StratumpsuComponent.asNode(s.Stratum, "stratum", psuNodes);

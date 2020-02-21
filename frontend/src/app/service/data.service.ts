@@ -191,19 +191,19 @@ export class DataService {
   }
 
   getObjectHelpAsHtml(packageName: string, objectName: string): Observable<string> {
-    
+
     return this.runFunction('getObjectHelpAsHtml', {
-      "packageName": packageName, 
+      "packageName": packageName,
       "objectName": objectName
     });
   }
 
   getFilterOptions(projectPath: string, modelName: string, processID: string, tableName: string): Observable<QueryBuilderConfig> {
-    
+
     return this.runFunction('getFilterOptions', {
-      "projectPath": projectPath, 
-      "modelName": modelName, 
-      "processID": processID, 
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
       "tableName": tableName
     });
   }
@@ -211,15 +211,15 @@ export class DataService {
   expression2list(expr: string): Observable<RuleSet> {
 
     return this.runFunction('expression2list', {
-      "expr": expr 
+      "expr": expr
     });
   }
 
   json2expression(query: RuleSet): Observable<string> {
-    
+
     return this.runFunction('json2expression', {
       "json": JSON.stringify(query)
-    });   
+    });
   }
 
 
@@ -399,7 +399,7 @@ export class DataService {
   getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {
     return this.runProcessFunc<string>('getInteractiveMode', projectPath, modelName, processID);
   }
-  
+
   getMapData(projectPath: string, modelName: string, processID: string): Observable<any> {
     return this.runProcessFunc<any>('getMapData', projectPath, modelName, processID);
   }
@@ -408,14 +408,16 @@ export class DataService {
     return this.runProcessFunc<any>('getInteractiveData', projectPath, modelName, processID);
   }
 
-  modifyStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
-    return this.runFunction('modifyStratum', { "stratum" : stratum,
+  modifyStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+    return this.runFunction('modifyStratum', {
+      "stratum": stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
 
-  addStratum(stratum : any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
-    return this.runFunction('addStratum', { "stratum" : stratum,
+  addStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+    return this.runFunction('addStratum', {
+      "stratum": stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
@@ -437,7 +439,19 @@ export class DataService {
 
   }
 
+  addEDSU(psu: string, edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+    return this.runFunction('addEDSU', {
+      "PSU": psu, "EDSU": edsu,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
 
+  removeEDSU(edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+    return this.runFunction('removeEDSU', {
+      "acousticPSU": null/* removed */, "EDSU": edsu,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
   setRPath(rpath: string): Observable<any> {
     return this.postLocalNode('rpath', { rpath: rpath });
   }

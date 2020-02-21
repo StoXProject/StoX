@@ -11,7 +11,7 @@ import { Subject } from 'rxjs';
 
 export class ProcessDataService {
     private m_acousticPSU: AcousticPSU;
-    private m_acousticPSUSubject = new Subject<AcousticPSU>();
+    private m_acousticPSUSubject = new Subject<string>();
     private m_selectedStratum: string;
     private m_selectedStratumSubject = new Subject<string>();
     private m_selectedPSU: string;
@@ -38,10 +38,10 @@ export class ProcessDataService {
     }
     set acousticPSU(val: AcousticPSU) {
         this.m_acousticPSU = val;
-        this.m_acousticPSUSubject.next(this.m_acousticPSU);
+        this.m_acousticPSUSubject.next("change");
     }
 
-    get acousticPSUSubject(): Subject<AcousticPSU> {
+    get acousticPSUSubject(): Subject<string> {
         return this.m_acousticPSUSubject;
     }
 
@@ -50,7 +50,7 @@ export class ProcessDataService {
     }
     set selectedPSU(val: string) {
         this.m_selectedPSU = val;
-        this.m_selectedPSUSubject.next(val);
+        this.m_acousticPSUSubject.next("change");
     }
 
     get selectedPSUSubject(): Subject<string> {

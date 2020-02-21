@@ -239,48 +239,60 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     this.pds.acousticPSUSubject.subscribe(async acousticPSU => {
       if (acousticPSU != null) {
-        // Set EDSU features to any-selected (green) to indicate psus independent of selected psu.
         (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
           let edsu: string = f.get("EDSU");
-          let selected : boolean = this.pds.acousticPSU.EDSU_PSU.findIndex(edsupsu => edsupsu.EDSU == edsu) > 0 ? true : false;
-          f.set("selected", selected);
-          MapSetup.updateEDSUSelection(f)
+          let edsupsu: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu);
+          // Connect EDSU_PSU to feature
+          f.set("edsupsu", edsupsu);
+          MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
         })
-        //acousticPSU.EDSU_PSU
       }
     });
-    this.pds.selectedPSUSubject.subscribe(async psu => {
-      if(psu != null ){
-        let edsupsuFiltered : EDSU_PSU[] = this.pds.acousticPSU.EDSU_PSU.filter(edsupsu => edsupsu.PSU == psu); 
+    /*this.pds.selectedPSUSubject.subscribe(async psu => {
+      if (psu != null) {
+        let edsupsuFiltered: EDSU_PSU[] = this.pds.acousticPSU.EDSU_PSU.filter(edsupsu => edsupsu.PSU == psu);
         (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
           let edsu: string = f.get("EDSU");
           // An edsu is focused when it is selected as psu:
-          let edsuPsu : EDSU_PSU = edsupsuFiltered.find(edsupsu => edsupsu.EDSU == edsu);
+          let edsuPsu: EDSU_PSU = edsupsuFiltered.find(edsupsu => edsupsu.EDSU == edsu);
           f.set("focused", edsuPsu != null ? true : false);
           MapSetup.updateEDSUSelection(f)
         })
       }
-    });
+    });*/
 
-    var selected = [];
+    //var selected = [];
 
-    /*this.map.on('singleclick', e => {
+    this.map.on('singleclick', e => {
       console.log("shift " + shiftKeyOnly(e));
       this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
-        var selIndex = selected.indexOf(f);
-        console.log("layer" + (<Layer>l).get("name"));
-        console.log("style" + (<Feature>f).get("id"));
-        if (selIndex < 0) {
-          selected.push(f);
-          console.log('selected ' + f.get("id"));
-          (<Feature>f).setStyle(MapSetup.getAcousticPointStyleSelected());
-        } else {
-          console.log('unselected ' + f.get("id"))
-          selected.splice(selIndex, 1);
-          (<Feature>f).setStyle(null);
+        let fe: Feature = (<Feature>f);
+        switch (l.get("name")) {
+          case "EDSU": {
+            if (this.rs.iaMode == "acousticPSU" && this.pds.selectedPSU != null) {
+              // Controlling focus.
+              let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
+              let prevClickIndex = l.get("lastClickedIndex");
+              let clickedIndex = farr.findIndex(fe1 => fe1 === fe);
+              l.set("lastClickedIndex", clickedIndex);
+              if (!shiftKeyOnly(e) || prevClickIndex == null) {
+                prevClickIndex = clickedIndex;
+              }
+              let iFirst = Math.min(prevClickIndex, clickedIndex);
+              let iLast = Math.max(prevClickIndex, clickedIndex);
+              for (let idx: number = iFirst; idx <= iLast; idx++) {
+                let fi = farr[idx];
+                let edsuPsu: EDSU_PSU = fi.get("edsupsu");
+                edsuPsu.PSU = edsuPsu.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+                MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+              }
+
+              //(<VectorSource>l.getSource()).getFeatures().findIndex()
+            }
+          }
         }
       });
-    });*/
+    });
 
     this.map.on('change', function (evt) {
       console.info(evt);
