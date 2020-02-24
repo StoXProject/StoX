@@ -25,7 +25,7 @@ export class OpenProjectDlg {
     }
 
     async browse() {
-        console.log("Browse");
+        console.log("Browse " + this.projectPath);
         this.projectPath = await this.dataService.browse(this.projectPath).toPromise();
         console.log("this.projectPath: " + this.projectPath);
     }
