@@ -50,7 +50,7 @@ export class OpenProjectDlg {
             // the following should return an instance of class Project
             let project : Project = <Project>await this.dataService.openProject(this.projectPath).toPromise();
             if (project != null) {
-                if (this.ps.selectedProject != null) {
+                /*if (this.ps.selectedProject != null) {
                     if (this.ps.selectedProject.projectPath == project.projectPath) {
                         let projectName = this.ps.selectedProject.projectName;
                         this.msgService.setMessage("Project with name " + projectName + " is already open!");
@@ -60,7 +60,7 @@ export class OpenProjectDlg {
                         // close the previous project after saving it if it is edited 
                         await this.dataService.closeProject(this.ps.selectedProject.projectPath, new Boolean(true)).toPromise();
                     }
-                }
+                }*/ 
                 //this.ps.projects = [project];
                 this.ps.projects = [project];
                 this.ps.selectedProject = this.ps.projects[0];

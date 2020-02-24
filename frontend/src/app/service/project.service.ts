@@ -100,6 +100,7 @@ export class ProjectService {
     console.log("updating ActiveProject with string  " + jsonString)
     let status = await this.dataService.updateActiveProject(jsonString).toPromise();
     console.log("status " + status);
+    this.updateProcessList();
   }
 
   public get selectedProcess(): Process {
