@@ -105,9 +105,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   set tool(tool: string) {
     this.m_Tool = tool;
     console.log("setting tool: " + tool);
-    if (this.stratumDraw != null) {
-      this.map.getInteractions().remove(this.stratumDraw);
-    }
+    this.resetInteractions();
     switch (tool) {
       case "stratum-edit":
         this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
@@ -127,7 +125,17 @@ export class MapComponent implements OnInit, AfterViewInit {
   get tool(): string {
     return this.m_Tool;
   }
-
+  resetInteractions() {
+    if (this.stratumDraw != null) {
+      this.map.getInteractions().remove(this.stratumDraw);
+    }
+    if (this.stratumSelect != null) {
+      this.map.getInteractions().remove(this.stratumSelect);
+    }
+    if (this.stratumModify != null) {
+      this.map.getInteractions().remove(this.stratumModify);
+    }
+  }
   async ngOnInit() {
 
     const proj4 = (proj4x as any).default;
@@ -233,6 +241,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         }
         default: {
           //this.map.removeLayer(this.map.getLayers()."station");
+          //this.resetInteractions();   
+          this.tool = "freemove";
         }
       }
     })
@@ -274,8 +284,10 @@ export class MapComponent implements OnInit, AfterViewInit {
     //var selected = [];
 
     this.map.on('singleclick', e => {
-      console.log("shift " + shiftKeyOnly(e));
       this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
+        if(l == null || f == null) {
+          return;
+        }
         let fe: Feature = (<Feature>f);
         switch (l.get("name")) {
           case "EDSU": {
@@ -302,14 +314,11 @@ export class MapComponent implements OnInit, AfterViewInit {
                 if (edsuPsu != null) {
                   edsuPsu.PSU = psuToUse;
                   MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
-                  fi.changed();
-                } else {
-                  console.log(fi)
+                  //fi.changed();
                 }
               }
-              l.changed();
-              (<VectorSource>l.getSource()).changed();
-              //(<VectorSource>l.getSource()).getFeatures().findIndex()
+              //l.changed();
+              //(<VectorSource>l.getSource()).changed();
             }
           }
         }

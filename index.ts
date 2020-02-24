@@ -9,7 +9,7 @@ var mainWindow: any;
 // var rStoxFtpPath: string;
 
 var properties = {
-  "projectRootPath": "",
+  "projectRootPath": require('os').homedir(),
   "activeProject": {},
   "rPath": "",
   "rStoxFtpPath": ""
@@ -79,8 +79,10 @@ function createWindow() {
 
   server.post('/browse', function (req: any, res: any) {
     console.log("select a folder... wait");
+    let defPath = req.body.defaultpath.replace(/\\/g, "/"); // convert backslash to forward
+    console.log("default folder " + defPath);
     require('electron').dialog.showOpenDialog(mainWindow, {
-      title: 'Select a folder', defaultPath: /*require('os').homedir()*/ req.body.defaultpath,
+      title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
       properties: [/*'openFile'*/'openDirectory']
     }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
       if (!object.filePaths || !object.filePaths.length) {
@@ -398,9 +400,9 @@ const writePropertiesToFile = function writePropertiesToFile() {
   try {
     let fs = require('fs');
     let options = { encoding: 'utf-8', flag: 'w' };
-    if (!properties.projectRootPath) {
+    /*if (properties.projectRootPath) {
       properties.projectRootPath = require('os').homedir();
-    }
+    */
     let jsonString = JSON.stringify(properties, null, 2);
     console.log("jsonString : " + jsonString);
     fs.writeFileSync(resourcefile, jsonString, options)

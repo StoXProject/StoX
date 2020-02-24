@@ -138,11 +138,11 @@ export class MapSetup {
         }
     }
     static getEDSUPointStyleCache(): Style[] {
-        let edsuRadius : number = 6; // px
-        let pointColor : string = this.DISTANCE_POINT_COLOR;
-        let outlineColor : string = 'rgb(0, 0, 0, 0.1)'
-        let focusColor : string = Color.darken(this.DISTANCE_POINT_SELECTED_COLOR, 0.5)
-        let focusLineColor : string = Color.darken(focusColor, 0.5)
+        let edsuRadius: number = 6; // px
+        let pointColor: string = this.DISTANCE_POINT_COLOR;
+        let outlineColor: string = 'rgb(0, 0, 0, 0.1)'
+        let focusColor: string = Color.darken(this.DISTANCE_POINT_SELECTED_COLOR, 0.5)
+        let focusLineColor: string = Color.darken(focusColor, 0.5)
         return [
             this.getPointStyleCircle(pointColor, outlineColor, edsuRadius), // 0: present
             this.getPointStyleCircle(this.DISTANCE_POINT_SELECTED_COLOR, outlineColor, edsuRadius), // 1: selected
@@ -187,7 +187,16 @@ export class MapSetup {
         })
         m.on('modifyend', async function (e) {
             // Add the features back to API.
-            let s: string = (new GeoJSON()).writeFeatures(e.features.getArray(), { featureProjection: proj, dataProjection: 'EPSG:4326' });
+            //console.log(JSON.stringify(e.features.getArray()));
+            let fcloned: Feature[] = e.features.getArray().map(f => { 
+                let f2: Feature = f.clone(); 
+                f2.set("layer", null);
+                f2.set("styleCache", null);
+                return f2;  
+            });
+            console.log(JSON.stringify(fcloned));
+
+            let s: string = (new GeoJSON()).writeFeatures(fcloned, { featureProjection: proj, dataProjection: 'EPSG:4326' });
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
@@ -263,7 +272,7 @@ export class MapSetup {
         selectable: boolean, layerOrder: number): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
-            useSpatialIndex:false
+            useSpatialIndex: false
         });
         var v: Vector = new Vector({
             source: s,
