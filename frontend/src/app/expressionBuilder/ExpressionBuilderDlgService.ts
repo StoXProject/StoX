@@ -56,7 +56,7 @@ export class ExpressionBuilderDlgService {
         this.currentPropertyCategory = category;
     }
 
-    getCurrentPropertyCategory (): PropertyCategory {
+    getCurrentPropertyCategory(): PropertyCategory {
         return this.currentPropertyCategory;
     }
 
@@ -88,9 +88,15 @@ export class ExpressionBuilderDlgService {
     }
 
     combinedExpression(): string {
+        // let combinedTable = this.tableExpressions.map(t => {
+        //     let o: Object = {};
+        //     o[t.tableName] = t.expression;
+        //     return o;
+        // });
+
         let combinedTable = {};
 
-        this.tableExpressions.forEach(t => { combinedTable[t.tableName] = t.expression });
+        this.tableExpressions.forEach( t => {  combinedTable[t.tableName] = t.expression } );
 
         return JSON.stringify(combinedTable);
     }
@@ -110,26 +116,13 @@ export class ExpressionBuilderDlgService {
             let o: any[] = JSON.parse(this.currentPropertyItem.value);
             o.forEach(o1 => {
                 let keys = Object.keys(o1);
-                console.log(keys[0] + "=>" + o1[keys[0]]);
-                this.tableExpressions.push({tableName: keys[0], expression: o1[keys[0]]});  
+                
+                keys.forEach(key => {
+                    console.log(key + "=>" + o1[key]);
+                    this.tableExpressions.push({ tableName: key, expression: o1[key] });
+                })
+                
             }
-                //let keys = Object.keys(o);
-                //keys.forEach(
-                //  key => 
-                // { 
-                // this.tableExpressions.push({tableName: key, expression: o[key]});
-                //   console.log(key + "=>" + o[key]);
-
-                // let obj = JSON.parse(o[key]);
-                // let keys2 = Object(obj);
-
-                // keys2.forEach(
-                //     key2 => {
-                //         this.tableExpressions.push({tableName: key2, expression: obj[key2]});
-                //         console.log(key2 + "=>" + obj[key2]);
-                //     }
-                // );
-                //   }
             );
 
             this.tableExpressionsSource.next(this.tableExpressions);
