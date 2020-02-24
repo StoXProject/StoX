@@ -175,13 +175,13 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   ngOnChanges(changes: SimpleChanges) {
     const config = this.config;
     const type = typeof config;
-    if (type === 'object') {
+    if (type === 'object' && config.fields != null) {
       this.fields = Object.keys(config.fields).map((value) => {
         const field = config.fields[value];
         field.value = field.value || value;
         return field;
       });
-      if (config.entities) {
+      if (config.entities && config.entities != null) {
         this.entities = Object.keys(config.entities).map((value) => {
           const entity = config.entities[value];
           entity.value = entity.value || value;
@@ -191,8 +191,6 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
         this.entities = null;
       }
       this.operatorsCache = {};
-    } else {
-      throw new Error(`Expected 'config' must be a valid object, got ${type} instead.`);
     }
   }
 
