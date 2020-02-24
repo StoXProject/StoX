@@ -6,6 +6,9 @@ import { MatTableDataSource } from '@angular/material';
 import { TableExpression } from '../data/tableexpression';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from '../message/MessageService';
+import { ProjectService } from '../service/project.service';
+import { DataService } from '../service/data.service';
+import { ProcessProperties } from '../data/ProcessProperties';
 
 @Component({
     selector: 'ExpressionBuilderDlg',
@@ -27,7 +30,8 @@ export class ExpressionBuilderDlg  implements OnInit {
     @Output() messageEvent = new EventEmitter<string>();
 
     constructor(public service: ExpressionBuilderDlgService, private msgService: MessageService
-        , private quBuilderService: QueryBuilderDlgService ) {
+        , private quBuilderService: QueryBuilderDlgService, private ps: ProjectService, 
+        private dataService: DataService ) {
         // console.log("start ExpressionBuilderDlg constructor");
         // this.tableExpressions = Object.assign( ELEMENT_DATA);
         // this.dataSource = new MatTableDataSource(this.service.tableExpressions);
@@ -164,8 +168,35 @@ export class ExpressionBuilderDlg  implements OnInit {
         this.combinedExpression = this.service.combinedExpression();
 
         console.log("this.combinedExpression : " + this.combinedExpression);
+        console.log("this.service.getCurrentPropertyItem().value : " + this.service.getCurrentPropertyItem().value);
 
-        this.service.getCurrentPropertyItem().value = this.combinedExpression;
+        if(this.combinedExpression != null && this.service.getCurrentPropertyItem().value != this.combinedExpression) {
+
+            this.service.getCurrentPropertyItem().value = this.combinedExpression;
+
+            if (this.ps.selectedProject != null && this.ps.selectedProcess != null && this.ps.selectedModel != null) {
+                try {
+                  this.dataService.setProcessPropertyValue(this.service.getCurrentPropertyCategory().groupName, this.service.getCurrentPropertyItem().name, this.service.getCurrentPropertyItem().value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID)
+                    .toPromise().then((s: ProcessProperties) => {
+                      this.ps.propertyCategories = s.propertySheet;
+                      // this.ps.helpContent = s.help;
+                      this.ps.helpContent = s.help; // this.ps.sanitizer.bypassSecurityTrustHtml(s.help);
+          
+                      // Special case if a property processname is changed, it should update the selected process name
+                    //   if (this.ps.selectedProcess != null && pi.name == 'processName') {
+                    //     this.ps.selectedProcess.processName = pi.value; 
+                    //   }
+                    });
+                } catch (error) {
+                  console.log(error.error);
+                  var firstLine = error.error.split('\n', 1)[0];
+                  this.msgService.setMessage(firstLine);
+                  this.msgService.showMessage();
+                  return;
+                }
+          
+            }
+        }
 
         this.service.display = false;
     }

@@ -94,9 +94,11 @@ export class ParameterComponent implements OnInit {
   //   return s.map(st => { return { label: st, value: st }; })
   // }
 
-  filter(pi: PropertyItem) {
+  filter(category: PropertyCategory, pi: PropertyItem) {
     // set this pi as the current PropertyItem in ExpressionBuilderService
     this.exprBuilderService.setCurrentPropertyItem(pi);
+
+    this.exprBuilderService.setCurrentPropertyCategory(category);
 
     // run ExpressionBuilderService.showDialog() to show Expression builder dialog
     this.exprBuilderService.showDialog();
