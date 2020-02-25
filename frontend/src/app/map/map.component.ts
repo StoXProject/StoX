@@ -57,10 +57,11 @@ export class MapComponent implements OnInit, AfterViewInit {
   // layer: OlTileLayer;
   vector: Vector;
   view: OlView;
-  stationLayer: Layer = null;
+  /*stationLayer: Layer = null;
   edsuPointLayer: Layer = null;
   edsuLineLayer: Layer = null;
-  stratumLayer: Layer = null;
+  stratumLayer: Layer = null;*/
+  layerMap: Map<string, Layer[]> = new Map();
   stratumSelect: Select;
   stratumModify: Modify;
   stratumDraw: Draw;
@@ -92,11 +93,11 @@ export class MapComponent implements OnInit, AfterViewInit {
     switch (tool) {
       case "freemove": return true;
       case "stratum-edit":
-        return this.rs.iaMode == "stratum" && this.stratumLayer != null /**stratum layer is initiated */;
+        return this.rs.iaMode == "stratum" && this.stratumSelect != null && this.stratumModify != null;
       case "stratum-add":
-        return this.rs.iaMode == "stratum" && this.stratumLayer != null && this.stratumDraw != null;
+        return this.rs.iaMode == "stratum" && this.stratumDraw != null;
       case "stratum-delete":
-        return this.rs.iaMode == "stratum" && this.stratumLayer != null /**stratum layer is initiated */;
+        return this.rs.iaMode == "stratum" && this.stratumDraw != null /**stratum layer is initiated */;
     }
     return false;
   }
@@ -136,6 +137,17 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.map.getInteractions().remove(this.stratumModify);
     }
   }
+
+  addLayerToProcess(pid, l: Layer) {
+    let la = this.layerMap.get(pid);
+    if (la == null) {
+      la = [];
+      this.layerMap.set(pid, la);
+    }
+    la.push(l);
+    this.map.addLayer(l);
+  }
+
   async ngOnInit() {
 
     const proj4 = (proj4x as any).default;
@@ -208,36 +220,32 @@ export class MapComponent implements OnInit, AfterViewInit {
       let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
       switch (iaMode) {
         case "reset": {
-          if (this.stationLayer != null) {
-            this.map.removeLayer(this.stationLayer);
-          }
-          if (this.stratumLayer != null) {
-            this.map.removeLayer(this.stratumLayer);
-          }
+          this.layerMap.forEach((value, key, map) => {
+            value.forEach(l => this.map.removeLayer(l));
+          });
+          this.layerMap.clear();
           break;
         }
         case "station": {
           let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.stationLayer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, str, proj, [MapSetup.getStationPointStyle()], false, 4);
-          this.map.addLayer(this.stationLayer);
+          this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, str, proj, [MapSetup.getStationPointStyle()], false, 4));
           break;
         }
         case "EDSU": {
           let data: { EDSUPoints: string; EDSULines: string; } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.edsuLineLayer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2);
-          this.edsuPointLayer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3);
-          this.map.addLayer(this.edsuLineLayer);
-          this.map.addLayer(this.edsuPointLayer);
+          this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2));
+          this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3));
+
           break;
         }
         case "stratum": {
-          if (this.stratumLayer != null) {
+          /*if (this.stratumLayer != null) {
             this.map.removeLayer(this.stratumLayer);
-          }
+          }*/
           let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, str, proj, [MapSetup.getStratumStyle()], false, 1)
-          this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>this.stratumLayer.getSource(), this.dataService, this.ps, proj);
-          this.map.addLayer(this.stratumLayer);
+          let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, str, proj, [MapSetup.getStratumStyle()], false, 1);
+          this.addLayerToProcess(this.ps.activeProcessId, layer);
+          this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj);
           break;
         }
         default: {
@@ -269,10 +277,14 @@ export class MapComponent implements OnInit, AfterViewInit {
           break;
         }
         case "selectedpsu": {
-          (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
-            // selected PSU.
-            MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-          })
+          this.map.getLayers().getArray()
+            .filter(l => l.get("layerType") == "EDSU")
+            .map(l => <VectorSource>(<Layer>l).getSource())
+            .forEach(s => s.getFeatures()
+              .forEach(f => {
+                // selected PSU.
+                MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+              }))
           break;
         }
       }

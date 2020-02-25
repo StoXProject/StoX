@@ -213,7 +213,7 @@ export class MapSetup {
             condition: singleClick,
             toggleCondition: shiftKeyOnly,
             layers: function (layer) {
-                return layer.get('name') == 'stratum';
+                return layer.get('layerType') == 'stratum';
             },
             style: [this.getStratumSelectStyle(), MapSetup.getStratumNodeStyle()],
             multi: false
