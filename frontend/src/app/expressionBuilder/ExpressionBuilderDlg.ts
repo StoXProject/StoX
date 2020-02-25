@@ -180,12 +180,15 @@ export class ExpressionBuilderDlg  implements OnInit {
             }
         }
 
-        this.selection.clear();
-        this.service.display = false;
+        this.onHide();
     }
 
     cancel() {
+        this.onHide();
+    }
+
+    onHide() {
         this.selection.clear();
-        this.service.display = false;        
+        this.service.display = false;          
     }
 }
