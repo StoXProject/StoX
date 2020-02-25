@@ -1,7 +1,7 @@
 
 import { ExpressionBuilderDlgService } from './ExpressionBuilderDlgService';
 import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material';
 import { TableExpression } from '../data/tableexpression';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -17,17 +17,11 @@ import { ProcessProperties } from '../data/ProcessProperties';
   })
 export class ExpressionBuilderDlg  implements OnInit {
 
-    // tableExpressions: TableExpression[] = [];
     combinedExpression: string = "";
-
-    // tableName: string = "";
-    // expression: string = "";
 
     displayedColumns = ['select', 'tableName', 'expression'];
     dataSource: MatTableDataSource<TableExpression>;
     selection = new SelectionModel<TableExpression>(true, []);
-
-    @Output() messageEvent = new EventEmitter<string>();
 
     constructor(public service: ExpressionBuilderDlgService, private msgService: MessageService
         , private quBuilderService: QueryBuilderDlgService, private ps: ProjectService, 
@@ -41,8 +35,6 @@ export class ExpressionBuilderDlg  implements OnInit {
  
     async ngOnInit() {
         // console.log("start ngOnInit in ExpressionBuilderDlg");
-
-     
     }    
 
     // deleteRecordAtIndex(index) {
@@ -102,16 +94,16 @@ export class ExpressionBuilderDlg  implements OnInit {
         return true; // No duplicate values found for tableName
      }
 
-     short(param: string): string {
+    short(param: string): string {
         if(param.length > 43) {
             let i = param.indexOf('/');
             return param.substr(0, 27) + "..." + param.substr(i+1);
         } else {
             return param;
         }
-     }
+    }
 
-     buildExpression() {
+    buildExpression() {
 
         // check if current table name is given in the current row
         let currentTableExpression: TableExpression;
@@ -127,18 +119,13 @@ export class ExpressionBuilderDlg  implements OnInit {
 
         this.service.setCurrentTableExpression(currentTableExpression);
 
-        // get current configuration from R using currentTableExpression.tableName as param
-
         this.service.updateQueryBuilderConfig();
 
-        // set it as a property to QueryBuilderDlg
-
         // let the user get a new page of QueryBuilderDlg shown on screen
-
         // show query builder
         this.quBuilderService.showDialog();
 
-     }
+    }
 
     async apply() {
         console.log("start ExpressionBuilderDlg.apply()");
@@ -160,11 +147,7 @@ export class ExpressionBuilderDlg  implements OnInit {
             return;
         }
 
-
         // combine all expressions in array tableExpressions into combinedExpression
-        // emit combinedExpression to other components
-        // this.messageEvent.emit(this.combinedExpression);
-
         this.combinedExpression = this.service.combinedExpression();
 
         console.log("this.combinedExpression : " + this.combinedExpression);
@@ -194,17 +177,9 @@ export class ExpressionBuilderDlg  implements OnInit {
                   this.msgService.showMessage();
                   return;
                 }
-          
             }
         }
 
         this.service.display = false;
     }
 }
-
-// const ELEMENT_DATA: TableExpression[] = [
-//     { tableName: 'Table 1', expression: 'Expression 1' },
-//     { tableName: 'Table 2', expression: 'Expression 2' },
-//     { tableName: 'Table 3', expression: 'Expression 3' },
-     
-//   ];

@@ -62,26 +62,15 @@ export class ExpressionBuilderDlgService {
 
     async updateQueryBuilderConfig() {
 
-        // console.log("this.tableExpressions : " + JSON.stringify(JSON.stringify(this.tableExpressions)));
-
         this.query = { condition: "&", rules: [] };
 
         this.config = <QueryBuilderConfig>await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
-
-        // console.log("config : " + JSON.stringify(this.config));
 
         if (this.currentTableExpression.expression != null && this.currentTableExpression.expression.trim() != "") {
             // build query object from rExpression
             // instantiate this.query object
             this.query = <RuleSet>await this.dataService.expression2list(this.currentTableExpression.expression).toPromise();
         }
-        // else {
-        //     // this.query = <RuleSet>{};
-        //     // this.query.rules = [];
-        //     this.query = {condition: "&", rules: []};
-        // }
-
-        // console.log("query : " + JSON.stringify(this.query));
 
         this.configSource.next(this.config);
         this.querySource.next(this.query);
@@ -116,13 +105,11 @@ export class ExpressionBuilderDlgService {
             let o: any[] = JSON.parse(this.currentPropertyItem.value);
             o.forEach(o1 => {
                 let keys = Object.keys(o1);
-                
                 keys.forEach(key => {
                     console.log(key + "=>" + o1[key]);
                     this.tableExpressions.push({ tableName: key, expression: o1[key] });
                 })
-                
-            }
+                }
             );
 
             this.tableExpressionsSource.next(this.tableExpressions);
