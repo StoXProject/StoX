@@ -76,6 +76,10 @@ $nodata: #acacac;
   white-space: nowrap;
 }
 
+.ui-listbox-item:focus {
+  outline: none !important; // prevent webkit :focus outline.
+}
+
 // tabview
 .ui-tabmenu {
   padding: 0 !important;

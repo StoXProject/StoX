@@ -8,6 +8,6 @@ export class RunResult {
 export class ProcessResult {
     activeProcessID: string;
 }
-export class RunModelResult extends ProcessResult {
+export class RunProcessesResult extends ProcessResult {
     interactiveMode: string
 }

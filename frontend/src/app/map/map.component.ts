@@ -204,8 +204,9 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, proj);
 
-    this.rs.iaModeSubject.subscribe(async mapMode => {
-      switch (mapMode) {
+    this.rs.iaModeSubject.subscribe(async iaMode => {
+      let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
+      switch (iaMode) {
         case "reset": {
           if (this.stationLayer != null) {
             this.map.removeLayer(this.stationLayer);
@@ -217,14 +218,14 @@ export class MapComponent implements OnInit, AfterViewInit {
         }
         case "station": {
           let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.stationLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStationPointStyle()], false, 4);
+          this.stationLayer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, str, proj, [MapSetup.getStationPointStyle()], false, 4);
           this.map.addLayer(this.stationLayer);
           break;
         }
         case "EDSU": {
           let data: { EDSUPoints: string; EDSULines: string; } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.edsuLineLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode + "line", data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2);
-          this.edsuPointLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3);
+          this.edsuLineLayer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2);
+          this.edsuPointLayer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3);
           this.map.addLayer(this.edsuLineLayer);
           this.map.addLayer(this.edsuPointLayer);
           break;
@@ -234,7 +235,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             this.map.removeLayer(this.stratumLayer);
           }
           let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(mapMode, str, proj, [MapSetup.getStratumStyle()], false, 1)
+          this.stratumLayer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, str, proj, [MapSetup.getStratumStyle()], false, 1)
           this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>this.stratumLayer.getSource(), this.dataService, this.ps, proj);
           this.map.addLayer(this.stratumLayer);
           break;
@@ -250,13 +251,21 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.pds.acousticPSUSubject.subscribe(async evt => {
       switch (evt) {
         case "data": {
-          (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
-            let edsu: string = f.get("EDSU");
-            let edsupsu: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu);
-            // Connect EDSU_PSU to feature
-            f.set("edsupsu", edsupsu);
-            MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-          })
+          this.map.getLayers().getArray()
+            .filter(l => l.get("layerType") == "EDSU")
+            .map(l => <VectorSource>(<Layer>l).getSource())
+            .forEach(s => s.getFeatures()
+              .forEach(f => {
+                let edsu: string = f.get("EDSU");
+                let edsupsu: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu);
+                // Connect EDSU_PSU to feature
+                if (edsupsu == null) {
+                  console.log("edsu " + edsu + " not mapped");
+                }
+                f.set("edsupsu", edsupsu);
+                MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+              })
+            )
           break;
         }
         case "selectedpsu": {
@@ -284,45 +293,57 @@ export class MapComponent implements OnInit, AfterViewInit {
     //var selected = [];
 
     this.map.on('singleclick', e => {
+      let farr: Feature[] = [];
       this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
-        if(l == null || f == null) {
+        if (l == null || f == null) {
           return;
         }
-        let fe: Feature = (<Feature>f);
-        switch (l.get("name")) {
+        switch (l.get("layerType")) {
           case "EDSU": {
-            if (this.rs.iaMode == "acousticPSU" && this.pds.selectedPSU != null) {
-              // Controlling focus.
-              let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
-              let prevClickIndex = l.get("lastClickedIndex");
-              let clickedIndex = farr.findIndex(fe1 => fe1 === fe);
-              l.set("lastClickedIndex", clickedIndex);
-              if (!shiftKeyOnly(e) || prevClickIndex == null) {
-                prevClickIndex = clickedIndex;
-              }
-              let fi1 = farr[prevClickIndex];
-              let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
-              let psuToUse: string = edsuPsu1.PSU;
-              if (prevClickIndex == clickedIndex) {
-                psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
-              }
-              let iFirst = Math.min(prevClickIndex, clickedIndex);
-              let iLast = Math.max(prevClickIndex, clickedIndex);
-              for (let idx: number = iFirst; idx <= iLast; idx++) {
-                let fi = farr[idx];
-                let edsuPsu: EDSU_PSU = fi.get("edsupsu");
-                if (edsuPsu != null) {
-                  edsuPsu.PSU = psuToUse;
-                  MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
-                  //fi.changed();
-                }
-              }
-              //l.changed();
-              //(<VectorSource>l.getSource()).changed();
-            }
+            farr.push(<Feature>f);
           }
         }
       });
+      // handle the top feature only.
+      farr.sort((a: Feature, b: Feature) => (<Layer>a.get("layer")).getZIndex() -
+        (<Layer>b.get("layer")).getZIndex()).slice(0, 1).
+        forEach(f => {
+          let l: Layer = <Layer>f.get("layer");
+          console.log("Z index: " + l.getZIndex());
+          let fe: Feature = (<Feature>f);
+          if (this.rs.iaMode == "acousticPSU" && this.pds.selectedPSU != null) {
+            // Controlling focus.
+            //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
+            let prevClickIndex = l.get("lastClickedIndex");
+            let clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
+            l.set("lastClickedIndex", clickedIndex);
+            if (!shiftKeyOnly(e) || prevClickIndex == null) {
+              prevClickIndex = clickedIndex;
+            }
+            let fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
+            let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
+            if (edsuPsu1 == null) {
+              console.log(fi1.get("EDSU") + " is missing edsu  for " + fi1.get("EDSU") + " layer " + l.get("name"));
+            }
+            let psuToUse: string = edsuPsu1.PSU;
+            if (prevClickIndex == clickedIndex) {
+              psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+            }
+            let iFirst = Math.min(prevClickIndex, clickedIndex);
+            let iLast = Math.max(prevClickIndex, clickedIndex);
+            for (let idx: number = iFirst; idx <= iLast; idx++) {
+              let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
+              let edsuPsu: EDSU_PSU = fi.get("edsupsu");
+              if (edsuPsu != null) {
+                edsuPsu.PSU = psuToUse;
+                MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+                //fi.changed();
+              }
+            }
+            //l.changed();
+            //(<VectorSource>l.getSource()).changed();
+          }
+        });
     });
 
     this.map.on('change', function (evt) {
@@ -365,7 +386,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     /*selectClick.getFeatures().on('remove', e => {
       console.log(e.element.get("id") + " is deselected, shift:" + shiftKeyOnly(e.target));
     });
-    
+     
     this.map.on('click', e => { 
       shiftKeyOnly(e.);
     });*/
