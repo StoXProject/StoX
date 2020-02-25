@@ -150,10 +150,15 @@ export class ExpressionBuilderDlg  implements OnInit {
         // combine all expressions in array tableExpressions into combinedExpression
         this.combinedExpression = this.service.combinedExpression();
 
+        let temporary = "";
+        if(this.combinedExpression != null) {
+            temporary = "[" + this.combinedExpression +"]";
+        }
+
         console.log("this.combinedExpression : " + this.combinedExpression);
         console.log("this.service.getCurrentPropertyItem().value : " + this.service.getCurrentPropertyItem().value);
 
-        if(this.combinedExpression != null && this.service.getCurrentPropertyItem().value != this.combinedExpression) {
+        if(this.combinedExpression != null && this.service.getCurrentPropertyItem().value != temporary) {
 
             this.service.getCurrentPropertyItem().value = this.combinedExpression;
 
