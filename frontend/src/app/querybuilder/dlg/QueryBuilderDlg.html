@@ -1,48 +1,11 @@
 <p-dialog header="Query builder dialog" [(visible)]="service.display" [modal]="true" [responsive]="true"
     [style]="{width: '800px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
     
-    <!--
-    <h2>Vanilla</h2>
-    <br>
-    <query-builder [formControl]='queryCtrl' [config]='currentConfig' [allowRuleset]='allowRuleset' [allowCollapse]='allowCollapse' [persistValueOnFieldChange]='persistValueOnFieldChange'>
-      <ng-container *queryInput="let rule; type: 'textarea'; let getDisabledState=getDisabledState">
-        <textarea class="text-input text-area" [(ngModel)]="rule.value" [disabled]=getDisabledState()
-          placeholder="Custom Textarea"></textarea>
-      </ng-container>
-    </query-builder>
-    <br>  -->
     <div>
-      <!--
-      <div class="row">
-        <p class="col-6">Control Valid (Vanilla): {{ queryCtrl.valid }}</p>
-        <div class="col-6">
-          <label><input type="checkbox" (change)=switchModes($event)>Entity Mode</label>
-        </div>
-      </div>
-      <div class="row">
-        <p class="col-6">Control Touched (Vanilla): {{ queryCtrl.touched }}</p>
-        <div class="col-6">
-          <label><input type="checkbox" (change)=changeDisabled($event)>Disabled</label>
-        </div>
-      </div>
-    
-      <div class="row">
-        <div class="col-6">
-          <label><input type="checkbox" [(ngModel)]='allowRuleset'>Allow Ruleset</label>
-        </div>
-        <div class="col-6">
-          <label><input type="checkbox" [(ngModel)]='allowCollapse'>Allow Collapse</label>
-        </div>
-        <div class="col-6">
-          <label><input type="checkbox" [(ngModel)]='persistValueOnFieldChange'>Persist Values on Field Change</label>
-        </div>
-      </div> -->
-  
       <textarea class="output">{{query | json}}</textarea>
     </div>
-
-    
     <br>
+
     <h5>Quiery Builder GUI on table {{tableName}}</h5>
     <br>
     <mat-card>
@@ -145,18 +108,6 @@
     </query-builder>
     </mat-card>
     
-    <!--
-    <br>
-    <h2>Bootstrap</h2>
-    <br>
-    <query-builder [(ngModel)]='query' [classNames]='bootstrapClassNames' [config]='currentConfig' [allowRuleset]='allowRuleset' [allowCollapse]='allowCollapse' [persistValueOnFieldChange]='persistValueOnFieldChange'>
-      <div class="col-auto" *queryInput="let rule; type: 'textarea'">
-        <textarea class="form-control" [(ngModel)]="rule.value"
-          placeholder="Custom Textarea"></textarea>
-      </div>
-	</query-builder>	
--->
-		
     <p-footer>
 		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
 			class="ui-button-secondary"></button>
