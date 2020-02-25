@@ -8,7 +8,7 @@ import { DataService } from '../service/data.service';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
-import { RunModelResult } from './../data/runresult';
+import { RunProcessesResult } from './../data/runresult';
 
 @Injectable({
     providedIn: 'root'
@@ -144,7 +144,7 @@ export class RunService {
             //console.log("Run process " + p.processName + " with id " + p.processID);
             this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "Process " + p.processName));
             this.iaMode = '';
-            let res: RunModelResult = await this.dataService.runModel(projectPath, modelName, i + 1, i + 1).toPromise();
+            let res: RunProcessesResult = await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise();
 
             //console.log("run result: " + res);
             //await new Promise(resolve => setTimeout(resolve, 1200));

@@ -268,7 +268,7 @@ export class MapSetup {
      * @param style 
      * @param selectable 
      */
-    static getGeoJSONLayerFromFeatureString(name: string, feat: string, proj: string, style: Style[],
+    static getGeoJSONLayerFromFeatureString(name: string, layerType : string, zIndex : number, feat: string, proj: string, style: Style[],
         selectable: boolean, layerOrder: number): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
@@ -277,6 +277,7 @@ export class MapSetup {
         var v: Vector = new Vector({
             source: s,
             style: this.getStyleCacheFunction(),
+            zIndex: zIndex
         });
         s.on("addfeature", evt => {
             evt.feature.set("layer", v);
@@ -294,6 +295,7 @@ export class MapSetup {
         // Set layer properties
         v.set("selectable", selectable);
         v.set("name", name);
+        v.set("layerType", layerType);
         v.set("style", style);
         v.set("hasTooltip", true);
         v.set("layerOrder", layerOrder);
@@ -347,7 +349,8 @@ export class MapSetup {
         });
         var v: Vector = new Vector({
             source: s,
-            style: style
+            style: style,
+            zIndex: 10
         });
         s.on("addfeature", ft => {
             ft.feature.set("layer", v);
@@ -356,7 +359,8 @@ export class MapSetup {
 
         // Set layer properties
         v.set("selectable", false);
-        v.set("name", name);
+        v.set("name", "grid");
+        v.set("layerType", "grid");
         v.set("style", style);
         // Create a feature->layer link
         //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));

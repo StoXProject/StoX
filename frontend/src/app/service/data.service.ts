@@ -8,7 +8,7 @@ import { rotateWithoutConstraints } from 'ol/interaction/Interaction';
 import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
-import { RunResult, RunModelResult, ProcessResult } from '../data/runresult';
+import { RunResult, RunProcessesResult, ProcessResult } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
 
@@ -377,9 +377,9 @@ export class DataService {
       }));
   }
 
-  runModel(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<RunModelResult> {
+  runProcesses(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<RunProcessesResult> {
 
-    return this.runFunction('runModel', {
+    return this.runFunction('runProcesses', {
       "projectPath": projectPath, "modelName": modelName,
       "startProcess": startProcess, "endProcess": endProcess,
       "save": false
