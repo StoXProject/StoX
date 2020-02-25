@@ -41,12 +41,12 @@ export class HomeComponent {
     {
       label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
     },    
-    {
-      label: 'Test expression builder...', command: e => this.expressionBuilderDlgService.showDialog()
-    },
-    {
-      label: 'Test query builder...', command: e => this.testDlgService.showDialog()
-    },    
+    // {
+    //   label: 'Test expression builder...', command: e => this.expressionBuilderDlgService.showDialog()
+    // },
+    // {
+    //   label: 'Test query builder...', command: e => this.testDlgService.showDialog()
+    // },    
     {
       label: 'Test...', command: e => {
         // this.dataService.getBioticData().pipe(map((resp: any) => {console.log("response", resp)}));
