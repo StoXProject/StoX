@@ -26,7 +26,10 @@ export class ExpressionBuilderDlgService {
 
     public display: boolean = false;
 
-    currentTableExpression: TableExpression = null;
+    public currentTableExpression: TableExpression = null;
+    private currentTableExpressionSource = new BehaviorSubject(this.currentTableExpression);
+    tableExpressionObservable = this.currentTableExpressionSource.asObservable();
+
     currentPropertyItem: PropertyItem = null;
     currentPropertyCategory: PropertyCategory = null;
 
@@ -38,6 +41,7 @@ export class ExpressionBuilderDlgService {
 
     setCurrentTableExpression(tableExpression: TableExpression) {
         this.currentTableExpression = tableExpression;
+        this.currentTableExpressionSource.next(this.currentTableExpression);
     }
 
     getCurrentTableExpression(): TableExpression {

@@ -26,6 +26,8 @@ export class QueryBuilderDlg  implements OnInit {
     public allowRuleset: boolean = true;
     public allowCollapse: boolean;
     public persistValueOnFieldChange: boolean = false;
+
+    public tableName: string = "";
   
     constructor(
         public service: QueryBuilderDlgService, private formBuilder: FormBuilder, 
@@ -37,6 +39,13 @@ export class QueryBuilderDlg  implements OnInit {
       try {
         this.queryCtrl = this.formBuilder.control(this.query);
         this.currentConfig = this.config;
+
+        this.exprBuilderService.tableExpressionObservable.subscribe(
+          cte => { 
+            if(cte != null) {
+              this.tableName = cte.tableName;
+            }
+          });
 
         this.exprBuilderService.currentConfig.subscribe(
             config => {
