@@ -74,7 +74,10 @@ export class ProjectService {
   }
   async updateProcessList() {
     if (this.selectedProject != null) {
-      this.processes = <Process[]>await this.dataService.getProcessesTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+      this.processes = <Process[]>await this.dataService.getProcessTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+      if (this.processes == null) {
+        this.processes = [];
+      }
       if (this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
       }
@@ -191,20 +194,23 @@ export class ProjectService {
 
   async initData() {
 
-    let jsonString = <string>await this.dataService.readActiveProject().toPromise();
+    let jsonString = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
     let activeProject: Project = <Project>JSON.parse(jsonString);
     // Read models and set selected to the first model
     this.models = <Model[]>await this.dataService.getModelInfo().toPromise();
     this.setModels(this.models);
     this.selectedModel = this.models[0];
-
-    if (!this.isEmpty(activeProject)) {
-      this.projects = [{ projectName: activeProject.projectName, projectPath: activeProject.projectPath }];
-      //  console.log("active project : " + activeProject.projectName);
-      this.selectedProject = activeProject;
-    }
+    this.openProject(activeProject.projectPath);
   }
 
+  async openProject(projectPath: string) {
+    // the following should open the project and make it selected in the GUI
+    let project: Project = <Project>await this.dataService.openProject(projectPath).toPromise();
+    if (project != null) {
+      this.projects = [project];
+      this.selectedProject = this.projects[0];
+    }
+  }
   /*
   Returns:
     true: undefined, null, "", [], {}
@@ -223,13 +229,13 @@ export class ProjectService {
     )
   }
   public getProcessIdx(process: Process): number {
-    return this.processes.findIndex(p => p === process);
+    return this.processes != null ? this.processes.findIndex(p => p === process) : null;
   }
   public getProcessIdxById(id: string): number {
-    return this.processes.findIndex(p => p.processID === id);
+    return this.processes != null ? this.processes.findIndex(p => p.processID === id) : null;
   }
   public getProcessIdxByProcessesAndId(processes: Process[], id: string): number {
-    return processes.findIndex(p => p.processID === id);
+    return this.processes != null ? processes.findIndex(p => p.processID === id) : null;
   }
   public getActiveProcess(): Process {
     return this.getProcessById(this.activeProcessId);
@@ -244,7 +250,7 @@ export class ProjectService {
     return this.getProcessIdxByProcessesAndId(this.processes, this.activeProcessId);
   }
   public getSelectedProcessIdx(): number {
-    return this.selectedProcess != null ? this.getProcessIdxByProcessesAndId(this.processes, this.selectedProcess.processID) : null;
+    return this.processes != null && this.selectedProcess != null ? this.getProcessIdxByProcessesAndId(this.processes, this.selectedProcess.processID) : null;
   }
   public getActiveProcessIdxByProcesses(processes: Process[]): number {
     return this.getProcessIdxByProcessesAndId(processes, this.activeProcessId);
@@ -255,7 +261,7 @@ export class ProjectService {
   }
 
   getProcessById(processId: string): Process {
-    return this.processes.find(p => p.processID === processId);
+    return this.processes != null ? this.processes.find(p => p.processID === processId) : null;
   }
 
   /*getProcess(idx: number): Process {

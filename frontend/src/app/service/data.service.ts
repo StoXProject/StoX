@@ -8,7 +8,7 @@ import { rotateWithoutConstraints } from 'ol/interaction/Interaction';
 import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
-import { RunResult, RunProcessesResult, ProcessResult } from '../data/runresult';
+import { RunResult, RunProcessesResult, ProcessResult, PSUResult } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
 
@@ -115,7 +115,7 @@ export class DataService {
   //   return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessTable/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   // }
 
-  getProcessesTable(projectPath: string, modelName: string): Observable<any> {
+  getProcessTable(projectPath: string, modelName: string): Observable<any> {
     //console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
@@ -161,14 +161,17 @@ export class DataService {
   }
 
   isProject(projectPath: string): Observable<boolean> {
-    // const formData = new FormData();
-    // formData.set('projectPath', "'" + projectPath + "'");
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/isProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-
     return this.runFunction('isProject', {
       "projectPath": projectPath
     });
   }
+
+  isOpenProject(projectPath: string): Observable<boolean> {
+    return this.runFunction('isOpenProject', {
+      "projectPath": projectPath
+    });
+  }
+
 
   setProcessPropertyValue(groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string): Observable<any> {
     // const formData = new FormData();
@@ -416,6 +419,13 @@ export class DataService {
   }
 
   addStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+    return this.runFunction('addStratum', {
+      "stratum": stratum,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
+  addAcousticPSU(stratum: string, projectPath: string, modelName: string, processID: string): Observable<PSUResult> {
     return this.runFunction('addStratum', {
       "stratum": stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
