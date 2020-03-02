@@ -11,6 +11,7 @@ import { UserLogType } from '../enum/enums';
 import { RunResult, RunProcessesResult, ProcessResult, PSUResult } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
+import { ProcessProperties } from '../data/ProcessProperties';
 
 @Injectable({
   providedIn: 'root'
@@ -150,14 +151,12 @@ export class DataService {
     });
   }
 
-  getProcessProperties(projectPath: string, modelName: string, processID: string): Observable<any> {
-    return this.runProcessFunc<any>("getProcessPropertySheet", projectPath, modelName, processID);
-    /* const formData = new FormData();
-     // projectPath, modelName, processID
-     formData.set('projectPath', "'" + projectPath + "'");
-     formData.set('modelName', "'" + modelName + "'");
-     formData.set('processID', "'" + processID + "'");
-     return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessPropertySheet/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));*/
+  getProcessProperties(projectPath: string, modelName: string, processID: string): Observable<ProcessProperties> {
+    return this.runProcessFunc<ProcessProperties>("getProcessPropertySheet", projectPath, modelName, processID);
+  }
+
+  getFunctionHelpAsHtml(projectPath: string, modelName: string, processID: string): Observable<string> {
+    return this.runProcessFunc<string>("getFunctionHelpAsHtml", projectPath, modelName, processID);
   }
 
   isProject(projectPath: string): Observable<boolean> {
@@ -340,7 +339,7 @@ export class DataService {
     formData.set('args', args);
     console.log(what + "(" + args + ")");
     return <any>this.postLocalOCPU('RstoxFramework', 'runFunction', formData, 'text', true, "json")
-      .pipe(map(async res => {
+      .pipe(map(res => {
         //let jsr: RunResult = JSON.parse(res.body);
         // Get the OCPU-sinked R messages from session file (message) and put it int the result.
         // The OCPU sink overrides the message stdout, and must be retrieved from the session message file.

@@ -66,11 +66,11 @@ getMapData
 }
 
 getAcousticPSUData
-'{
-"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes", 
+{
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_31processes", 
 "modelName":"baseline", 
 "processID":"P007"
-}'
+}
 
 getInteractiveMode
 '{
@@ -81,7 +81,7 @@ getInteractiveMode
 
 getProcessTable
 {
-"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes", 
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_31processes", 
 "modelName":"baseline"
 }
 

@@ -1,5 +1,6 @@
 import { Injectable, SecurityContext } from '@angular/core';
-import { Subject } from 'rxjs';
+import { catchError, map, tap, mapTo } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
 import { Project } from '../data/project';
 import { Process } from '../data/process';
 import { Model } from '../data/model';
@@ -124,16 +125,40 @@ export class ProjectService {
     this.m_helpContent = content;
   }
 
-  async onSelectedProcessChanged() {
+  processPropertiesSubscription: Subscription = null;
+  functionHelpAsHtmlSubscription: Subscription = null;
 
-    this.initializeProperties();
+  onSelectedProcessChanged() {
+
+    //this.initializeProperties();
+
 
     if (this.selectedProject != null &&
       this.selectedProcess != null &&
       this.selectedModel != null) {
       // propertyCategories: PropertyCategory[];
       // var t0 = performance.now();
-      this.processProperties = <ProcessProperties>await this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcess.processID).toPromise();
+      if (this.processPropertiesSubscription != null) {
+        this.processPropertiesSubscription.unsubscribe();
+      }
+      this.processPropertiesSubscription = this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName,
+        this.selectedProcess.processID).subscribe((prop: ProcessProperties) => {
+          this.processProperties = prop;
+          if (this.processProperties != null) {
+            this.propertyCategories = this.processProperties.propertySheet;
+          }
+        });
+      if (this.functionHelpAsHtmlSubscription != null) {
+        this.functionHelpAsHtmlSubscription.unsubscribe();
+      }
+      this.functionHelpAsHtmlSubscription = this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
+        this.selectedModel.modelName, this.selectedProcess.processID).subscribe((response: any) => {
+          this.helpContent = response;
+        }); 
+       // console.log("this")
+      /*if (this.processProperties != null) {
+          this.propertyCategories = this.processProperties.propertySheet;
+        }*/
       // var t1 = performance.now();
       // console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
       // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
@@ -142,14 +167,6 @@ export class ProjectService {
       //   p.possibleValues = typeof (p.possibleValues) == "string" ? [p.possibleValues] : p.possibleValues;
       // }));
 
-      if (this.processProperties != null) {
-        this.helpContent = this.processProperties.help;
-        this.propertyCategories = this.processProperties.propertySheet;
-      }
-
-      // this.helpContent = <string> await this.dataService.getFunctionHelpAsHtml("DefineStrata").toPromise();
-      // // this.helpContent = await this.dataService.getHelp("help", "html").toPromise();
-      // console.log("this.helpContent : " + this.helpContent);
     }
   }
 
@@ -201,6 +218,7 @@ export class ProjectService {
     this.setModels(this.models);
     this.selectedModel = this.models[0];
     this.openProject(activeProject.projectPath);
+    // resetModel. here 
   }
 
   async openProject(projectPath: string) {
