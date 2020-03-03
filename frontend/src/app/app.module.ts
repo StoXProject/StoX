@@ -7,7 +7,7 @@ import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
 import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
 import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
 import { QueryBuilderDlg } from './querybuilder/dlg/QueryBuilderDlg';
-// import { QueryBuilderDlg } from './querybuilder/QueryBuilderDlg';
+import { DefinedColumnsTableDlg } from './dlg/definedColumns/DefinedColumnsTableDlg';
 import { MessageDlg } from './message/MessageDlg';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
@@ -213,7 +213,7 @@ export class MaterialModule {}
     OpenProjectDlg,
     ExpressionBuilderDlg,
     QueryBuilderDlg,
-    // QueryBuilderDlg,
+    DefinedColumnsTableDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,

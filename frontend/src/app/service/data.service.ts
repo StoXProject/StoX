@@ -222,6 +222,15 @@ export class DataService {
     });
   }
 
+  getParameterTableInfo(projectPath: string, modelName: string, processID: string, format: string): Observable<any> {
+
+    return this.runFunction('getParameterTableInfo', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "format": format
+    });
+  }  
 
   // getHelp(topic: string, help_type: string): Observable<any> {
   //   const formData = new FormData();
