@@ -101,6 +101,7 @@ import { StratumpsuComponent } from './processdata/stratumpsu/stratumpsu.compone
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module';
+import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 
 @NgModule({
   exports: [
@@ -153,7 +154,9 @@ import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
-  ]
+    MatAutocompleteModule,
+  ],
+  declarations: []
 })
 export class MaterialModule {}
 
@@ -225,7 +228,8 @@ export class MaterialModule {}
     RunComponent,
     UserLogComponent,
     OutputComponent,
-    HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent
+    HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent,
+    AutocompleteComponent
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },
