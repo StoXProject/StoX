@@ -19,7 +19,7 @@
                 </colgroup>
             </ng-template>
             <ng-template pTemplate="body" let-propertyItem>
-                <tr  style="white-space: nowrap;">
+                <tr style="white-space: nowrap;">
                     <td pResizableColumn>
                         <div>
                             {{propertyItem.displayName}}
@@ -28,25 +28,29 @@
                     <td pResizableColumn [ngSwitch]="propertyItem.type">
                         <div *ngSwitchCase="'character'">
                             <div *ngIf="propertyItem.possibleValues.length > 0">
-                                <select
+                                <app-autocomplete [items]="propertyItem.possibleValues" 
+                                    [selectedItem]="propertyItem.value"
+                                    (change)="propertyItem.value = $event.selectedItem; onChanged(category, propertyItem)">
+                                </app-autocomplete>
+                                <!--<select
                                     (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
                                     style="width:100%;">
                                     <option *ngFor="let verdi of propertyItem.possibleValues" value="{{verdi}}"
                                         [selected]="verdi === propertyItem.value">{{verdi}}</option>
-                                </select>
+                                </select>-->
                             </div>
 
                             <div *ngIf="propertyItem.possibleValues.length == 0">
                                 <ng-container [ngSwitch]="propertyItem.format">
                                     <ng-container *ngSwitchCase="'filterExpressionTable'">
-                                        <input style="width:calc(100% - 22px);" type="text" pInputText                                       
+                                        <input style="width:calc(100% - 22px);" type="text" pInputText
                                             [(ngModel)]="propertyItem.value" />
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="filter(category, propertyItem)"></button>
                                     </ng-container>
-                                    <ng-container *ngSwitchCase="'none'">
-                                        <input matInput type="text" value="{{propertyItem.value}}"  spellcheck="false" 
-                                        (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" style="width:100%;"/>
+                                    <ng-container *ngSwitchDefault>
+                                        <input matInput type="text" value="{{propertyItem.value}}" spellcheck="false"
+                                            (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
                                     </ng-container>
                                     <ng-container *ngSwitchDefault>
                                         <input style="width:calc(100% - 22px);" type="text" pInputText                                       

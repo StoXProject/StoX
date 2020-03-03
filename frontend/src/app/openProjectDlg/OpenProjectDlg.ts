@@ -47,21 +47,21 @@ export class OpenProjectDlg {
                 this.msgService.showMessage();
                 return;
             }
-            // the following should return an instance of class Project
-            let project : Project = <Project>await this.dataService.openProject(this.projectPath).toPromise();
+            if (this.ps.selectedProject != null) {
+                // Check if project is open in GUI
+                if (this.ps.selectedProject.projectPath == this.projectPath) {
+                    this.msgService.setMessage("Project with name " + this.ps.selectedProject.projectName + " is already open in the GUI!");
+                    this.msgService.showMessage();
+                    return;
+                } /*else {
+                    // close the previous project after saving it if it is edited 
+                    await this.dataService.closeProject(this.ps.selectedProject.projectPath, new Boolean(true)).toPromise();
+                }*/
+            }
+
+            // the following should open the project and make it selected in the GUI
+            let project: Project = <Project>await this.dataService.openProject(this.projectPath).toPromise();
             if (project != null) {
-                /*if (this.ps.selectedProject != null) {
-                    if (this.ps.selectedProject.projectPath == project.projectPath) {
-                        let projectName = this.ps.selectedProject.projectName;
-                        this.msgService.setMessage("Project with name " + projectName + " is already open!");
-                        this.msgService.showMessage();
-                        return;
-                    } else {
-                        // close the previous project after saving it if it is edited 
-                        await this.dataService.closeProject(this.ps.selectedProject.projectPath, new Boolean(true)).toPromise();
-                    }
-                }*/ 
-                //this.ps.projects = [project];
                 this.ps.projects = [project];
                 this.ps.selectedProject = this.ps.projects[0];
             }

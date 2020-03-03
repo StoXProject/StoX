@@ -9,5 +9,9 @@ export class ProcessResult {
     activeProcessID: string;
 }
 export class RunProcessesResult extends ProcessResult {
-    interactiveMode: string
+    interactiveMode: string;
+}
+
+export class PSUResult extends ProcessResult {
+    PSU: string;
 }
