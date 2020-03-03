@@ -32,7 +32,7 @@
                 <mat-header-cell *matHeaderCellDef> SpeciesCategory </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <mat-select placeholder = "choose SpeciesCategory"  [(ngModel)] = "element.SpeciesCategory" name = "element.SpeciesCategory">
+                        <mat-select placeholder = ""  [(ngModel)] = "element.SpeciesCategory" name = "element.SpeciesCategory">
                             <mat-option *ngFor = "let oldName of possibleValues('SpeciesCategory')" [value] = "oldName">
                                {{oldName}}
                             </mat-option>
@@ -46,7 +46,7 @@
                 <mat-header-cell *matHeaderCellDef> NewSpeciesCategory </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <input matInput placeholder="New name" [value]="element.NewSpeciesCategory" [(ngModel)]="element.NewSpeciesCategory">
+                        <input matInput placeholder="" [value]="element.NewSpeciesCategory" [(ngModel)]="element.NewSpeciesCategory">
                     </mat-form-field>
                 </mat-cell>
             </ng-container>  
@@ -56,7 +56,7 @@
                 <mat-header-cell *matHeaderCellDef> AcousticCategory </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <mat-select placeholder = "choose AcousticCategory"  [(ngModel)] = "element.AcousticCategory" name = "element.AcousticCategory">
+                        <mat-select placeholder = ""  [(ngModel)] = "element.AcousticCategory" name = "element.AcousticCategory">
                             <mat-option *ngFor = "let oldName of possibleValues('AcousticCategory')" [value] = "oldName">
                                {{oldName}}
                             </mat-option>
@@ -70,7 +70,7 @@
                 <mat-header-cell *matHeaderCellDef> NewAcousticCategory </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <input matInput placeholder="New name" [value]="element.NewAcousticCategory" [(ngModel)]="element.NewAcousticCategory">
+                        <input matInput placeholder="" [value]="element.NewAcousticCategory" [(ngModel)]="element.NewAcousticCategory">
                     </mat-form-field>
                 </mat-cell>
             </ng-container>
@@ -80,7 +80,7 @@
                 <mat-header-cell *matHeaderCellDef> Alpha </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <input matInput placeholder="Alpha" [value]="element.Alpha" [(ngModel)]="element.Alpha">
+                        <input matInput placeholder="" [value]="element.Alpha" [(ngModel)]="element.Alpha">
                     </mat-form-field>
                 </mat-cell>
             </ng-container>
@@ -89,7 +89,7 @@
                 <mat-header-cell *matHeaderCellDef> Beta </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <input matInput placeholder="Beta" [value]="element.Beta" [(ngModel)]="element.Beta">
+                        <input matInput placeholder="" [value]="element.Beta" [(ngModel)]="element.Beta">
                     </mat-form-field>
                 </mat-cell>
             </ng-container>     
@@ -98,7 +98,7 @@
                 <mat-header-cell *matHeaderCellDef> LMin </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <input matInput placeholder="LMin" [value]="element.LMin" [(ngModel)]="element.LMin">
+                        <input matInput placeholder="" [value]="element.LMin" [(ngModel)]="element.LMin">
                     </mat-form-field>
                 </mat-cell>
             </ng-container>  
@@ -108,7 +108,7 @@
                 <mat-header-cell *matHeaderCellDef> LMax </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <input matInput placeholder="LMax" [value]="element.LMax" [(ngModel)]="element.LMax">
+                        <input matInput placeholder="" [value]="element.LMax" [(ngModel)]="element.LMax">
                     </mat-form-field>
                 </mat-cell>
             </ng-container>
@@ -118,7 +118,7 @@
                 <mat-header-cell *matHeaderCellDef> m </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <input matInput placeholder="m" [value]="element.m" [(ngModel)]="element.m">
+                        <input matInput placeholder="" [value]="element.m" [(ngModel)]="element.m">
                     </mat-form-field>
                 </mat-cell>
             </ng-container>     
@@ -127,7 +127,7 @@
                 <mat-header-cell *matHeaderCellDef> a </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <input matInput placeholder="a" [value]="element.a" [(ngModel)]="element.a">
+                        <input matInput placeholder="" [value]="element.a" [(ngModel)]="element.a">
                     </mat-form-field>
                 </mat-cell>
             </ng-container>  
@@ -137,7 +137,7 @@
                 <mat-header-cell *matHeaderCellDef>d </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <input matInput placeholder="d" [value]="element.d" [(ngModel)]="element.d">
+                        <input matInput placeholder="" [value]="element.d" [(ngModel)]="element.d">
                     </mat-form-field>
                 </mat-cell>
             </ng-container>

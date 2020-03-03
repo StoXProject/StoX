@@ -36,7 +36,7 @@ export class DefinedColumnsService {
   
     async showDialog() {
         
-        let returnValue  = <any> await this.dataService.getParameterTableInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, "speciesCategoryTable" /*this.currentPropertyItem.format*/).toPromise();
+        let returnValue  = <any> await this.dataService.getParameterTableInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentPropertyItem.format).toPromise();
         
         if(returnValue != null) {
           console.log("returnValue : " + JSON.stringify(returnValue));
