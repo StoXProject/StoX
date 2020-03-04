@@ -42,6 +42,7 @@ import { MatDialog } from '@angular/material';
 import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
 import { EDSU_PSU } from '../data/processdata';
+import { ProcessResult } from '../data/runresult';
 
 @Component({
   selector: 'app-map',
@@ -319,7 +320,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       // handle the top feature only.
       farr.sort((a: Feature, b: Feature) => (<Layer>a.get("layer")).getZIndex() -
         (<Layer>b.get("layer")).getZIndex()).slice(0, 1).
-        forEach(f => {
+        forEach(async f => {
           let l: Layer = <Layer>f.get("layer");
           console.log("Z index: " + l.getZIndex());
           let fe: Feature = (<Feature>f);
@@ -343,13 +344,26 @@ export class MapComponent implements OnInit, AfterViewInit {
             }
             let iFirst = Math.min(prevClickIndex, clickedIndex);
             let iLast = Math.max(prevClickIndex, clickedIndex);
+            let changedEDSUs: string[] = [];
             for (let idx: number = iFirst; idx <= iLast; idx++) {
               let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
               let edsuPsu: EDSU_PSU = fi.get("edsupsu");
               if (edsuPsu != null) {
-                edsuPsu.PSU = psuToUse;
-                MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+                if (edsuPsu.PSU != psuToUse) {
+                  changedEDSUs.push(edsuPsu.EDSU);
+                  edsuPsu.PSU = psuToUse;
+                  MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+                }
                 //fi.changed();
+              }
+            }
+            if (changedEDSUs.length > 0) {
+              let res: ProcessResult = psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
+                this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
+                await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
+                  this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
+              if (res != null && res.activeProcessID != null) {
+                this.ps.activeProcessId = res.activeProcessID; // reset active process id
               }
             }
             //l.changed();

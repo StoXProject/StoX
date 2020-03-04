@@ -125,10 +125,10 @@ export class ProjectService {
     this.m_helpContent = content;
   }
 
-  processPropertiesSubscription: Subscription = null;
-  functionHelpAsHtmlSubscription: Subscription = null;
+  //processPropertiesSubscription: Subscription = null;
+  //functionHelpAsHtmlSubscription: Subscription = null;
 
-  onSelectedProcessChanged() {
+  async onSelectedProcessChanged() {
 
     //this.initializeProperties();
 
@@ -138,7 +138,13 @@ export class ProjectService {
       this.selectedModel != null) {
       // propertyCategories: PropertyCategory[];
       // var t0 = performance.now();
-      if (this.processPropertiesSubscription != null) {
+      this.processProperties = await this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName,
+        this.selectedProcess.processID).toPromise();
+      if (this.processProperties != null) {
+        this.propertyCategories = this.processProperties.propertySheet;
+      }
+      this.updateHelp();
+      /*if (this.processPropertiesSubscription != null) {
         this.processPropertiesSubscription.unsubscribe();
       }
       this.processPropertiesSubscription = this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName,
@@ -147,15 +153,17 @@ export class ProjectService {
           if (this.processProperties != null) {
             this.propertyCategories = this.processProperties.propertySheet;
           }
-        });
-      if (this.functionHelpAsHtmlSubscription != null) {
+        });*/
+
+      /*if (this.functionHelpAsHtmlSubscription != null) {
         this.functionHelpAsHtmlSubscription.unsubscribe();
       }
       this.functionHelpAsHtmlSubscription = this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
         this.selectedModel.modelName, this.selectedProcess.processID).subscribe((response: any) => {
           this.helpContent = response;
-        }); 
-       // console.log("this")
+        });*/
+
+      // console.log("this")
       /*if (this.processProperties != null) {
           this.propertyCategories = this.processProperties.propertySheet;
         }*/
@@ -168,6 +176,11 @@ export class ProjectService {
       // }));
 
     }
+  }
+
+  async updateHelp() {
+    this.helpContent = await this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
+      this.selectedModel.modelName, this.selectedProcess.processID).toPromise(); 
   }
 
   async initializeProperties() {

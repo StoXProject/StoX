@@ -12,6 +12,7 @@ import { RunResult, RunProcessesResult, ProcessResult, PSUResult } from '../data
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
 import { ProcessProperties } from '../data/ProcessProperties';
+import { Process } from '../data/process';
 
 @Injectable({
   providedIn: 'root'
@@ -116,7 +117,7 @@ export class DataService {
   //   return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/getProcessTable/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   // }
 
-  getProcessTable(projectPath: string, modelName: string): Observable<any> {
+  getProcessTable(projectPath: string, modelName: string): Observable<Process[]> {
     //console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
@@ -172,7 +173,7 @@ export class DataService {
   }
 
 
-  setProcessPropertyValue(groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string): Observable<any> {
+  setProcessPropertyValue(groupName: string, name: string, value: any, projectPath: string, modelName: string, processID: string): Observable<any> {
     // const formData = new FormData();
     // formData.set('groupName', "'" + groupName + "'");
     // formData.set('name', "'" + name + "'");
