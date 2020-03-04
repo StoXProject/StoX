@@ -126,10 +126,10 @@ $nodata: #acacac;
   }
 }
 .ui-tree {
-  border: none !important; 
+  border: none !important;
   margin: 1px !important;
   padding: 0 !important;
-  height:100% !important;
+  height: 100% !important;
   width: inherit !important;
   //overflow-y: scroll;
 }
@@ -541,6 +541,12 @@ $nodata: #acacac;
   z-index: 20000 !important;
 }
 .mat-option {
-  line-height:1.2rem !important;
-  height:1.3rem !important;
+  line-height: 1.2rem !important;
+  height: 1.3rem !important;
+}
+
+.ellipsiscolumn {
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  width: 100%;
 }

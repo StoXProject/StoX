@@ -23,7 +23,7 @@ export class ParameterComponent implements OnInit {
 
 
   //  booleanForm: FormGroup; private msgService: MessageService,
-  constructor(private msgService: MessageService, public ps: ProjectService, 
+  constructor(private msgService: MessageService, public ps: ProjectService,
     private dataService: DataService, private exprBuilderService: ExpressionBuilderDlgService) { }
 
   async ngOnInit() {
@@ -53,11 +53,14 @@ export class ParameterComponent implements OnInit {
             // console.log(p);
             this.ps.propertyCategories = s.propertySheet;
             // this.ps.helpContent = s.help;
-            this.ps.helpContent = s.help; // this.ps.sanitizer.bypassSecurityTrustHtml(s.help);
+            //this.ps.helpContent = s.help; // this.ps.sanitizer.bypassSecurityTrustHtml(s.help);
             this.ps.activeProcessId = s.activeProcessID; // reset active processid
             // Special case if a property processname is changed, it should update the selected process name
             if (this.ps.selectedProcess != null && pi.name == 'processName') {
-              this.ps.selectedProcess.processName = pi.value; 
+              this.ps.selectedProcess.processName = pi.value;
+            }
+            if (s.updateHelp) {
+              this.ps.updateHelp();
             }
           });
 

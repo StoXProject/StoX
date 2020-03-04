@@ -168,7 +168,10 @@ export class ExpressionBuilderDlg  implements OnInit {
                     .toPromise().then((s: ProcessProperties) => {
                       this.ps.propertyCategories = s.propertySheet;
                       // this.ps.helpContent = s.help;
-                      this.ps.helpContent = s.help; // this.ps.sanitizer.bypassSecurityTrustHtml(s.help);
+                      if(s.updateHelp) {
+                          this.ps.updateProcessList
+                      }
+                      this.ps.helpContent = s.updateHelp; // this.ps.sanitizer.bypassSecurityTrustHtml(s.help);
           
                       // Special case if a property processname is changed, it should update the selected process name
                     //   if (this.ps.selectedProcess != null && pi.name == 'processName') {

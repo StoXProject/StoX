@@ -21,14 +21,14 @@
             <ng-template pTemplate="body" let-propertyItem>
                 <tr style="white-space: nowrap;">
                     <td pResizableColumn>
-                        <div>
+                        <div class = "ellipsiscolumn">
                             {{propertyItem.displayName}}
                         </div>
                     </td>
                     <td pResizableColumn [ngSwitch]="propertyItem.type">
                         <div *ngSwitchCase="'character'">
                             <div *ngIf="propertyItem.possibleValues.length > 0">
-                                <app-autocomplete [items]="propertyItem.possibleValues" 
+                                <app-autocomplete  class="ellipsiscolumn" [items]="propertyItem.possibleValues" 
                                     [selectedItem]="propertyItem.value"
                                     (change)="propertyItem.value = $event.selectedItem; onChanged(category, propertyItem)">
                                 </app-autocomplete>
@@ -50,7 +50,8 @@
                                     </ng-container>
                                     <ng-container *ngSwitchDefault>
                                         <input matInput type="text" value="{{propertyItem.value}}" spellcheck="false"
-                                            (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
+                                            (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" 
+                                            class="ellipsiscolumn"/>
                                     </ng-container>
                                 </ng-container>
                             </div>
@@ -64,7 +65,7 @@
                                 <option *ngFor="let bool of getMetParameterValueList()" [ngValue]="bool.name">
                                     {{bool.name}}</option>
                             </select>-->
-                            <input type="checkbox" [checked]="propertyItem.value == true ? true : false"
+                            <input type="checkbox" [checked]="propertyItem.value == 'true' ? true : false"
                                 (change)="propertyItem.value = $event.target.checked ? 'true' : 'false'; onChanged(category, propertyItem)"
                                 style="vertical-align: middle !important;" />
                         </div>
