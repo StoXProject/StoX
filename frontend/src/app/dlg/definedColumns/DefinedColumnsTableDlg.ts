@@ -3,6 +3,7 @@ import { DefinedColumns, ColumnPossibleValues } from '../../data/DefinedColumns'
 import { SelectionModel } from '@angular/cdk/collections';
 import { DefinedColumnsService } from './DefinedColumnsService';
 import { Component, OnInit } from '@angular/core';
+import { MessageService } from '../../message/MessageService';
 
 @Component({
     selector: 'DefinedColumnsTableDlg',
@@ -17,9 +18,14 @@ export class DefinedColumnsTableDlg  implements OnInit {
     columnPossibleValues: ColumnPossibleValues[] = [];
 
     dataSource: MatTableDataSource<DefinedColumns> = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
-    selection = new SelectionModel<DefinedColumns>(true, []);    
+    selection = new SelectionModel<DefinedColumns>(true, []);   
+    
+    combinedExpression = "";
 
-    constructor(public service: DefinedColumnsService) {
+    constructor(public service: DefinedColumnsService, private msgService: MessageService) {
+        service.definedColumnsDataObservable.subscribe(dcd => {
+            this.dataSource = new MatTableDataSource<DefinedColumns>(dcd);
+        });
 
         service.displayedColumnsObservable.subscribe(dColumns => {
             this.displayedColumns = dColumns;
@@ -102,6 +108,41 @@ export class DefinedColumnsTableDlg  implements OnInit {
     //  }
 
     apply() {
+
+        // validate input for null values in dialog and show messages if necessary
+        // check if there is empty field in dialog
+        for(let i=0; i< this.service.definedColumnsData.length; i++) {
+            let blankFound = false;
+            this.displayedColumns.forEach(key => {
+                if(key != 'select') {
+                    if(this.service.definedColumnsData[i][key] == null) {
+                        console.log("Field " + key + " is null in row index : " + i);
+                        // show the message that one or more fields are empty
+                        this.msgService.setMessage("One or more fields are empty!");
+                        this.msgService.showMessage();
+                        blankFound = true;
+                    }
+                }
+            });
+
+            if(blankFound) {
+                break;
+            }
+        }        
+
+        // validate input for duplicate rows 
+
+        // get the combined string from service
+        this.combinedExpression = this.service.combinedExpression();
+
+        console.log("this.service.currentPropertyItem.value : " + this.service.currentPropertyItem.value);
+        console.log("this.combinedExpression : " + this.combinedExpression);
+
+        // save the combined string into current property item and run set property values function if there is a change in value
+        if(this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
+            this.service.currentPropertyItem.value = this.combinedExpression;
+            // run set property value function
+        }
 
 
         this.onHide();
