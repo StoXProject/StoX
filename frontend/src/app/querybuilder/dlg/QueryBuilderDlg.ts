@@ -7,7 +7,7 @@ import { QueryBuilderDlgService } from './QueryBuilderDlgService';
 import { DataService } from '../../service/data.service';
 
 @Component({
-    selector: 'TestDlg',
+    selector: 'QueryBuilderDlg',
     templateUrl: './QueryBuilderDlg.html',
     styleUrls: ['./QueryBuilderDlg.css']
 })

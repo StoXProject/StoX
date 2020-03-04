@@ -1,4 +1,5 @@
 import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBuilderDlgService';
+import { DefinedColumnsService } from './../dlg/definedColumns/DefinedColumnsService';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 //import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProjectService } from '../service/project.service';
@@ -23,8 +24,9 @@ export class ParameterComponent implements OnInit {
 
 
   //  booleanForm: FormGroup; private msgService: MessageService,
-  constructor(private msgService: MessageService, public ps: ProjectService,
-    private dataService: DataService, private exprBuilderService: ExpressionBuilderDlgService) { }
+  constructor(private msgService: MessageService, public ps: ProjectService, 
+    private dataService: DataService, private exprBuilderService: ExpressionBuilderDlgService,
+    private definedColumnsService: DefinedColumnsService) { }
 
   async ngOnInit() {
     /*    let a = [];
@@ -35,7 +37,7 @@ export class ParameterComponent implements OnInit {
         }
         console.log(a[0].name + a[1].name);*/
   }
-
+ 
   getMetParameterValueList(): any[] {
     return [{ name: false }, { name: true }];
   }
@@ -51,8 +53,7 @@ export class ParameterComponent implements OnInit {
             // let p = <PropertyCategory[]>JSON.parse(s);
             // let p: ProcessProperties = s;
             // console.log(p);
-            this.ps.propertyCategories = s.propertySheet;
-            // this.ps.helpContent = s.help;
+            this.ps.propertyCategories = s.propertySheet; 
             //this.ps.helpContent = s.help; // this.ps.sanitizer.bypassSecurityTrustHtml(s.help);
             this.ps.activeProcessId = s.activeProcessID; // reset active processid
             // Special case if a property processname is changed, it should update the selected process name
@@ -106,5 +107,12 @@ export class ParameterComponent implements OnInit {
     // run ExpressionBuilderService.showDialog() to show Expression builder dialog
     this.exprBuilderService.showDialog();
 
+  }
+
+  definedColumns(category: PropertyCategory, pi: PropertyItem) {
+    this.definedColumnsService.currentPropertyCategory = category;
+    this.definedColumnsService.currentPropertyItem = pi;
+
+    this.definedColumnsService.showDialog();
   }
 }

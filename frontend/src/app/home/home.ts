@@ -7,7 +7,7 @@ import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
 import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
 import { ExpressionBuilderDlgService } from '../expressionBuilder/ExpressionBuilderDlgService';
-// import { QueryBuilderDlgService } from '../querybuilder/QueryBuilderDlgService';
+import { DefinedColumnsService } from '../dlg/definedColumns/DefinedColumnsService';
 import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { MenuItem } from 'primeng/api';
 
@@ -24,7 +24,8 @@ export class HomeComponent {
     private openProjectDlgService: OpenProjectDlgService,
     private dataService: DataService, private runService: RunService, 
     private expressionBuilderDlgService: ExpressionBuilderDlgService,
-    private testDlgService: QueryBuilderDlgService
+    private testDlgService: QueryBuilderDlgService, 
+    private definedColumns: DefinedColumnsService
     /*,
     private quBuilderDlgService: QueryBuilderDlgService */) {
       // document.addEventListener('touchstart', function(){}, {passive: false});
@@ -41,9 +42,9 @@ export class HomeComponent {
     {
       label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
     },    
-    // {
-    //   label: 'Test expression builder...', command: e => this.expressionBuilderDlgService.showDialog()
-    // },
+    {
+      label: 'Test defined columns ...', command: e => this.definedColumns.showDialog()
+    },
     // {
     //   label: 'Test query builder...', command: e => this.testDlgService.showDialog()
     // },    
