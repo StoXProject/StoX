@@ -51,14 +51,14 @@ export class QueryBuilderDlg  implements OnInit {
             config => {
               this.adjustConfig(config);
               this.currentConfig = config;
-              // console.log("currentConfig : " + JSON.stringify(this.currentConfig));
+              console.log("currentConfig : " + JSON.stringify(this.currentConfig));
             }
           );
 
         this.exprBuilderService.currentQuery.subscribe(
             query => {
               this.query = query;
-              // console.log("query : " + JSON.stringify(this.query));
+              console.log("query : " + JSON.stringify(this.query));
             }
           );
       } catch (error) {
