@@ -65,19 +65,23 @@ export class ExpressionBuilderDlgService {
     }
 
     async updateQueryBuilderConfig() {
+        try {
 
-        this.query = { condition: "&", rules: [] };
+            this.query = { condition: "&", rules: [] };
 
-        this.config = <QueryBuilderConfig>await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
-
-        if (this.currentTableExpression.expression != null && this.currentTableExpression.expression.trim() != "") {
-            // build query object from rExpression
-            // instantiate this.query object
-            this.query = <RuleSet>await this.dataService.expression2list(this.currentTableExpression.expression).toPromise();
+            this.config = <QueryBuilderConfig>await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
+    
+            if (this.currentTableExpression.expression != null && this.currentTableExpression.expression.trim() != "") {
+                // build query object from rExpression
+                // instantiate this.query object
+                this.query = <RuleSet>await this.dataService.expression2list(this.currentTableExpression.expression).toPromise();
+            }
+    
+            this.configSource.next(this.config);
+            this.querySource.next(this.query);
+        } catch(error) {
+            console.log(error);
         }
-
-        this.configSource.next(this.config);
-        this.querySource.next(this.query);
     }
 
     combinedExpression(): string {
@@ -106,15 +110,15 @@ export class ExpressionBuilderDlgService {
 
         this.tableExpressions = [];
         if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != "") {
-            let o: any[] = JSON.parse(this.currentPropertyItem.value);
-            o.forEach(o1 => {
-                let keys = Object.keys(o1);
+            let o: any = JSON.parse(this.currentPropertyItem.value);
+            // o.forEach(o1 => {
+                let keys = Object.keys(o);
                 keys.forEach(key => {
-                    console.log(key + "=>" + o1[key]);
-                    this.tableExpressions.push({ tableName: key, expression: o1[key] });
-                })
-                }
-            );
+                    console.log(key + "=>" + o[key]);
+                    this.tableExpressions.push({ tableName: key, expression: o[key] });
+                });
+                // }
+            //);
 
             this.tableExpressionsSource.next(this.tableExpressions);
 

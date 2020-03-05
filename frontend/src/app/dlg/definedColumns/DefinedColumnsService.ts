@@ -59,7 +59,23 @@ export class DefinedColumnsService {
     async showDialog() {
 
       // parse currentPropertyItem.value and populate definedColumnsData and send it to dialog
-        
+      if(this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != "") {
+        this.definedColumnsData = [];
+        let o: any[] = JSON.parse(this.currentPropertyItem.value);
+        o.forEach(
+          o1 => {
+            let keys = Object.keys(o1);
+            let ob = new DefinedColumns();
+            keys.forEach(key => {
+              ob[key] = o1[key];
+            });
+            this.definedColumnsData.push(ob);
+          }
+        );
+
+        this.definedColumnsDataSource.next(this.definedColumnsData);
+      }
+
       let returnValue  = <any> await this.dataService.getParameterTableInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentPropertyItem.format).toPromise();
       
       if(returnValue != null) {
@@ -85,16 +101,16 @@ export class DefinedColumnsService {
 
         this.columnPossibleValuesSource.next(this.columnPossibleValues);
 
-        console.log(this.displayedColumns);
+        // console.log(this.displayedColumns);
 
-        console.log("returnValue['arameterTablePossibleValues'] : " + JSON.stringify(returnValue['arameterTablePossibleValues']));
+        console.log("returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
 
-        let possibleValues = returnValue['arameterTablePossibleValues'];
+        // let possibleValues = returnValue['parameterTablePossibleValues'];
 
-        for(let j=0; j<possibleValues.length; j++) {
-          console.log(possibleValues[j].constructor);
+        // for(let j=0; j<possibleValues.length; j++) {
+        //   console.log(possibleValues[j].constructor);
 
-        }
+        // }
       }
 
       this.display = true;
