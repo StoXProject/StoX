@@ -48,17 +48,17 @@
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="filter(category, propertyItem)"></button>
                                     </ng-container>
-                                    <ng-container *ngSwitchCase="propertyItem.format === 'none' || propertyItem.format === 'filePath' || propertyItem.format === 'directoryPath' || propertyItem.format === 'filePaths'">
-                                        <input matInput type="text" value="{{propertyItem.value}}" spellcheck="false"
-                                            (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" 
-                                            class="ellipsiscolumn"/>
-                                    </ng-container>
-                                    <ng-container *ngSwitchDefault>
+                                    <ng-container *ngSwitchCase="propertyItem.format === 'filterExpressionTable' || propertyItem.format === 'speciesCategoryTable' || propertyItem.format === 'acousticCategoryTable' || propertyItem.format === 'catchCompensationTable' || propertyItem.format === 'selectivityTable' || propertyItem.format === 'speciesLinktable' || propertyItem.format === 'acousticTargetStrengthTable'">
                                         <input style="width:calc(100% - 22px);" type="text" pInputText                                       
                                             [(ngModel)]="propertyItem.value" />
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="definedColumns(category, propertyItem)"></button>
-                                    </ng-container>                                    
+                                    </ng-container>
+                                    <ng-container *ngSwitchDefault>
+                                        <input matInput type="text" value="{{propertyItem.value}}" spellcheck="false"
+                                            (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" 
+                                            class="ellipsiscolumn"/>
+                                    </ng-container>
                                 </ng-container>
                             </div>
                         </div>
