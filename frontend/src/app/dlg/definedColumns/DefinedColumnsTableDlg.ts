@@ -99,43 +99,43 @@ export class DefinedColumnsTableDlg  implements OnInit {
         return null;
     }
 
-    areOldNamesUnique() {
-        // var tmpArr = [];
-        // for(var obj in this.service.definedColumnsData) {
-        //   if(tmpArr.indexOf(this.service.definedColumnsData[obj].old) < 0){ 
-        //     tmpArr.push(this.service.definedColumnsData[obj].old);
-        //   } else {
-        //     return false; // Duplicate value for tableName found
-        //   }
-        // }
-        // return true; // No duplicate values found for tableName
+    // areOldNamesUnique() {
+    //     // var tmpArr = [];
+    //     // for(var obj in this.service.definedColumnsData) {
+    //     //   if(tmpArr.indexOf(this.service.definedColumnsData[obj].old) < 0){ 
+    //     //     tmpArr.push(this.service.definedColumnsData[obj].old);
+    //     //   } else {
+    //     //     return false; // Duplicate value for tableName found
+    //     //   }
+    //     // }
+    //     // return true; // No duplicate values found for tableName
 
-        let keyColumns = ['SpeciesCategory', 'NewSpeciesCategory', 'AcousticCategory', 'NewAcousticCategory'];
+    //     let keyColumns = ['SpeciesCategory', 'NewSpeciesCategory', 'AcousticCategory', 'NewAcousticCategory'];
 
-        for(let i=0; i<this.service.definedColumnsData.length; i++) {
-            let result = 
-            this.service.definedColumnsData.filter(
-                dcd => {           
-                    // Object.keys(keyColumns).forEach(key => {dcd[key] == this.service.definedColumnsData[i][key]});
-                    let j=0;
-                    while(j<keyColumns.length) {
-                        let key = keyColumns[j];
-                        if(dcd[key] != this.service.definedColumnsData[i][key]) {
-                            return false;
-                        }
-                        j++;
-                    }
-                    return true;
-                }
-            );
+    //     for(let i=0; i<this.service.definedColumnsData.length; i++) {
+    //         let result = 
+    //         this.service.definedColumnsData.filter(
+    //             dcd => {           
+    //                 // Object.keys(keyColumns).forEach(key => {dcd[key] == this.service.definedColumnsData[i][key]});
+    //                 let j=0;
+    //                 while(j<keyColumns.length) {
+    //                     let key = keyColumns[j];
+    //                     if(dcd[key] != this.service.definedColumnsData[i][key]) {
+    //                         return false;
+    //                     }
+    //                     j++;
+    //                 }
+    //                 return true;
+    //             }
+    //         );
 
-            if(result.length > 1) {
-                return false;
-            }
-        }
+    //         if(result.length > 1) {
+    //             return false;
+    //         }
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     apply() {
 
