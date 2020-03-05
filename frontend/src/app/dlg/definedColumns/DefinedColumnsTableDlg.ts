@@ -4,6 +4,9 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { DefinedColumnsService } from './DefinedColumnsService';
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from '../../message/MessageService';
+import { ProjectService } from '../../service/project.service';
+import { DataService } from '../../service/data.service';
+import { ProcessProperties } from '../../data/ProcessProperties';
 
 @Component({
     selector: 'DefinedColumnsTableDlg',
@@ -22,7 +25,8 @@ export class DefinedColumnsTableDlg  implements OnInit {
     
     combinedExpression = "";
 
-    constructor(public service: DefinedColumnsService, private msgService: MessageService) {
+    constructor(public service: DefinedColumnsService, private msgService: MessageService, private ps: ProjectService, 
+        private dataService: DataService) {
         service.definedColumnsDataObservable.subscribe(dcd => {
             this.dataSource = new MatTableDataSource<DefinedColumns>(dcd);
         });
@@ -95,17 +99,43 @@ export class DefinedColumnsTableDlg  implements OnInit {
         return null;
     }
 
-    // areOldNamesUnique() {
-    //     var tmpArr = [];
-    //     for(var obj in this.service.definedColumnsData) {
-    //       if(tmpArr.indexOf(this.service.definedColumnsData[obj].old) < 0){ 
-    //         tmpArr.push(this.service.definedColumnsData[obj].old);
-    //       } else {
-    //         return false; // Duplicate value for tableName found
-    //       }
-    //     }
-    //     return true; // No duplicate values found for tableName
-    //  }
+    areOldNamesUnique() {
+        // var tmpArr = [];
+        // for(var obj in this.service.definedColumnsData) {
+        //   if(tmpArr.indexOf(this.service.definedColumnsData[obj].old) < 0){ 
+        //     tmpArr.push(this.service.definedColumnsData[obj].old);
+        //   } else {
+        //     return false; // Duplicate value for tableName found
+        //   }
+        // }
+        // return true; // No duplicate values found for tableName
+
+        let keyColumns = ['SpeciesCategory', 'NewSpeciesCategory', 'AcousticCategory', 'NewAcousticCategory'];
+
+        for(let i=0; i<this.service.definedColumnsData.length; i++) {
+            let result = 
+            this.service.definedColumnsData.filter(
+                dcd => {           
+                    // Object.keys(keyColumns).forEach(key => {dcd[key] == this.service.definedColumnsData[i][key]});
+                    let j=0;
+                    while(j<keyColumns.length) {
+                        let key = keyColumns[j];
+                        if(dcd[key] != this.service.definedColumnsData[i][key]) {
+                            return false;
+                        }
+                        j++;
+                    }
+                    return true;
+                }
+            );
+
+            if(result.length > 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     apply() {
 
@@ -142,8 +172,21 @@ export class DefinedColumnsTableDlg  implements OnInit {
         if(this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
             this.service.currentPropertyItem.value = this.combinedExpression;
             // run set property value function
+            if (this.ps.selectedProject != null && this.ps.selectedProcess != null && this.ps.selectedModel != null) {
+                try {
+                  this.dataService.setProcessPropertyValue(this.service.currentPropertyCategory.groupName, this.service.currentPropertyItem.name, this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID)
+                    .toPromise().then((s: ProcessProperties) => {
+                      this.ps.propertyCategories = s.propertySheet;      
+                    });
+                } catch (error) {
+                  console.log(error.error);
+                  var firstLine = error.error.split('\n', 1)[0];
+                  this.msgService.setMessage(firstLine);
+                  this.msgService.showMessage();
+                  return;
+                }
+            }
         }
-
 
         this.onHide();
     }
