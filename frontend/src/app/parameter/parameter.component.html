@@ -48,7 +48,7 @@
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="filter(category, propertyItem)"></button>
                                     </ng-container>
-                                    <ng-container *ngSwitchCase="propertyItem.format === 'filterExpressionTable' || propertyItem.format === 'speciesCategoryTable' || propertyItem.format === 'acousticCategoryTable' || propertyItem.format === 'catchCompensationTable' || propertyItem.format === 'selectivityTable' || propertyItem.format === 'speciesLinktable' || propertyItem.format === 'acousticTargetStrengthTable'">
+                                    <ng-container *ngSwitchCase="propertyItem.format === 'speciesCategoryTable' || propertyItem.format === 'acousticCategoryTable' || propertyItem.format === 'catchCompensationTable' || propertyItem.format === 'selectivityTable' || propertyItem.format === 'speciesLinktable' || propertyItem.format === 'acousticTargetStrengthTable'">
                                         <input style="width:calc(100% - 22px);" type="text" pInputText                                       
                                             [(ngModel)]="propertyItem.value" />
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"

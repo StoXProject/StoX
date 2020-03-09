@@ -93,24 +93,20 @@ export class DefinedColumnsService {
           this.displayedColumns.push(columns[i]);
           let column = new ColumnPossibleValues(); 
           column.columnName =  columns[i];
-          // column.possibleValues = 
+          
+          if(returnValue['parameterTablePossibleValues'][i].length == 0) {
+            column.possibleValues = null;
+          } else {
+            column.possibleValues = returnValue['parameterTablePossibleValues'][i];
+          }
+
           this.columnPossibleValues.push(column);
         }
 
         this.displayedColumnsSource.next(this.displayedColumns);
-
         this.columnPossibleValuesSource.next(this.columnPossibleValues);
-
-        // console.log(this.displayedColumns);
-
+        
         console.log("returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
-
-        // let possibleValues = returnValue['parameterTablePossibleValues'];
-
-        // for(let j=0; j<possibleValues.length; j++) {
-        //   console.log(possibleValues[j].constructor);
-
-        // }
       }
 
       this.display = true;

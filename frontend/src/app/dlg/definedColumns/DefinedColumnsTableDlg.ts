@@ -90,7 +90,7 @@ export class DefinedColumnsTableDlg  implements OnInit {
         this.dataSource.data.forEach(row => this.selection.select(row));
     }
 
-    possibleValues(colName: string) {
+    possibleValues(colName: string): string[] {
         for(let i=0; i<this.columnPossibleValues.length; i++) {
             if(this.columnPossibleValues[i].columnName == colName) {
                 return this.columnPossibleValues[i].possibleValues;

@@ -31,13 +31,20 @@
             <ng-container matColumnDef="SpeciesCategory">
                 <mat-header-cell *matHeaderCellDef> SpeciesCategory </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <mat-select placeholder = ""  [(ngModel)] = "element.SpeciesCategory" name = "element.SpeciesCategory">
-                            <mat-option *ngFor = "let oldName of possibleValues('SpeciesCategory')" [value] = "oldName">
-                               {{oldName}}
-                            </mat-option>
-                         </mat-select>
-                    </mat-form-field>
+                    <ng-container *ngIf="possibleValues('SpeciesCategory') != null">
+                        <mat-form-field floatLabel="never">
+                            <mat-select placeholder = ""  [(ngModel)] = "element.SpeciesCategory" name = "element.SpeciesCategory">
+                                <mat-option *ngFor = "let oldName of possibleValues('SpeciesCategory')" [value] = "oldName">
+                                {{oldName}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-container *ngIf="possibleValues('SpeciesCategory') == null">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" [value]="element.SpeciesCategory" [(ngModel)]="element.SpeciesCategory">
+                        </mat-form-field>
+                    </ng-container> 
                 </mat-cell>
             </ng-container>
 
@@ -55,13 +62,20 @@
             <ng-container matColumnDef="AcousticCategory">
                 <mat-header-cell *matHeaderCellDef> AcousticCategory </mat-header-cell>
                 <mat-cell *matCellDef="let element">
+                <ng-container *ngIf="possibleValues('AcousticCategory') != null">
                     <mat-form-field floatLabel="never">
                         <mat-select placeholder = ""  [(ngModel)] = "element.AcousticCategory" name = "element.AcousticCategory">
                             <mat-option *ngFor = "let oldName of possibleValues('AcousticCategory')" [value] = "oldName">
                                {{oldName}}
                             </mat-option>
                          </mat-select>
-                    </mat-form-field>
+                    </mat-form-field>                
+                </ng-container>
+                <ng-container *ngIf="possibleValues('AcousticCategory') == null">
+                    <mat-form-field floatLabel="never">
+                        <input matInput placeholder="" [value]="element.AcousticCategory" [(ngModel)]="element.AcousticCategory">
+                    </mat-form-field>                 
+                </ng-container>
                 </mat-cell>
             </ng-container>  
             

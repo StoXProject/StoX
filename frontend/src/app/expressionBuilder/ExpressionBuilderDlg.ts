@@ -156,15 +156,15 @@ export class ExpressionBuilderDlg  implements OnInit {
         // }
 
         console.log("this.combinedExpression : " + this.combinedExpression);
-        console.log("this.service.getCurrentPropertyItem().value : " + this.service.getCurrentPropertyItem().value);
+        console.log("this.service.currentPropertyItem.value : " + this.service.currentPropertyItem.value);
 
-        if(this.combinedExpression != null && this.service.getCurrentPropertyItem().value != this.combinedExpression) {
+        if(this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
 
-            this.service.getCurrentPropertyItem().value = this.combinedExpression;
+            this.service.currentPropertyItem.value = this.combinedExpression;
 
             if (this.ps.selectedProject != null && this.ps.selectedProcess != null && this.ps.selectedModel != null) {
                 try {
-                  this.dataService.setProcessPropertyValue(this.service.getCurrentPropertyCategory().groupName, this.service.getCurrentPropertyItem().name, this.service.getCurrentPropertyItem().value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID)
+                  this.dataService.setProcessPropertyValue(this.service.currentPropertyCategory.groupName, this.service.currentPropertyItem.name, this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID)
                     .toPromise().then((s: ProcessProperties) => {
                       this.ps.propertyCategories = s.propertySheet;
                        // Special case if a property processname is changed, it should update the selected process name

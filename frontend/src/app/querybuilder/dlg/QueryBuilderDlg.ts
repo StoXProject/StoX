@@ -49,9 +49,10 @@ export class QueryBuilderDlg  implements OnInit {
 
         this.exprBuilderService.currentConfig.subscribe(
             config => {
+              console.log("currentConfig : " + JSON.stringify(config));
               this.adjustConfig(config);
               this.currentConfig = config;
-              console.log("currentConfig : " + JSON.stringify(this.currentConfig));
+              // console.log("currentConfig : " + JSON.stringify(this.currentConfig));
             }
           );
 
@@ -115,10 +116,10 @@ export class QueryBuilderDlg  implements OnInit {
 
               if(optionsLength > 0) {
                 value2["type"] = "category";
-                // console.log("type changed to 'category'!");
+                console.log("type changed to 'category'!");
               } else {
                 delete value2[key3];      
-                // console.log("empty options deleted!");          
+                console.log("empty options deleted!");          
               }
             }
           }
