@@ -9,7 +9,7 @@ import { ProcessProperties } from '../data/ProcessProperties'
 import { DataService } from '../service/data.service';
 import { MessageService } from '../message/MessageService';
 // import {MessageService} from 'primeng/api';
-
+ 
 @Component({
   selector: 'app-parameter',
   templateUrl: './parameter.component.html',
@@ -55,7 +55,7 @@ export class ParameterComponent implements OnInit {
             // console.log(p);
             this.ps.propertyCategories = s.propertySheet; 
             //this.ps.helpContent = s.help; // this.ps.sanitizer.bypassSecurityTrustHtml(s.help);
-            this.ps.activeProcessId = s.activeProcessID; // reset active processid
+            //this.ps.activeProcessId = s.activeProcessID; // reset active processid 
             // Special case if a property processname is changed, it should update the selected process name
             if (this.ps.selectedProcess != null && pi.name == 'processName') {
               this.ps.selectedProcess.processName = pi.value;

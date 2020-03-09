@@ -52,9 +52,9 @@ export class AutocompleteComponent {
   }
 
   filterItems(name: string, arr: any[]) {
-    return this.items.filter(
+    return this.items != null ? this.items.filter(
       item => item.toLowerCase().indexOf(name.toLowerCase()) === 0
-    );
+    ) : [];
   }
   updateSelectedItem(val: string) {
     //if (this.selectedItem != val) {

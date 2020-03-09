@@ -56,7 +56,7 @@ export class StratumpsuComponent implements OnInit {
 
   ngOnInit() {
     // test
-    this.nodes = [StratumpsuComponent.asNode("1", "stratum", [StratumpsuComponent.asNode("PSU1", "psu", [])])];
+    //this.nodes = [StratumpsuComponent.asNode("1", "stratum", [StratumpsuComponent.asNode("PSU1", "psu", [])])];
 
     // this.m_selectedNode = this.nodes[0];
     //   this.nodes = [];
@@ -67,9 +67,9 @@ export class StratumpsuComponent implements OnInit {
     if (node.data.type == "stratum") {
       m.push(
         {
-          label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
+          label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => { 
             // psu a new psu node
-            let res: PSUResult = await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectName, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
+            let res: PSUResult = await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
             if (res.PSU != null && res.PSU.length > 0) {
               node.children.push(StratumpsuComponent.asNode(res.PSU, "psu", []))
             }

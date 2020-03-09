@@ -435,8 +435,8 @@ export class DataService {
   }
 
   addAcousticPSU(stratum: string, projectPath: string, modelName: string, processID: string): Observable<PSUResult> {
-    return this.runFunction('addStratum', {
-      "stratum": stratum,
+    return this.runFunction('addAcousticPSU', {
+      "Stratum": stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }

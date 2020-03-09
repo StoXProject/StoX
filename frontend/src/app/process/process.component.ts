@@ -75,7 +75,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
                 label: e, icon: 'rib absa emptyicon', command: async (event) => {
                   let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
                     this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, e).toPromise();
-                  this.ps.outputTables.push({ table: e, output: out });
+                  this.ps.outputTables.push({ table: this.ps.selectedProcess.processName + "(" + e + ")", output: out });
                 }
               };
             })
