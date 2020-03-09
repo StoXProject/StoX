@@ -42,24 +42,24 @@
                             </div>
 
                             <div *ngIf="propertyItem.possibleValues.length == 0">
-                                <ng-container [ngSwitch]="propertyItem.format">
-                                    <ng-container *ngSwitchCase="'filterExpressionTable'">
+                                <ng-container [ngSwitch]="true">
+                                    <ng-container *ngSwitchCase="propertyItem.format === 'filterExpressionTable'">
                                         <input style="width:calc(100% - 22px);" type="text" pInputText
-                                            [(ngModel)]="propertyItem.value" />
+                                            [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="filter(category, propertyItem)"></button>
                                     </ng-container>
-                                    <ng-container *ngSwitchCase="'none'">
+                                    <ng-container *ngSwitchCase="propertyItem.format === 'speciesCategoryTable' || propertyItem.format === 'acousticCategoryTable' || propertyItem.format === 'catchCompensationTable' || propertyItem.format === 'selectivityTable' || propertyItem.format === 'speciesLinktable' || propertyItem.format === 'acousticTargetStrengthTable'">
+                                        <input style="width:calc(100% - 22px);" type="text" pInputText                                       
+                                            [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
+                                        <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
+                                            (click)="definedColumns(category, propertyItem)"></button>
+                                    </ng-container>
+                                    <ng-container *ngSwitchDefault>
                                         <input matInput type="text" value="{{propertyItem.value}}" spellcheck="false"
                                             (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" 
                                             class="ellipsiscolumn"/>
                                     </ng-container>
-                                    <ng-container *ngSwitchDefault>
-                                        <input style="width:calc(100% - 22px);" type="text" pInputText                                       
-                                            [(ngModel)]="propertyItem.value" />
-                                        <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
-                                            (click)="definedColumns(category, propertyItem)"></button>
-                                    </ng-container>                                    
                                 </ng-container>
                             </div>
                         </div>
