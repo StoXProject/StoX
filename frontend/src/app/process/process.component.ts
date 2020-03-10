@@ -98,5 +98,14 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     cm.show(event);
     return false;
   }
+  draggedProcessId: string = null;
+  dragStart(process: Process) {
+     this.draggedProcessId = process.processID;
+  }
 
+  drop(process: Process) {
+    if (this.draggedProcessId != null) {
+      console.log("dragging " + this.draggedProcessId + " to " + process.processID);
+    }
+  }
 }

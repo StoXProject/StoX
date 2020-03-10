@@ -21,6 +21,7 @@ import { TabViewModule } from 'primeng/primeng';
 import { ListboxModule } from 'primeng/listbox';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { ToolbarModule } from 'primeng/toolbar';
+import {DragDropModule} from 'primeng/dragdrop';
 import { AngularSplitModule } from 'angular-split';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ParameterComponent } from './parameter/parameter.component';
@@ -187,6 +188,7 @@ export class MaterialModule {}
     ListboxModule,
     TabMenuModule,
     ToolbarModule,
+    DragDropModule,
     TreeModule,
     ContextMenuModule,
     KeyboardShortcutsModule.forRoot(),
