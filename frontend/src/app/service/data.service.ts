@@ -13,6 +13,7 @@ import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
 import { ProcessProperties } from '../data/ProcessProperties';
 import { Process } from '../data/process';
+import { Project } from '../data/project';
 
 @Injectable({
   providedIn: 'root'
@@ -130,7 +131,7 @@ export class DataService {
     });
   }
 
-  openProject(projectPath: string): Observable<any> {
+  openProject(projectPath: string): Observable<Project> {
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxFramework/R/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
@@ -154,6 +155,12 @@ export class DataService {
 
   getProcessProperties(projectPath: string, modelName: string, processID: string): Observable<ProcessProperties> {
     return this.runProcessFunc<ProcessProperties>("getProcessPropertySheet", projectPath, modelName, processID);
+  }
+
+  getActiveProcessId(projectPath: string, modelName: string): Observable<string> {
+    return this.runFunction('getActiveProcessID', {
+      "projectPath": projectPath, "modelName": modelName
+    });
   }
 
   getFunctionHelpAsHtml(projectPath: string, modelName: string, processID: string): Observable<string> {
@@ -233,7 +240,7 @@ export class DataService {
       "processID": processID,
       "format": format
     });
-  }  
+  }
 
   // getHelp(topic: string, help_type: string): Observable<any> {
   //   const formData = new FormData();
@@ -397,6 +404,13 @@ export class DataService {
       "save": false
     });
   }
+
+  resetModel(projectPath: string, modelName: string): Observable<string> {
+    return this.runFunction('resetModel', {
+      "projectPath": projectPath, "modelName": modelName
+    });
+  }
+
 
   runProcessFunc<R>(func: string, projectPath: string, modelName: string, processID: string): Observable<R> {
     return this.runFunction(func, {

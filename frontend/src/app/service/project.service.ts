@@ -8,6 +8,7 @@ import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
 import { ProcessProperties } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
+//import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
 // import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
@@ -15,6 +16,9 @@ import { ProcessOutput } from '../data/processoutput';
   providedIn: 'root'
 })
 export class ProjectService {
+  private m_iaMode: string;
+  private m_iaModeSubject = new Subject<string>();
+
   projects: Project[] = [];
   private m_selectedProject: Project = null;
   outputTables: { table: string, output: ProcessOutput }[] = [];
@@ -25,7 +29,7 @@ export class ProjectService {
 
   processes: Process[];
   private m_selectedProcess: Process = null; // the selected process by user
-  activeModelName: string = null; // the last run model
+  //activeModelName: string = null; // the last run model
   activeProcessId: string = null; // the last run-ok process
   runFailedProcessId: string = null; // the last run-failed process
   runningProcessId: string = null; // current running process
@@ -35,11 +39,22 @@ export class ProjectService {
 
   processProperties: ProcessProperties = null;
   userlog: string[] = [];
-  constructor(private dataService: DataService /*, public sanitizer: DomSanitizer*/) {
+
+  constructor(private dataService: DataService/*, public rs: RunService*/) {
     this.initData();
   }
 
+  get iaModeSubject(): Subject<string> {
+    return this.m_iaModeSubject;
+  }
 
+  set iaMode(iaMode: string) {
+    this.m_iaMode = iaMode;
+    this.m_iaModeSubject.next(iaMode); // propagate event
+  }
+  get iaMode(): string {
+    return this.m_iaMode;
+  }
 
   hasProject(project: Project): boolean {
     var projectPath = project.projectPath;
@@ -65,17 +80,15 @@ export class ProjectService {
   }
 
   set selectedModel(model: Model) {
-    if (this.models == null) {
-      console.log("Error. models not set");
-      return;
-    }
     this.m_selectedModel = model;
-    this.initializeProperties();
+    // To do in future: caching process list per model. For now update process list on each model click
     this.updateProcessList();
   }
+
   async updateProcessList() {
+    this.initializeProperties();
     if (this.selectedProject != null) {
-      this.processes = <Process[]>await this.dataService.getProcessTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+      this.processes = await this.dataService.getProcessTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
       if (this.processes == null) {
         this.processes = [];
       }
@@ -99,12 +112,30 @@ export class ProjectService {
 
   public async setSelectedProject(project: Project) {
     this.m_selectedProject = project;
-    this.selectedModel = this.models[0];//("baseline");
+    this.selectedModel = this.models[0]; // This will trigger update process list.
+
+    // To do: make this property the project path instead of project object.
     let jsonString = JSON.stringify(project);
-    console.log("updating ActiveProject with string  " + jsonString)
+    console.log("StoX GUI: updating ActiveProject with string  " + jsonString)
     let status = await this.dataService.updateActiveProject(jsonString).toPromise();
     console.log("status " + status);
-    this.updateProcessList();
+
+    // Update active process id.
+    let activeProcessId : string = await this.dataService.getActiveProcessId(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+    let idx = this.getProcessIdxByProcessesAndId(this.processes, activeProcessId);
+    if (idx != null) {
+      for (let i: number = 0; i <= idx; i++) {
+        let p: Process = this.processes[i];
+        this.activeProcessId = this.processes[i].processID;
+        if (p.canShowInMap && p.showInMap || p.hasProcessData) {
+          let iaMode: string = await this.dataService.getInteractiveMode(this.selectedProject.projectPath, this.selectedModel.modelName, this.activeProcessId).toPromise();
+          this.iaMode = iaMode;
+        }
+      }
+    }
+    //console.log("Backend active process id: " + activeProcessId);
+    // Loop from first process up to current process and read interactive processes.
+
   }
 
   public get selectedProcess(): Process {
@@ -180,7 +211,7 @@ export class ProjectService {
 
   async updateHelp() {
     this.helpContent = await this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
-      this.selectedModel.modelName, this.selectedProcess.processID).toPromise(); 
+      this.selectedModel.modelName, this.selectedProcess.processID).toPromise();
   }
 
   async initializeProperties() {
@@ -229,14 +260,15 @@ export class ProjectService {
     // Read models and set selected to the first model
     this.models = <Model[]>await this.dataService.getModelInfo().toPromise();
     this.setModels(this.models);
-    this.selectedModel = this.models[0];
-    this.openProject(activeProject.projectPath);
-    // resetModel. here 
+    if (this.models != null && this.models.length > 0) {
+      //this.selectedModel = this.models[0]; 
+      this.openProject(activeProject.projectPath);
+    }
   }
 
   async openProject(projectPath: string) {
     // the following should open the project and make it selected in the GUI
-    let project: Project = <Project>await this.dataService.openProject(projectPath).toPromise();
+    let project: Project = await this.dataService.openProject(projectPath).toPromise();
     if (project != null) {
       this.projects = [project];
       this.selectedProject = this.projects[0];
@@ -287,6 +319,7 @@ export class ProjectService {
     return this.getProcessIdxByProcessesAndId(processes, this.activeProcessId);
   }
 
+  /* Determine if a process is run, used to draw blue badges in the template on the process list */
   isRun(process: Process) {
     return this.getProcessIdx(process) <= this.getActiveProcessIdx();
   }

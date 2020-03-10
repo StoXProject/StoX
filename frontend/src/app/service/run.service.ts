@@ -17,31 +17,20 @@ import { RunProcessesResult } from './../data/runresult';
  * Manage Run process logic
  */
 export class RunService {
-    private m_iaMode: string;
-    private m_iaModeSubject = new Subject<string>();
+
 
     constructor(private ps: ProjectService, private dataService: DataService) {
         //this.iaMode = this.iaSubject.asObservable();
-        this.m_iaModeSubject.subscribe({
+        this.ps.iaModeSubject.subscribe({
             next: (newVal) => {
                 //      console.log(newVal);
             }
         });
         //this.iaSubject.next('stratum');
-        this.reset();
+        //this.reset();
     }
 
-    get iaModeSubject(): Subject<string> {
-        return this.m_iaModeSubject;
-    }
 
-    set iaMode(iaMode: string) {
-        this.m_iaMode = iaMode;
-        this.m_iaModeSubject.next(iaMode); // propagate event
-    }
-    get iaMode(): string {
-        return this.m_iaMode;
-    }
 
     canRun(): boolean {
         return this.ps.selectedProject != null && this.ps.selectedModel != null &&
@@ -119,20 +108,23 @@ export class RunService {
     }
     canReset(): boolean {
         return this.ps.runningProcessId == null &&
-            (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null) &&
-            this.ps.activeModelName != null && this.ps.selectedModel.modelName === this.ps.activeModelName;
+            (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null)/* &&
+            this.ps.activeModelName != null && this.ps.selectedModel.modelName === this.ps.activeModelName*/;
     }
-    reset() {
+    async reset() {
         this.ps.runningProcessId = null;
-        this.ps.activeModelName = null;
-        this.ps.activeProcessId = null;
+        //   this.ps.activeModelName = null;
+        let activeProcessId: string = await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise();
+        console.log("Reset active process id : " + activeProcessId);
+        this.ps.activeProcessId = activeProcessId;
         this.ps.runFailedProcessId = null;
         this.dataService.log.length = 0;
-        this.m_iaModeSubject.next('reset'); // reset interactive mode set to reset
+        this.ps.iaMode = 'reset'; // reset interactive mode set to reset
+        // Reset in backend
     }
 
     async runProcessIdx(iFrom: number, iTo: number) {
-        this.ps.activeModelName = this.ps.selectedModel.modelName;
+        //  this.ps.activeModelName = this.ps.selectedModel.modelName;
         this.ps.runFailedProcessId = null;
         // local cache of project, model and processes survives async environment if changed by user.
         let projectPath: string = this.ps.selectedProject.projectPath;
@@ -143,7 +135,7 @@ export class RunService {
             this.ps.runningProcessId = p.processID;
             //console.log("Run process " + p.processName + " with id " + p.processID);
             this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "Process " + p.processName));
-            this.iaMode = '';
+            this.ps.iaMode = '';
             let res: RunProcessesResult = await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise();
 
             //console.log("run result: " + res);
@@ -162,7 +154,7 @@ export class RunService {
                 let ia: string = res.interactiveMode;//await this.dataService.getInteractiveMode(projectPath, modelName, this.ps.activeProcessId).toPromise();
                 //console.log("ia mode " + ia);
                 if (ia.length > 0) {
-                    this.iaMode = ia;
+                    this.ps.iaMode = ia;
                 }
                 //console.log("interactive mode:" + ia);
             }

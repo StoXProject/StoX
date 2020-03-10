@@ -32,7 +32,7 @@ import { createStringXY } from 'ol/coordinate';
 
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
-import { RunService } from '../service/run.service';
+
 import { ProcessDataService } from '../service/processdata.service';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
@@ -68,7 +68,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   stratumDraw: Draw;
   overlay: Overlay;
   private m_Tool: string = "freemove";
-  constructor(private dataService: DataService, private ps: ProjectService, private rs: RunService, private pds: ProcessDataService, private dialog: MatDialog) {
+  constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
   /*@HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -94,11 +94,11 @@ export class MapComponent implements OnInit, AfterViewInit {
     switch (tool) {
       case "freemove": return true;
       case "stratum-edit":
-        return this.rs.iaMode == "stratum" && this.stratumSelect != null && this.stratumModify != null;
+        return this.ps.iaMode == "stratum" && this.stratumSelect != null && this.stratumModify != null;
       case "stratum-add":
-        return this.rs.iaMode == "stratum" && this.stratumDraw != null;
+        return this.ps.iaMode == "stratum" && this.stratumDraw != null;
       case "stratum-delete":
-        return this.rs.iaMode == "stratum" && this.stratumDraw != null /**stratum layer is initiated */;
+        return this.ps.iaMode == "stratum" && this.stratumDraw != null /**stratum layer is initiated */;
     }
     return false;
   }
@@ -217,7 +217,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, proj);
 
-    this.rs.iaModeSubject.subscribe(async iaMode => {
+    this.ps.iaModeSubject.subscribe(async iaMode => {
       let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
       switch (iaMode) {
         case "reset": {
@@ -324,7 +324,7 @@ export class MapComponent implements OnInit, AfterViewInit {
           let l: Layer = <Layer>f.get("layer");
           console.log("Z index: " + l.getZIndex());
           let fe: Feature = (<Feature>f);
-          if (this.rs.iaMode == "acousticPSU" && this.pds.selectedPSU != null) {
+          if (this.ps.iaMode == "acousticPSU" && this.pds.selectedPSU != null) {
             // Controlling focus.
             //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
             let prevClickIndex = l.get("lastClickedIndex");

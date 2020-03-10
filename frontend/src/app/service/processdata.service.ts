@@ -17,8 +17,8 @@ export class ProcessDataService {
     private m_selectedPSU: string;
     private m_selectedPSUSubject = new Subject<string>();
 
-    constructor(private rs: RunService, private ds: DataService, private ps: ProjectService) {
-        this.rs.iaModeSubject.subscribe({
+    constructor(private ds: DataService, private ps: ProjectService) {
+        this.ps.iaModeSubject.subscribe({
             next: async (newVal) => {
                 switch (newVal) {
                     case 'acousticPSU': {
@@ -26,7 +26,7 @@ export class ProcessDataService {
                             ps.selectedModel.modelName, ps.activeProcessId).toPromise();
                         this.acousticPSU = v;
                         break;
-                    }
+                    } 
                 }
                 //      console.log(newVal);
             }

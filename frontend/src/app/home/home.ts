@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { DataService } from '../service/data.service';
-import { RunService } from '../service/run.service';
+import { ProjectService } from '../service/project.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
 import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
@@ -22,7 +22,7 @@ export class HomeComponent {
   constructor(private rConnectionDlgService: RConnectionDlgService, 
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
-    private dataService: DataService, private runService: RunService, 
+    private dataService: DataService, private projectService: ProjectService, 
     private expressionBuilderDlgService: ExpressionBuilderDlgService,
     private testDlgService: QueryBuilderDlgService, 
     private definedColumns: DefinedColumnsService
@@ -121,12 +121,12 @@ export class HomeComponent {
     },
     {
       label: 'Mapmode stratum', command: e => {
-        this.runService.iaMode = 'stratum';
+        this.projectService.iaMode = 'stratum';
       }
     },
     {
       label: 'Mapmode station', command: e => {
-        this.runService.iaMode = 'station';
+        this.projectService.iaMode = 'station';
       }
     }
 
