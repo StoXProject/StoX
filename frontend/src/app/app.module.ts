@@ -50,6 +50,7 @@ import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy } f
 import { ModelComponent } from './model/model.component';
 import { RunComponent } from './run/run.component';
 import { TreeModule } from 'primeng/tree';
+import { TooltipDirective } from './directive/TooltipDirective'
 import {
   MatTabsModule,
   MatButtonModule,
@@ -229,7 +230,7 @@ export class MaterialModule {}
     UserLogComponent,
     OutputComponent,
     HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent,
-    AutocompleteComponent
+    AutocompleteComponent, TooltipDirective
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },

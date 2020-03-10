@@ -60,11 +60,7 @@ export class OpenProjectDlg {
             }
 
             // the following should open the project and make it selected in the GUI
-            let project: Project = <Project>await this.dataService.openProject(this.projectPath).toPromise();
-            if (project != null) {
-                this.ps.projects = [project];
-                this.ps.selectedProject = this.ps.projects[0];
-            }
+            this.ps.openProject(this.projectPath);
         } catch (error) {
             console.log(error);
             var firstLine = error;//.error.split('\n', 1)[0];
