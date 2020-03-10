@@ -24,3 +24,7 @@
   .mat-column-select {
     flex: 0 0 75px;
   }
+
+  .mat-cell {
+    padding: 2px 2px 2px 0;
+  }
