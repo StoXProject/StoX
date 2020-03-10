@@ -69,7 +69,7 @@ export class ExpressionBuilderDlgService {
 
             this.query = { condition: "&", rules: [] };
 
-            this.config = <QueryBuilderConfig>await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, this.currentTableExpression.tableName).toPromise();
+            this.config = <QueryBuilderConfig>await this.dataService.getFilterOptions(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, this.currentTableExpression.tableName).toPromise();
     
             if (this.currentTableExpression.expression != null && this.currentTableExpression.expression.trim() != "") {
                 // build query object from rExpression
@@ -101,7 +101,7 @@ export class ExpressionBuilderDlgService {
     async showDialog() {
         console.log("in ExpressionBuilderDlgService.showDialog()");
 
-        this.tableNames = <string[]>await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
+        this.tableNames = <string[]>await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
         console.log("this.tableNames : " + this.tableNames);
 
         // build array of tableExpressions from rExpression

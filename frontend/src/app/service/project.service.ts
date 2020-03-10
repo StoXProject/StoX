@@ -28,7 +28,7 @@ export class ProjectService {
   private m_selectedModel: Model = null;
 
   processes: Process[];
-  private m_selectedProcess: Process = null; // the selected process by user
+  private m_selectedProcessId: string;
   //activeModelName: string = null; // the last run model
   activeProcessId: string = null; // the last run-ok process
   runFailedProcessId: string = null; // the last run-failed process
@@ -121,7 +121,7 @@ export class ProjectService {
     console.log("status " + status);
 
     // Update active process id.
-    let activeProcessId : string = await this.dataService.getActiveProcessId(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+    let activeProcessId: string = await this.dataService.getActiveProcessId(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
     let idx = this.getProcessIdxByProcessesAndId(this.processes, activeProcessId);
     if (idx != null) {
       for (let i: number = 0; i <= idx; i++) {
@@ -137,14 +137,18 @@ export class ProjectService {
     // Loop from first process up to current process and read interactive processes.
 
   }
-
+  public get selectedProcessId(): string {
+    return this.m_selectedProcessId;
+  }
+  public set selectedProcessId(processId: string) {
+    this.m_selectedProcessId = processId;
+    this.onSelectedProcessChanged();
+  }
   public get selectedProcess(): Process {
-    return this.m_selectedProcess;
+    return this.getProcessById(this.selectedProcessId);
   }
   public set selectedProcess(process: Process) {
-    console.log("setSelectedProcess");
-    this.m_selectedProcess = process;
-    this.onSelectedProcessChanged();
+    this.selectedProcessId = process != null ? process.processID : null;
   }
 
   public get helpContent(): string {
@@ -170,7 +174,7 @@ export class ProjectService {
       // propertyCategories: PropertyCategory[];
       // var t0 = performance.now();
       this.processProperties = await this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName,
-        this.selectedProcess.processID).toPromise();
+        this.selectedProcessId).toPromise();
       if (this.processProperties != null) {
         this.propertyCategories = this.processProperties.propertySheet;
       }
@@ -179,7 +183,7 @@ export class ProjectService {
         this.processPropertiesSubscription.unsubscribe();
       }
       this.processPropertiesSubscription = this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName,
-        this.selectedProcess.processID).subscribe((prop: ProcessProperties) => {
+        this.selectedProcessID).subscribe((prop: ProcessProperties) => {
           this.processProperties = prop;
           if (this.processProperties != null) {
             this.propertyCategories = this.processProperties.propertySheet;
@@ -190,7 +194,7 @@ export class ProjectService {
         this.functionHelpAsHtmlSubscription.unsubscribe();
       }
       this.functionHelpAsHtmlSubscription = this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
-        this.selectedModel.modelName, this.selectedProcess.processID).subscribe((response: any) => {
+        this.selectedModel.modelName, this.selectedProcessID).subscribe((response: any) => {
           this.helpContent = response;
         });*/
 
@@ -211,7 +215,7 @@ export class ProjectService {
 
   async updateHelp() {
     this.helpContent = await this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
-      this.selectedModel.modelName, this.selectedProcess.processID).toPromise();
+      this.selectedModel.modelName, this.selectedProcessId).toPromise();
   }
 
   async initializeProperties() {
@@ -313,7 +317,7 @@ export class ProjectService {
     return this.getProcessIdxByProcessesAndId(this.processes, this.activeProcessId);
   }
   public getSelectedProcessIdx(): number {
-    return this.processes != null && this.selectedProcess != null ? this.getProcessIdxByProcessesAndId(this.processes, this.selectedProcess.processID) : null;
+    return this.processes != null && this.selectedProcess != null ? this.getProcessIdxByProcessesAndId(this.processes, this.selectedProcessId) : null;
   }
   public getActiveProcessIdxByProcesses(processes: Process[]): number {
     return this.getProcessIdxByProcessesAndId(processes, this.activeProcessId);

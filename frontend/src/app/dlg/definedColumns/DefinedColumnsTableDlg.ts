@@ -172,9 +172,11 @@ export class DefinedColumnsTableDlg  implements OnInit {
         if(this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
             this.service.currentPropertyItem.value = this.combinedExpression;
             // run set property value function
-            if (this.ps.selectedProject != null && this.ps.selectedProcess != null && this.ps.selectedModel != null) {
+            if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
                 try {
-                  this.dataService.setProcessPropertyValue(this.service.currentPropertyCategory.groupName, this.service.currentPropertyItem.name, this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID)
+                  this.dataService.setProcessPropertyValue(this.service.currentPropertyCategory.groupName, 
+                    this.service.currentPropertyItem.name, this.service.currentPropertyItem.value, 
+                    this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
                     .toPromise().then((s: ProcessProperties) => {
                       this.ps.propertyCategories = s.propertySheet;      
                     });

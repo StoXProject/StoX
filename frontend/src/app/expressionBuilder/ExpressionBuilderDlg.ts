@@ -162,13 +162,15 @@ export class ExpressionBuilderDlg  implements OnInit {
 
             this.service.currentPropertyItem.value = this.combinedExpression;
 
-            if (this.ps.selectedProject != null && this.ps.selectedProcess != null && this.ps.selectedModel != null) {
+            if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
                 try {
-                  this.dataService.setProcessPropertyValue(this.service.currentPropertyCategory.groupName, this.service.currentPropertyItem.name, this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcess.processID)
+                  this.dataService.setProcessPropertyValue(this.service.currentPropertyCategory.groupName, this.service.currentPropertyItem.name, 
+                    this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, 
+                    this.ps.selectedProcessId)
                     .toPromise().then((s: ProcessProperties) => {
                       this.ps.propertyCategories = s.propertySheet;
                        // Special case if a property processname is changed, it should update the selected process name
-                    //   if (this.ps.selectedProcess != null && pi.name == 'processName') {
+                    //   if (this.ps.selectedProcessId != null && pi.name == 'processName') {
                     //     this.ps.selectedProcess.processName = pi.value; 
                     //   }
                     });

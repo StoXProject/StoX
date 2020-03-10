@@ -66,7 +66,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
       { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } });
     if (this.ps.isRun(this.ps.selectedProcess)) {
       let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.selectedProject.projectPath,
-        this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
+        this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
       if (tables.length > 0) {
         m.push({
           label: 'View output', icon: 'rib absa emptyicon', items:
@@ -74,7 +74,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
               return {
                 label: e, icon: 'rib absa emptyicon', command: async (event) => {
                   let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
-                    this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, e).toPromise();
+                    this.ps.selectedModel.modelName, this.ps.selectedProcessId, e).toPromise();
                   this.ps.outputTables.push({ table: this.ps.selectedProcess.processName + "(" + e + ")", output: out });
                 }
               };
