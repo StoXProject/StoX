@@ -156,7 +156,7 @@ export class DefinedColumnsTableDlg  implements OnInit {
             });
 
             if(blankFound) {
-                break;
+                return;
             }
         }        
 

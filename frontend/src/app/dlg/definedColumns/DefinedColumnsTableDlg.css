@@ -24,3 +24,11 @@
   .mat-column-select {
     flex: 0 0 75px;
   }
+
+   .mat-header-cell {
+     padding: .4375em 0.5em !important;
+   }
+   
+   .mat-cell {
+     padding: .4375em 0.5em !important;
+   }
