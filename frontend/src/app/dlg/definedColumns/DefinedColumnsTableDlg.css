@@ -25,6 +25,10 @@
     flex: 0 0 75px;
   }
 
-  .mat-cell {
-    padding: 2px 2px 2px 0;
-  }
+   .mat-header-cell {
+     padding: .4375em 0.5em !important;
+   }
+   
+   .mat-cell {
+     padding: .4375em 0.5em !important;
+   }
