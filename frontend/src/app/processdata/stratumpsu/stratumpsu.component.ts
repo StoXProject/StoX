@@ -31,13 +31,15 @@ export class StratumpsuComponent implements OnInit {
     pds.acousticPSUSubject.subscribe((evt: string) => {
       if (evt == "data") {
         // Convert Acoustic PSU to TreeNodes:
-        this.nodes = pds.acousticPSU.Stratum
-          .map((s: Stratum) => {
-            let psuNodes: TreeNode[] = pds.acousticPSU.Stratum_PSU
-              .filter((spsu: Stratum_PSU) => spsu.Stratum === s.Stratum)
-              .map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, "psu", []));
-            return StratumpsuComponent.asNode(s.Stratum, "stratum", psuNodes);
-          });
+        if (pds.acousticPSU != null && pds.acousticPSU.Stratum != null) {
+          this.nodes = pds.acousticPSU.Stratum
+            .map((s: Stratum) => {
+              let psuNodes: TreeNode[] = pds.acousticPSU.Stratum_PSU
+                .filter((spsu: Stratum_PSU) => spsu.Stratum === s.Stratum)
+                .map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, "psu", []));
+              return StratumpsuComponent.asNode(s.Stratum, "stratum", psuNodes);
+            });
+        }
       }
     })
   }
@@ -67,7 +69,7 @@ export class StratumpsuComponent implements OnInit {
     if (node.data.type == "stratum") {
       m.push(
         {
-          label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => { 
+          label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
             // psu a new psu node
             let res: PSUResult = await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
             if (res.PSU != null && res.PSU.length > 0) {

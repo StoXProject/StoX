@@ -51,6 +51,7 @@ export class ProjectService {
   set iaMode(iaMode: string) {
     this.m_iaMode = iaMode;
     this.m_iaModeSubject.next(iaMode); // propagate event
+    console.log("IAMode changed to " + iaMode);
   }
   get iaMode(): string {
     return this.m_iaMode;

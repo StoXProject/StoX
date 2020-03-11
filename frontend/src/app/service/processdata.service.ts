@@ -22,6 +22,7 @@ export class ProcessDataService {
             next: async (newVal) => {
                 switch (newVal) {
                     case 'acousticPSU': {
+                        console.log("Process data - listen on iamode=acousticPSU")
                         let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
                             ps.selectedModel.modelName, ps.activeProcessId).toPromise();
                         this.acousticPSU = v;
