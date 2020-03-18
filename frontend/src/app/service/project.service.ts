@@ -93,10 +93,10 @@ export class ProjectService {
       if (this.processes == null) {
         this.processes = [];
       }
-      if (this.processes.length > 0) {
+      if (this.selectedProcess == null && this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
       }
-    }
+    } 
   }
 
   get selectedModel(): Model {
@@ -174,7 +174,7 @@ export class ProjectService {
       this.selectedModel != null) {
       // propertyCategories: PropertyCategory[];
       // var t0 = performance.now();
-      this.processProperties = await this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName,
+      this.processProperties = await this.dataService.getProcessPropertySheet(this.selectedProject.projectPath, this.selectedModel.modelName,
         this.selectedProcessId).toPromise();
       if (this.processProperties != null) {
         this.propertyCategories = this.processProperties.propertySheet;
