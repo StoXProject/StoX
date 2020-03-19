@@ -90,7 +90,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     this.contextMenu = m;
   }
   async openCm(event, cm, process: Process) {
-    this.ps.selectedProcess = process;
+    this.ps.selectedProcess = process; 
     //console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
@@ -103,9 +103,11 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
      this.draggedProcessId = process.processID;
   }
 
-  drop(process: Process) {
+  async drop(process: Process) {
     if (this.draggedProcessId != null) {
       console.log("dragging " + this.draggedProcessId + " to " + process.processID);
+      await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise();
+      this.ps.updateProcessList();
     }
   }
 }

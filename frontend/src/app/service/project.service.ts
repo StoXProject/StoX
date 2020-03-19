@@ -6,7 +6,7 @@ import { Process } from '../data/process';
 import { Model } from '../data/model';
 import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
-import { ProcessProperties } from '../data/ProcessProperties';
+import { ProcessProperties,ActiveProcess } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
@@ -93,10 +93,10 @@ export class ProjectService {
       if (this.processes == null) {
         this.processes = [];
       }
-      if (this.processes.length > 0) {
+      if (this.selectedProcess == null && this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
       }
-    }
+    } 
   }
 
   get selectedModel(): Model {
@@ -122,8 +122,8 @@ export class ProjectService {
     console.log("status " + status);
 
     // Update active process id.
-    let activeProcessId: string = await this.dataService.getActiveProcessId(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
-    let idx = this.getProcessIdxByProcessesAndId(this.processes, activeProcessId);
+    let activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+    let idx = this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
     if (idx != null) {
       for (let i: number = 0; i <= idx; i++) {
         let p: Process = this.processes[i];
@@ -174,7 +174,7 @@ export class ProjectService {
       this.selectedModel != null) {
       // propertyCategories: PropertyCategory[];
       // var t0 = performance.now();
-      this.processProperties = await this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName,
+      this.processProperties = await this.dataService.getProcessPropertySheet(this.selectedProject.projectPath, this.selectedModel.modelName,
         this.selectedProcessId).toPromise();
       if (this.processProperties != null) {
         this.propertyCategories = this.processProperties.propertySheet;

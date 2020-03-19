@@ -1,3 +1,4 @@
+import {ActiveProcess}from './ProcessProperties'
 export class RunResult {
     value: any;
     message: string[];
@@ -6,8 +7,9 @@ export class RunResult {
 }
 
 export class ProcessResult {
-    activeProcessID: string;
+    activeProcess: ActiveProcess;
 }
+
 export class RunProcessesResult extends ProcessResult {
     interactiveMode: string;
 }

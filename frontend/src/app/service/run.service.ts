@@ -141,13 +141,13 @@ export class RunService {
             //console.log("run result: " + res);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
-            if (typeof (res.activeProcessID) == 'undefined') {
+            if (typeof (res.activeProcess) == 'undefined') {
                 // getting empty object {} when interrupted by error
                 this.ps.runFailedProcessId = p.processID;
                 break;
             } else { // empty/missing result
                 // ok update active process id and continue the loop
-                this.ps.activeProcessId = res.activeProcessID; // get first element in array
+                this.ps.activeProcessId = res.activeProcess.processID; // get first element in array
                 // get the interactive mode:
 
                 //console.log("asking for ia mode");
