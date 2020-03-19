@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
-import { DataService } from '../service/data.service';
+// import { Observable, of } from 'rxjs';
+// import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
 import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
-import { ExpressionBuilderDlgService } from '../expressionBuilder/ExpressionBuilderDlgService';
-import { DefinedColumnsService } from '../dlg/definedColumns/DefinedColumnsService';
-import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
+// import { ExpressionBuilderDlgService } from '../expressionBuilder/ExpressionBuilderDlgService';
+// import { DefinedColumnsService } from '../dlg/definedColumns/DefinedColumnsService';
+// import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { MenuItem } from 'primeng/api';
 
 @Component({
@@ -21,12 +21,14 @@ export class HomeComponent {
   title = 'StoX';
   constructor(private rConnectionDlgService: RConnectionDlgService, 
     private createProjectDialogService: CreateProjectDialogService,
-    private openProjectDlgService: OpenProjectDlgService,
-    private dataService: DataService, private projectService: ProjectService, 
+    private openProjectDlgService: OpenProjectDlgService, 
+    private projectService: ProjectService
+    /*,
+    private dataService: DataService, 
     private expressionBuilderDlgService: ExpressionBuilderDlgService,
     private testDlgService: QueryBuilderDlgService, 
     private definedColumns: DefinedColumnsService
-    /*,
+    ,
     private quBuilderDlgService: QueryBuilderDlgService */) {
       // document.addEventListener('touchstart', function(){}, {passive: false});
   }
@@ -42,9 +44,9 @@ export class HomeComponent {
     {
       label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
     },    
-    {
-      label: 'Test defined columns ...', command: e => this.definedColumns.showDialog()
-    },
+    // {
+    //   label: 'Test defined columns ...', command: e => this.definedColumns.showDialog()
+    // },
     // {
     //   label: 'Test query builder...', command: e => this.testDlgService.showDialog()
     // },    

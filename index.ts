@@ -95,6 +95,27 @@ function createWindow() {
     });
   });
 
+  server.post('/browsePath', function (req: any, res: any) {
+    console.log("select a file/folder path(s)");
+
+    if(JSON.stringify(req.body) != '{}') {
+
+      require('electron').dialog.showOpenDialog(mainWindow, {
+        title: req.body.title, defaultPath: req.body.defaultPath,
+        properties: req.body.properties
+      }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
+        if (!object.filePaths || !object.filePaths.length) {
+          console.log("You didn't select anything");
+          return;
+        }
+
+        console.log("You selected : " + object.filePaths);
+
+        res.send(object.filePaths);
+      });
+    }
+  });
+
   // mainWindow.setMenu(null);
   createMenu();
 

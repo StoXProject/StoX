@@ -55,6 +55,12 @@
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="definedColumns(category, propertyItem)"></button>
                                     </ng-container>
+                                    <ng-container *ngSwitchCase="propertyItem.format === 'filePath' || propertyItem.format === 'filePaths' || propertyItem.format === 'directoryPath'">
+                                        <input style="width:calc(100% - 22px);" type="text" pInputText                                       
+                                            [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
+                                        <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
+                                            (click)="filePath(category, propertyItem)"></button>
+                                    </ng-container>                                    
                                     <ng-container *ngSwitchDefault>
                                         <input matInput type="text" value="{{propertyItem.value}}" spellcheck="false"
                                             (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" 

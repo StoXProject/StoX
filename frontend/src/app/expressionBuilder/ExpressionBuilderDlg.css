@@ -3,7 +3,7 @@
     flex-direction: column;
     min-width: 300px;
     max-height: 400px;
-    overflow:scroll;
+    overflow: auto;
   }
   
   .example-header {

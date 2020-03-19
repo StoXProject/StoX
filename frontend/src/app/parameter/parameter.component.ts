@@ -8,6 +8,7 @@ import { PropertyCategory } from '../data/propertycategory';
 import { ProcessProperties } from '../data/ProcessProperties'
 import { DataService } from '../service/data.service';
 import { MessageService } from '../message/MessageService';
+import { FilePathDlgService } from '../dlg/filePath/FilePathDlgService';
 // import {MessageService} from 'primeng/api';
  
 @Component({
@@ -26,7 +27,7 @@ export class ParameterComponent implements OnInit {
   //  booleanForm: FormGroup; private msgService: MessageService,
   constructor(private msgService: MessageService, public ps: ProjectService, 
     private dataService: DataService, private exprBuilderService: ExpressionBuilderDlgService,
-    private definedColumnsService: DefinedColumnsService) { }
+    private definedColumnsService: DefinedColumnsService, private filePathDlgService: FilePathDlgService) { }
 
   async ngOnInit() {
     /*    let a = [];
@@ -115,5 +116,65 @@ export class ParameterComponent implements OnInit {
     this.definedColumnsService.currentPropertyItem = pi;
 
     this.definedColumnsService.showDialog();
+  }
+
+  async filePath(category: PropertyCategory, pi: PropertyItem) {
+
+    // console.log("project path : " + this.ps.selectedProject.projectPath);
+
+    let options = {};
+
+    if(pi.format == "filePath") {
+      options = {properties:['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath};
+    }
+    else if(pi.format == "filePaths") {
+      // options = {properties:["multiSelections","openFile"], title: 'Select files', defaultPath: this.ps.selectedProject.projectPath};
+      this.filePathDlgService.currentPropertyCategory = category;
+      this.filePathDlgService.currentPropertyItem = pi;
+      this.filePathDlgService.showDialog();
+      return;
+    }
+    else if(pi.format == "directoryPath") {
+      options = {properties:["openDirectory"], title: 'Select folder', defaultPath: this.ps.selectedProject.projectPath};
+    }    
+
+    let filePath = await this.dataService.browsePath(options).toPromise();
+
+    var paths: string[] = [];
+    if(filePath != null) {
+      // filePath = filePath.replace(/\\\\/g, "/");
+
+      paths = <string[]>JSON.parse(filePath);
+      for(let i=0; i<paths.length; i++) {
+        paths[i] = paths[i].replace(/\\/g, "/");
+      }
+    }
+
+    if(JSON.stringify(paths) != pi.value) {
+      pi.value = JSON.stringify(paths);
+      // call setProcessPropertyValue
+      // this.onChanged(category, pi);
+
+      if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
+        try {
+          this.dataService.setProcessPropertyValue(category.groupName, pi.name, 
+            pi.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, 
+            this.ps.selectedProcessId)
+            .toPromise().then((s: ProcessProperties) => {
+              this.ps.propertyCategories = s.propertySheet;
+               // Special case if a property processname is changed, it should update the selected process name
+            //   if (this.ps.selectedProcessId != null && pi.name == 'processName') {
+            //     this.ps.selectedProcess.processName = pi.value; 
+            //   }
+            });
+        } catch (error) {
+          console.log(error.error);
+          var firstLine = error.error.split('\n', 1)[0];
+          this.msgService.setMessage(firstLine);
+          this.msgService.showMessage();
+          return;
+        }
+      }      
+    }
   }
 }

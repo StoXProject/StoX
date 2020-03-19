@@ -8,6 +8,7 @@ import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
 import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
 import { QueryBuilderDlg } from './querybuilder/dlg/QueryBuilderDlg';
 import { DefinedColumnsTableDlg } from './dlg/definedColumns/DefinedColumnsTableDlg';
+import { FilePathDlg } from './dlg/filePath/FilePathDlg';
 import { MessageDlg } from './message/MessageDlg';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
@@ -220,6 +221,7 @@ export class MaterialModule {}
     ExpressionBuilderDlg,
     QueryBuilderDlg,
     DefinedColumnsTableDlg,
+    FilePathDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,
