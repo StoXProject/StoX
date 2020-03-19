@@ -11,7 +11,7 @@ import { UserLogType } from '../enum/enums';
 import { RunResult, RunProcessesResult, ProcessResult, PSUResult } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
-import { ProcessProperties } from '../data/ProcessProperties';
+import { ProcessProperties, ActiveProcess } from '../data/ProcessProperties';
 import { Process } from '../data/process';
 import { Project } from '../data/project';
 
@@ -157,8 +157,8 @@ export class DataService {
     return this.runProcessFunc<ProcessProperties>("getProcessPropertySheet", projectPath, modelName, processID);
   }
 
-  getActiveProcessId(projectPath: string, modelName: string): Observable<string> {
-    return this.runFunction('getActiveProcessID', {
+  getActiveProcess(projectPath: string, modelName: string): Observable<ActiveProcess> {
+    return this.runFunction('getActiveProcess', {
       "projectPath": projectPath, "modelName": modelName
     });
   }

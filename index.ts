@@ -54,10 +54,10 @@ function createWindow() {
         console.log("opencpu is not installed, and is try to install it now ...");
         child_process.execSync("Rscript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
         console.log("Starting opencpu ...");
-        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxAPI', 'RstoxFramework'), workers = 3)\"");
+        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxAPI'), workers = 3)\"");
       } else if (stdout !== null && stdout.includes("TRUE")) {
         console.log("Starting opencpu ...");
-        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxAPI', 'RstoxFramework'), workers = 3)\"");
+        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxAPI'), workers = 3)\"");
       }
     }
   });

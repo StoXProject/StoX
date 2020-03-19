@@ -56,7 +56,7 @@ export class ParameterComponent implements OnInit {
             // console.log(p);
             this.ps.propertyCategories = s.propertySheet; 
             //this.ps.helpContent = s.help; // this.ps.sanitizer.bypassSecurityTrustHtml(s.help);
-            this.ps.activeProcessId = s.activeProcessID; // reset active processid 
+            this.ps.activeProcessId = s.activeProcessID.processID; // reset active processid 
             this.ps.processes = s.processTable
             // Special case if a property processname is changed, it should update the selected process name
             /*if (this.ps.selectedProcessId != null && pi.name == 'processName') {

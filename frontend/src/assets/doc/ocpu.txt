@@ -71,6 +71,12 @@ getAcousticPSUData
 "modelName":"baseline", 
 "processID":"P007"
 }
+'getActiveProcess'
+{
+"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_31processes", 
+"modelName":"baseline"
+}
+
 
 getInteractiveMode
 '{
