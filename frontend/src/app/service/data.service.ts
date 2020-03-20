@@ -479,7 +479,7 @@ export class DataService {
     });
   }
 
-  rearrangeProcesses(projectPath: string, modelName : string, processID : string, afterProcessID : string) {
+  rearrangeProcesses(projectPath: string, modelName : string, processID : string, afterProcessID : string): Observable<Process[]> {
     return this.runFunction('rearrangeProcesses', {
       "projectPath": projectPath, "modelName": modelName, "processID": processID,
       "afterProcessID": afterProcessID

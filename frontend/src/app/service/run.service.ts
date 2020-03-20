@@ -116,6 +116,7 @@ export class RunService {
         //   this.ps.activeModelName = null;
         let activeProcessId: string = await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise();
         console.log("Reset active process id : " + activeProcessId);
+        this.ps.updateProcessList(); // TODO: get processlist from resetmodel.
         this.ps.activeProcessId = activeProcessId;
         this.ps.runFailedProcessId = null;
         this.dataService.log.length = 0;

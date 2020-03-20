@@ -405,7 +405,14 @@ $nodata: #acacac;
   @include icon_content("\f0c8", 0.4rem, rgb(247, 128, 59), true);
   top: 68%;
 }
-
+.runstatusmodifiedicon:after {
+  @include icon_content("\f0c8", 0.4rem, rgb(180, 177, 175), true);
+  top: 68%;
+}
+.functioninputerroricon:after {
+  @include icon_content("\f0c8", 0.4rem, rgba(209, 53, 53), true);
+  top: 8%;
+}
 .editicon:before {
   @include icon_content("\f040", 0.7rem, rgb(19, 40, 58));
 }

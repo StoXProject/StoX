@@ -95,7 +95,7 @@ export class ProjectService {
       }
       if (this.selectedProcess == null && this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
-      }
+      } 
     } 
   }
 

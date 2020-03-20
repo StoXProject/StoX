@@ -106,8 +106,8 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   async drop(process: Process) {
     if (this.draggedProcessId != null) {
       console.log("dragging " + this.draggedProcessId + " to " + process.processID);
-      await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise();
-      this.ps.updateProcessList();
+      this.ps.processes = await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise();
+      //this.ps.updateProcessList();
     }
   }
 }
