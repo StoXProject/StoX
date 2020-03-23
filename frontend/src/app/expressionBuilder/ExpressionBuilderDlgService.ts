@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { PropertyItem } from '../data/propertyitem';
 import { PropertyCategory } from '../data/propertycategory';
 import { RuleSet } from '../querybuilder/module/query-builder.interfaces';
+import { MessageService } from '../message/MessageService';
 
 @Injectable({
     providedIn: 'root'
@@ -37,7 +38,7 @@ export class ExpressionBuilderDlgService {
     private tableExpressionsSource = new BehaviorSubject(this.tableExpressions);
     currentTableExpressionsObservable = this.tableExpressionsSource.asObservable();
 
-    constructor(private dataService: DataService, private ps: ProjectService) { }
+    constructor(private dataService: DataService, private ps: ProjectService, private msgService: MessageService) { }
 
     setCurrentTableExpression(tableExpression: TableExpression) {
         this.currentTableExpression = tableExpression;
@@ -102,7 +103,11 @@ export class ExpressionBuilderDlgService {
         console.log("in ExpressionBuilderDlgService.showDialog()");
 
         this.tableNames = <string[]>await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
-        console.log("this.tableNames : " + this.tableNames);
+        console.log("this.tableNames : " + JSON.stringify(this.tableNames));
+
+        if(JSON.stringify(this.tableNames) == '{}') {
+            this.tableNames = [];
+        }
 
         // build array of tableExpressions from rExpression
 
