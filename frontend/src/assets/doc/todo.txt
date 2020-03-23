@@ -2,3 +2,10 @@ implement row-number - in
 
 
 activeProcess i resetModel
+
+
+
+
+TODO: grey out buttons when updating interactive resetModel
+TODO: getRstoxAPIVersion
+TODO: remove map data when resetting earlier processes

@@ -23,7 +23,7 @@ export class HomeComponent {
   constructor(private rConnectionDlgService: RConnectionDlgService,
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
-    private ps: ProjectService,
+    public ps: ProjectService,
     private ds: DataService
     /*,
     private dataService: DataService, 
