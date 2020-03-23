@@ -6,7 +6,7 @@ import { Process } from '../data/process';
 import { Model } from '../data/model';
 import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
-import { ProcessProperties,ActiveProcess } from '../data/ProcessProperties';
+import { ProcessProperties, ActiveProcess } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
@@ -21,18 +21,20 @@ export class ProjectService {
 
   projects: Project[] = [];
   private m_selectedProject: Project = null;
+  //private m_isSelectedProjectSaved = true;
   outputTables: { table: string, output: ProcessOutput }[] = [];
 
   models: Model[];
 
   private m_selectedModel: Model = null;
 
-  processes: Process[];
+  public processes: Process[];
   private m_selectedProcessId: string;
   //activeModelName: string = null; // the last run model
   activeProcessId: string = null; // the last run-ok process
   runFailedProcessId: string = null; // the last run-failed process
   runningProcessId: string = null; // current running process
+  m_isResetting: boolean = false; // current reset flag.
 
   propertyCategories: PropertyCategory[] = [];
   private m_helpContent: string = "";
@@ -57,6 +59,14 @@ export class ProjectService {
     return this.m_iaMode;
   }
 
+  /*get isSelectedProjectSaved(): boolean {
+    return this.m_isSelectedProjectSaved;
+  }
+
+  set isSelectedProjectSaved(value: boolean) {
+    this.m_isSelectedProjectSaved = value;
+  }*/
+
   hasProject(project: Project): boolean {
     var projectPath = project.projectPath;
     for (let i = 0; i < this.projects.length; i++) {
@@ -66,6 +76,11 @@ export class ProjectService {
       }
     }
     return false;
+  }
+  async save() {
+    this.selectedProject.saved = (await this.dataService.saveProject(this.selectedProject.projectPath).toPromise()).saved;
+    // TODO: get save status on return
+    //this.isSelectedProjectSaved = await this.dataService.isSaved(this.selectedProject.projectPath).toPromise();
   }
 
   onSelectedProjectChanged(event) {
@@ -95,8 +110,8 @@ export class ProjectService {
       }
       if (this.selectedProcess == null && this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
-      } 
-    } 
+      }
+    }
   }
 
   get selectedModel(): Model {
@@ -314,6 +329,14 @@ export class ProjectService {
   public getRunningProcess(): Process {
     return this.getProcessById(this.runningProcessId);
   }
+
+  public get isResetting(): boolean {
+    return this.m_isResetting;
+  }
+  public set isResetting(value: boolean) {
+    this.m_isResetting = value;
+  }
+
   public getActiveProcessIdx(): number {
     return this.getProcessIdxByProcessesAndId(this.processes, this.activeProcessId);
   }
@@ -325,9 +348,9 @@ export class ProjectService {
   }
 
   /* Determine if a process is run, used to draw blue badges in the template on the process list */
-  isRun(process: Process) {
+  /*isRun(process: Process) {
     return this.getProcessIdx(process) <= this.getActiveProcessIdx();
-  }
+  }*/
 
   getProcessById(processId: string): Process {
     return this.processes != null ? this.processes.find(p => p.processID === processId) : null;

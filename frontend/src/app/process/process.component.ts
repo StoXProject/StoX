@@ -11,6 +11,7 @@ import { ProcessOutput } from '../data/processoutput';
 
 import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
+import { ProcessResult } from '../data/runresult';
 @Component({
   selector: 'app-process',
   templateUrl: './process.component.html',
@@ -64,7 +65,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     m.push(
       { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } },
       { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } });
-    if (this.ps.isRun(this.ps.selectedProcess)) {
+    if (this.ps.selectedProcess.hasBeenRun) {
       let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
       if (tables.length > 0) {
@@ -106,7 +107,8 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   async drop(process: Process) {
     if (this.draggedProcessId != null) {
       console.log("dragging " + this.draggedProcessId + " to " + process.processID);
-      this.ps.processes = await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise();
+      let pr : ProcessResult = await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise();
+      this.ps.processes = pr.processTable;
       //this.ps.updateProcessList();
     }
   }

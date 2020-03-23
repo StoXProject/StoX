@@ -74,6 +74,7 @@ export class StratumpsuComponent implements OnInit {
             let res: PSUResult = await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
             if (res.PSU != null && res.PSU.length > 0) {
               node.children.push(StratumpsuComponent.asNode(res.PSU, "psu", []))
+              this.ps.selectedProject.saved = res.saved; 
             }
           }
         }

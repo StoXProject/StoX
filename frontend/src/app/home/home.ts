@@ -10,6 +10,7 @@ import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
 // import { DefinedColumnsService } from '../dlg/definedColumns/DefinedColumnsService';
 // import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { MenuItem } from 'primeng/api';
+import { DataService } from '../service/data.service';
 
 @Component({
   selector: 'homeComponent',
@@ -19,10 +20,11 @@ import { MenuItem } from 'primeng/api';
 
 export class HomeComponent {
   title = 'StoX';
-  constructor(private rConnectionDlgService: RConnectionDlgService, 
+  constructor(private rConnectionDlgService: RConnectionDlgService,
     private createProjectDialogService: CreateProjectDialogService,
-    private openProjectDlgService: OpenProjectDlgService, 
-    private projectService: ProjectService
+    private openProjectDlgService: OpenProjectDlgService,
+    private ps: ProjectService,
+    private ds: DataService
     /*,
     private dataService: DataService, 
     private expressionBuilderDlgService: ExpressionBuilderDlgService,
@@ -30,7 +32,7 @@ export class HomeComponent {
     private definedColumns: DefinedColumnsService
     ,
     private quBuilderDlgService: QueryBuilderDlgService */) {
-      // document.addEventListener('touchstart', function(){}, {passive: false});
+    // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
 
@@ -43,7 +45,7 @@ export class HomeComponent {
     },
     {
       label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
-    },    
+    },
     // {
     //   label: 'Test defined columns ...', command: e => this.definedColumns.showDialog()
     // },
@@ -123,16 +125,17 @@ export class HomeComponent {
     },
     {
       label: 'Mapmode stratum', command: e => {
-        this.projectService.iaMode = 'stratum';
+        this.ps.iaMode = 'stratum';
       }
     },
     {
       label: 'Mapmode station', command: e => {
-        this.projectService.iaMode = 'station';
+        this.ps.iaMode = 'station';
       }
     }
 
     ];
   }
+
 
 }

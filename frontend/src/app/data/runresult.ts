@@ -1,4 +1,5 @@
-import {ActiveProcess}from './ProcessProperties'
+import { ActiveProcess } from './ProcessProperties'
+import { Process } from './process'
 export class RunResult {
     value: any;
     message: string[];
@@ -7,7 +8,9 @@ export class RunResult {
 }
 
 export class ProcessResult {
-    activeProcess: ActiveProcess;
+    processTable?: Process[];
+    activeProcess?: ActiveProcess;
+    saved?: boolean;
 }
 
 export class RunProcessesResult extends ProcessResult {
