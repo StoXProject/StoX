@@ -8,7 +8,7 @@ import { DataService } from '../service/data.service';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
-import { RunProcessesResult } from './../data/runresult';
+import { RunProcessesResult, ProcessResult } from './../data/runresult';
 
 @Injectable({
     providedIn: 'root'
@@ -30,11 +30,10 @@ export class RunService {
         //this.reset();
     }
 
-
-
     canRun(): boolean {
         return this.ps.selectedProject != null && this.ps.selectedModel != null &&
-            this.ps.processes != null && this.ps.processes.length > 0 && this.ps.getRunningProcess() == null;
+            this.ps.processes != null && this.ps.processes.length > 0 && this.ps.getRunningProcess() == null &&
+            !this.ps.isResetting;
     }
     run() {
         let idx: number = this.ps.getActiveProcessIdx() === null ||
@@ -89,7 +88,7 @@ export class RunService {
     }
 
     canRunToHere(): boolean {
-        return this.ps.getSelectedProcessIdx() != null;
+        return this.canRun() && this.ps.getSelectedProcessIdx() != null;
     }
     canRunThis(): boolean {
         let idxFrom: number = this.getRunToHereIndexFrom();
@@ -108,19 +107,26 @@ export class RunService {
     }
     canReset(): boolean {
         return this.ps.runningProcessId == null &&
-            (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null)/* &&
+            (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null) && !this.ps.isResetting/* &&
             this.ps.activeModelName != null && this.ps.selectedModel.modelName === this.ps.activeModelName*/;
     }
     async reset() {
+        this.ps.isResetting = true;
         this.ps.runningProcessId = null;
         //   this.ps.activeModelName = null;
-        let activeProcessId: string = await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise();
+        let pr: ProcessResult = await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise();
+        let activeProcessId: string = pr.activeProcess.processID
+        //let activeProcessId: string = await (await this.dataService.getActiveProcess(this.ps.selectedProject.projectPath, 
+        //  this.ps.selectedModel.modelName).toPromise()).processID;
         console.log("Reset active process id : " + activeProcessId);
-        this.ps.updateProcessList(); // TODO: get processlist from resetmodel.
+        this.ps.processes = pr.processTable;
+        //console.log("Hasbeenrun1" + pr.processTable[0].hasBeenRun); 
+
         this.ps.activeProcessId = activeProcessId;
         this.ps.runFailedProcessId = null;
         this.dataService.log.length = 0;
         this.ps.iaMode = 'reset'; // reset interactive mode set to reset
+        this.ps.isResetting = false;
         // Reset in backend
     }
 
@@ -148,7 +154,9 @@ export class RunService {
                 break;
             } else { // empty/missing result
                 // ok update active process id and continue the loop
-                this.ps.activeProcessId = res.activeProcess.processID; // get first element in array
+                this.ps.activeProcessId = res.activeProcess.processID;
+                this.ps.processes = res.processTable;
+                //console.log("Hasbeenrun1" + res.processTable[0].hasBeenRun);
                 // get the interactive mode:
 
                 //console.log("asking for ia mode");

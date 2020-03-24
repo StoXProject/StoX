@@ -141,6 +141,27 @@ export class DataService {
     }, true);
   }
 
+  isSaved(projectPath: string): Observable<boolean> {
+    // const formData = new FormData();
+    // formData.set('projectPath', "'" + projectPath + "'");
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+
+    return this.runFunctionThrow('isSaved', {
+      "projectPath": projectPath
+    }, true);
+  }
+
+  saveProject(projectPath: string): Observable<Project> {
+    // const formData = new FormData();
+    // formData.set('projectPath', "'" + projectPath + "'");
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+
+    return this.runFunctionThrow('saveProject', {
+      "projectPath": projectPath
+    }, true);
+  }
+
+
   closeProject(projectPath: string, save: Boolean): Observable<any> {
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
@@ -405,7 +426,7 @@ export class DataService {
     });
   }
 
-  resetModel(projectPath: string, modelName: string): Observable<string> {
+  resetModel(projectPath: string, modelName: string): Observable<ProcessResult> {
     return this.runFunction('resetModel', {
       "projectPath": projectPath, "modelName": modelName
     });
@@ -491,7 +512,7 @@ export class DataService {
     });
   }
 
-  rearrangeProcesses(projectPath: string, modelName : string, processID : string, afterProcessID : string): Observable<Process[]> {
+  rearrangeProcesses(projectPath: string, modelName: string, processID: string, afterProcessID: string): Observable<ProcessResult> {
     return this.runFunction('rearrangeProcesses', {
       "projectPath": projectPath, "modelName": modelName, "processID": processID,
       "afterProcessID": afterProcessID

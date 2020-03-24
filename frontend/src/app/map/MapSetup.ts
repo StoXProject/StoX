@@ -203,6 +203,7 @@ export class MapSetup {
             })*/
             //console.log(s);
             let res: ProcessResult = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            this.ps.selectedProject.saved = res.saved; 
             //ps.activeProcessId = res.activeProcessID; // reset active processid
             console.log("res :" + res);
         });
@@ -255,6 +256,7 @@ export class MapSetup {
                 //e.setId(33); // find the max id + 1
                 let res: ProcessResult = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
                 //ps.activeProcessId = res.activeProcessID; // reset active processid
+                this.ps.selectedProject.saved = res.saved; 
             }            //console.log("res :" + res); 
 
         });

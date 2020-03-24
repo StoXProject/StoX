@@ -8,14 +8,17 @@ POST
 
     {"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes","modelName":"baseline","startProcess":2,"endProcess":2,"save":false}
 
-closeProject
+'closeProject'
 {"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes",
 "save":false}
 
-openProject
+'openProject'
 {"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes"}
 
-runModel
+'isSaved'
+{"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes"}
+
+'runModel'
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes", 
 "modelName":"baseline", 

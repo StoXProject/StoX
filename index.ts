@@ -8,12 +8,9 @@ var mainWindow: any;
 // var rPath: string;
 // var rStoxFtpPath: string;
 
-var properties = {
-  "projectRootPath": require('os').homedir(),
-  "activeProject": {},
-  "rPath": "",
-  "rStoxFtpPath": ""
-};
+var properties: any = null;
+
+
 
 // properties.projectList = [{"projectPath": "c:/temp/aa", "projectName":"aa"}, {"projectPath":"c:/1/b", "projectName":"b"}];
 //JSON.stringify(props)-> fil
@@ -98,7 +95,7 @@ function createWindow() {
   server.post('/browsePath', function (req: any, res: any) {
     console.log("select a file/folder path(s)");
 
-    if(JSON.stringify(req.body) != '{}') {
+    if (JSON.stringify(req.body) != '{}') {
 
       require('electron').dialog.showOpenDialog(mainWindow, {
         title: req.body.title, defaultPath: req.body.defaultPath,
@@ -401,6 +398,8 @@ server.post('/login', function (req: any, res: any) {
 });
 
 const readPropertiesFromFile = function readPropertiesFromFile() {
+
+
   let resourcefile = require('os').homedir() + "/.stox.properties.json";
   try {
     let fs = require('fs');
@@ -411,12 +410,25 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       console.log("jsonString : " + jsonString);
       properties = JSON.parse(jsonString);
     }
+    if (properties == null) {
+      // Properties not read properly from file, or the file doesnt exist.
+      console.log("create initial properties")
+      properties = {
+        "projectRootPath": require('os').homedir(),
+        "activeProject": {},
+        "rPath": "",
+        "rStoxFtpPath": ""
+      };
+    }
   } catch (err) {
     console.log(err);
   }
 }
 
 const writePropertiesToFile = function writePropertiesToFile() {
+  if (properties == null) {
+    return; // Prevent properties to be reset.
+  }
   let resourcefile = require('os').homedir() + "/.stox.properties.json";
   try {
     let fs = require('fs');

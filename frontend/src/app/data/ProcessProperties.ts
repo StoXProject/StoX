@@ -7,7 +7,8 @@ export class ActiveProcess {
 }
 export class ProcessProperties {
     propertySheet: PropertyCategory[];
-    activeProcessID: ActiveProcess;
+    activeProcess: ActiveProcess;
     updateHelp?: boolean;
     processTable : Process[];
+    saved : boolean;
 }

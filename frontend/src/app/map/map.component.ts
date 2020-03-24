@@ -362,6 +362,7 @@ export class MapComponent implements OnInit, AfterViewInit {
                 this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
                 await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
                   this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
+              this.ps.selectedProject.saved = res.saved;
               /*if (res != null && res.activeProcessID != null) {
                 this.ps.activeProcessId = res.activeProcessID; // reset active process id
               }*/

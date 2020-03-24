@@ -428,6 +428,11 @@ $nodata: #acacac;
   @include icon_content("\f068", 0.8rem, rgb(206, 127, 127), true);
 }
 
+.saveicon:before {
+  @include icon_content("\f0c7", 1.0rem, rgb(1, 1, 2), true);
+}
+
+
 .blink {
   animation: blink 500ms infinite steps(1);
 }
