@@ -54,7 +54,7 @@ export class ExpressionBuilderDlg  implements OnInit {
         this.selection.selected.forEach(item => {
           let index: number = this.service.tableExpressions.findIndex(d => d === item);
           console.log(this.service.tableExpressions.findIndex(d => d === item));
-          this.service.tableExpressions.splice(index,1)
+          this.service.tableExpressions.splice(index,1);
           this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
         });
         this.selection = new SelectionModel<TableExpression>(true, []);

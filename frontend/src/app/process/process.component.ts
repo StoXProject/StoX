@@ -63,7 +63,21 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     }
     m.push(
       { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } },
-      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } });
+      { label: 'Delete', icon: 'rib absa emptyicon', command: 
+      (event) => { 
+        console.log("trying to delete selected process");
+        // let index: number = this.ps.getProcessIdx(this.ps.selectedProcess);
+        // // let index: number = this.ps.processes.findIndex(pr => pr === this.ps.selectedProcess);
+        // this.ps.processes.splice(index, 1);
+
+        console.log("Number of processes : " + this.ps.processes.length);
+
+        this.ps.removeSelectedProcess();
+        
+        console.log("Number of processes : " + this.ps.processes.length);
+
+        console.log("see if it managed to delete process");
+      } });
     if (this.ps.isRun(this.ps.selectedProcess)) {
       let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();

@@ -99,6 +99,19 @@ export class ProjectService {
     } 
   }
 
+  async removeSelectedProcess() {
+    this.initializeProperties();
+    if (this.selectedProject != null) {
+      this.processes = await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise();
+      if (this.processes == null) {
+        this.processes = [];
+      }
+      if (this.processes.length > 0) {
+        this.selectedProcess = this.processes[0];
+      } 
+    }
+  } 
+
   get selectedModel(): Model {
     return this.m_selectedModel;
   }

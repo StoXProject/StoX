@@ -62,7 +62,7 @@ export class DefinedColumnsTableDlg  implements OnInit {
         this.selection.selected.forEach(item => {
           let index: number = this.service.definedColumnsData.findIndex(d => d === item);
           console.log(this.service.definedColumnsData.findIndex(d => d === item));
-          this.service.definedColumnsData.splice(index,1)
+          this.service.definedColumnsData.splice(index,1);
           this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
         });
         this.selection = new SelectionModel<DefinedColumns>(true, []);
