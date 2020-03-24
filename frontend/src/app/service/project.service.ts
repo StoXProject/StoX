@@ -8,6 +8,7 @@ import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
 import { ProcessProperties, ActiveProcess } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
+import { ProcessResult } from '../data/runresult'
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
 // import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -117,15 +118,26 @@ export class ProjectService {
   async removeSelectedProcess() {
     this.initializeProperties();
     if (this.selectedProject != null) {
-      this.processes = await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise();
-      if (this.processes == null) {
-        this.processes = [];
-      }
-      if (this.processes.length > 0) {
+      let pr : ProcessResult = await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise();
+      this.processes = pr.processTable;
+      this.selectedProject.saved = pr.saved;
+      if (this.selectedProcess == null && this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
       } 
     }
   } 
+
+  async addProcess() {
+    this.initializeProperties();
+    if (this.selectedProject != null) {
+      let pr : ProcessResult = await this.dataService.addProcess(this.selectedProject.projectPath, this.selectedModel.modelName, null).toPromise();
+      this.processes = pr.processTable;
+      this.selectedProject.saved = pr.saved;
+      if (this.selectedProcess == null && this.processes.length > 0) {
+        this.selectedProcess = this.processes[0];
+      }
+    }
+  }
 
   get selectedModel(): Model {
     return this.m_selectedModel;

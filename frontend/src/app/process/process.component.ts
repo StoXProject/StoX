@@ -67,16 +67,11 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
       { label: 'Delete', icon: 'rib absa emptyicon', command: 
       (event) => { 
         console.log("trying to delete selected process");
-        // let index: number = this.ps.getProcessIdx(this.ps.selectedProcess);
-        // // let index: number = this.ps.processes.findIndex(pr => pr === this.ps.selectedProcess);
-        // this.ps.processes.splice(index, 1);
-
         console.log("Number of processes : " + this.ps.processes.length);
 
         this.ps.removeSelectedProcess();
         
         console.log("Number of processes : " + this.ps.processes.length);
-
         console.log("see if it managed to delete process");
       } });
      if (this.ps.selectedProcess.hasBeenRun) {
