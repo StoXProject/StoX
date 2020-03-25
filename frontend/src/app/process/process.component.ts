@@ -92,6 +92,8 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     this.contextMenu = m;
   }
   async openCm(event : MouseEvent, cm : ContextMenu, process: Process) {
+    // TODO: Incorpoate dynamic ng-action-outlet with material. or support scrolling primeng menus
+    // https://stackblitz.com/edit/ng-action-outlet-demo?file=src/app/app.component.ts
     this.ps.selectedProcess = process; 
     //console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
