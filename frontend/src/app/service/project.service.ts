@@ -128,7 +128,7 @@ export class ProjectService {
   } 
 
   async addProcess() {
-    this.initializeProperties();
+    // this.initializeProperties();
     if (this.selectedProject != null) {
       let pr : ProcessResult = await this.dataService.addProcess(this.selectedProject.projectPath, this.selectedModel.modelName, null).toPromise();
       this.processes = pr.processTable;
