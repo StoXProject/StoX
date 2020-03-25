@@ -4,7 +4,7 @@ import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
 import { RunService } from '../service/run.service';
 import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "ng-keyboard-shortcuts";
-import { ContextMenuModule } from 'primeng/contextmenu';
+import { ContextMenuModule, ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
 import { ProcessOutput } from '../data/processoutput';
@@ -90,7 +90,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     );
     this.contextMenu = m;
   }
-  async openCm(event, cm, process: Process) {
+  async openCm(event : MouseEvent, cm : ContextMenu, process: Process) {
     this.ps.selectedProcess = process; 
     //console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
@@ -109,6 +109,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
       console.log("dragging " + this.draggedProcessId + " to " + process.processID);
       let pr : ProcessResult = await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise();
       this.ps.processes = pr.processTable;
+      this.ps.selectedProject.saved = pr.saved;
       //this.ps.updateProcessList();
     }
   }
