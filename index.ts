@@ -113,6 +113,26 @@ function createWindow() {
     }
   });
 
+  server.post('/fileExists', function (req: any, res: any) {
+    console.log("check if a file exists");
+
+    if (JSON.stringify(req.body) != '{}') {
+      var rootPath = req.body.projectPath;
+      var filePath = req.body.filePath;
+
+      if(require('fs').existsSync(filePath)) {
+        res.send("true");
+      } else {
+        var wholePath = rootPath + "/" + filePath;
+        if(require('fs').existsSync(wholePath)) {
+          res.send("true");
+        } else {
+          res.send("false");
+        }
+      }
+    }
+  });
+
   // mainWindow.setMenu(null);
   createMenu();
 

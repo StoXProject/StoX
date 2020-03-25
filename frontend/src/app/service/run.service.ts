@@ -188,4 +188,8 @@ export class RunService {
     // call rstox active model and active project and process idx
     // update activeProcessId from rstox
     //}
+
+    addProcess() {
+        this.ps.addProcess();
+    }
 }

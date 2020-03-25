@@ -54,6 +54,7 @@ export class RunComponent implements OnInit {
       case "reset": return this.runService.reset();
       case "runnext": return this.runService.runNext();
       case "runfromhere": return this.runService.runFromHere();
+      // case "addprocess": return this.runService.addProcess();
     }
   }
 }

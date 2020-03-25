@@ -24,9 +24,9 @@ export class FilePathDlg  implements OnInit {
 
     constructor(public service: FilePathDlgService, private dataService: DataService,
         private msgService: MessageService, private ps: ProjectService) {
-        // service.pathDataObservable.subscribe(paths => {
-        //     this.dataSource = new MatTableDataSource<FilePath>(paths);
-        // });
+        service.pathDataObservable.subscribe(paths => {
+            this.dataSource = new MatTableDataSource<FilePath>(paths);
+        });
     }
 
     async ngOnInit() {
@@ -104,13 +104,24 @@ export class FilePathDlg  implements OnInit {
         }
     }
 
-    apply() { 
-        // check that all paths are filled
+    async apply() { 
+        var options = {projectPath: this.ps.selectedProject.projectPath, filePath: null};
+        // check that all paths are filled and files exist
         for(let i=0; i< this.service.paths.length; i++) {
             if(this.service.paths[i].path == null) {
                 this.msgService.setMessage("One or more fields are empty!");
                 this.msgService.showMessage();
                 return;
+            } else {
+                // check file for existence
+                options.filePath = this.service.paths[i].path;
+                let exists = await this.dataService.fileExists(options).toPromise();
+
+                if(exists != null && exists != "true") {
+                    this.msgService.setMessage("File " + this.service.paths[i].path + " does not exist");
+                    this.msgService.showMessage();
+                    return;
+                }
             }
         }
 

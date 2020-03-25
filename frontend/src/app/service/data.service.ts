@@ -439,6 +439,18 @@ export class DataService {
     });
   }
 
+  removeProcess(projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+    return this.runFunction('removeProcess', {
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
+  addProcess(projectPath: string, modelName: string, value: any): Observable<ProcessResult> {
+    return this.runFunction('addProcess', {
+      "projectPath": projectPath, "modelName": modelName, "value": value
+    });
+  }
+
   getProcessOutputTableNames(projectPath: string, modelName: string, processID: string): Observable<string[]> {
     return this.runProcessFunc<string[]>('getProcessOutputTableNames', projectPath, modelName, processID);
   }
@@ -523,6 +535,10 @@ export class DataService {
 
   browsePath(options: any): Observable<any> {
     return this.postLocalNode('browsePath', options);
+  }
+
+  fileExists(options: any): Observable<any> {
+    return this.postLocalNode('fileExists', options);
   }
 
   public getRPath(): Observable<any> {
