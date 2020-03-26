@@ -23,6 +23,7 @@ export class RConnectionDlgService {
     async apply() {
         console.log("apply");
         console.log("Posting rpath " + this.rpath)
+        this.rpath = this.rpath.replace(/\\/g, "/"); // convert backslash to forward
         var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
         console.log("Posting rpath, response " + res)
         this.display = false;

@@ -1,4 +1,6 @@
 import { Fill, Stroke, Style, RegularShape, Circle, Icon } from 'ol/style';
+import { StyleLike, StyleFunction } from 'ol/style/Style';
+import { FeatureLike } from 'ol/Feature';
 import { Coordinate } from 'ol/coordinate';
 import { Layer, Vector } from 'ol/layer';
 import BaseObject from 'ol/Object';
@@ -22,11 +24,15 @@ import { MatDialog } from '@angular/material';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { Color } from './Color';
 import { clone } from 'ol/extent';
+import { ProcessResult } from '../data/runresult';
+import { HTMLUtil } from '../utils/htmlutil'
+import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
+import { EDSU_PSU } from './../data/processdata'
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
-    public static DISTANCE_POINT_ANYSELECTED_COLOR: string = 'rgb(166, 200, 176)';
-    public static DISTANCE_ABSENCE_POINT_COLOR: string = 'rgb(253, 244, 247)';
+    public static DISTANCE_ABSENT_POINT_COLOR: string = 'rgb(253, 244, 247)';
+    public static DISTANCE_POINT_SELECTED_COLOR: string = 'rgb(166, 200, 176)';
     public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
     public static POINT_OUTLINE_COLOR: string = 'rgb(0, 0, 0, 0.3)';
     public static BG_COLOR = 'rgb(252, 255, 198)';
@@ -42,11 +48,43 @@ export class MapSetup {
             })
         });
     }
-    static getPointStyle(fillColor: string, outlineColor: string, size: number): Style {
-        var svg = '<svg width="' + size + 'px" height="' + size + 'px" version="1.1" xmlns="http://www.w3.org/2000/svg">'
-            + '<rect width="' + size + 'px" height="' + size + 'px" style="fill:' + fillColor +
-            ';stroke-width:3;stroke:' + outlineColor + '" />'
-            + '</svg>';
+
+
+    static getPointStyleRect(fillColor: string, outlineColor: string, size: number): Style {
+        return MapSetup.getPointStyle(fillColor, outlineColor, 1, { shape: 'rect', width: size, height: size });
+    }
+    static getPointStyleCircle(fillColor: string, outlineColor: string, size: number): Style {
+        return MapSetup.getPointStyle(fillColor, outlineColor, 1, { shape: 'circle', radius: size });
+    }
+    static getPointStyle(fillColor: string, outlineColor: string, strokeWidth: number, symb: MapSymbol): Style {
+        let symbFormatted: string = symb.shape,
+            svgWidth: number = null,
+            svgHeight: number = null,
+            halfStrokeWidth: number = strokeWidth / 2;
+        switch (symb.shape) { // type-guard for algebraic type (discriminant union)
+            case 'rect':
+                symbFormatted += HTMLUtil.formatTagPropPx('x', halfStrokeWidth) +
+                    HTMLUtil.formatTagPropPx('y', halfStrokeWidth) +
+                    HTMLUtil.formatTagPropPx('width', symb.width) +
+                    HTMLUtil.formatTagPropPx('height', symb.height);
+                svgWidth = symb.width + strokeWidth;
+                svgHeight = symb.height + strokeWidth;
+                break;
+            case 'circle':
+                let cx: number = symb.radius + halfStrokeWidth,
+                    cy: number = cx;
+                symbFormatted += HTMLUtil.formatTagPropPx('cx', cx) +
+                    HTMLUtil.formatTagPropPx('cy', cy) + HTMLUtil.formatTagPropPx('r', symb.radius);
+                svgWidth = symb.radius * 2 + strokeWidth;
+                svgHeight = svgWidth;
+                break;
+        }
+        var svg = '<svg width="' + svgWidth + 'px" height="' + svgHeight + 'px" version="1.1" xmlns="http://www.w3.org/2000/svg">'
+            + '<' + symbFormatted +
+            HTMLUtil.formatTagProp('fill', fillColor) +
+            HTMLUtil.formatTagPropPx('stroke-width', strokeWidth) +
+            HTMLUtil.formatTagProp('stroke', outlineColor) +
+            '/>' + '</svg>';
 
         var style = new Style({
             image: new Icon({
@@ -69,18 +107,52 @@ export class MapSetup {
             })
         });*/
     }
+    static getLineStyle(strokeColor: string, width: number) {
+        return new Style({
+            stroke: new Stroke({
+                color: strokeColor,
+                width: width
+            })
+        });
+    }
 
     static getAcousticPointStyle(): Style {
-        return this.getPointStyle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
+        return this.getPointStyleCircle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
+    }
+    static getAcousticPointStyleFocused(): Style {
+        return this.getPointStyleCircle(Color.darken(this.DISTANCE_POINT_SELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleSelected(): Style {
-        return this.getPointStyle(Color.darken(this.DISTANCE_POINT_ANYSELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
-    }
-    static getAcousticPointStyleAnySelected(): Style {
-        return this.getPointStyle(this.DISTANCE_POINT_ANYSELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
+        return this.getPointStyleCircle(this.DISTANCE_POINT_SELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
     static getStationPointStyle(): Style {
-        return this.getPointStyle(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
+        return this.getPointStyleRect(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
+    }
+    static getStyleCacheFunction(): StyleFunction {
+        // This function lets the feature determine by callback the selection of style into the stylecache.
+        return (feature: FeatureLike, resolution: number) => {
+            let l: Layer = feature.get("layer");
+            let styleCache: Style[] = feature.get("styleCache");
+            let styleSelection: number = feature.get("selection");
+            return styleCache[styleSelection];
+        }
+    }
+    static getEDSUPointStyleCache(): Style[] {
+        let edsuRadius: number = 6; // px
+        let pointColor: string = this.DISTANCE_POINT_COLOR;
+        let outlineColor: string = 'rgb(0, 0, 0, 0.1)'
+        let focusColor: string = Color.darken(this.DISTANCE_POINT_SELECTED_COLOR, 0.5)
+        let focusLineColor: string = Color.darken(focusColor, 0.5)
+        return [
+            this.getPointStyleCircle(pointColor, outlineColor, edsuRadius), // 0: present
+            this.getPointStyleCircle(this.DISTANCE_POINT_SELECTED_COLOR, outlineColor, edsuRadius), // 1: selected
+            this.getPointStyleCircle(focusColor, outlineColor, edsuRadius), // 2: focused
+            this.getPointStyleCircle(this.DISTANCE_ABSENT_POINT_COLOR, outlineColor, edsuRadius), // 3 : absent
+        ];
+    }
+
+    static getEDSULineStyle(): Style {
+        return this.getLineStyle(Color.darken(this.DISTANCE_POINT_COLOR, 0.9), 2);
     }
     static getPolygonStyle(fillColor: string, strokeColor: string, strokeWidth: number): Style {
         return new Style({
@@ -97,7 +169,7 @@ export class MapSetup {
         return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.05)', 'rgba(0, 0, 0, 0.2)', 1);
     }
     static getStratumNodeStyle(): Style {
-        let s: Style = MapSetup.getPointStyle("rgba(255, 0, 0, 0.7)", MapSetup.POINT_OUTLINE_COLOR, 6);
+        let s: Style = MapSetup.getPointStyleRect("rgba(255, 0, 0, 0.7)", MapSetup.POINT_OUTLINE_COLOR, 6);
         s.setGeometry(f => {
             var coordinates: Coordinate[] = [].concat(...(<Point>f.getGeometry()).getCoordinates());
             return new MultiPoint(coordinates);
@@ -115,13 +187,24 @@ export class MapSetup {
         })
         m.on('modifyend', async function (e) {
             // Add the features back to API.
-            let s: string = (new GeoJSON()).writeFeatures(e.features.getArray(), { featureProjection: proj, dataProjection: 'EPSG:4326' });
+            //console.log(JSON.stringify(e.features.getArray()));
+            let fcloned: Feature[] = e.features.getArray().map(f => { 
+                let f2: Feature = f.clone(); 
+                f2.set("layer", null);
+                f2.set("styleCache", null);
+                return f2;  
+            });
+            console.log(JSON.stringify(fcloned));
+
+            let s: string = (new GeoJSON()).writeFeatures(fcloned, { featureProjection: proj, dataProjection: 'EPSG:4326' });
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
             })*/
             //console.log(s);
-            let res: string = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            let res: ProcessResult = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            this.ps.selectedProject.saved = res.saved; 
+            //ps.activeProcessId = res.activeProcessID; // reset active processid
             console.log("res :" + res);
         });
         return m;
@@ -131,13 +214,14 @@ export class MapSetup {
             condition: singleClick,
             toggleCondition: shiftKeyOnly,
             layers: function (layer) {
-                return layer.get('name') == 'stratum';
+                return layer.get('layerType') == 'stratum';
             },
             style: [this.getStratumSelectStyle(), MapSetup.getStratumNodeStyle()],
             multi: false
         });
     }
-    static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource, dataService: DataService, ps: ProjectService, proj: string) {
+    static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource,
+        dataService: DataService, ps: ProjectService, proj: string) {
         let d: Draw = new Draw({
             source: source,
             type: GeometryType.POLYGON
@@ -164,13 +248,15 @@ export class MapSetup {
             if (typeof (strataName) == 'string') {
                 console.log("converting " + strataName);
                 // a valid stratum name has been entered
-                f.setId(strataName);
+                //f.setId(Math.max(...source.getFeatures().map(f2 => f2.getId() != null ? +f2.getId() : 0)) + 1);
                 f.setProperties({ 'polygonName': strataName });
                 let stratum: string = (new GeoJSON()).writeFeatures([f], { featureProjection: proj, dataProjection: 'EPSG:4326' });
                 console.log(stratum);
                 //source.getFeatures().map(f => f.getId())
                 //e.setId(33); // find the max id + 1
-                let res: string = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+                let res: ProcessResult = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+                //ps.activeProcessId = res.activeProcessID; // reset active processid
+                this.ps.selectedProject.saved = res.saved; 
             }            //console.log("res :" + res); 
 
         });
@@ -181,30 +267,40 @@ export class MapSetup {
      * getGEOJSONLayerFromURL - create a GEOJSON layer
      * @param name 
      * @param url 
-     * @param styles 
+     * @param style 
      * @param selectable 
      */
-    static getGeoJSONLayerFromFeatureString(name: string, feat: string, proj: string, styles: Style[], selectable: boolean): Layer {
+    static getGeoJSONLayerFromFeatureString(name: string, layerType : string, zIndex : number, feat: string, proj: string, style: Style[],
+        selectable: boolean, layerOrder: number): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
-            features: (new GeoJSON).readFeatures(JSON.parse(feat), {
-                dataProjection: 'EPSG:4326',
-                featureProjection: proj
-            })
+            useSpatialIndex: false
         });
         var v: Vector = new Vector({
             source: s,
-            style: styles,
+            style: this.getStyleCacheFunction(),
+            zIndex: zIndex
         });
-        s.on("addfeature", ft => {
-            ft.feature.set("layer", v);
+        s.on("addfeature", evt => {
+            evt.feature.set("layer", v);
+            evt.feature.set("styleCache", style);
+            //evt.feature.set("absent", false); // this property must be provided in geojson
+            MapSetup.updateEDSUSelection(evt.feature, null);
+            //evt.feature.set("selection", 0); // selection 0 by default.
             //ft.feature.set("feature", ft); // set a reference to itsself
         })
+        s.addFeatures((new GeoJSON).readFeatures(JSON.parse(feat), {
+            dataProjection: 'EPSG:4326',
+            featureProjection: proj
+        }));
 
         // Set layer properties
         v.set("selectable", selectable);
         v.set("name", name);
-        v.set("style", styles);
+        v.set("layerType", layerType);
+        v.set("style", style);
+        v.set("hasTooltip", true);
+        v.set("layerOrder", layerOrder);
         // Create a feature->layer link
         //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));
         return v;
@@ -255,7 +351,8 @@ export class MapSetup {
         });
         var v: Vector = new Vector({
             source: s,
-            style: style
+            style: style,
+            zIndex: 10
         });
         s.on("addfeature", ft => {
             ft.feature.set("layer", v);
@@ -264,7 +361,8 @@ export class MapSetup {
 
         // Set layer properties
         v.set("selectable", false);
-        v.set("name", name);
+        v.set("name", "grid");
+        v.set("layerType", "grid");
         v.set("style", style);
         // Create a feature->layer link
         //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));
@@ -281,5 +379,16 @@ export class MapSetup {
             undefinedHTML: '&nbsp;'
         });
 
+    }
+    static updateEDSUSelection(f: Feature, selectedPSU) {
+        let absent: boolean = f.get("absent");
+        let edsuPsu: EDSU_PSU = f.get("edsupsu");
+        let selected: boolean = edsuPsu != null && edsuPsu.PSU != null && edsuPsu.PSU.length > 0;//f.get("selected");
+        let focused: boolean = selected && selectedPSU != null && edsuPsu.PSU == selectedPSU;
+        let selection =
+            absent != null && absent ? 3 :
+                focused != null && focused ? 2 :
+                    selected != null && selected ? 1 : 0;
+        f.set("selection", selection); // Set the style selection.
     }
 }

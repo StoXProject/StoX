@@ -33,6 +33,7 @@
     "chart.js": "^2.9.3",
     "core-js": "^3.4.5",
     "font-awesome": "^4.7.0",
+    "material-icons": "^0.3.1",
     "ng-keyboard-shortcuts": "^8.2.5",
     "ngx-contextmenu": "^5.2.0",
     "npm-update-all": "^1.0.1",

@@ -1,0 +1,6 @@
+<p-tree #tree [value]="nodes" selectionMode="single" [(selection)]="selectedNode">
+    <ng-template let-node pTemplate="default">
+        <div (contextmenu)="openCm($event, cm, node)"><span style="user-select:none">{{node.label}}</span></div>
+    </ng-template>
+</p-tree>
+<p-contextMenu #cm [model]="contextMenu" appendTo="body"> </p-contextMenu>

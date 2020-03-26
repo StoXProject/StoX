@@ -6,6 +6,9 @@ import { RConnectionDlg } from './dlg/RConnectionDlg';
 import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
 import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
 import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
+import { QueryBuilderDlg } from './querybuilder/dlg/QueryBuilderDlg';
+import { DefinedColumnsTableDlg } from './dlg/definedColumns/DefinedColumnsTableDlg';
+import { FilePathDlg } from './dlg/filePath/FilePathDlg';
 import { MessageDlg } from './message/MessageDlg';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ProjectComponent } from './project/project.component';
@@ -13,12 +16,13 @@ import { UserLogComponent } from './output/userlog/userlog.component';
 import { OutputComponent } from './output/output/output.component';
 import {HelpComponent, HelpContentHandler, SanitizeHtmlPipe} from './help/HelpComponent'
 import { MapComponent } from './map/map.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProcessComponent } from './process/process.component';
 import { TabViewModule } from 'primeng/primeng';
 import { ListboxModule } from 'primeng/listbox';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { ToolbarModule } from 'primeng/toolbar';
+import {DragDropModule} from 'primeng/dragdrop';
 import { AngularSplitModule } from 'angular-split';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ParameterComponent } from './parameter/parameter.component';
@@ -47,6 +51,8 @@ import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ModelComponent } from './model/model.component';
 import { RunComponent } from './run/run.component';
+import { TreeModule } from 'primeng/tree';
+import { TooltipDirective } from './directive/TooltipDirective'
 import {
   MatTabsModule,
   MatButtonModule,
@@ -93,6 +99,13 @@ import {
   MatTooltipModule,
   MatTreeModule,
 } from '@angular/material';
+import { StratumpsuComponent } from './processdata/stratumpsu/stratumpsu.component';
+
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module';
+import { AutocompleteComponent } from './autocomplete/autocomplete.component';
+
 @NgModule({
   exports: [
     // CDK
@@ -144,7 +157,9 @@ import {
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
-  ]
+    MatAutocompleteModule,
+  ],
+  declarations: []
 })
 export class MaterialModule {}
 
@@ -174,6 +189,8 @@ export class MaterialModule {}
     ListboxModule,
     TabMenuModule,
     ToolbarModule,
+    DragDropModule,
+    TreeModule,
     ContextMenuModule,
     KeyboardShortcutsModule.forRoot(),
     RouterModule.forRoot([]),
@@ -181,6 +198,19 @@ export class MaterialModule {}
     MatTabsModule, MatToolbarModule, MatButtonModule,MatButtonToggleModule, MatCommonModule, 
     MatFormFieldModule,
     MatInputModule,MatDialogModule,
+
+    ReactiveFormsModule,
+    NoopAnimationsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatSelectModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatRadioModule,
+    MatIconModule,
+    MatCardModule,
+    QueryBuilderModule  
   ],
   entryComponents: [StratumNameDlgComponent],
   declarations: [
@@ -189,17 +219,22 @@ export class MaterialModule {}
     CreateProjectDialog,
     OpenProjectDlg,
     ExpressionBuilderDlg,
+    QueryBuilderDlg,
+    DefinedColumnsTableDlg,
+    FilePathDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,
     MapComponent,
+    StratumpsuComponent,
     ProcessComponent,
     ParameterComponent,
     ModelComponent,
     RunComponent,
     UserLogComponent,
     OutputComponent,
-    HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent
+    HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent,
+    AutocompleteComponent, TooltipDirective
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },

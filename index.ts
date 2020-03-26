@@ -8,12 +8,9 @@ var mainWindow: any;
 // var rPath: string;
 // var rStoxFtpPath: string;
 
-var properties = {
-  "projectRootPath": "",
-  "activeProject": {},
-  "rPath": "",
-  "rStoxFtpPath": ""
-};
+var properties: any = null;
+
+
 
 // properties.projectList = [{"projectPath": "c:/temp/aa", "projectName":"aa"}, {"projectPath":"c:/1/b", "projectName":"b"}];
 //JSON.stringify(props)-> fil
@@ -54,10 +51,10 @@ function createWindow() {
         console.log("opencpu is not installed, and is try to install it now ...");
         child_process.execSync("Rscript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
         console.log("Starting opencpu ...");
-        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxFramework'), workers = 3)\"");
+        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxAPI'), workers = 3)\"");
       } else if (stdout !== null && stdout.includes("TRUE")) {
         console.log("Starting opencpu ...");
-        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxFramework'), workers = 3)\"");
+        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxAPI'), workers = 3)\"");
       }
     }
   });
@@ -79,8 +76,10 @@ function createWindow() {
 
   server.post('/browse', function (req: any, res: any) {
     console.log("select a folder... wait");
+    let defPath = req.body.defaultpath.replace(/\\/g, "/"); // convert backslash to forward
+    console.log("default folder " + defPath);
     require('electron').dialog.showOpenDialog(mainWindow, {
-      title: 'Select a folder', defaultPath: /*require('os').homedir()*/ req.body.defaultpath,
+      title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
       properties: [/*'openFile'*/'openDirectory']
     }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
       if (!object.filePaths || !object.filePaths.length) {
@@ -91,6 +90,47 @@ function createWindow() {
       console.log(object.filePaths[0]);
       res.send(object.filePaths[0]);
     });
+  });
+
+  server.post('/browsePath', function (req: any, res: any) {
+    console.log("select a file/folder path(s)");
+
+    if (JSON.stringify(req.body) != '{}') {
+
+      require('electron').dialog.showOpenDialog(mainWindow, {
+        title: req.body.title, defaultPath: req.body.defaultPath,
+        properties: req.body.properties
+      }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
+        if (!object.filePaths || !object.filePaths.length) {
+          console.log("You didn't select anything");
+          return;
+        }
+
+        console.log("You selected : " + object.filePaths);
+
+        res.send(object.filePaths);
+      });
+    }
+  });
+
+  server.post('/fileExists', function (req: any, res: any) {
+    console.log("check if a file exists");
+
+    if (JSON.stringify(req.body) != '{}') {
+      var rootPath = req.body.projectPath;
+      var filePath = req.body.filePath;
+
+      if(require('fs').existsSync(filePath)) {
+        res.send("true");
+      } else {
+        var wholePath = rootPath + "/" + filePath;
+        if(require('fs').existsSync(wholePath)) {
+          res.send("true");
+        } else {
+          res.send("false");
+        }
+      }
+    }
   });
 
   // mainWindow.setMenu(null);
@@ -116,7 +156,7 @@ function createWindow() {
 }
 
 app.on('ready', function () {
-  console.log("App is ready")
+  console.log("App is ready...")
   if (!setupEvents.handleSquirrelEvent()) {
     createWindow()
   }
@@ -378,6 +418,8 @@ server.post('/login', function (req: any, res: any) {
 });
 
 const readPropertiesFromFile = function readPropertiesFromFile() {
+
+
   let resourcefile = require('os').homedir() + "/.stox.properties.json";
   try {
     let fs = require('fs');
@@ -388,19 +430,32 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       console.log("jsonString : " + jsonString);
       properties = JSON.parse(jsonString);
     }
+    if (properties == null) {
+      // Properties not read properly from file, or the file doesnt exist.
+      console.log("create initial properties")
+      properties = {
+        "projectRootPath": require('os').homedir(),
+        "activeProject": {},
+        "rPath": "",
+        "rStoxFtpPath": ""
+      };
+    }
   } catch (err) {
     console.log(err);
   }
 }
 
 const writePropertiesToFile = function writePropertiesToFile() {
+  if (properties == null) {
+    return; // Prevent properties to be reset.
+  }
   let resourcefile = require('os').homedir() + "/.stox.properties.json";
   try {
     let fs = require('fs');
     let options = { encoding: 'utf-8', flag: 'w' };
-    if (!properties.projectRootPath) {
+    /*if (properties.projectRootPath) {
       properties.projectRootPath = require('os').homedir();
-    }
+    */
     let jsonString = JSON.stringify(properties, null, 2);
     console.log("jsonString : " + jsonString);
     fs.writeFileSync(resourcefile, jsonString, options)

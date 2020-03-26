@@ -39,8 +39,8 @@ export class RunComponent implements OnInit {
     switch (cmd) {
       case "run": return this.runService.canRun(); // or "Continue model" if active process > -1
       case "runnext": return this.runService.canRunNext();
-      case "runfromhere": return this.runService.canRunNext();
-      case "runto": return false; // or "Run this if selected process < active process"
+      case "runfromhere": return this.runService.canRunFromHere();
+      case "runto": return this.runService.canRunToHere(); // or "Run this if selected process < active process"
       case "reset": return this.runService.canReset();
       case "addprocess": return true;
       default:
@@ -54,6 +54,7 @@ export class RunComponent implements OnInit {
       case "reset": return this.runService.reset();
       case "runnext": return this.runService.runNext();
       case "runfromhere": return this.runService.runFromHere();
+      case "addprocess": return this.runService.addProcess();
     }
   }
 }

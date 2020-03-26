@@ -19,24 +19,54 @@
                 </colgroup>
             </ng-template>
             <ng-template pTemplate="body" let-propertyItem>
-                <tr>
+                <tr style="white-space: nowrap;">
                     <td pResizableColumn>
-                        <div>
+                        <div class = "ellipsiscolumn">
                             {{propertyItem.displayName}}
                         </div>
                     </td>
                     <td pResizableColumn [ngSwitch]="propertyItem.type">
                         <div *ngSwitchCase="'character'">
                             <div *ngIf="propertyItem.possibleValues.length > 0">
-                                <select
-                                    (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" style="width:100%;">
+                                <app-autocomplete  class="ellipsiscolumn" [items]="propertyItem.possibleValues" 
+                                    [selectedItem]="propertyItem.value"
+                                    (change)="propertyItem.value = $event.selectedItem; onChanged(category, propertyItem)"
+                                    >
+                                </app-autocomplete>
+                                <!--<select
+                                    (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
+                                    style="width:100%;">
                                     <option *ngFor="let verdi of propertyItem.possibleValues" value="{{verdi}}"
                                         [selected]="verdi === propertyItem.value">{{verdi}}</option>
-                                </select>
+                                </select>-->
                             </div>
 
                             <div *ngIf="propertyItem.possibleValues.length == 0">
-                                {{propertyItem.value}}
+                                <ng-container [ngSwitch]="true">
+                                    <ng-container *ngSwitchCase="propertyItem.format === 'filterExpressionTable'">
+                                        <input style="width:calc(100% - 22px);" type="text" pInputText
+                                            [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
+                                        <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
+                                            (click)="filter(category, propertyItem)"></button>
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="propertyItem.format === 'speciesCategoryTable' || propertyItem.format === 'acousticCategoryTable' || propertyItem.format === 'catchCompensationTable' || propertyItem.format === 'selectivityTable' || propertyItem.format === 'speciesLinktable' || propertyItem.format === 'acousticTargetStrengthTable'">
+                                        <input style="width:calc(100% - 22px);" type="text" pInputText                                       
+                                            [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
+                                        <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
+                                            (click)="definedColumns(category, propertyItem)"></button>
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="propertyItem.format === 'filePath' || propertyItem.format === 'filePaths' || propertyItem.format === 'directoryPath'">
+                                        <input style="width:calc(100% - 22px);" type="text" pInputText                                       
+                                            [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
+                                        <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
+                                            (click)="filePath(category, propertyItem)"></button>
+                                    </ng-container>                                    
+                                    <ng-container *ngSwitchDefault>
+                                        <input matInput type="text" value="{{propertyItem.value}}" spellcheck="false"
+                                            (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" 
+                                            class="ellipsiscolumn"/>
+                                    </ng-container>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -48,16 +78,20 @@
                                 <option *ngFor="let bool of getMetParameterValueList()" [ngValue]="bool.name">
                                     {{bool.name}}</option>
                             </select>-->
-                            <input type="checkbox" [checked]="propertyItem.value == true ? true : false"
+                            <input type="checkbox" [checked]="propertyItem.value == 'true' ? true : false"
                                 (change)="propertyItem.value = $event.target.checked ? 'true' : 'false'; onChanged(category, propertyItem)"
                                 style="vertical-align: middle !important;" />
                         </div>
                         <div *ngSwitchCase="'double'">
-                            <input type="number" step="any" value="{{propertyItem.value}}" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" style="width:100%;">
+                            <input type="number" step="any" value="{{propertyItem.value}}"
+                                (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
+                                style="width:100%;">
                         </div>
                         <div *ngSwitchCase="'integer'">
-                            <input type="number" step="1" value="{{propertyItem.value}}" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" style="width:100%;">
-                        </div>                        
+                            <input type="number" step="1" value="{{propertyItem.value}}"
+                                (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
+                                style="width:100%;">
+                        </div>
                         <div *ngSwitchDefault>{{propertyItem.value}}</div>
                     </td>
                 </tr>

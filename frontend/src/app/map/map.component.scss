@@ -56,13 +56,17 @@
 
 }
 
-#info {
+.maptooltip {
   position: absolute;
-  height: 1px;
-  width: 1px;
-  /*z-index: 100;*/
-  color: red;
-  background-color: rgb(146, 39, 39);
+
+  z-index: 1000000; 
+  color: black;
+  background-color: rgb(255,255,225);
+  border:solid; 
+  border-width:1px;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  padding: 0.1rem;
 }
 .disableButton {
   opacity: 0.35;

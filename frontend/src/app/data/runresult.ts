@@ -1,3 +1,5 @@
+import { ActiveProcess } from './ProcessProperties'
+import { Process } from './process'
 export class RunResult {
     value: any;
     message: string[];
@@ -5,7 +7,16 @@ export class RunResult {
     error: string[];
 }
 
-export class RunModelResult {
-    activeProcessID: string;
-    interactiveMode: string
+export class ProcessResult {
+    processTable?: Process[];
+    activeProcess?: ActiveProcess;
+    saved?: boolean;
+}
+
+export class RunProcessesResult extends ProcessResult {
+    interactiveMode: string;
+}
+
+export class PSUResult extends ProcessResult {
+    PSU: string;
 }

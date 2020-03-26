@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 /* You can add global styles to this file, and also import other style files */
 @import "assets/hi-theme-primeng/hi-primeng.scss";
+@import "material-icons/iconfont/material-icons.css";
 //@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 //@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
@@ -72,6 +73,11 @@ $nodata: #acacac;
   color: black !important;
   user-select: none;
   line-height: 1.1;
+  white-space: nowrap;
+}
+
+.ui-listbox-item:focus {
+  outline: none !important; // prevent webkit :focus outline.
 }
 
 // tabview
@@ -119,6 +125,23 @@ $nodata: #acacac;
     }
   }
 }
+.ui-tree {
+  border: none !important;
+  margin: 1px !important;
+  padding: 0 !important;
+  height: 100% !important;
+  width: inherit !important;
+  //overflow-y: scroll;
+}
+.ui-treenode-label,
+.ui-treenode,
+.ui-tree-container {
+  padding: 0 !important;
+}
+
+.ui-treenode-content:focus {
+  outline: none;
+}
 .ui-contextmenu .ui-menuitem-link {
   padding: 0 20px 0 0 !important ;
   text-decoration: none !important;
@@ -126,10 +149,10 @@ $nodata: #acacac;
     font-size: 0.75rem;
   }
 }
-.ui-menuitem-link {
-  //white-space: nowrap !important;
-  //display: inline-block !important;
-}
+//.ui-menuitem-link {
+//white-space: nowrap !important;
+//display: inline-block !important;
+//}
 .ui-submenu-list {
   //padding: 0 20px 0 0 !important ;
   width: unset !important;
@@ -316,6 +339,14 @@ $nodata: #acacac;
   left: 80%;
 }
 
+.stratumicon:before {
+  @include icon_content("\f00a", 1rem, rgb(145, 173, 131), true);
+}
+
+.psuicon:before {
+  @include icon_content("\f03a", 1rem, rgb(145, 173, 131), true);
+}
+
 .interactiveicon:after {
   @include icon_content("\f111", 0.34rem, rgb(77, 94, 69));
 }
@@ -374,7 +405,14 @@ $nodata: #acacac;
   @include icon_content("\f0c8", 0.4rem, rgb(247, 128, 59), true);
   top: 68%;
 }
-
+.runstatusmodifiedicon:after {
+  @include icon_content("\f0c8", 0.4rem, rgb(180, 177, 175), true);
+  top: 68%;
+}
+.functioninputerroricon:after {
+  @include icon_content("\f0c8", 0.4rem, rgba(209, 53, 53), true);
+  top: 8%;
+}
 .editicon:before {
   @include icon_content("\f040", 0.7rem, rgb(19, 40, 58));
 }
@@ -388,6 +426,10 @@ $nodata: #acacac;
 
 .deleteicon:before {
   @include icon_content("\f068", 0.8rem, rgb(206, 127, 127), true);
+}
+
+.saveicon:before {
+  @include icon_content("\f0c7", 1.0rem, rgb(1, 1, 2), true);
 }
 
 
@@ -446,21 +488,23 @@ $nodata: #acacac;
   background-color: #c0c0c0 !important;
 }
 .mat-tab-header-pagination {
-  background-color:  lighten(#f0f0f0, 4%) !important;
+  background-color: lighten(#f0f0f0, 4%) !important;
 }
 
 .mat-tab-links {
-  width:100%;
+  width: 100%;
 }
-.mat-tab-labels, .mat-tab-links {
+.mat-tab-labels,
+.mat-tab-links {
   background-color: #e5e5e5 !important;
 }
-.mat-tab-label,.mat-tab-link {
+.mat-tab-label,
+.mat-tab-link {
   padding: 0 10px !important;
   height: 1.2rem !important;
   line-height: 1.2rem !important;
-  opacity: 1.0 !important;
-  color:black !important;
+  opacity: 1 !important;
+  color: black !important;
   background-color: #f0f0f0 !important;
   min-width: auto !important;
   border: 1px solid darken(#f0f0f0, 4%);
@@ -478,29 +522,43 @@ $nodata: #acacac;
 }
 
 .mat-tab-group {
-  height: 100% !important; 
+  height: 100% !important;
 }
 
 .mat-tab-body {
-  height: 100% !important; 
+  height: 100% !important;
 }
 .mat-tab-body-content {
-  height: 100% !important; 
+  height: 100% !important;
   line-height: 1.2rem !important;
-  overflow:hidden !important;;
+  overflow: hidden !important;
 }
 
 .mat-button-base {
   line-height: 1.3rem !important;
-  min-width:0px !important;
+  min-width: 0px !important;
 }
 .mat-toolbar {
   padding: 3px 3px !important;
-
 }
-.mat-raised-button, .mat-button-toggle-label-content {
+.mat-raised-button,
+.mat-button-toggle-label-content {
   padding: 0 0 !important;
 }
 .mat-button-toggle-label-content {
   line-height: 1.2rem !important;
+}
+
+.cdk-overlay-container {
+  z-index: 20000 !important;
+}
+.mat-option {
+  line-height: 1.2rem !important;
+  height: 1.3rem !important;
+}
+
+.ellipsiscolumn {
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  width: 100%;
 }

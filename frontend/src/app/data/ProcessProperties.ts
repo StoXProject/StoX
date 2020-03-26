@@ -1,6 +1,14 @@
 import { PropertyCategory } from './propertycategory';
+import { Process } from './process'
 
+export class ActiveProcess {
+    processID? : string;
+    modified? : boolean;
+}
 export class ProcessProperties {
     propertySheet: PropertyCategory[];
-    help: string;
+    activeProcess: ActiveProcess;
+    updateHelp?: boolean;
+    processTable : Process[];
+    saved : boolean;
 }

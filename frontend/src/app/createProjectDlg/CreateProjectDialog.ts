@@ -90,7 +90,7 @@ export class CreateProjectDialog {
                 // this.projectService.PROJECTS.push(this.project);
                 this.ps.projects =  [{projectName: project.projectName, projectPath: project.projectPath}]; 
 
-                this.ps.setSelectedProject(project);
+                this.ps.selectedProject = project;
             }
         } catch(error) {
             console.log(error);

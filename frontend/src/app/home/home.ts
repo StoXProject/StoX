@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
-import { DataService } from '../service/data.service';
-import { RunService } from '../service/run.service';
+// import { Observable, of } from 'rxjs';
+// import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
-import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service'
-import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService'
-import {ExpressionBuilderDlgService} from '../expressionBuilder/ExpressionBuilderDlgService'
+import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
+import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
+// import { ExpressionBuilderDlgService } from '../expressionBuilder/ExpressionBuilderDlgService';
+// import { DefinedColumnsService } from '../dlg/definedColumns/DefinedColumnsService';
+// import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { MenuItem } from 'primeng/api';
+import { DataService } from '../service/data.service';
 
 @Component({
   selector: 'homeComponent',
@@ -17,11 +20,19 @@ import { MenuItem } from 'primeng/api';
 
 export class HomeComponent {
   title = 'StoX';
-  constructor(private rConnectionDlgService: RConnectionDlgService, 
+  constructor(private rConnectionDlgService: RConnectionDlgService,
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
-    private dataService: DataService, private runService: RunService, private expressionBuilderDlgService: ExpressionBuilderDlgService ) {
-      // document.addEventListener('touchstart', function(){}, {passive: false});
+    public ps: ProjectService,
+    private ds: DataService
+    /*,
+    private dataService: DataService, 
+    private expressionBuilderDlgService: ExpressionBuilderDlgService,
+    private testDlgService: QueryBuilderDlgService, 
+    private definedColumns: DefinedColumnsService
+    ,
+    private quBuilderDlgService: QueryBuilderDlgService */) {
+    // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
 
@@ -34,10 +45,13 @@ export class HomeComponent {
     },
     {
       label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
-    },    
-    {
-      label: 'Expression builder...', command: e => this.expressionBuilderDlgService.showDialog()
-    },    
+    },
+    // {
+    //   label: 'Test defined columns ...', command: e => this.definedColumns.showDialog()
+    // },
+    // {
+    //   label: 'Test query builder...', command: e => this.testDlgService.showDialog()
+    // },    
     {
       label: 'Test...', command: e => {
         // this.dataService.getBioticData().pipe(map((resp: any) => {console.log("response", resp)}));
@@ -111,16 +125,17 @@ export class HomeComponent {
     },
     {
       label: 'Mapmode stratum', command: e => {
-        this.runService.iaMode = 'stratum';
+        this.ps.iaMode = 'stratum';
       }
     },
     {
       label: 'Mapmode station', command: e => {
-        this.runService.iaMode = 'station';
+        this.ps.iaMode = 'station';
       }
     }
 
     ];
   }
+
 
 }

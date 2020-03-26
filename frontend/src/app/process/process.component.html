@@ -1,6 +1,7 @@
 <p-listbox #listBox [options]="ps.processes" [(ngModel)]="ps.selectedProcess" optionLabel="processName">
     <ng-template let-process pTemplate="item">
-        <div (contextmenu)="openCm($event, cm, process.value)">
+        <div (contextmenu)="openCm($event, cm, process.value)" pDraggable="process.value" pDroppable="process.value"
+            (onDragStart)="dragStart(process.value)" (onDrop)="drop(process.value)">
             <span class="rib fa processicon" [ngClass]="{'fa-spin': process.value===ps.getRunningProcess()}">
                 <span *ngIf="process.value.hasProcessData" class="absa interactiveicon"></span>
                 <span *ngIf="process.value != ps.getRunningProcess() && process.value.canShowInMap"
@@ -9,7 +10,11 @@
             <span class="rib fa emptyicon">
                 <span *ngIf="process.value.hasError" class="absa processmodelerroricon"></span>
                 <span *ngIf="process.value===ps.getRunFailedProcess()" class="absa runstatusfailedicon"></span>
-                <span *ngIf="ps.isRun(process.value)" class="absa runstatusokicon"></span>
+                <span *ngIf="process.value.hasBeenRun && !process.value.modified" class="absa runstatusokicon"></span>
+                <span *ngIf="process.value.hasBeenRun && process.value.modified"
+                    class="absa runstatusmodifiedicon"></span>
+                <span *ngIf="process.value.functionInputError"
+                    class="absa functioninputerroricon"></span>
             </span>
             <span style="display:inline-block; line-height:1.1;">{{process.value.processName}}</span>
         </div>

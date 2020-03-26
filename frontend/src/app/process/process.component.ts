@@ -4,13 +4,14 @@ import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
 import { RunService } from '../service/run.service';
 import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "ng-keyboard-shortcuts";
-import { ContextMenuModule } from 'primeng/contextmenu';
+import { ContextMenuModule, ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
 import { ProcessOutput } from '../data/processoutput';
 
 import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
+import { ProcessResult } from '../data/runresult';
 @Component({
   selector: 'app-process',
   templateUrl: './process.component.html',
@@ -38,7 +39,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
         key: "ctrl + f6",
         // preventDefault: true,
         command: e => {
-          this.runToHere();
+          this.rs.runToHere();
         }
       }
     );
@@ -54,27 +55,29 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   }
 
 
-  runToHere() {
-    this.rs.runToHere(this.ps.getProcessIdx(this.ps.selectedProcess))
-  }
   async prepCm() {
     // comment: add list of outputtablenames to runModel result. 
     let m: MenuItem[] = [];
+    if (this.rs.canRunFromHere()) {
+      m.push(
+        { label: 'Run from here', icon: 'rib absa runfromhereicon', command: (event) => { this.rs.runFromHere(); } });
+    }
     m.push(
-      { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.runToHere(); } },
-      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { } });
-    if (this.ps.isRun(this.ps.selectedProcess)) {
-      let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.getSelectedProject().projectPath,
-        this.ps.selectedModel.modelName, this.ps.selectedProcess.processID).toPromise();
+      { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } },
+      { label: 'Delete', icon: 'rib absa emptyicon', command:  (event) => { this.ps.removeSelectedProcess(); } }
+    );
+     if (this.ps.selectedProcess.hasBeenRun) {
+      let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.selectedProject.projectPath,
+        this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
       if (tables.length > 0) {
         m.push({
           label: 'View output', icon: 'rib absa emptyicon', items:
             tables.map(e => {
               return {
                 label: e, icon: 'rib absa emptyicon', command: async (event) => {
-                  let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.getSelectedProject().projectPath,
-                    this.ps.selectedModel.modelName, this.ps.selectedProcess.processID, e).toPromise();
-                  this.ps.outputTables.push({ table: e, output: out });
+                  let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
+                    this.ps.selectedModel.modelName, this.ps.selectedProcessId, e).toPromise();
+                  this.ps.outputTables.push({ table: this.ps.selectedProcess.processName + "(" + e + ")", output: out });
                 }
               };
             })
@@ -88,8 +91,10 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     );
     this.contextMenu = m;
   }
-  async openCm(event, cm, process: Process) {
-    this.ps.selectedProcess = process;
+  async openCm(event : MouseEvent, cm : ContextMenu, process: Process) {
+    // TODO: Incorpoate dynamic ng-action-outlet with material. or support scrolling primeng menus
+    // https://stackblitz.com/edit/ng-action-outlet-demo?file=src/app/app.component.ts
+    this.ps.selectedProcess = process; 
     //console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
@@ -97,5 +102,18 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     cm.show(event);
     return false;
   }
+  draggedProcessId: string = null;
+  dragStart(process: Process) {
+     this.draggedProcessId = process.processID;
+  }
 
+  async drop(process: Process) {
+    if (this.draggedProcessId != null) {
+      console.log("dragging " + this.draggedProcessId + " to " + process.processID);
+      let pr : ProcessResult = await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise();
+      this.ps.processes = pr.processTable;
+      this.ps.selectedProject.saved = pr.saved;
+      //this.ps.updateProcessList();
+    }
+  }
 }

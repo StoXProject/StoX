@@ -1,6 +1,6 @@
 <!--<p-tabMenu #menuItems [model]="items" (click)="activateMenu()">
 </p-tabMenu>-->
 <nav mat-tab-nav-bar>
-    <a mat-tab-link *ngFor="let model of models" (click)="activateMenu(model)"
-    [active]="ps.selectedModel == model">{{model.modelName}}</a>
+    <a mat-tab-link *ngFor="let model of ps.models" (click)="activateMenu(model)"
+    [active]="ps.selectedModel == model">{{model.displayName}}</a>
 </nav>
