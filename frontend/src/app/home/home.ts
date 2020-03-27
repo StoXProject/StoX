@@ -11,6 +11,7 @@ import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
 // import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { MenuItem } from 'primeng/api';
 import { DataService } from '../service/data.service';
+import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgService';
 
 @Component({
   selector: 'homeComponent',
@@ -24,6 +25,7 @@ export class HomeComponent {
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
     public ps: ProjectService,
+    private saveProjectAs: SaveAsProjectDlgService,
     private ds: DataService
     /*,
     private dataService: DataService, 
@@ -52,8 +54,8 @@ export class HomeComponent {
     // {
     //   label: 'Test query builder...', command: e => this.testDlgService.showDialog()
     // },    
-    {
-      label: 'Test...', command: e => {
+    // {
+    //   label: 'Test...', command: e => {
         // this.dataService.getBioticData().pipe(map((resp: any) => {console.log("response", resp)}));
         //this.dataService.getBioticData().toPromise().then((st:any) => {console.log(st);});
 
@@ -121,16 +123,16 @@ export class HomeComponent {
         //     console.log("response : " + response)
         //   }
         // );
+    //   }
+    // },
+    {
+      label: 'Save project as ...', command: e => {
+        this.saveProjectAs.show();
       }
     },
     {
-      label: 'Mapmode stratum', command: e => {
-        this.ps.iaMode = 'stratum';
-      }
-    },
-    {
-      label: 'Mapmode station', command: e => {
-        this.ps.iaMode = 'station';
+      label: 'Reset project', command: e => {
+        // this.ps.iaMode = 'station';
       }
     }
 
