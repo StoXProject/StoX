@@ -169,6 +169,14 @@ export class DataService {
     }, true); 
   }
 
+  saveAsProject(projectPath: string, newProjectPath: string /*, ow: Boolean */): Observable<Project> {
+    
+    return this.runFunctionThrow('saveAsProject', {
+      "projectPath": projectPath,
+      "newProjectPath": newProjectPath
+      /*, "ow": ow */
+    }, true);
+  }
 
   closeProject(projectPath: string, save: Boolean): Observable<any> {
     // const formData = new FormData();
@@ -556,6 +564,10 @@ export class DataService {
 
   fileExists(options: any): Observable<any> {
     return this.postLocalNode('fileExists', options);
+  }
+
+  makeDirectory(options: any): Observable<any> {
+    return this.postLocalNode('makeDirectory', options);
   }
 
   public getRPath(): Observable<any> {

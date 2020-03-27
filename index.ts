@@ -117,19 +117,27 @@ function createWindow() {
     console.log("check if a file exists");
 
     if (JSON.stringify(req.body) != '{}') {
-      var rootPath = req.body.projectPath;
       var filePath = req.body.filePath;
 
       if(require('fs').existsSync(filePath)) {
         res.send("true");
       } else {
-        var wholePath = rootPath + "/" + filePath;
-        if(require('fs').existsSync(wholePath)) {
-          res.send("true");
-        } else {
-          res.send("false");
-        }
+        res.send("false");
       }
+    }
+  });
+
+  server.post('/makeDirectory', function (req: any, res: any) {
+    console.log("make directory");
+
+    if (JSON.stringify(req.body) != '{}') {
+      var dirPath = req.body.dirPath;
+      try {
+        require('fs').mkdirSync(dirPath);
+        res.send("true");
+      } catch(error) {
+        res.send(error);
+      }      
     }
   });
 

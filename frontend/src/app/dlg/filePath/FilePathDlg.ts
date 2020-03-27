@@ -105,7 +105,7 @@ export class FilePathDlg  implements OnInit {
     }
 
     async apply() { 
-        var options = {projectPath: this.ps.selectedProject.projectPath, filePath: null};
+        var option = {filePath: null};
         // check that all paths are filled and files exist
         for(let i=0; i< this.service.paths.length; i++) {
             if(this.service.paths[i].path == null) {
@@ -114,13 +114,18 @@ export class FilePathDlg  implements OnInit {
                 return;
             } else {
                 // check file for existence
-                options.filePath = this.service.paths[i].path;
-                let exists = await this.dataService.fileExists(options).toPromise();
+                option.filePath = this.service.paths[i].path;
+                let trial1 = await this.dataService.fileExists(option).toPromise();
 
-                if(exists != null && exists != "true") {
-                    this.msgService.setMessage("File " + this.service.paths[i].path + " does not exist");
-                    this.msgService.showMessage();
-                    return;
+                if(trial1 != null && trial1 != "true") {
+                    option.filePath = this.ps.selectedProject.projectPath + "/" + this.service.paths[i].path;
+                    let trial2 = await this.dataService.fileExists(option).toPromise();
+
+                    if(trial2 != null && trial2 != "true") {
+                        this.msgService.setMessage("File " + this.service.paths[i].path + " does not exist");
+                        this.msgService.showMessage();
+                        return;
+                    }
                 }
             }
         }
