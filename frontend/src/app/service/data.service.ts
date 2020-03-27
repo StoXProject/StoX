@@ -96,7 +96,7 @@ export class DataService {
     // // formData.set('open', 'TRUE');
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPI/R/createProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
-    return this.runFunctionThrow('createProject', {
+    return this.runFunctionThrowFramework('createProject', {
       "projectPath": projectPath,
       "template": templateName,
       "ow": false,
@@ -136,7 +136,7 @@ export class DataService {
     // formData.set('projectPath', "'" + projectPath + "'");
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
-    return this.runFunctionThrow('openProject', {
+    return this.runFunctionThrowFramework('openProject', {
       "projectPath": projectPath
     }, true);
   }
@@ -146,9 +146,17 @@ export class DataService {
     // formData.set('projectPath', "'" + projectPath + "'");
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
-    return this.runFunctionThrow('isSaved', {
+    return this.runFunctionThrowFramework('isSaved', {
       "projectPath": projectPath
     }, true);
+  }
+
+  getRstoxAPIVersion(): Observable<string> {
+    // const formData = new FormData();
+    // formData.set('projectPath', "'" + projectPath + "'");
+    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+
+    return this.runFunctionThrowAPI('getRstoxAPIVersion', {}, true);
   }
 
   saveProject(projectPath: string): Observable<Project> {
@@ -156,9 +164,9 @@ export class DataService {
     // formData.set('projectPath', "'" + projectPath + "'");
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
-    return this.runFunctionThrow('saveProject', {
+    return this.runFunctionThrowFramework('saveProject', {
       "projectPath": projectPath
-    }, true);
+    }, true); 
   }
 
 
@@ -365,17 +373,26 @@ export class DataService {
     return this.postLocalOCPUBody('tests', 'test_geojson_points', {}, 'text', true);
   }
   runFunction(what: string, argsobj: any): Observable<any> {
-    return this.runFunctionThrow(what, argsobj, false);
+    return this.runFunctionThrowFramework(what, argsobj, false);
   }
 
+  runFunctionThrowFramework(what: string, argsobj: any, dothrow: boolean): Observable<any> {
+    return this.runFunctionThrow(what, argsobj, dothrow, 'RstoxFramework');
+  }
+
+  runFunctionThrowAPI(what: string, argsobj: any, dothrow: boolean): Observable<any> {
+    return this.runFunctionThrow(what, argsobj, dothrow, 'RstoxAPI');
+  }
   /** runFunction API wrapper - includes logging of user message/warning/errors from R*/
-  runFunctionThrow(what: string, argsobj: any, dothrow: boolean): Observable<any> {
+  runFunctionThrow(what: string, argsobj: any, dothrow: boolean, pkg: string): Observable<any> {
     // runFunction wraps a doCall with what/args and exception handling that returns a list.
     const formData = new FormData();
     let args: any = JSON.stringify(argsobj);
     formData.set('what', "'" + what + "'");
     formData.set('args', args);
+    formData.set('package', "'" + pkg + "'");
     console.log(what + "(" + args + ")");
+    // Run RstoxAPI::runFunction with package parameter that is default RstoxFramework
     return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', formData, 'text', true, "json")
       .pipe(map(res => {
         //let jsr: RunResult = JSON.parse(res.body);

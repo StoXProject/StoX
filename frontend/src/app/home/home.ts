@@ -20,6 +20,8 @@ import { DataService } from '../service/data.service';
 
 export class HomeComponent {
   title = 'StoX';
+  stoxVersion: string;
+  rstoxAPIVersion: string;
   constructor(private rConnectionDlgService: RConnectionDlgService,
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
@@ -32,11 +34,14 @@ export class HomeComponent {
     private definedColumns: DefinedColumnsService
     ,
     private quBuilderDlgService: QueryBuilderDlgService */) {
+
     // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.stoxVersion = '2.9.6';
+    this.rstoxAPIVersion = await this.ds.getRstoxAPIVersion().toPromise();
     this.items = [{
       label: 'R connection...', command: e => this.rConnectionDlgService.showDialog()
     },
