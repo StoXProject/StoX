@@ -171,7 +171,7 @@ export class DataService {
 
   saveAsProject(projectPath: string, newProjectPath: string /*, ow: Boolean */): Observable<Project> {
     
-    return this.runFunctionThrow('saveAsProject', {
+    return this.runFunctionThrowFramework('saveAsProject', {
       "projectPath": projectPath,
       "newProjectPath": newProjectPath
       /*, "ow": ow */
