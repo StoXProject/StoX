@@ -118,19 +118,19 @@ export class ProjectService {
   async removeSelectedProcess() {
     this.initializeProperties();
     if (this.selectedProject != null) {
-      let pr : ProcessResult = await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise();
+      let pr: ProcessResult = await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise();
       this.processes = pr.processTable;
       this.selectedProject.saved = pr.saved;
       if (this.selectedProcess == null && this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
-      } 
+      }
     }
-  } 
+  }
 
   async addProcess() {
     // this.initializeProperties();
     if (this.selectedProject != null) {
-      let pr : ProcessResult = await this.dataService.addProcess(this.selectedProject.projectPath, this.selectedModel.modelName, null).toPromise();
+      let pr: ProcessResult = await this.dataService.addProcess(this.selectedProject.projectPath, this.selectedModel.modelName, null).toPromise();
       this.processes = pr.processTable;
       this.selectedProject.saved = pr.saved;
       if (this.selectedProcess == null && this.processes.length > 0) {
@@ -156,7 +156,7 @@ export class ProjectService {
     this.selectedModel = this.models[0]; // This will trigger update process list.
 
     // To do: make this property the project path instead of project object.
-    let jsonString = JSON.stringify(project);
+    let jsonString = JSON.stringify(project.projectPath);
     console.log("StoX GUI: updating ActiveProject with string  " + jsonString)
     let status = await this.dataService.updateActiveProject(jsonString).toPromise();
     console.log("status " + status);
@@ -300,14 +300,15 @@ export class ProjectService {
 
   async initData() {
 
-    let jsonString = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
-    let activeProject: Project = <Project>JSON.parse(jsonString);
+    let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
+
+    console.log("Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);
     // Read models and set selected to the first model
     this.models = <Model[]>await this.dataService.getModelInfo().toPromise();
     this.setModels(this.models);
     if (this.models != null && this.models.length > 0) {
       //this.selectedModel = this.models[0]; 
-      this.openProject(activeProject.projectPath);
+      this.openProject(projectPath);
     }
   }
 
