@@ -380,12 +380,14 @@ const writePropertiesToFile = function writePropertiesToFile() {
 }
 
 server.post('/updateactiveproject', function (req: any, res: any) {
-  properties.activeProject = req.body.jsonString;
+  properties.activeProject = JSON.parse(req.body.jsonString);
+  logInfo("update active project: " +properties.activeProject)
   res.send("ok");
 });
 
 server.get('/readactiveproject', function (req: any, res: any) {
-  res.send(properties.activeProject);
+  logInfo("read active project: " +properties.activeProject)
+    res.send(properties.activeProject);
 });
 
 server.post('/updateprojectrootpath', function (req: any, res: any) {
