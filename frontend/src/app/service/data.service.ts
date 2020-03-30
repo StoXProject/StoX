@@ -597,8 +597,8 @@ export class DataService {
     return this.getLocalNode('readactiveproject');
   }
 
-  public updateActiveProject(jsonString: string): Observable<any> {
-    return this.postLocalNode('updateactiveproject', { jsonString: jsonString });
+  public updateActiveProject(projectPath: string): Observable<any> {
+    return this.postLocalNode('updateactiveproject', { jsonString: projectPath });
   }
 
   public updateProjectRootPath(jsonString: string): Observable<any> {
