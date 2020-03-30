@@ -178,6 +178,13 @@ export class DataService {
     }, true);
   }
 
+  resetProject(projectPath: string, save: Boolean): Observable<Project> {
+    return this.runFunctionThrowFramework('resetProject', {
+      "projectPath": projectPath,
+      "save": save
+    }, true);
+  }
+
   closeProject(projectPath: string, save: Boolean): Observable<any> {
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");

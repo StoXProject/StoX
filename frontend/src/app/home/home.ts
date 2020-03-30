@@ -1,3 +1,4 @@
+import { ResetProjectDlgService } from './../resetProject/ResetProjectDlgService';
 import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 // import { Observable, of } from 'rxjs';
@@ -27,7 +28,7 @@ export class HomeComponent {
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
     public ps: ProjectService,
-    private saveProjectAs: SaveAsProjectDlgService,
+    private saveProjectAs: SaveAsProjectDlgService, private resetProject: ResetProjectDlgService,
     private ds: DataService
     /*,
     private dataService: DataService, 
@@ -131,13 +132,13 @@ export class HomeComponent {
     //   }
     // },
     {
-      label: 'Save project as ...', command: e => {
+      label: 'Save project as...', command: e => {
         this.saveProjectAs.show();
       }
     },
     {
       label: 'Reset project', command: e => {
-        // this.ps.iaMode = 'station';
+        this.resetProject.checkSaved();
       }
     }
 
