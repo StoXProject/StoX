@@ -46,7 +46,8 @@ export class ExpressionBuilderDlg  implements OnInit {
     // }
 
     addRow() {
-        this.dataSource.data.push({tableName: null, expression: null});
+        this.service.tableExpressions.push({tableName: null, expression: null});
+        this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
         this.dataSource.filter = "";
     }    
 

@@ -54,7 +54,9 @@ export class DefinedColumnsTableDlg  implements OnInit {
                 obj[key] = null;
             }
         });
-        this.dataSource.data.push(obj);
+        this.service.definedColumnsData.push(obj);
+        this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
+        // this.dataSource.data.push(obj);
         this.dataSource.filter = "";
     }    
 
