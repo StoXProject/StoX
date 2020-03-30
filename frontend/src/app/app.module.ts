@@ -1,6 +1,6 @@
+import { ResetProjectDlg } from './resetProject/ResetProjectDlg';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { HomeComponent } from './home/home';
 import { RConnectionDlg } from './dlg/RConnectionDlg';
 import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
@@ -45,8 +45,8 @@ import { PanelMenuModule } from 'primeng/primeng';
 import { InputTextModule } from 'primeng/inputtext';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/components/table/table';
-import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService } from './in-memory-data.service';
+//import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+//import { InMemoryDataService } from './in-memory-data.service';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 import { CommonModule, APP_BASE_HREF, LocationStrategy, HashLocationStrategy } from '@angular/common';
@@ -224,6 +224,7 @@ export class MaterialModule {}
     DefinedColumnsTableDlg,
     FilePathDlg,
     SaveAsProjectDlg,
+    ResetProjectDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,
