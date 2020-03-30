@@ -33,7 +33,9 @@ export class FilePathDlg  implements OnInit {
     }
 
     addRow() {
-        this.dataSource.data.push({path: null});
+        let p : FilePath = {path: null};
+        this.service.paths.push(p)
+        this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
         this.dataSource.filter = "";
     }    
 

@@ -1,4 +1,5 @@
 import { start } from "repl";
+import { platform } from "os";
 
 //handle setupevents as quickly as possible
 const setupEvents = require('./../installers/setupEvents')
@@ -24,8 +25,8 @@ var properties: any = null;
 
 var logDir = './log';
 
-if (!fs.existsSync(logDir)){
-    fs.mkdirSync(logDir);
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir);
 }
 
 const opts = {
@@ -50,12 +51,12 @@ const { app, BrowserWindow, Menu } = require('electron')
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 
-function logInfo(str : string) {
+function logInfo(str: string) {
   log.info(str);
   console.log(str);
 }
 
-function logError(str : string) {
+function logError(str: string) {
   log.log('error', str);
   console.log(str);
 }
@@ -78,9 +79,14 @@ function createWindow() {
     }
   })
 
+  function resolveDefaultPath(defPath: string): string {
+    // electron showOpenDialog defaultPath requires c:\\temp\\test on win32, otherwise c:/temp/test on mac/linux
+    return process.platform == "win32" ? defPath.replace(/\//g, "\\") : defPath.replace(/\\/g, "/")
+  }
+  
   server.post('/browse', function (req: any, res: any) {
     logInfo("select a folder... wait");
-    let defPath = req.body.defaultpath.replace(/\\/g, "/"); // convert backslash to forward
+    let defPath = resolveDefaultPath(req.body.defaultpath); // correct slashes in default path
     logInfo("default folder " + defPath);
     require('electron').dialog.showOpenDialog(mainWindow, {
       title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
@@ -100,9 +106,10 @@ function createWindow() {
     logInfo("select a file/folder path(s)");
 
     if (JSON.stringify(req.body) != '{}') {
-
+      let defPath = resolveDefaultPath(req.body.defaultPath); // correct slashes in default path
+      logInfo("default folder " + defPath);
       require('electron').dialog.showOpenDialog(mainWindow, {
-        title: req.body.title, defaultPath: req.body.defaultPath,
+        title: req.body.title, defaultPath: defPath,
         properties: req.body.properties
       }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
         if (!object.filePaths || !object.filePaths.length) {
@@ -381,13 +388,13 @@ const writePropertiesToFile = function writePropertiesToFile() {
 
 server.post('/updateactiveproject', function (req: any, res: any) {
   properties.activeProject = JSON.parse(req.body.jsonString);
-  logInfo("update active project: " +properties.activeProject)
+  logInfo("update active project: " + properties.activeProject)
   res.send("ok");
 });
 
 server.get('/readactiveproject', function (req: any, res: any) {
-  logInfo("read active project: " +properties.activeProject)
-    res.send(properties.activeProject);
+  logInfo("read active project: " + properties.activeProject)
+  res.send(properties.activeProject);
 });
 
 server.post('/updateprojectrootpath', function (req: any, res: any) {
