@@ -22,15 +22,22 @@ import { FormControl } from "@angular/forms";
 export class AutocompleteComponent {
   //formCtrl: FormControl;
   filteredCountry: Observable<any[]>;
-  @ViewChild(MatAutocompleteTrigger, {static:true}) autocomplete: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger, { static: true }) autocomplete: MatAutocompleteTrigger;
 
-  @ViewChild("txtVal", {static:true}) myInput: ElementRef;
+  @ViewChild("txtVal", { static: true }) myInput: ElementRef;
   m_items: string[]; /* = [
     "Afghanistan","Åland Islands","Albania"];*/
   m_selectedItem: string;
 
   @Input()
   set items(items: string[]) {
+    if (typeof items == "string") { // one element array given as string.
+      console.warn("autocomplete is an one element string, not an array");
+      items = [items];
+    } else if (!Array.isArray(items)) {
+      console.error("autocomplete is not an array, nor string");
+      items = [];
+    }
     this.m_items = items;
   }
   get items(): string[] {
