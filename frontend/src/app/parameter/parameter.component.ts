@@ -49,6 +49,9 @@ export class ParameterComponent implements OnInit {
       console.log("p.value==null") 
       pi.value = ""; // send null as empty string.
     }
+    if(pi.value == "" && pi.format == "filePaths") {
+      pi.value = "[]";
+    }
     //return;
     // groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string
     if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {

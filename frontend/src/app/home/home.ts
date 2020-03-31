@@ -1,5 +1,5 @@
 import { ResetProjectDlgService } from './../resetProject/ResetProjectDlgService';
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { tap } from 'rxjs/operators';
 // import { Observable, of } from 'rxjs';
 // import { DataService } from '../service/data.service';
@@ -20,7 +20,14 @@ import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgServic
   styleUrls: ['./home.scss']
 })
 
-export class HomeComponent {
+export class HomeComponent /*implements OnInit, OnDestroy*/ {
+  /*@HostListener("window:beforeunload", ["$event"]) unloadHandler($event) {
+    // Cancel the event as stated by the standard.
+    event.preventDefault();
+    // Chrome requires returnValue to be set.
+    $event.returnValue = 'Data will be lost';
+    console.log($event);
+  }*/
   title = 'StoX';
   stoxVersion: string;
   rstoxAPIVersion: string;
@@ -41,9 +48,19 @@ export class HomeComponent {
     // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
+  /*async ngOnDestroy() {
+    await this.ds.resetProject(this.ps.selectedProject.projectPath, false, false).toPromise();
+  }*/
+  @HostListener('window:beforeunload', ['$event'])
+  async unloadHandler(event: any) {
+    //event.preventDefault();
+    //event.returnValue = true;
+    await this.ds.resetProject(this.ps.selectedProject.projectPath, true, false).toPromise();
+  }
 
   async ngOnInit() {
-    this.stoxVersion = '2.9.6';
+    console.log("Home init")
+    this.stoxVersion = '2.9.7';
     try {
       this.rstoxAPIVersion = await this.ds.getRstoxAPIVersion().toPromise();
     } catch (error) {
@@ -148,6 +165,5 @@ export class HomeComponent {
 
     ];
   }
-
 
 }
