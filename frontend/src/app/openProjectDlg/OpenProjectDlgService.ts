@@ -9,8 +9,11 @@ export class OpenProjectDlgService {
 
     display: boolean = false;
 
+    projectPath: string = null;
+
     showDialog() {
-        console.log("OpenProjectDialogService showDialog");
+        // console.log("OpenProjectDialogService showDialog");
+        this.projectPath = null;
         this.display = true;
     }
 }

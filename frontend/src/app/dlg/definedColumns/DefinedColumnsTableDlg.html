@@ -14,10 +14,10 @@
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
             <mat-header-cell *matHeaderCellDef>
-                <mat-checkbox (change)="$event ? masterToggle() : null"
+                <!--<mat-checkbox (change)="$event ? masterToggle() : null"
                             [checked]="selection.hasValue() && isAllSelected()"
                             [indeterminate]="selection.hasValue() && !isAllSelected()">
-                </mat-checkbox>
+                </mat-checkbox>-->
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <mat-checkbox (click)="$event.stopPropagation()"

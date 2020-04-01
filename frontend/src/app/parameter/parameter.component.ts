@@ -110,14 +110,28 @@ export class ParameterComponent implements OnInit {
   //   return s.map(st => { return { label: st, value: st }; })
   // }
 
-  filter(category: PropertyCategory, pi: PropertyItem) {
+  async filter(category: PropertyCategory, pi: PropertyItem) {
     // set this pi as the current PropertyItem in ExpressionBuilderService
     this.exprBuilderService.currentPropertyItem = pi;
     this.exprBuilderService.currentPropertyCategory = category;
 
+    let tableNames = <string[]> await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+    console.log("tableNames : " + JSON.stringify(tableNames));
+
+    if(tableNames != null && JSON.stringify(tableNames) == '{}') {
+        tableNames = [];
+    }
+
+    if(tableNames == null || JSON.stringify(tableNames) == '[]') {
+      this.msgService.setMessage("You have to run the function before this action!");
+      this.msgService.showMessage();
+      return;      
+    }    
+
+    this.exprBuilderService.tableNames = tableNames;
+
     // run ExpressionBuilderService.showDialog() to show Expression builder dialog
     this.exprBuilderService.showDialog();
-
   }
 
   definedColumns(category: PropertyCategory, pi: PropertyItem) {
