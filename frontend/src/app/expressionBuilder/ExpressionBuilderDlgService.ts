@@ -102,12 +102,12 @@ export class ExpressionBuilderDlgService {
     async showDialog() {
         console.log("in ExpressionBuilderDlgService.showDialog()");
 
-        this.tableNames = <string[]>await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
-        console.log("this.tableNames : " + JSON.stringify(this.tableNames));
+        // this.tableNames = <string[]>await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+        // console.log("this.tableNames : " + JSON.stringify(this.tableNames));
 
-        if(JSON.stringify(this.tableNames) == '{}') {
-            this.tableNames = [];
-        }
+        // if(JSON.stringify(this.tableNames) == '{}') {
+        //     this.tableNames = [];
+        // }
 
         // build array of tableExpressions from rExpression
 
