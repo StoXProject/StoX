@@ -31,10 +31,10 @@ export class AutocompleteComponent {
 
   @Input()
   set items(items: string[]) {
-    if (typeof items == "string") { // one element array given as string.
+    /*if (typeof items == "string") { // one element array given as string.
       console.warn("autocomplete is an one element string, not an array");
       items = [items];
-    } else if (!Array.isArray(items)) {
+    } else */if (!Array.isArray(items)) {
       console.error("autocomplete is not an array, nor string");
       items = [];
     }
