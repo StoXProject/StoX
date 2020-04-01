@@ -318,6 +318,7 @@ export class ProjectService {
     if (project != null) {
       this.projects = [project];
       this.selectedProject = this.projects[0];
+      this.onSelectedProcessChanged();
     }
   }
   /*
