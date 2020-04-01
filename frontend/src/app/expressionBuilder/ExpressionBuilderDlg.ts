@@ -2,7 +2,7 @@
 import { ExpressionBuilderDlgService } from './ExpressionBuilderDlgService';
 import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 import { TableExpression } from '../data/tableexpression';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from '../message/MessageService';

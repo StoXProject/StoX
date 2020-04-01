@@ -12,7 +12,7 @@ import { map, startWith } from "rxjs/operators";
 import {
   MatAutocompleteTrigger,
   MatAutocompleteSelectedEvent
-} from "@angular/material";
+} from "@angular/material/autocomplete";
 import { FormControl } from "@angular/forms";
 @Component({
   selector: "app-autocomplete",

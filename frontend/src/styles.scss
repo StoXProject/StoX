@@ -78,6 +78,7 @@ $nodata: #acacac;
 
 .ui-listbox-item:focus {
   outline: none !important; // prevent webkit :focus outline.
+  box-shadow: none !important; // add by primeng
 }
 
 // tabview

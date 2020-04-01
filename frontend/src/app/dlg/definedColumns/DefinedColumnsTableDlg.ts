@@ -1,4 +1,4 @@
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 import { DefinedColumns, ColumnPossibleValues } from '../../data/DefinedColumns';
 import { SelectionModel } from '@angular/cdk/collections';
 import { DefinedColumnsService } from './DefinedColumnsService';

@@ -38,7 +38,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
 import { EDSU_PSU } from '../data/processdata';
