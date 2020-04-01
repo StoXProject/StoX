@@ -87,7 +87,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     m.push(
       { label: 'Move up', icon: 'rib absa emptyicon', command: (event) => { } },
       { label: 'Move down', icon: 'rib absa emptyicon', command: (event) => { } },
-      { label: 'Add process', icon: 'rib absa addprocessicon', command: (event) => { } }
+      { label: 'Add process', icon: 'rib absa addprocessicon', command: (event) => { this.ps.addProcess(); } }
     );
     this.contextMenu = m;
   }
