@@ -22,26 +22,8 @@ var fs = require('fs')
 var cors = require('cors');
 
 var properties: any = null;
-
-var logDir = './log';
-
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir);
-}
-
-const opts = {
-  errorEventName: 'error',
-  logDirectory: logDir, // NOTE: folder must exist and be writable... executable bin directory
-  fileNamePattern: 'node-<DATE>.log',
-  dateFormat: 'YYYY.MM.DD'
-};
-const log = simpleNodeLogger.createRollingFileLogger(opts);
-
-var server = express();
-server.use(bodyParser.json())
-
-server.use(cors()) // enable cors in header (http call from static resources)
-server.options(cors());
+var log: any = null;
+var server: any = null;
 
 var rspawn: any;
 var opencpuProcess: any; // Opencpu process
@@ -51,136 +33,16 @@ const { app, BrowserWindow, Menu } = require('electron')
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 
-function logInfo(str: string) {
-  log.info(str);
-  console.log(str);
-}
-
-function logError(str: string) {
-  log.log('error', str);
-  console.log(str);
-}
-
-function createWindow() {
-
-  var port = 3000;
-  server.listen(port);
-  // start the server
-  logInfo('Node express server started at port ' + port + ". Available at http://localhost:" + port);
-  //log.log('error', 'test');
-
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    title: 'StoX 3.0',
-    webPreferences: {
-      nodeIntegration: true
-    }
-  })
-
-  function resolveDefaultPath(defPath: string): string {
-    // electron showOpenDialog defaultPath requires c:\\temp\\test on win32, otherwise c:/temp/test on mac/linux
-    return process.platform == "win32" ? defPath.replace(/\//g, "\\") : defPath.replace(/\\/g, "/")
-  }
-  
-  server.post('/browse', function (req: any, res: any) {
-    logInfo("select a folder... wait");
-    let defPath = resolveDefaultPath(req.body.defaultpath); // correct slashes in default path
-    logInfo("default folder " + defPath);
-    require('electron').dialog.showOpenDialog(mainWindow, {
-      title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
-      properties: [/*'openFile'*/'openDirectory']
-    }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
-      if (!object.filePaths || !object.filePaths.length) {
-        logInfo("You didn't select a folder");
-        return;
-      }
-      logInfo("You did select a folder");
-      logInfo(object.filePaths[0]);
-      res.send(object.filePaths[0]);
-    });
-  });
-
-  server.post('/browsePath', function (req: any, res: any) {
-    logInfo("select a file/folder path(s)");
-
-    if (JSON.stringify(req.body) != '{}') {
-      let defPath = resolveDefaultPath(req.body.defaultPath); // correct slashes in default path
-      logInfo("default folder " + defPath);
-      require('electron').dialog.showOpenDialog(mainWindow, {
-        title: req.body.title, defaultPath: defPath,
-        properties: req.body.properties
-      }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
-        if (!object.filePaths || !object.filePaths.length) {
-          logInfo("You didn't select anything");
-          return;
-        }
-
-        logInfo("You selected : " + object.filePaths);
-
-        res.send(object.filePaths);
-      });
-    }
-  });
-
-  server.post('/fileExists', function (req: any, res: any) {
-    logInfo("check if a file exists");
-
-    if (JSON.stringify(req.body) != '{}') {
-      var filePath = req.body.filePath;
-
-      if (fs.existsSync(filePath)) {
-        res.send("true");
-      } else {
-        res.send("false");
-      }
-    }
-  });
-
-  server.post('/makeDirectory', function (req: any, res: any) {
-    logInfo("make directory");
-
-    if (JSON.stringify(req.body) != '{}') {
-      var dirPath = req.body.dirPath;
-      try {
-        fs.mkdirSync(dirPath);
-        res.send("true");
-      } catch (error) {
-        res.send(error);
-      }
-    }
-  });
-
-  // mainWindow.setMenu(null);
-  createMenu();
-
-  // and load the index.html of the app.
-  //mainWindow.loadFile(`../frontend/dist/stox/index.html`)
-  mainWindow.loadURL(`file://${__dirname}/../frontend/dist/stox/index.html`)
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
-
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null;
-    rspawn = null;
-    child_process = null;
-  })
-
-}
-
 app.on('ready', function () {
+  if (setupEvents.handleSquirrelEvent()) {
+    return;
+  }
+  setupLogger();
   logInfo("lifecycle: ready")
+  setupServer();
   readPropertiesFromFile();
   startOpenCPU();
-  if (!setupEvents.handleSquirrelEvent()) {
-    createWindow()
-  }
+  createWindow()
 })
 
 // Quit when all windows are closed.
@@ -209,6 +71,75 @@ app.on('quit', function () {
     process.exit(opencpuProcess.pid);
   }
 });
+
+function logInfo(str: string) {
+  if (log != null) {
+    log.info(str);
+  }
+  console.log(str);
+}
+
+function logError(str: string) {
+  log.log('error', str);
+  console.log(str);
+}
+
+function setupLogger() {
+  var logDir = './log';
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+  }
+  const opts = {
+    errorEventName: 'error',
+    logDirectory: logDir, // NOTE: folder must exist and be writable... executable bin directory
+    fileNamePattern: 'node-<DATE>.log',
+    dateFormat: 'YYYY.MM.DD'
+  };
+  log = simpleNodeLogger.createRollingFileLogger(opts);
+}
+
+
+
+function createWindow() {
+  // start server
+  var port = 3000;
+  server.listen(port);
+  // start the server
+  logInfo('Node express server started at port ' + port + ". Available at http://localhost:" + port);
+  //log.log('error', 'test');
+  app.allowRendererProcessReuse = true; // required or forced by electron 9
+
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    title: 'StoX 3.0',
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
+
+  // mainWindow.setMenu(null);
+  createMenu();
+
+  // and load the index.html of the app.
+  //mainWindow.loadFile(`../frontend/dist/stox/index.html`)
+  mainWindow.loadURL(`file://${__dirname}/../frontend/dist/stox/index.html`)
+
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
+
+  // Emitted when the window is closed.
+  mainWindow.on('closed', function () {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null;
+    rspawn = null;
+    child_process = null;
+  })
+
+}
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
@@ -287,19 +218,6 @@ const createMenu = function createMenu() {
   Menu.setApplicationMenu(menu)
 }
 
-
-// observe project root path
-server.get('/projectrootpath', function (req: any, res: any) {
-  //logInfo('get project root path ' + properties.projectRootPath);
-  res.send(properties.projectRootPath);
-});
-
-// observe rpath in backend
-server.get('/rpath', function (req: any, res: any) {
-  //logInfo('get rpath ' + properties.rPath);
-  res.send(properties.rPath);
-});
-
 function startOpenCPU(): string {
   logInfo("Running on Platform: " + process.platform)
   if (process.platform == "win32"/*windows*/ || process.platform == "darwin"/*mac*/) {
@@ -337,13 +255,6 @@ function startOpenCPU(): string {
   }
   return "ok";
 }
-// modify rpath in backend
-server.post('/rpath', function (req: any, res: any) {
-  properties.rPath = req.body.rpath;
-  //logInfo('rpath ' + properties.rPath);
-  let resultstr: string = startOpenCPU();
-  res.send('post /rpath result:' + resultstr);
-});
 
 const readPropertiesFromFile = function readPropertiesFromFile() {
   let propFileName = require('os').homedir() + "/.stox.properties.json";
@@ -386,20 +297,127 @@ const writePropertiesToFile = function writePropertiesToFile() {
   }
 }
 
-server.post('/updateactiveproject', function (req: any, res: any) {
-  properties.activeProject = JSON.parse(req.body.jsonString);
-  logInfo("update active project: " + properties.activeProject)
-  res.send("ok");
-});
+function setupServer() {
+  server = express();
+  server.use(bodyParser.json())
 
-server.get('/readactiveproject', function (req: any, res: any) {
-  logInfo("read active project: " + properties.activeProject)
-  res.send(properties.activeProject);
-});
+  server.use(cors()) // enable cors in header (http call from static resources)
+  server.options(cors());
 
-server.post('/updateprojectrootpath', function (req: any, res: any) {
-  let jsonString = req.body.jsonString;
-  //logInfo("in updateprojectrootpath jsonString : " + jsonString);
-  properties.projectRootPath = JSON.parse(jsonString);
-  res.send("project root path updated");
-});
+  server.post('/updateactiveproject', function (req: any, res: any) {
+    properties.activeProject = JSON.parse(req.body.jsonString);
+    logInfo("update active project: " + properties.activeProject)
+    res.send("ok");
+  });
+
+  server.get('/readactiveproject', function (req: any, res: any) {
+    logInfo("read active project: " + properties.activeProject)
+    res.send(properties.activeProject);
+  });
+
+  server.post('/updateprojectrootpath', function (req: any, res: any) {
+    let jsonString = req.body.jsonString;
+    //logInfo("in updateprojectrootpath jsonString : " + jsonString);
+    properties.projectRootPath = JSON.parse(jsonString);
+    res.send("project root path updated");
+  });
+  // modify rpath in backend
+  server.post('/rpath', function (req: any, res: any) {
+    properties.rPath = req.body.rpath;
+    //logInfo('rpath ' + properties.rPath);
+    let resultstr: string = startOpenCPU();
+    res.send('post /rpath result:' + resultstr);
+  });
+  // observe project root path
+  server.get('/projectrootpath', function (req: any, res: any) {
+    //logInfo('get project root path ' + properties.projectRootPath);
+    res.send(properties.projectRootPath);
+  });
+
+  // observe rpath in backend
+  server.get('/rpath', function (req: any, res: any) {
+    //logInfo('get rpath ' + properties.rPath);
+    res.send(properties.rPath);
+  });
+
+  function resolveDefaultPath(defPath: string): string {
+    // electron showOpenDialog defaultPath requires c:\\temp\\test on win32, otherwise c:/temp/test on mac/linux
+    return process.platform == "win32" ? defPath.replace(/\//g, "\\") : defPath.replace(/\\/g, "/")
+  }
+
+  server.post('/browse', function (req: any, res: any) {
+    logInfo("select a folder... wait");
+    if (mainWindow == null) {
+      res.send("No electron window created");
+      return;
+    }
+    let defPath = resolveDefaultPath(req.body.defaultpath); // correct slashes in default path
+    logInfo("default folder " + defPath);
+    require('electron').dialog.showOpenDialog(mainWindow, {
+      title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
+      properties: [/*'openFile'*/'openDirectory']
+    }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
+      if (!object.filePaths || !object.filePaths.length) {
+        logInfo("You didn't select a folder");
+        return;
+      }
+      logInfo("You did select a folder");
+      logInfo(object.filePaths[0]);
+      res.send(object.filePaths[0]);
+    });
+  });
+
+  server.post('/browsePath', function (req: any, res: any) {
+    logInfo("select a file/folder path(s)");
+    if (mainWindow == null) {
+      res.send("No electron window created");
+      return;
+    }
+    if (JSON.stringify(req.body) != '{}') {
+      let defPath = resolveDefaultPath(req.body.defaultPath); // correct slashes in default path
+      logInfo("default folder " + defPath);
+      require('electron').dialog.showOpenDialog(mainWindow, {
+        title: req.body.title, defaultPath: defPath,
+        properties: req.body.properties
+      }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
+        if (!object.filePaths || !object.filePaths.length) {
+          logInfo("You didn't select anything");
+          return;
+        }
+
+        logInfo("You selected : " + object.filePaths);
+
+        res.send(object.filePaths);
+      });
+    }
+  });
+
+  server.post('/fileExists', function (req: any, res: any) {
+    logInfo("check if a file exists");
+
+    if (JSON.stringify(req.body) != '{}') {
+      var filePath = req.body.filePath;
+
+      if (fs.existsSync(filePath)) {
+        res.send("true");
+      } else {
+        res.send("false");
+      }
+    }
+  });
+
+  server.post('/makeDirectory', function (req: any, res: any) {
+    logInfo("make directory");
+
+    if (JSON.stringify(req.body) != '{}') {
+      var dirPath = req.body.dirPath;
+      try {
+        fs.mkdirSync(dirPath);
+        res.send("true");
+      } catch (error) {
+        res.send(error);
+      }
+    }
+  });
+
+}
