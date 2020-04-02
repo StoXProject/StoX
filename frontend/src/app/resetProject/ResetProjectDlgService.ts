@@ -16,7 +16,10 @@ export class ResetProjectDlgService {
     async checkSaved() {
 
         if(this.ps.selectedProject.saved) {
-            let project: Project = await this.ds.resetProject(this.ps.selectedProject.projectPath, false, false).toPromise();          
+            let project: Project = await this.ds.resetProject(this.ps.selectedProject.projectPath, false, false).toPromise(); 
+            if(project != null) {
+                this.ps.openProject(project.projectPath);
+            }
             return;
         }
 
