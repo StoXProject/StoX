@@ -30,7 +30,8 @@
               "src/styles.scss",
               "node_modules/font-awesome/css/font-awesome.css",
               "node_modules/primeflex/primeflex.css",
-              "node_modules/bootstrap-scss/bootstrap.scss" 
+              "node_modules/bootstrap-scss/bootstrap.scss",
+              "node_modules/ol/ol.css"
             ],
             "scripts": [],
             "es5BrowserSupport": true
