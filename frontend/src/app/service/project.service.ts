@@ -163,7 +163,7 @@ export class ProjectService {
 
     // Update active process id.
     let activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
-    let idx = this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
+    let idx = activeProcess.processID == null ? null : this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
     if (idx != null) {
       for (let i: number = 0; i <= idx; i++) {
         let p: Process = this.processes[i];
@@ -173,6 +173,9 @@ export class ProjectService {
           this.iaMode = iaMode;
         }
       }
+    } else {
+      this.activeProcessId = null;
+      this.iaMode = 'reset';
     }
     //console.log("Backend active process id: " + activeProcessId);
     // Loop from first process up to current process and read interactive processes.

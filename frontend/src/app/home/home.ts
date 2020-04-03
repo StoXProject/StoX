@@ -75,6 +75,14 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     {
       label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
     },
+    {
+      label: 'Close project', command: async e => {
+        if (this.ps.selectedProject != null) {
+          await this.ds.closeProject(this.ps.selectedProject.projectPath, true).toPromise();
+        }
+        this.ps.selectedProject = null; 
+      }
+    },
     // {
     //   label: 'Test defined columns ...', command: e => this.definedColumns.showDialog()
     // },

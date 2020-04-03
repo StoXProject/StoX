@@ -51,7 +51,7 @@ export class ParameterComponent implements OnInit {
       pi.value = ""; // send null as empty string.
     }
     //if (pi.value == "" && pi.format == "filePaths") {
-      //pi.value = "[]";
+      //pi.value = "[]";   
     //}
     //return;
     // groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string
