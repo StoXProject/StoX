@@ -26,8 +26,6 @@ export class OpenProjectDlg {
 
     async browse() {
         console.log("Browse " + this.service.projectPath);
-        this.service.projectPath = <string> await this.dataService.getProjectRootPath().toPromise();
-
         if(this.service.projectPath == null || this.service.projectPath.trim() == "") {
             if(this.ps.selectedProject != null && this.ps.selectedProject.projectPath != null) {
                 this.service.projectPath = this.ps.selectedProject.projectPath.substring(0, this.ps.selectedProject.projectPath.lastIndexOf("/"));
