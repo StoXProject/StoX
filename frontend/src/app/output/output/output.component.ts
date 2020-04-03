@@ -2,7 +2,6 @@ import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 
 import { DataService } from '../../service/data.service';
 import { ProjectService } from '../../service/project.service';
-import { getListeners } from 'ol/events';
 
 
 @Component({

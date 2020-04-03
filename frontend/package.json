@@ -23,6 +23,8 @@
     "@angular/router": "^9.1.0",
     "@fullcalendar/core": "^4.4.0",
     "@ng-bootstrap/ng-bootstrap": "^6.0.2",
+    "@types/ol": "^6.2.0",
+    "@types/proj4": "^2.5.0",
     "angular-in-memory-web-api": "^0.10.0",
     "angular-resize-event": "^1.2.1",
     "angular-split": "^3.0.3",

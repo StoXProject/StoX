@@ -4,7 +4,6 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angul
 import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
-import { rotateWithoutConstraints } from 'ol/interaction/Interaction';
 import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
