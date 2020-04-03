@@ -319,6 +319,7 @@ export class ProjectService {
       this.projects = [project];
       this.selectedProject = this.projects[0];
       this.onSelectedProcessChanged();
+      this.iaMode = 'reset'; // reset interactive mode
     }
   }
   /*
