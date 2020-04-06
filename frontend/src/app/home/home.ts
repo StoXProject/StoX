@@ -60,7 +60,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
 
   async ngOnInit() {
     console.log("Home init")
-    this.stoxVersion = '2.9.7';
+    this.stoxVersion = '2.9.8';
     try {
       this.rstoxAPIVersion = await this.ds.getRstoxAPIVersion().toPromise();
     } catch (error) {

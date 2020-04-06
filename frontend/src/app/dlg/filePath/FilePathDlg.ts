@@ -153,10 +153,14 @@ export class FilePathDlg  implements OnInit {
                   this.ps.selectedProcessId)
                   .toPromise().then((s: ProcessProperties) => {
                     this.ps.propertyCategories = s.propertySheet;
-                     // Special case if a property processname is changed, it should update the selected process name
-                  //   if (this.ps.selectedProcessId != null && pi.name == 'processName') {
-                  //     this.ps.selectedProcess.processName = pi.value; 
-                  //   }
+                      // TODO: introduce property service with onChanged
+                      this.ps.processes = s.processTable
+                      this.ps.activeProcessId = s.activeProcess.processID;
+                      this.ps.selectedProject.saved = s.saved;
+                      if (s.updateHelp) {
+                        this.ps.updateHelp();
+                      }
+
                   });
               } catch (error) {
                 console.log(error.error);
