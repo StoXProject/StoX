@@ -10,7 +10,7 @@ import { MessageService } from './../message/MessageService';
 export class ResetProjectDlgService { 
     public display: boolean = false;
 
-    constructor(public ds: DataService, public ps: ProjectService, private msgService: MessageService) {
+    constructor(public ds: DataService, public ps: ProjectService) {
     }
 
     async checkSaved() {

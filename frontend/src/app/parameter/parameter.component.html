@@ -43,7 +43,7 @@
 
                             <div *ngIf="propertyItem.possibleValues.length == 0">
                                 <ng-container [ngSwitch]="true">
-                                    <ng-container *ngSwitchCase="propertyItem.format === 'filterExpressionTable'">
+                                    <ng-container *ngSwitchCase="propertyItem.format === 'filterExpressionList'">
                                         <input style="width:calc(100% - 22px);" type="text" pInputText
                                             [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
