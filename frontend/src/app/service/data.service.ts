@@ -345,7 +345,7 @@ export class DataService {
   public postLocalOCPU(rPackage: string, rFunctionName: string, body: any, responseType: string = 'text',
     parseJSON: boolean = false, endPoint: string = 'json'): Observable<HttpResponse<any>> {
     return this.post(DataService.LOCALHOST, DataService.OCPU_PORT, 'ocpu/library/' + rPackage + '/R/' + rFunctionName
-      + "/" + endPoint + "?auto_unbox=true", body, responseType); // maps response to unparsed JSON
+      + "/" + endPoint + "?auto_unbox=true&na=string", body, responseType); // maps response to unparsed JSON
   }
 
   public postLocalOCPUBody(rPackage: string, rFunctionName: string, body: any, responseType: string = 'text',
