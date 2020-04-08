@@ -430,9 +430,8 @@ $nodata: #acacac;
 }
 
 .saveicon:before {
-  @include icon_content("\f0c7", 1.0rem, rgb(1, 1, 2), true);
+  @include icon_content("\f0c7", 1rem, rgb(1, 1, 2), true);
 }
-
 
 .blink {
   animation: blink 500ms infinite steps(1);
@@ -548,6 +547,10 @@ $nodata: #acacac;
 }
 .mat-button-toggle-label-content {
   line-height: 1.2rem !important;
+}
+
+.mat-select-panel {
+  min-width: fit-content !important;
 }
 
 .cdk-overlay-container {

@@ -95,14 +95,15 @@ export class ExpressionBuilderDlg  implements OnInit {
         return true; // No duplicate values found for tableName
      }
 
-    short(param: string): string {
+     // Replacing this with Styling mat-select-panel:  min-width:fit-content
+    /*short(param: string): string {
         if(param.length > 43) {
             let i = param.indexOf('/');
             return param.substr(0, 27) + "..." + param.substr(i+1);
         } else {
             return param;
         }
-    }
+    }*/
 
     buildExpression() {
 
