@@ -35,6 +35,7 @@ export interface Field {
   defaultValue?: any;
   defaultOperator?: any;
   entity?: string;
+  multiselect?: boolean;
   validator?: (rule: Rule, parent: RuleSet) => any | null;
 }
 
