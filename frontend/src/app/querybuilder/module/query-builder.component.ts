@@ -322,13 +322,15 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     }
 
     const type = this.config.fields[field].type;
+    let multiselect = this.config.fields[field].multiselect;
     switch (operator) {
       case 'is null':
       case 'is not null':
         return null;  // No displayed component
       case '%in%':
       case '%notin%':
-        return type === 'category' || type === 'boolean' ? 'multiselect' : type;
+        // return type === 'category' || type === 'boolean' ? 'multiselect' : type;
+        return multiselect ? 'multiselect' : type;
       default:
         return type;
     }

@@ -115,8 +115,10 @@ export class QueryBuilderDlg  implements OnInit {
               // console.log("option length : " + optionsLength);
 
               if(optionsLength > 0) {
-                value2["type"] = "category";
-                console.log("type changed to 'category'!");
+                // value2["type"] = "category";
+                value2["multiselect"] = true;
+                // console.log("type changed to 'category'!");
+                console.log("multiselect is true!");
               } else {
                 delete value2[key3];      
                 console.log("empty options deleted!");          
