@@ -19,6 +19,7 @@
           <mat-icon>add_circle_outline</mat-icon></button>
         <button type="button" mat-icon-button color="accent" *ngIf="removeRuleSet" (click)="removeRuleSet()">
           <mat-icon>remove_circle_outline</mat-icon></button>
+          <mat-checkbox [(ngModel)]="query.negate" *ngIf="!(removeRuleSet)">negate</mat-checkbox>
           <mat-checkbox [(ngModel)]="ruleset.negate" *ngIf="removeRuleSet">negate</mat-checkbox>
       </ng-container>
       <ng-container *queryArrowIcon>
