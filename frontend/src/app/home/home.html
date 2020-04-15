@@ -2,8 +2,6 @@
 <RConnectionDlg></RConnectionDlg>
 <CreateProjectDialog></CreateProjectDialog>
 <OpenProjectDlg></OpenProjectDlg>
-<ExpressionBuilderDlg></ExpressionBuilderDlg>
-<QueryBuilderDlg></QueryBuilderDlg>
 <DefinedColumnsTableDlg></DefinedColumnsTableDlg>
 <FilePathDlg></FilePathDlg>
 <SaveAsProjectDlg></SaveAsProjectDlg>
@@ -12,8 +10,8 @@
 	<div class="stox-logo" style="height:100%; display:inline-block;">
 		<img src="./assets/images/stox.svg" style="height:100%;width:100px;display:inline-block;">
 		<span
-			style="margin-left:30px;display:inline;font-size:1.0rem;font-weight:bold; vertical-align: bottom; color:#4d6277">{{stoxVersion}}	<sub
-				style="font-size:0.6rem;">RstoxAPI {{rstoxAPIVersion}}</sub></span>
+			style="margin-left:30px;display:inline;font-size:1.0rem;font-weight:bold; vertical-align: bottom; color:#4d6277">{{stoxVersion}}
+			<sub style="font-size:0.6rem;">RstoxAPI {{rstoxAPIVersion}}</sub></span>
 	</div>
 	<div class="flex-grow-1" style="height:100%;">
 	</div>
@@ -29,8 +27,8 @@
 	</svg>-->
 	<p-menu #menu popup="popup" [model]="items">
 	</p-menu>
-	<button type="button" style="margin-left:4px; padding:2px !important;" (click)="ps.save()" pButton
-		icon="pi pi-save" [disabled]="ps.selectedProject == null ||  ps.selectedProject.saved"> 
+	<button type="button" style="margin-left:4px; padding:2px !important;" (click)="ps.save()" pButton icon="pi pi-save"
+		[disabled]="ps.selectedProject == null ||  ps.selectedProject.saved">
 
 	</button>
 	<button type="button" style="margin-left:4px;" (click)="menu.toggle($event)" pButton icon="pi pi-bars"></button>
@@ -92,6 +90,8 @@
 		<as-split-area size="20">
 			<as-split direction="vertical" gutterSize=6>
 				<as-split-area size="50">
+					<ExpressionBuilderDlg></ExpressionBuilderDlg>
+					<QueryBuilderDlg></QueryBuilderDlg>
 					<app-parameter></app-parameter>
 				</as-split-area>
 				<as-split-area size="50">

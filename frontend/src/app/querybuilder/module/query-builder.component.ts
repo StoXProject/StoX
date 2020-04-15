@@ -139,17 +139,17 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   @Input() parentTouchedCallback: () => void;
   @Input() persistValueOnFieldChange: boolean = false;
 
-  @ViewChild('treeContainer', {static: true}) treeContainer: ElementRef;
+  @ViewChild('treeContainer', { static: true }) treeContainer: ElementRef;
 
-  @ContentChild(QueryButtonGroupDirective, {static: false}) buttonGroupTemplate: QueryButtonGroupDirective;
-  @ContentChild(QuerySwitchGroupDirective, {static: false}) switchGroupTemplate: QuerySwitchGroupDirective;
-  @ContentChild(QueryFieldDirective, {static: false}) fieldTemplate: QueryFieldDirective;
-  @ContentChild(QueryEntityDirective, {static: false}) entityTemplate: QueryEntityDirective;
-  @ContentChild(QueryOperatorDirective, {static: false}) operatorTemplate: QueryOperatorDirective;
-  @ContentChild(QueryRemoveButtonDirective, {static: false}) removeButtonTemplate: QueryRemoveButtonDirective;
-  @ContentChild(QueryEmptyWarningDirective, {static: false}) emptyWarningTemplate: QueryEmptyWarningDirective;
+  @ContentChild(QueryButtonGroupDirective, { static: false }) buttonGroupTemplate: QueryButtonGroupDirective;
+  @ContentChild(QuerySwitchGroupDirective, { static: false }) switchGroupTemplate: QuerySwitchGroupDirective;
+  @ContentChild(QueryFieldDirective, { static: false }) fieldTemplate: QueryFieldDirective;
+  @ContentChild(QueryEntityDirective, { static: false }) entityTemplate: QueryEntityDirective;
+  @ContentChild(QueryOperatorDirective, { static: false }) operatorTemplate: QueryOperatorDirective;
+  @ContentChild(QueryRemoveButtonDirective, { static: false }) removeButtonTemplate: QueryRemoveButtonDirective;
+  @ContentChild(QueryEmptyWarningDirective, { static: false }) emptyWarningTemplate: QueryEmptyWarningDirective;
   @ContentChildren(QueryInputDirective) inputTemplates: QueryList<QueryInputDirective>;
-  @ContentChild(QueryArrowIconDirective, {static: false}) arrowIconTemplate: QueryArrowIconDirective;
+  @ContentChild(QueryArrowIconDirective, { static: false }) arrowIconTemplate: QueryArrowIconDirective;
 
   private defaultTemplateTypes: string[] = [
     'character', 'numeric', 'integer', 'time', 'date', 'category', 'boolean', 'multiselect'];
@@ -268,6 +268,9 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   }
 
   getOperators(field: string): string[] {
+    if (this.operatorsCache == null || this.operatorsCache == undefined || Object.keys(this.operatorsCache).length === 0) {
+      return [];
+    }
     if (this.operatorsCache[field]) {
       return this.operatorsCache[field];
     }
@@ -315,7 +318,9 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     if (this.config.getInputType) {
       return this.config.getInputType(field, operator);
     }
-
+    if (Object.keys(this.config).length === 0) {
+      return "No config defined. Check backend."
+    }
     if (!this.config.fields[field]) {
       return "No configuration for field '${field}' could be found! Please add it to config.fields.";
       // throw new Error(`No configuration for field '${field}' could be found! Please add it to config.fields.`);
@@ -782,11 +787,13 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
         if ((item as RuleSet).rules) {
           return this.validateRulesInRuleset(item as RuleSet, errorStore);
         } else if ((item as Rule).field) {
-          const field = this.config.fields[(item as Rule).field];
-          if (field && field.validator && field.validator.apply) {
-            const error = field.validator(item as Rule, ruleset);
-            if (error != null) {
-              errorStore.push(error);
+          if (this.config.fields != undefined) {
+            const field = this.config.fields[(item as Rule).field];
+            if (field && field.validator && field.validator.apply) {
+              const error = field.validator(item as Rule, ruleset);
+              if (error != null) {
+                errorStore.push(error);
+              }
             }
           }
         }
