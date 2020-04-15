@@ -253,12 +253,12 @@ export class DataService {
 
   getFilterOptions(projectPath: string, modelName: string, processID: string, tableName: string): Observable<QueryBuilderConfig> {
 
-    return this.runFunction('getFilterOptions', {
+    return this.runFunctionThrowFramework('getFilterOptions', {
       "projectPath": projectPath,
       "modelName": modelName,
       "processID": processID,
       "tableName": tableName
-    });
+    }, true);
   }
 
   expression2list(expr: string): Observable<RuleSet> {
