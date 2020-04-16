@@ -42,6 +42,7 @@ app.on('ready', function () {
   setupServer();
   readPropertiesFromFile();
   startOpenCPU();
+  startNodeServer();
   createWindow()
 })
 
@@ -98,15 +99,20 @@ function setupLogger() {
   log = simpleNodeLogger.createRollingFileLogger(opts);
 }
 
-
-
-function createWindow() {
+function startNodeServer() {
   // start server
   var port = 3000;
+  logInfo("Starting Node Server at port " + port + "...");
   server.listen(port);
-  // start the server
-  logInfo('Node express server started at port ' + port + ". Available at http://localhost:" + port);
-  //log.log('error', 'test');
+  logInfo('Node Server started at http://localhost:' + port);
+}
+
+function createWindow() {
+  if(process.argv.filter(arg=>arg == '--server').length > 0) {
+    logInfo('No window created due to --server flag');
+    return;  
+  }
+  logInfo('creating window');
   app.allowRendererProcessReuse = true; // required or forced by electron 9
 
   // Create the browser window.
@@ -118,7 +124,9 @@ function createWindow() {
       nodeIntegration: true
     }
   })
-
+  if(mainWindow == null) {
+    return;
+  }
   // mainWindow.setMenu(null);
   createMenu();
 
@@ -298,7 +306,7 @@ const writePropertiesToFile = function writePropertiesToFile() {
 }
 
 function setupServer() {
-  server = express();
+  server = express(); 
   server.use(bodyParser.json())
 
   server.use(cors()) // enable cors in header (http call from static resources)
@@ -333,7 +341,11 @@ function setupServer() {
     //logInfo('get project root path ' + properties.projectRootPath);
     res.send(properties.projectRootPath);
   });
-
+  // observe rpath in backend
+  server.get('/', function (req: any, res: any) {
+    //logInfo('get rpath ' + properties.rPath);
+    res.send("Node server started");
+  });
   // observe rpath in backend
   server.get('/rpath', function (req: any, res: any) {
     //logInfo('get rpath ' + properties.rPath);
