@@ -6,6 +6,7 @@
   "main": "build/index.js",
   "scripts": {
     "start": "tsc && electron ./build/index.js",
+    "start-server": "tsc && electron ./build/index.js --server",    
     "start-dev": "tsc-node-dev --respawn --transpileOnly ./index.ts && electron ./build/index.js",
     "package-win": "tsc && electron-packager . stox --platform win32 --arch x64 --out dist/ --overwrite  --asar --icon=assets/stox_icon.ico",
     "package-mac": "tsc && electron-packager . stox --platform darwin --arch x64 --out dist/ --overwrite",
