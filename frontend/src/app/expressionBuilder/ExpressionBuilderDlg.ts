@@ -19,7 +19,7 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     combinedExpression: string = "";
 
-    displayedColumns = ['select', 'tableName', 'expression'];
+    displayedColumns = ['select', 'tableName', 'expression', 'action'];
     dataSource: MatTableDataSource<TableExpression>;
     selection = new SelectionModel<TableExpression>(true, []);
 
@@ -127,6 +127,31 @@ export class ExpressionBuilderDlg  implements OnInit {
         // show query builder
         this.quBuilderService.showDialog();
 
+    }
+
+    edit(tableExpression: TableExpression) {
+        if(tableExpression != null && tableExpression.tableName == null) {
+            this.msgService.setMessage("Table name is not given in selected row!");
+            this.msgService.showMessage();
+            return;            
+        }
+
+        console.log("current table name : " + tableExpression.tableName);
+
+        this.service.setCurrentTableExpression(tableExpression);
+
+        this.service.updateQueryBuilderConfig();
+
+        // let the user get a new page of QueryBuilderDlg shown on screen
+        // show query builder
+        this.quBuilderService.showDialog();        
+    }
+
+    delete(tableExpression: TableExpression) {
+        let index: number = this.service.tableExpressions.findIndex(d => d === tableExpression);
+        console.log(this.service.tableExpressions.findIndex(d => d === tableExpression));
+        this.service.tableExpressions.splice(index,1);
+        this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
     }
 
     async apply() {

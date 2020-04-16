@@ -26,6 +26,9 @@
   }
 
   .mat-column-tableName {
-    flex: 0 0 40%;
+    flex: 0 0 30%;
   }
   
+  /* .mat-column-action {
+    flex: 0 0 20%;
+  } */
