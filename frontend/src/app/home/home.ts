@@ -77,10 +77,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     },
     {
       label: 'Close project', command: async e => {
-        if (this.ps.selectedProject != null) {
-          await this.ds.closeProject(this.ps.selectedProject.projectPath, true).toPromise();
-        }
-        this.ps.selectedProject = null; 
+        this.ps.closeProject(this.ps.selectedProject.projectPath);
       }
     },
     // {

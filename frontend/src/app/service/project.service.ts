@@ -156,30 +156,29 @@ export class ProjectService {
     this.selectedModel = this.models[0]; // This will trigger update process list.
 
     // To do: make this property the project path instead of project object.
-    let jsonString = JSON.stringify(project.projectPath);
+    let jsonString = JSON.stringify(this.selectedProject == null ? "" : this.selectedProject.projectPath);
     console.log("StoX GUI: updating ActiveProject with string  " + jsonString)
     let status = await this.dataService.updateActiveProject(jsonString).toPromise();
-    console.log("status " + status);
+    console.log("status " + status); 
 
     // Update active process id.
-    let activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
-    let idx = activeProcess.processID == null ? null : this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
-    if (idx != null) {
-      for (let i: number = 0; i <= idx; i++) {
-        let p: Process = this.processes[i];
-        this.activeProcessId = this.processes[i].processID;
-        if (p.canShowInMap && p.showInMap || p.hasProcessData) {
-          let iaMode: string = await this.dataService.getInteractiveMode(this.selectedProject.projectPath, this.selectedModel.modelName, this.activeProcessId).toPromise();
-          this.iaMode = iaMode;
+    if (this.selectedProject != null) {
+      let activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+      let idx = activeProcess.processID == null ? null : this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
+      if (idx != null) {
+        for (let i: number = 0; i <= idx; i++) {
+          let p: Process = this.processes[i];
+          this.activeProcessId = this.processes[i].processID;
+          if (p.canShowInMap && p.showInMap || p.hasProcessData) {
+            let iaMode: string = await this.dataService.getInteractiveMode(this.selectedProject.projectPath, this.selectedModel.modelName, this.activeProcessId).toPromise();
+            this.iaMode = iaMode;
+          }
         }
+      } else {
+        this.activeProcessId = null;
+        this.iaMode = 'reset';
       }
-    } else {
-      this.activeProcessId = null;
-      this.iaMode = 'reset';
     }
-    //console.log("Backend active process id: " + activeProcessId);
-    // Loop from first process up to current process and read interactive processes.
-
   }
   public get selectedProcessId(): string {
     return this.m_selectedProcessId;
@@ -204,56 +203,16 @@ export class ProjectService {
     this.m_helpContent = content;
   }
 
-  //processPropertiesSubscription: Subscription = null;
-  //functionHelpAsHtmlSubscription: Subscription = null;
-
   async onSelectedProcessChanged() {
-
-    //this.initializeProperties();
-
-
     if (this.selectedProject != null &&
       this.selectedProcess != null &&
       this.selectedModel != null) {
-      // propertyCategories: PropertyCategory[];
-      // var t0 = performance.now();
       this.processProperties = await this.dataService.getProcessPropertySheet(this.selectedProject.projectPath, this.selectedModel.modelName,
         this.selectedProcessId).toPromise();
       if (this.processProperties != null) {
         this.propertyCategories = this.processProperties.propertySheet;
       }
       this.updateHelp();
-      /*if (this.processPropertiesSubscription != null) {
-        this.processPropertiesSubscription.unsubscribe();
-      }
-      this.processPropertiesSubscription = this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName,
-        this.selectedProcessID).subscribe((prop: ProcessProperties) => {
-          this.processProperties = prop;
-          if (this.processProperties != null) {
-            this.propertyCategories = this.processProperties.propertySheet;
-          }
-        });*/
-
-      /*if (this.functionHelpAsHtmlSubscription != null) {
-        this.functionHelpAsHtmlSubscription.unsubscribe();
-      }
-      this.functionHelpAsHtmlSubscription = this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
-        this.selectedModel.modelName, this.selectedProcessID).subscribe((response: any) => {
-          this.helpContent = response;
-        });*/
-
-      // console.log("this")
-      /*if (this.processProperties != null) {
-          this.propertyCategories = this.processProperties.propertySheet;
-        }*/
-      // var t1 = performance.now();
-      // console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
-      // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
-      // this.propertyCategories.forEach(pc => pc.properties.forEach(p => {
-      //   // autounboxing is applied to avoid r strings to become javascript array.
-      //   p.possibleValues = typeof (p.possibleValues) == "string" ? [p.possibleValues] : p.possibleValues;
-      // }));
-
     }
   }
 
@@ -309,7 +268,7 @@ export class ProjectService {
     // Read models and set selected to the first model
     this.models = <Model[]>await this.dataService.getModelInfo().toPromise();
     this.setModels(this.models);
-    if (this.models != null && this.models.length > 0) {
+    if (projectPath.length > 0 && this.models != null && this.models.length > 0) {
       //this.selectedModel = this.models[0]; 
       this.openProject(projectPath);
     }
@@ -324,6 +283,17 @@ export class ProjectService {
       this.onSelectedProcessChanged();
       this.iaMode = 'reset'; // reset interactive mode
     }
+  }
+  async closeProject(projectPath: string) {
+    // the following should open the project and make it selected in the GUI
+    await this.dataService.closeProject(projectPath, true).toPromise();
+    this.projects = [];
+    this.selectedProject = null;
+    this.iaMode = 'reset'; // reset interactive mode
+    this.processProperties = null;
+    this.propertyCategories = null;
+    this.processes = null;
+    this.dataService.log = [];
   }
   /*
   Returns:
