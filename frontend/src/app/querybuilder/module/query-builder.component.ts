@@ -268,9 +268,9 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   }
 
   getOperators(field: string): string[] {
-    if (this.operatorsCache == null || this.operatorsCache == undefined || Object.keys(this.operatorsCache).length === 0) {
-      return [];
-    }
+    // if (this.operatorsCache == null || this.operatorsCache == undefined || Object.keys(this.operatorsCache).length === 0) {
+    //   return [];
+    // }
     if (this.operatorsCache[field]) {
       return this.operatorsCache[field];
     }
