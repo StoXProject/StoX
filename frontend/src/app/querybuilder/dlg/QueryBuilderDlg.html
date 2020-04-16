@@ -7,8 +7,9 @@
     </div>
     <br>  -->
 
-    <h5>Quiery Builder GUI on table {{tableName}}</h5>
-    <br>
+    <h5>Query Builder</h5>
+    <h6>Table: <code>{{tableName}}</code></h6>
+    <br> 
     <mat-card>
     <query-builder [(ngModel)]='query' [config]='currentConfig' [allowRuleset]='allowRuleset' [allowCollapse]='allowCollapse' [persistValueOnFieldChange]='persistValueOnFieldChange'>
       <ng-container *queryButtonGroup="let ruleset; let addRule=addRule; let addRuleSet=addRuleSet; let removeRuleSet=removeRuleSet">
@@ -18,6 +19,7 @@
           <mat-icon>add_circle_outline</mat-icon></button>
         <button type="button" mat-icon-button color="accent" *ngIf="removeRuleSet" (click)="removeRuleSet()">
           <mat-icon>remove_circle_outline</mat-icon></button>
+          <mat-checkbox [(ngModel)]="query.negate" *ngIf="!(removeRuleSet)">negate</mat-checkbox>
           <mat-checkbox [(ngModel)]="ruleset.negate" *ngIf="removeRuleSet">negate</mat-checkbox>
       </ng-container>
       <ng-container *queryArrowIcon>

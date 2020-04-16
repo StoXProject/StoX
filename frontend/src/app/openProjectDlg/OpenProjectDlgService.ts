@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
+import { DataService } from './../service/data.service';
 
 @Injectable({
     providedIn: 'root'
-  })
+})
 export class OpenProjectDlgService {
-    
-    constructor() {}
+
+    constructor(private dataService: DataService) { }
 
     display: boolean = false;
 
-    showDialog() {
-        console.log("OpenProjectDialogService showDialog");
+    projectPath: string = null;
+
+    async  showDialog() {
+        this.projectPath = <string>await this.dataService.getProjectRootPath().toPromise();
         this.display = true;
     }
 }

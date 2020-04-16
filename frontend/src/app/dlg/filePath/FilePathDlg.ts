@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FilePathDlgService } from './FilePathDlgService';
 import { DataService } from '../../service/data.service';
@@ -33,7 +33,9 @@ export class FilePathDlg  implements OnInit {
     }
 
     addRow() {
-        this.dataSource.data.push({path: null});
+        this.service.paths.push({path: null});
+        this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
+        // this.dataSource.data.push({path: null});
         this.dataSource.filter = "";
     }    
 
@@ -105,7 +107,7 @@ export class FilePathDlg  implements OnInit {
     }
 
     async apply() { 
-        var options = {projectPath: this.ps.selectedProject.projectPath, filePath: null};
+        var option = {filePath: null};
         // check that all paths are filled and files exist
         for(let i=0; i< this.service.paths.length; i++) {
             if(this.service.paths[i].path == null) {
@@ -114,13 +116,18 @@ export class FilePathDlg  implements OnInit {
                 return;
             } else {
                 // check file for existence
-                options.filePath = this.service.paths[i].path;
-                let exists = await this.dataService.fileExists(options).toPromise();
+                option.filePath = this.service.paths[i].path;
+                let trial1 = await this.dataService.fileExists(option).toPromise();
 
-                if(exists != null && exists != "true") {
-                    this.msgService.setMessage("File " + this.service.paths[i].path + " does not exist");
-                    this.msgService.showMessage();
-                    return;
+                if(trial1 != null && trial1 != "true") {
+                    option.filePath = this.ps.selectedProject.projectPath + "/" + this.service.paths[i].path;
+                    let trial2 = await this.dataService.fileExists(option).toPromise();
+
+                    if(trial2 != null && trial2 != "true") {
+                        this.msgService.setMessage("File " + this.service.paths[i].path + " does not exist");
+                        this.msgService.showMessage();
+                        return;
+                    }
                 }
             }
         }
@@ -146,10 +153,14 @@ export class FilePathDlg  implements OnInit {
                   this.ps.selectedProcessId)
                   .toPromise().then((s: ProcessProperties) => {
                     this.ps.propertyCategories = s.propertySheet;
-                     // Special case if a property processname is changed, it should update the selected process name
-                  //   if (this.ps.selectedProcessId != null && pi.name == 'processName') {
-                  //     this.ps.selectedProcess.processName = pi.value; 
-                  //   }
+                      // TODO: introduce property service with onChanged
+                      this.ps.processes = s.processTable
+                      this.ps.activeProcessId = s.activeProcess.processID;
+                      this.ps.selectedProject.saved = s.saved;
+                      if (s.updateHelp) {
+                        this.ps.updateHelp();
+                      }
+
                   });
               } catch (error) {
                 console.log(error.error);

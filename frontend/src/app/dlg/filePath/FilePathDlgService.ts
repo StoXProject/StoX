@@ -5,43 +5,38 @@ import { BehaviorSubject } from 'rxjs';
 import { FilePath } from '../../data/FilePath';
 
 @Injectable({
-    providedIn: 'root'
-  })
-  export class FilePathDlgService { 
-    public display: boolean = false;
+  providedIn: 'root'
+})
+export class FilePathDlgService {
+  public display: boolean = false;
 
-    public paths: FilePath [] = [];
-    private pathDataSource = new BehaviorSubject(this.paths);
-    pathDataObservable = this.pathDataSource.asObservable();    
+  public paths: FilePath[] = [];
+  private pathDataSource = new BehaviorSubject(this.paths);
+  pathDataObservable = this.pathDataSource.asObservable();
 
-    public currentPropertyItem: PropertyItem = null;
-    public currentPropertyCategory: PropertyCategory = null;
+  public currentPropertyItem: PropertyItem = null;
+  public currentPropertyCategory: PropertyCategory = null;
 
-    combinedPaths(): string[] {
-      let combined: string[] = [];
-      for(let i=0; i<this.paths.length; i++) {
-        combined.push(this.paths[i].path);
-      }
-        
-      return combined;
+  combinedPaths(): string[] {
+    let combined: string[] = [];
+    for (let i = 0; i < this.paths.length; i++) {
+      combined.push(this.paths[i].path);
     }
 
-    async showDialog() {
-        // parse currentPropertyItem and populate array paths and broadcast this to component
-        console.log("currentPropertyItem.value : " + this.currentPropertyItem.value);
-
-        this.paths = [];
-        let pathArray: string[] = JSON.parse(this.currentPropertyItem.value);
-
-        if(pathArray != null && pathArray.length > 0) {
-          pathArray.forEach(
-            sti => {
-              this.paths.push({path: sti});
-            }
-          );
-          this.pathDataSource.next(this.paths);
-        }
-
-        this.display = true;
-    }
+    return combined;
   }
+  obj2FilePath(o: any): FilePath {
+    return <FilePath>{ path: typeof (o) == "string" ? o : JSON.stringify(o) };
+  }
+  async showDialog() {
+    // parse currentPropertyItem and populate array paths and broadcast this to component
+    console.log("currentPropertyItem.value : " + this.currentPropertyItem.value);
+
+    let o: any = JSON.parse(this.currentPropertyItem.value);
+    // The propertyItem is an array, map each element to FilePath
+    // Enhanced: Otherwise map propertyItem to FilePath? The user may enter a path manually without []
+    this.paths = Array.isArray(o) ? o.map(s => this.obj2FilePath(s)) : [this.obj2FilePath(o)];
+    this.pathDataSource.next(this.paths);
+    this.display = true;
+  }
+}

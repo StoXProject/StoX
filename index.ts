@@ -1,3 +1,6 @@
+import { start } from "repl";
+import { platform } from "os";
+
 //handle setupevents as quickly as possible
 const setupEvents = require('./../installers/setupEvents')
 var mainWindow: any;
@@ -8,61 +11,109 @@ var mainWindow: any;
 // var rPath: string;
 // var rStoxFtpPath: string;
 
-var properties: any = null;
 
 
 
-// properties.projectList = [{"projectPath": "c:/temp/aa", "projectName":"aa"}, {"projectPath":"c:/1/b", "projectName":"b"}];
-//JSON.stringify(props)-> fil
-//props = JSON.parse("from file")
-
-
-// var rspawn = child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(5307)\"");
-
-// grab the packages we need
+var simpleNodeLogger = require('simple-node-logger');
 var express = require('express');
-var server = express();
 var bodyParser = require('body-parser');
-server.use(bodyParser.json())
+var child_process = require('child_process');
+var fs = require('fs')
 var cors = require('cors');
-server.use(cors()) // enable cors in header (http call from static resources)
-server.options(cors());
 
-var child_process: any;
+var properties: any = null;
+var log: any = null;
+var server: any = null;
+
 var rspawn: any;
+var opencpuProcess: any; // Opencpu process
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 
-function createWindow() {
+app.on('ready', function () {
+  if (setupEvents.handleSquirrelEvent()) {
+    return;
+  }
+  setupLogger();
+  logInfo("lifecycle: ready")
+  setupServer();
+  readPropertiesFromFile();
+  startOpenCPU();
+  startNodeServer();
+  createWindow()
+})
 
-  child_process = require('child_process');
-  rspawn = child_process.exec("Rscript -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error: any, stdout: any, stderr: any) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    } else {
-      console.log(`stdout: ${stdout}`);
-      console.error(`stderr: ${stderr}`);
+// Quit when all windows are closed.
+app.on('window-all-closed', function () {
+  // On macOS it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (process.platform !== 'darwin') app.quit()
+})
 
-      if (stdout !== null && stdout.includes("FALSE")) {
-        console.log("opencpu is not installed, and is try to install it now ...");
-        child_process.execSync("Rscript -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
-        console.log("Starting opencpu ...");
-        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxAPI'), workers = 3)\"");
-      } else if (stdout !== null && stdout.includes("TRUE")) {
-        console.log("Starting opencpu ...");
-        child_process.exec("Rscript -e \"library(opencpu);ocpu_start_server(port = 5307, preload = ('RstoxAPI'), workers = 3)\"");
-      }
-    }
-  });
+app.on('activate', function () {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) createWindow()
+})
 
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+
+app.on('quit', function () {
+  // Write app properties file to disc here.
+  logInfo('ev:app quit');
+  writePropertiesToFile();
+  if (opencpuProcess != null) {
+    logInfo("Terminating opencpu process " + opencpuProcess.pid);
+    process.exit(opencpuProcess.pid);
+  }
+});
+
+function logInfo(str: string) {
+  if (log != null) {
+    log.info(str);
+  }
+  console.log(str);
+}
+
+function logError(str: string) {
+  log.log('error', str);
+  console.log(str);
+}
+
+function setupLogger() {
+  var logDir = './log';
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+  }
+  const opts = {
+    errorEventName: 'error',
+    logDirectory: logDir, // NOTE: folder must exist and be writable... executable bin directory
+    fileNamePattern: 'node-<DATE>.log',
+    dateFormat: 'YYYY.MM.DD'
+  };
+  log = simpleNodeLogger.createRollingFileLogger(opts);
+}
+
+function startNodeServer() {
+  // start server
   var port = 3000;
+  logInfo("Starting Node Server at port " + port + "...");
   server.listen(port);
-  // start the server
-  console.log('Server started! At http://localhost:' + port);
+  logInfo('Node Server started at http://localhost:' + port);
+}
+
+function createWindow() {
+  if(process.argv.filter(arg=>arg == '--server').length > 0) {
+    logInfo('No window created due to --server flag');
+    return;  
+  }
+  logInfo('creating window');
+  app.allowRendererProcessReuse = true; // required or forced by electron 9
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -73,66 +124,9 @@ function createWindow() {
       nodeIntegration: true
     }
   })
-
-  server.post('/browse', function (req: any, res: any) {
-    console.log("select a folder... wait");
-    let defPath = req.body.defaultpath.replace(/\\/g, "/"); // convert backslash to forward
-    console.log("default folder " + defPath);
-    require('electron').dialog.showOpenDialog(mainWindow, {
-      title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
-      properties: [/*'openFile'*/'openDirectory']
-    }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
-      if (!object.filePaths || !object.filePaths.length) {
-        console.log("You didn't select a folder");
-        return;
-      }
-      console.log("You did select a folder");
-      console.log(object.filePaths[0]);
-      res.send(object.filePaths[0]);
-    });
-  });
-
-  server.post('/browsePath', function (req: any, res: any) {
-    console.log("select a file/folder path(s)");
-
-    if (JSON.stringify(req.body) != '{}') {
-
-      require('electron').dialog.showOpenDialog(mainWindow, {
-        title: req.body.title, defaultPath: req.body.defaultPath,
-        properties: req.body.properties
-      }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
-        if (!object.filePaths || !object.filePaths.length) {
-          console.log("You didn't select anything");
-          return;
-        }
-
-        console.log("You selected : " + object.filePaths);
-
-        res.send(object.filePaths);
-      });
-    }
-  });
-
-  server.post('/fileExists', function (req: any, res: any) {
-    console.log("check if a file exists");
-
-    if (JSON.stringify(req.body) != '{}') {
-      var rootPath = req.body.projectPath;
-      var filePath = req.body.filePath;
-
-      if(require('fs').existsSync(filePath)) {
-        res.send("true");
-      } else {
-        var wholePath = rootPath + "/" + filePath;
-        if(require('fs').existsSync(wholePath)) {
-          res.send("true");
-        } else {
-          res.send("false");
-        }
-      }
-    }
-  });
-
+  if(mainWindow == null) {
+    return;
+  }
   // mainWindow.setMenu(null);
   createMenu();
 
@@ -155,44 +149,13 @@ function createWindow() {
 
 }
 
-app.on('ready', function () {
-  console.log("App is ready...")
-  if (!setupEvents.handleSquirrelEvent()) {
-    createWindow()
-  }
-})
-
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') app.quit()
-})
-
-app.on('activate', function () {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) createWindow()
-})
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-
-app.on('quit', function () {
-  // Write app properties file to disc here.
-  console.log('ev:app quit');
-  writePropertiesToFile();
-});
-
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
 
 const createMenu = function createMenu() {
   // Read app properties file from disc here.
-  console.log('ev:ready');
-  readPropertiesFromFile();
+  logInfo('ev:ready');
 
   const template = [
     // { role: 'appMenu' }
@@ -263,185 +226,64 @@ const createMenu = function createMenu() {
   Menu.setApplicationMenu(menu)
 }
 
-// const readFile = function readFile() {
-//   let resourcefile = require('os').homedir() + "/.stox.config.xml";
-//   let fs = require('fs');
-//   var options = { encoding: 'utf-8', flag: 'r' };
-//   var xml2js = require('xml2js');
-//   var parser = new xml2js.Parser({ explicitArray: false });
-
-//   if (!fs.existsSync(resourcefile)) {
-//     console.log("Resource file (.stox.config.xml) does not exist");
-//     return;
-//   }
-
-//   // read if resource file is found
-//   var xml = fs.readFileSync(resourcefile, options);
-
-//   parser.parseString(xml, function (err: any, result: any) {
-//     if (err) {
-//       console.error('xml2js.parseString: Error occurred: ', err);
-//     } else {
-//       // console.log(JSON.stringify(result, null, 2));
-//       // console.log('projectroot : ', result.stox.$.projectroot);
-//       projectRootPath = result.stox.$.projectroot;
-//       console.log('projectRootPath : ', projectRootPath);
-//       // console.log('project : ', result.stox.$.project);
-//       projectPath = result.stox.$.project;
-//       console.log('projectPath : ', projectPath);
-//       // console.log('rfolder : ', result.stox.$.rfolder);
-//       rPath = result.stox.$.rfolder;
-//       console.log('rPath : ', rPath);
-//       // console.log('rStoxFTPPath : ', result.stox.$.rStoxFTPPath);
-//       rStoxFtpPath = result.stox.$.rStoxFTPPath;
-//       console.log('rStoxFtpPath : ', rStoxFtpPath);
-//     }
-//   });
-// }
-
-// const writeFile = function writeFile() {
-//   // if(projectRootPath == null || projectPath == null || rPath == null || rStoxFtpPath == null) {
-//   //   return;
-//   // }
-
-//   var result = {
-//     "stox": {
-//       "$": {
-//         "projectroot": projectRootPath == null ? "" : projectRootPath,
-//         "project": projectPath == null ? "" : projectPath,
-//         "rfolder": rPath == null ? "" : rPath,
-//         "rStoxFTPPath": rStoxFtpPath == null ? "" : rStoxFtpPath
-//       }
-//     }
-//   };
-
-//   let resourcefile = require('os').homedir() + "/.copy_stox.config.xml";
-
-//   let fs = require('fs');
-//   var xml2js = require('xml2js');
-//   var builder = new xml2js.Builder();
-//   var xml = builder.buildObject(result);
-
-//   var options = { encoding: 'utf-8', flag: 'w' };
-
-//   fs.writeFileSync(resourcefile, xml, options);
-
-//   // fs.writeFile(resourcefile, xml, function(err, data) {
-//   //   if (err) {
-//   //     console.log(err);
-//   //   } else {
-//   //     console.log("successfully written to xml file");
-//   //   }
-//   // });
-// }
-
-
-// let rPath = "C:/Users/user/Documents/R"; // read from local properties file.
-// console.log('homedir:' + require('os').homedir())
-
-// observe rpath in backend
-
-// observe project path
-// server.get('/projectpath', function (req: any, res: any) {
-//   console.log('get project path ' + projectPath);
-//   res.send(projectPath);
-// });
-
-// observe project root path
-server.get('/projectrootpath', function (req: any, res: any) {
-  console.log('get project root path ' + properties.projectRootPath);
-  res.send(properties.projectRootPath);
-});
-
-// observe rpath in backend
-server.get('/rpath', function (req: any, res: any) {
-  console.log('get rpath ' + properties.rPath);
-  res.send(properties.rPath);
-});
-
-// modify rpath in backend
-server.post('/rpath', function (req: any, res: any) {
-  properties.rPath = req.body.rpath;
-  console.log('rpath ' + properties.rPath);
-
-  var command = properties.rPath == "" || properties.rPath == null ? "Rscript" : properties.rPath + "/" + "Rscript";
-
-  console.log('command : ' + command);
-
-  child_process.exec(command + " -e \"print(TRUE)\"", (error: any, stdout: any, stderr: any) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      res.send(error);
-      return;
+function startOpenCPU(): string {
+  logInfo("Running on Platform: " + process.platform)
+  if (process.platform == "win32"/*windows*/ || process.platform == "darwin"/*mac*/) {
+    // On linux, sudo is required and opencpu must be installed separatly. check this
+    var rscriptBin = (properties.rPath == "" || properties.rPath == null ? "" : properties.rPath + "/") + "Rscript";
+    let p1 = child_process.spawnSync(rscriptBin, ["-e", "print(TRUE)"]);
+    logInfo('Check Rscript availability' + p1.stdout);
+    if (p1.error) {
+      return p1.error;
     }
-
-    properties.rPath = req.body.rpath;;
-
-    console.log(`stdout: ${stdout}`);
-    console.error(`stderr: ${stderr}`);
-
-    if (stdout !== null && stdout.includes("TRUE")) {
-      child_process.exec(command + " -e \"eval('opencpu' %in% rownames(installed.packages()))\"", (error: any, stdout: any, stderr: any) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          res.send(error);
-        } else {
-          console.log(`stdout: ${stdout}`);
-          console.error(`stderr: ${stderr}`);
-
-          if (stdout !== null && stdout.includes("FALSE")) {
-            console.log("opencpu is not installed, and is trying to install it now ...");
-            child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
-            console.log("Starting opencpu ...");
-            child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
-          } else if (stdout !== null && stdout.includes("TRUE")) {
-            // console.log("opencpu is installed, and is trying to remove it now ...");
-            // child_process.execSync(command + " -e \"remove.packages('opencpu')\"");
-            // console.log("trying to install opencpu now ...");
-            // child_process.execSync(command + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
-            console.log("Starting opencpu ...");
-            child_process.exec(command + " -e \"library(opencpu);ocpu_start_server(5307)\"");
-          }
-        }
-      });
+    if (p1.stdout == null || !p1.stdout.includes("TRUE")) {
+      return "Rscript is not available. Set R path in the properties."
     }
-  });
-
-  res.send('post /rpath performed ok');
-});
-
-server.post('/login', function (req: any, res: any) {
-  var user_name = req.body.user;
-  var password = req.body.password;
-  console.log("User name = " + user_name + ", password is " + password);
-  res.end("yes");
-});
+    // Check for opencpu in installed packages
+    let p2 = child_process.spawnSync(rscriptBin, ["-e", "eval('opencpu' %in% rownames(installed.packages()))"]);
+    if (p2.error) {
+      return p2.error;
+    }
+    if (p2.stdout == null) {
+      return "Rscript is not available. Set R path in the properties."
+    }
+    if (p2.stdout.includes("FALSE")) {
+      // Open cpu is not installed
+      logInfo("installing opencpu...");
+      child_process.execSync(rscriptBin + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+      logInfo("opencpu installed.");
+    }
+    logInfo("Starting opencpu ...");
+    let ocpucmd = rscriptBin + " -e \"opencpu::ocpu_start_server(5307)\"";
+    // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
+    let opencpuProcess: any = child_process.spawn(rscriptBin, ['-e', "opencpu::ocpu_start_server(5307, preload = ('RstoxAPI'), workers = 3)"]);
+    opencpuProcess.on('error', (er: any) => { logInfo(er) });
+    logInfo("Process " + opencpuProcess.pid + " started with " + ocpucmd)
+    logInfo("opencpu started.");
+  }
+  return "ok";
+}
 
 const readPropertiesFromFile = function readPropertiesFromFile() {
-
-
-  let resourcefile = require('os').homedir() + "/.stox.properties.json";
+  let propFileName = require('os').homedir() + "/.stox.properties.json";
   try {
-    let fs = require('fs');
-    if (fs.existsSync(resourcefile)) {
-      //file exists
-      let options = { encoding: 'utf-8', flag: 'r' };
-      let jsonString = fs.readFileSync(resourcefile, options);
-      console.log("jsonString : " + jsonString);
-      properties = JSON.parse(jsonString);
+    if (fs.existsSync(propFileName)) {
+      properties = JSON.parse(fs.readFileSync(propFileName, { encoding: 'utf-8', flag: 'r' }));
+      logInfo("Properties read from file: " + propFileName);
     }
     if (properties == null) {
       // Properties not read properly from file, or the file doesnt exist.
-      console.log("create initial properties")
+      logInfo("create initial properties")
       properties = {
         "projectRootPath": require('os').homedir(),
-        "activeProject": {},
+        "activeProject": "",
         "rPath": "",
         "rStoxFtpPath": ""
       };
+      logInfo("Properties initialized.");
     }
   } catch (err) {
-    console.log(err);
+    logInfo("Error reading properties: " + err);
   }
 }
 
@@ -451,47 +293,143 @@ const writePropertiesToFile = function writePropertiesToFile() {
   }
   let resourcefile = require('os').homedir() + "/.stox.properties.json";
   try {
-    let fs = require('fs');
     let options = { encoding: 'utf-8', flag: 'w' };
     /*if (properties.projectRootPath) {
       properties.projectRootPath = require('os').homedir();
     */
-    let jsonString = JSON.stringify(properties, null, 2);
-    console.log("jsonString : " + jsonString);
-    fs.writeFileSync(resourcefile, jsonString, options)
+    let str = JSON.stringify(properties, null, 2);
+    //logInfo("jsonString : " + jsonString);
+    fs.writeFileSync(resourcefile, str, options)
   } catch (err) {
-    console.log(err);
+    logInfo("Error writing properties " + err);
   }
 }
 
-// server.post('/updateprojectlist', function (req: any, res: any) {
-//   let jsonString = req.body.jsonString;
-//   console.log("in updateprojectlist jsonString : " + jsonString);
-//   properties.projectList = JSON.parse(jsonString);
-//   res.send("project list updated");
-// });
+function setupServer() {
+  server = express(); 
+  server.use(bodyParser.json())
 
-// server.get('/readprojectlist', function (req: any, res: any) {
-//   let jsonString = JSON.stringify(properties.projectList);
-//   res.send(jsonString); 
-// });
+  server.use(cors()) // enable cors in header (http call from static resources)
+  server.options(cors());
 
-server.post('/updateactiveproject', function (req: any, res: any) {
-  let jsonString = req.body.jsonString;
-  console.log("in updateactiveproject jsonString : " + jsonString);
-  properties.activeProject = JSON.parse(jsonString);
-  res.send("active project updated");
-});
+  server.post('/updateactiveproject', function (req: any, res: any) {
+    properties.activeProject = JSON.parse(req.body.jsonString);
+    logInfo("update active project: " + properties.activeProject)
+    res.send("ok");
+  });
 
-server.get('/readactiveproject', function (req: any, res: any) {
-  let jsonString = JSON.stringify(properties.activeProject);
-  console.log("in readactiveproject jsonString : " + jsonString);
-  res.send(jsonString);
-});
+  server.get('/readactiveproject', function (req: any, res: any) {
+    logInfo("read active project: " + properties.activeProject)
+    res.send(properties.activeProject);
+  });
 
-server.post('/updateprojectrootpath', function (req: any, res: any) {
-  let jsonString = req.body.jsonString;
-  console.log("in updateprojectrootpath jsonString : " + jsonString);
-  properties.projectRootPath = JSON.parse(jsonString);
-  res.send("project root path updated");
-});
+  server.post('/updateprojectrootpath', function (req: any, res: any) {
+    let jsonString = req.body.jsonString;
+    //logInfo("in updateprojectrootpath jsonString : " + jsonString);
+    properties.projectRootPath = JSON.parse(jsonString);
+    res.send("project root path updated");
+  });
+  // modify rpath in backend
+  server.post('/rpath', function (req: any, res: any) {
+    properties.rPath = req.body.rpath;
+    //logInfo('rpath ' + properties.rPath);
+    let resultstr: string = startOpenCPU();
+    res.send('post /rpath result:' + resultstr);
+  });
+  // observe project root path
+  server.get('/projectrootpath', function (req: any, res: any) {
+    //logInfo('get project root path ' + properties.projectRootPath);
+    res.send(properties.projectRootPath);
+  });
+  // observe rpath in backend
+  server.get('/', function (req: any, res: any) {
+    //logInfo('get rpath ' + properties.rPath);
+    res.send("Node server started");
+  });
+  // observe rpath in backend
+  server.get('/rpath', function (req: any, res: any) {
+    //logInfo('get rpath ' + properties.rPath);
+    res.send(properties.rPath);
+  });
+
+  function resolveDefaultPath(defPath: string): string {
+    // electron showOpenDialog defaultPath requires c:\\temp\\test on win32, otherwise c:/temp/test on mac/linux
+    return process.platform == "win32" ? defPath.replace(/\//g, "\\") : defPath.replace(/\\/g, "/")
+  }
+
+  server.post('/browse', function (req: any, res: any) {
+    logInfo("select a folder... wait");
+    if (mainWindow == null) {
+      res.send("No electron window created");
+      return;
+    }
+    let defPath = resolveDefaultPath(req.body.defaultpath); // correct slashes in default path
+    logInfo("default folder " + defPath);
+    require('electron').dialog.showOpenDialog(mainWindow, {
+      title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
+      properties: [/*'openFile'*/'openDirectory']
+    }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
+      if (!object.filePaths || !object.filePaths.length) {
+        logInfo("You didn't select a folder");
+        return;
+      }
+      logInfo("You did select a folder");
+      logInfo(object.filePaths[0]);
+      res.send(object.filePaths[0]);
+    });
+  });
+
+  server.post('/browsePath', function (req: any, res: any) {
+    logInfo("select a file/folder path(s)");
+    if (mainWindow == null) {
+      res.send("No electron window created");
+      return;
+    }
+    if (JSON.stringify(req.body) != '{}') {
+      let defPath = resolveDefaultPath(req.body.defaultPath); // correct slashes in default path
+      logInfo("default folder " + defPath);
+      require('electron').dialog.showOpenDialog(mainWindow, {
+        title: req.body.title, defaultPath: defPath,
+        properties: req.body.properties
+      }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
+        if (!object.filePaths || !object.filePaths.length) {
+          logInfo("You didn't select anything");
+          return;
+        }
+
+        logInfo("You selected : " + object.filePaths);
+
+        res.send(object.filePaths);
+      });
+    }
+  });
+
+  server.post('/fileExists', function (req: any, res: any) {
+    logInfo("check if a file exists");
+
+    if (JSON.stringify(req.body) != '{}') {
+      var filePath = req.body.filePath;
+
+      if (fs.existsSync(filePath)) {
+        res.send("true");
+      } else {
+        res.send("false");
+      }
+    }
+  });
+
+  server.post('/makeDirectory', function (req: any, res: any) {
+    logInfo("make directory");
+
+    if (JSON.stringify(req.body) != '{}') {
+      var dirPath = req.body.dirPath;
+      try {
+        fs.mkdirSync(dirPath);
+        res.send("true");
+      } catch (error) {
+        res.send(error);
+      }
+    }
+  });
+
+}

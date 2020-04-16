@@ -20,7 +20,7 @@ import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { Color } from './Color';
 import { clone } from 'ol/extent';

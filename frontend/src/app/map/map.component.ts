@@ -38,7 +38,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
 import { EDSU_PSU } from '../data/processdata';
@@ -139,7 +139,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  addLayerToProcess(pid, l: Layer) {
+  addLayerToProcess(pid: string, l: Layer) {
     let la = this.layerMap.get(pid);
     if (la == null) {
       la = [];
@@ -147,6 +147,24 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
     la.push(l);
     this.map.addLayer(l);
+  }
+
+  resetLayersToProcess(pid: string) {
+    let aidx: number = this.ps.getProcessIdxById(pid);
+    let idsToRemove: string[] = [];
+    this.layerMap.forEach((value, key, map) => {
+      let kidx: number = this.ps.getProcessIdxById(key);
+      if (kidx >= aidx) {
+        idsToRemove.push(key);
+      }
+    });
+    idsToRemove.forEach(id => {
+      let la = this.layerMap.get(id);
+      if (la != null) {
+        la.forEach(l => this.map.removeLayer(l));
+      }
+      this.layerMap.set(id, null);
+    });
   }
 
   async ngOnInit() {
@@ -228,21 +246,20 @@ export class MapComponent implements OnInit, AfterViewInit {
           break;
         }
         case "station": {
+          this.resetLayersToProcess(this.ps.activeProcessId);
           let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
           this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, str, proj, [MapSetup.getStationPointStyle()], false, 4));
           break;
         }
         case "EDSU": {
+          this.resetLayersToProcess(this.ps.activeProcessId);
           let data: { EDSUPoints: string; EDSULines: string; } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
           this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2));
           this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3));
-
           break;
         }
         case "stratum": {
-          /*if (this.stratumLayer != null) {
-            this.map.removeLayer(this.stratumLayer);
-          }*/
+          this.resetLayersToProcess(this.ps.activeProcessId);
           let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
           let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, str, proj, [MapSetup.getStratumStyle()], false, 1);
           this.addLayerToProcess(this.ps.activeProcessId, layer);

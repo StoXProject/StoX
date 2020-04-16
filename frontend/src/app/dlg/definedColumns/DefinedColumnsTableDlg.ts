@@ -1,4 +1,4 @@
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 import { DefinedColumns, ColumnPossibleValues } from '../../data/DefinedColumns';
 import { SelectionModel } from '@angular/cdk/collections';
 import { DefinedColumnsService } from './DefinedColumnsService';
@@ -12,20 +12,20 @@ import { ProcessProperties } from '../../data/ProcessProperties';
     selector: 'DefinedColumnsTableDlg',
     templateUrl: './DefinedColumnsTableDlg.html',
     styleUrls: ['./DefinedColumnsTableDlg.css']
-  })
-export class DefinedColumnsTableDlg  implements OnInit {
-    
+})
+export class DefinedColumnsTableDlg implements OnInit {
+
     // displayedColumns = ['select', 'NewSpeciesCategory', 'NewAcousticCategory', 'SpeciesCategory', 'Alpha', 'Beta', 'LMin', 'LMax', 'AcousticCategory', 'm', 'a', 'd'];
     title: string = "";
     displayedColumns = ['select'];
     columnPossibleValues: ColumnPossibleValues[] = [];
 
     dataSource: MatTableDataSource<DefinedColumns> = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
-    selection = new SelectionModel<DefinedColumns>(true, []);   
-    
+    selection = new SelectionModel<DefinedColumns>(true, []);
+
     combinedExpression = "";
 
-    constructor(public service: DefinedColumnsService, private msgService: MessageService, private ps: ProjectService, 
+    constructor(public service: DefinedColumnsService, private msgService: MessageService, private ps: ProjectService,
         private dataService: DataService) {
         service.definedColumnsDataObservable.subscribe(dcd => {
             this.dataSource = new MatTableDataSource<DefinedColumns>(dcd);
@@ -50,23 +50,25 @@ export class DefinedColumnsTableDlg  implements OnInit {
     addRow() {
         let obj = <DefinedColumns>{};
         this.displayedColumns.forEach(key => {
-            if(key != 'select') {
+            if (key != 'select') {
                 obj[key] = null;
             }
         });
-        this.dataSource.data.push(obj);
+        this.service.definedColumnsData.push(obj);
+        this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
+        // this.dataSource.data.push(obj);
         this.dataSource.filter = "";
-    }    
+    }
 
     removeSelectedRows() {
         this.selection.selected.forEach(item => {
-          let index: number = this.service.definedColumnsData.findIndex(d => d === item);
-          console.log(this.service.definedColumnsData.findIndex(d => d === item));
-          this.service.definedColumnsData.splice(index,1);
-          this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
+            let index: number = this.service.definedColumnsData.findIndex(d => d === item);
+            console.log(this.service.definedColumnsData.findIndex(d => d === item));
+            this.service.definedColumnsData.splice(index, 1);
+            this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
         });
         this.selection = new SelectionModel<DefinedColumns>(true, []);
-    }   
+    }
 
     /** Whether the number of selected elements matches the total number of rows. */
     isAllSelected() {
@@ -85,14 +87,14 @@ export class DefinedColumnsTableDlg  implements OnInit {
 
     /** Selects all rows if they are not all selected; otherwise clear selection. */
     masterToggle() {
-    this.isAllSelected() ?
-        this.selection.clear() :
-        this.dataSource.data.forEach(row => this.selection.select(row));
+        this.isAllSelected() ?
+            this.selection.clear() :
+            this.dataSource.data.forEach(row => this.selection.select(row));
     }
 
     possibleValues(colName: string): string[] {
-        for(let i=0; i<this.columnPossibleValues.length; i++) {
-            if(this.columnPossibleValues[i].columnName == colName) {
+        for (let i = 0; i < this.columnPossibleValues.length; i++) {
+            if (this.columnPossibleValues[i].columnName == colName) {
                 return this.columnPossibleValues[i].possibleValues;
             }
         }
@@ -141,11 +143,11 @@ export class DefinedColumnsTableDlg  implements OnInit {
 
         // validate input for null values in dialog and show messages if necessary
         // check if there is empty field in dialog
-        for(let i=0; i< this.service.definedColumnsData.length; i++) {
+        for (let i = 0; i < this.service.definedColumnsData.length; i++) {
             let blankFound = false;
             this.displayedColumns.forEach(key => {
-                if(key != 'select') {
-                    if(this.service.definedColumnsData[i][key] == null) {
+                if (key != 'select') {
+                    if (this.service.definedColumnsData[i][key] == null) {
                         console.log("Field " + key + " is null in row index : " + i);
                         // show the message that one or more fields are empty
                         this.msgService.setMessage("One or more fields are empty!");
@@ -155,10 +157,10 @@ export class DefinedColumnsTableDlg  implements OnInit {
                 }
             });
 
-            if(blankFound) {
+            if (blankFound) {
                 return;
             }
-        }        
+        }
 
         // validate input for duplicate rows 
 
@@ -169,23 +171,31 @@ export class DefinedColumnsTableDlg  implements OnInit {
         console.log("this.combinedExpression : " + this.combinedExpression);
 
         // save the combined string into current property item and run set property values function if there is a change in value
-        if(this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
+        if (this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
             this.service.currentPropertyItem.value = this.combinedExpression;
             // run set property value function
             if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
                 try {
-                  this.dataService.setProcessPropertyValue(this.service.currentPropertyCategory.groupName, 
-                    this.service.currentPropertyItem.name, this.service.currentPropertyItem.value, 
-                    this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
-                    .toPromise().then((s: ProcessProperties) => {
-                      this.ps.propertyCategories = s.propertySheet;      
-                    });
+                    this.dataService.setProcessPropertyValue(this.service.currentPropertyCategory.groupName,
+                        this.service.currentPropertyItem.name, this.service.currentPropertyItem.value,
+                        this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
+                        .toPromise().then((s: ProcessProperties) => {
+                            this.ps.propertyCategories = s.propertySheet;
+                            // TODO: introduce property service with onChanged
+                            this.ps.processes = s.processTable
+                            this.ps.activeProcessId = s.activeProcess.processID;
+                            this.ps.selectedProject.saved = s.saved;
+                            if (s.updateHelp) {
+                                this.ps.updateHelp();
+                            }
+
+                        });
                 } catch (error) {
-                  console.log(error.error);
-                  var firstLine = error.error.split('\n', 1)[0];
-                  this.msgService.setMessage(firstLine);
-                  this.msgService.showMessage();
-                  return;
+                    console.log(error.error);
+                    var firstLine = error.error.split('\n', 1)[0];
+                    this.msgService.setMessage(firstLine);
+                    this.msgService.showMessage();
+                    return;
                 }
             }
         }

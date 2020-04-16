@@ -6,6 +6,8 @@
   },
   "exclude": [
     "test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "app/service/acoustic-psu.service.ts",
+    "environments/environment.prod.ts"
   ]
 }

@@ -33,6 +33,7 @@ export class CreateProjectDialog {
         this.templates = <Template[]> await this.dataService.getAvailableTemplates().toPromise();
         //console.log("templates retrieved: " + this.templates.length);
         this.projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
+        this.projectRootPath = this.projectRootPath.replace(/\\/g, "/");
         //console.log("project root path retrieved: " + this.projectRootPath);
         // this.project = <string>await this.dataService.getProjectPath().toPromise();
         // console.log("project path retrieved: " + this.project);
@@ -42,6 +43,7 @@ export class CreateProjectDialog {
     async browse() {
         console.log("browse");
         this.projectRootPath = await this.dataService.browse(this.projectRootPath).toPromise();
+        this.projectRootPath = this.projectRootPath.replace(/\\/g, "/");
 
         let jsonString = JSON.stringify(this.projectRootPath);
         let status = <string> await this.dataService.updateProjectRootPath(jsonString).toPromise();

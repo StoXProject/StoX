@@ -2,7 +2,7 @@
 import { ExpressionBuilderDlgService } from './ExpressionBuilderDlgService';
 import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 import { TableExpression } from '../data/tableexpression';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from '../message/MessageService';
@@ -19,7 +19,7 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     combinedExpression: string = "";
 
-    displayedColumns = ['select', 'tableName', 'expression'];
+    displayedColumns = ['select', 'tableName', 'expression', 'action'];
     dataSource: MatTableDataSource<TableExpression>;
     selection = new SelectionModel<TableExpression>(true, []);
 
@@ -46,7 +46,8 @@ export class ExpressionBuilderDlg  implements OnInit {
     // }
 
     addRow() {
-        this.dataSource.data.push({tableName: null, expression: null});
+        this.service.tableExpressions.push({tableName: null, expression: null});
+        this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
         this.dataSource.filter = "";
     }    
 
@@ -94,14 +95,15 @@ export class ExpressionBuilderDlg  implements OnInit {
         return true; // No duplicate values found for tableName
      }
 
-    short(param: string): string {
+     // Replacing this with Styling mat-select-panel:  min-width:fit-content
+    /*short(param: string): string {
         if(param.length > 43) {
             let i = param.indexOf('/');
             return param.substr(0, 27) + "..." + param.substr(i+1);
         } else {
             return param;
         }
-    }
+    }*/
 
     buildExpression() {
 
@@ -125,6 +127,31 @@ export class ExpressionBuilderDlg  implements OnInit {
         // show query builder
         this.quBuilderService.showDialog();
 
+    }
+
+    edit(tableExpression: TableExpression) {
+        if(tableExpression != null && tableExpression.tableName == null) {
+            this.msgService.setMessage("Table name is not given in selected row!");
+            this.msgService.showMessage();
+            return;            
+        }
+
+        console.log("current table name : " + tableExpression.tableName);
+
+        this.service.setCurrentTableExpression(tableExpression);
+
+        this.service.updateQueryBuilderConfig();
+
+        // let the user get a new page of QueryBuilderDlg shown on screen
+        // show query builder
+        this.quBuilderService.showDialog();        
+    }
+
+    delete(tableExpression: TableExpression) {
+        let index: number = this.service.tableExpressions.findIndex(d => d === tableExpression);
+        console.log(this.service.tableExpressions.findIndex(d => d === tableExpression));
+        this.service.tableExpressions.splice(index,1);
+        this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
     }
 
     async apply() {
@@ -169,10 +196,13 @@ export class ExpressionBuilderDlg  implements OnInit {
                     this.ps.selectedProcessId)
                     .toPromise().then((s: ProcessProperties) => {
                       this.ps.propertyCategories = s.propertySheet;
-                       // Special case if a property processname is changed, it should update the selected process name
-                    //   if (this.ps.selectedProcessId != null && pi.name == 'processName') {
-                    //     this.ps.selectedProcess.processName = pi.value; 
-                    //   }
+                      // TODO: introduce property service with onChanged
+                      this.ps.processes = s.processTable
+                      this.ps.activeProcessId = s.activeProcess.processID;
+                      this.ps.selectedProject.saved = s.saved;
+                      if (s.updateHelp) {
+                        this.ps.updateHelp();
+                      }
                     });
                 } catch (error) {
                   console.log(error.error);
