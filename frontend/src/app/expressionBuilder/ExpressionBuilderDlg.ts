@@ -19,9 +19,9 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     combinedExpression: string = "";
 
-    displayedColumns = ['select', 'tableName', 'expression', 'action'];
+    displayedColumns = ['tableName', 'expression', 'action'];
     dataSource: MatTableDataSource<TableExpression>;
-    selection = new SelectionModel<TableExpression>(true, []);
+    // selection = new SelectionModel<TableExpression>(true, []);
 
     constructor(public service: ExpressionBuilderDlgService, private msgService: MessageService
         , private quBuilderService: QueryBuilderDlgService, private ps: ProjectService, 
@@ -51,37 +51,37 @@ export class ExpressionBuilderDlg  implements OnInit {
         this.dataSource.filter = "";
     }    
 
-    removeSelectedRows() {
-        this.selection.selected.forEach(item => {
-          let index: number = this.service.tableExpressions.findIndex(d => d === item);
-          console.log(this.service.tableExpressions.findIndex(d => d === item));
-          this.service.tableExpressions.splice(index,1);
-          this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
-        });
-        this.selection = new SelectionModel<TableExpression>(true, []);
-    }   
+    // removeSelectedRows() {
+    //     this.selection.selected.forEach(item => {
+    //       let index: number = this.service.tableExpressions.findIndex(d => d === item);
+    //       console.log(this.service.tableExpressions.findIndex(d => d === item));
+    //       this.service.tableExpressions.splice(index,1);
+    //       this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
+    //     });
+    //     this.selection = new SelectionModel<TableExpression>(true, []);
+    // }   
 
     /** Whether the number of selected elements matches the total number of rows. */
-    isAllSelected() {
-        const numSelected = this.selection.selected.length;
-        const numRows = this.dataSource.data.length;
-        return numSelected === numRows;
-    }
+    // isAllSelected() {
+    //     const numSelected = this.selection.selected.length;
+    //     const numRows = this.dataSource.data.length;
+    //     return numSelected === numRows;
+    // }
 
-    atLeastOneSelected() {
-        return this.selection.selected.length > 0;
-    }
+    // atLeastOneSelected() {
+    //     return this.selection.selected.length > 0;
+    // }
 
-    isOnlyOneSelected() {
-        return this.selection.selected.length === 1;
-    }
+    // isOnlyOneSelected() {
+    //     return this.selection.selected.length === 1;
+    // }
 
     /** Selects all rows if they are not all selected; otherwise clear selection. */
-    masterToggle() {
-    this.isAllSelected() ?
-        this.selection.clear() :
-        this.dataSource.data.forEach(row => this.selection.select(row));
-    }
+    // masterToggle() {
+    // this.isAllSelected() ?
+    //     this.selection.clear() :
+    //     this.dataSource.data.forEach(row => this.selection.select(row));
+    // }
 
     areTableNamesUnique() {
         var tmpArr = [];
@@ -105,33 +105,33 @@ export class ExpressionBuilderDlg  implements OnInit {
         }
     }*/
 
-    buildExpression() {
+    // buildExpression() {
 
-        // check if current table name is given in the current row
-        let currentTableExpression: TableExpression;
-        currentTableExpression = this.selection.selected[0];
+    //     // check if current table name is given in the current row
+    //     let currentTableExpression: TableExpression;
+    //     currentTableExpression = this.selection.selected[0];
 
-        if(currentTableExpression != null && currentTableExpression.tableName == null) {
-            this.msgService.setMessage("Table name is not given in selected row!");
-            this.msgService.showMessage();
-            return;            
-        }
+    //     if(currentTableExpression != null && currentTableExpression.tableName == null) {
+    //         this.msgService.setMessage("Table name is not given in the selected row!");
+    //         this.msgService.showMessage();
+    //         return;            
+    //     }
 
-        console.log("current table name : " + currentTableExpression.tableName);
+    //     console.log("current table name : " + currentTableExpression.tableName);
 
-        this.service.setCurrentTableExpression(currentTableExpression);
+    //     this.service.setCurrentTableExpression(currentTableExpression);
 
-        this.service.updateQueryBuilderConfig();
+    //     this.service.updateQueryBuilderConfig();
 
-        // let the user get a new page of QueryBuilderDlg shown on screen
-        // show query builder
-        this.quBuilderService.showDialog();
+    //     // let the user get a new page of QueryBuilderDlg shown on screen
+    //     // show query builder
+    //     this.quBuilderService.showDialog();
 
-    }
+    // }
 
     edit(tableExpression: TableExpression) {
         if(tableExpression != null && tableExpression.tableName == null) {
-            this.msgService.setMessage("Table name is not given in selected row!");
+            this.msgService.setMessage("Table name is not given in the selected row!");
             this.msgService.showMessage();
             return;            
         }
@@ -152,6 +152,8 @@ export class ExpressionBuilderDlg  implements OnInit {
         console.log(this.service.tableExpressions.findIndex(d => d === tableExpression));
         this.service.tableExpressions.splice(index,1);
         this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
+
+        // this.selection = new SelectionModel<TableExpression>(true, []);
     }
 
     async apply() {
@@ -222,7 +224,7 @@ export class ExpressionBuilderDlg  implements OnInit {
     }
 
     onHide() {
-        this.selection.clear();
+        // this.selection.clear();
         this.service.display = false;          
     }
 }
