@@ -28,6 +28,10 @@
   .mat-column-tableName {
     flex: 0 0 30%;
   }
+
+  .action-link {
+    cursor: pointer;
+  }
   
   /* .mat-column-action {
     flex: 0 0 20%;
