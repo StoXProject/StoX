@@ -149,7 +149,7 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     delete(tableExpression: TableExpression) {
         let index: number = this.service.tableExpressions.findIndex(d => d === tableExpression);
-        console.log(this.service.tableExpressions.findIndex(d => d === tableExpression));
+        //console.log(this.service.tableExpressions.findIndex(d => d === tableExpression));
         this.service.tableExpressions.splice(index,1);
         this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
 
