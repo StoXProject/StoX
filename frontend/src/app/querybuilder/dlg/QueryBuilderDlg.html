@@ -5,12 +5,12 @@
     <div>
       <textarea class="output">{{query | json}}</textarea>
     </div>
-    <br>  -->
+    <br>   
+    -->
 
-    <h5>Query Builder</h5>
-    <h6>Table: <code>{{tableName}}</code></h6>
-    <br> 
-    <mat-card>
+  <h6>Table: <code>{{tableName}}</code></h6>
+    
+  <mat-card>
     <query-builder [(ngModel)]='query' [config]='currentConfig' [allowRuleset]='allowRuleset' [allowCollapse]='allowCollapse' [persistValueOnFieldChange]='persistValueOnFieldChange'>
       <ng-container *queryButtonGroup="let ruleset; let addRule=addRule; let addRuleSet=addRuleSet; let removeRuleSet=removeRuleSet">
         <button type="button" mat-icon-button color="primary" (click)="addRule()">
@@ -109,9 +109,9 @@
         </mat-form-field>
       </ng-container>
     </query-builder>
-    </mat-card>
+  </mat-card>
     
-    <p-footer>
+  <p-footer>
 		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
 			class="ui-button-secondary"></button>
 		<button type="button" pButton icon="pi pi-check" (click)="apply()" label="OK"></button>
