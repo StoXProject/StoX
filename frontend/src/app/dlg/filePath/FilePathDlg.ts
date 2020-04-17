@@ -16,9 +16,9 @@ import { ProcessProperties } from '../../data/ProcessProperties';
 export class FilePathDlg  implements OnInit { 
 
     dataSource: MatTableDataSource<FilePath> = new MatTableDataSource<FilePath>(this.service.paths);
-    selection = new SelectionModel<FilePath>(true, []);
+    // selection = new SelectionModel<FilePath>(true, []);
 
-    displayedColumns = ['select', 'path'];
+    displayedColumns = ['path', 'action'];
 
     combinedPaths: string[] = [];
 
@@ -39,37 +39,37 @@ export class FilePathDlg  implements OnInit {
         this.dataSource.filter = "";
     }    
 
-    removeSelectedRows() {
-        this.selection.selected.forEach(item => {
-          let index: number = this.service.paths.findIndex(d => d === item);
-          console.log("index to remove : " + index);
-          this.service.paths.splice(index, 1);
-          this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
-        });
-        this.selection = new SelectionModel<FilePath>(true, []);
-    }   
+    // removeSelectedRows() {
+    //     this.selection.selected.forEach(item => {
+    //       let index: number = this.service.paths.findIndex(d => d === item);
+    //       console.log("index to remove : " + index);
+    //       this.service.paths.splice(index, 1);
+    //       this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
+    //     });
+    //     this.selection = new SelectionModel<FilePath>(true, []);
+    // }   
 
     /** Whether the number of selected elements matches the total number of rows. */
-    isAllSelected() {
-        const numSelected = this.selection.selected.length;
-        const numRows = this.dataSource.data.length;
-        return numSelected === numRows;
-    }
+    // isAllSelected() {
+    //     const numSelected = this.selection.selected.length;
+    //     const numRows = this.dataSource.data.length;
+    //     return numSelected === numRows;
+    // }
 
-    atLeastOneSelected() {
-        return this.selection.selected.length > 0;
-    }
+    // atLeastOneSelected() {
+    //     return this.selection.selected.length > 0;
+    // }
 
-    isOnlyOneSelected() {
-        return this.selection.selected.length === 1;
-    }
+    // isOnlyOneSelected() {
+    //     return this.selection.selected.length === 1;
+    // }
 
     /** Selects all rows if they are not all selected; otherwise clear selection. */
-    masterToggle() {
-    this.isAllSelected() ?
-        this.selection.clear() :
-        this.dataSource.data.forEach(row => this.selection.select(row));
-    }
+    // masterToggle() {
+    // this.isAllSelected() ?
+    //     this.selection.clear() :
+    //     this.dataSource.data.forEach(row => this.selection.select(row));
+    // }
 
     arePathsUnique() {
         var tmpArr = [];
@@ -83,10 +83,30 @@ export class FilePathDlg  implements OnInit {
         return true;
     }  
      
-    async buildFilePath() {
-        let currentFilePath: FilePath;
-        currentFilePath = this.selection.selected[0];
+    // async buildFilePath() {
+    //     let currentFilePath: FilePath;
+    //     currentFilePath = this.selection.selected[0];
 
+    //     let options = {properties:['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath};
+
+    //     let filePath = await this.dataService.browsePath(options).toPromise();
+
+    //     // console.log("filePath : " + filePath);
+
+    //     if(filePath != null) {
+    //         let paths = <string[]>JSON.parse(filePath);
+
+    //         //console.log("1st element : " + paths[0]);
+
+    //         paths[0] = paths[0].replace(/\\/g, "/"); // convert backslash to forward
+            
+    //         //console.log("1st element : " + paths[0]);
+
+    //         currentFilePath.path = paths[0];
+    //     }
+    // }
+
+    async edit(currentFilePath: FilePath) {
         let options = {properties:['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath};
 
         let filePath = await this.dataService.browsePath(options).toPromise();
@@ -105,6 +125,13 @@ export class FilePathDlg  implements OnInit {
             currentFilePath.path = paths[0];
         }
     }
+
+    delete(currentFilePath: FilePath) {
+        let index: number = this.service.paths.findIndex(d => d === currentFilePath);
+        // console.log(this.service.paths.findIndex(d => d === currentFilePath));
+        this.service.paths.splice(index,1);
+        this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
+    }    
 
     async apply() { 
         var option = {filePath: null};
@@ -180,7 +207,7 @@ export class FilePathDlg  implements OnInit {
     }
 
     onHide() {
-        this.selection.clear();
+        // this.selection.clear();
         this.service.display = false;
     }    
 }
