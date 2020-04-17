@@ -105,11 +105,11 @@ export class ParameterComponent implements OnInit {
     let tableNames = <string[]>await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
     console.log("tableNames : " + JSON.stringify(tableNames));
 
-    if (tableNames != null && JSON.stringify(tableNames) == '{}') {
-      tableNames = [];
-    }
+    // if (tableNames != null && JSON.stringify(tableNames) == '{}') {
+    //   tableNames = [];
+    // }
 
-    if (tableNames == null || JSON.stringify(tableNames) == '[]') {
+    if (this.ps.isEmpty(tableNames)) {
       this.msgService.setMessage("You have to run the function before this action!");
       this.msgService.showMessage();
       return;

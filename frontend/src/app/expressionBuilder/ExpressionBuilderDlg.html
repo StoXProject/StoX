@@ -3,8 +3,10 @@
     <MessageDlg></MessageDlg>
 
     <button mat-raised-button (click)="addRow()">Add</button> &nbsp;
-    <button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;
+    <!--
+        <button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;
     <button mat-raised-button [disabled]="!isOnlyOneSelected()" (click)="buildExpression()">Expression</button>
+    -->
 
     <div class="example-container mat-elevation-z8">
         <mat-table #table [dataSource]="dataSource">
@@ -13,7 +15,7 @@
                 The actual rendered columns are set as a property on the row definition" -->
       
             <!-- Checkbox Column -->
-            <ng-container matColumnDef="select">
+            <!--<ng-container matColumnDef="select">
             <mat-header-cell *matHeaderCellDef>
                 <mat-checkbox (change)="$event ? masterToggle() : null"
                             [checked]="selection.hasValue() && isAllSelected()"
@@ -26,7 +28,7 @@
                             [checked]="selection.isSelected(row)">
                 </mat-checkbox>
             </mat-cell>
-            </ng-container>
+            </ng-container>-->
 
             <!-- tableName Column -->
             <ng-container matColumnDef="tableName">
