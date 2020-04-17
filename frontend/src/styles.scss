@@ -566,3 +566,20 @@ $nodata: #acacac;
   overflow-x: hidden;
   width: 100%;
 }
+
+.mat-menu-item {
+  line-height: 1.2rem !important;
+  height: 1.2rem !important;
+  padding:0 !important;
+}
+.mat-menu-item:focus {
+  outline: none;
+}
+
+.mat-menu-panel {
+  min-height: 0rem !important;
+}
+
+.mat-menu-content {
+  padding: 0.2rem !important;
+}
