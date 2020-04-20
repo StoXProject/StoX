@@ -102,20 +102,25 @@ export class ParameterComponent implements OnInit {
     this.exprBuilderService.currentPropertyItem = pi;
     this.exprBuilderService.currentPropertyCategory = category;
 
-    let tableNames = <string[]>await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
-    console.log("tableNames : " + JSON.stringify(tableNames));
+    // let tableNames = <string[]>await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+    // console.log("tableNames : " + JSON.stringify(tableNames));
 
     // if (tableNames != null && JSON.stringify(tableNames) == '{}') {
     //   tableNames = [];
     // }
 
-    if (this.ps.isEmpty(tableNames)) {
-      this.msgService.setMessage("You have to run the function before this action!");
+    let allOptions = await this.dataService.getFilterOptionsAll(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+    console.log("allOptions : " + JSON.stringify(allOptions));
+
+    if (this.ps.isEmpty(allOptions)) {
+      this.msgService.setMessage("You have to run the previous process before this action!");
       this.msgService.showMessage();
       return;
     }
 
-    this.exprBuilderService.tableNames = tableNames;
+    this.exprBuilderService.allOptions = allOptions;
+    this.exprBuilderService.tableNames = allOptions.tableNames;
+    console.log("tableNames : " + JSON.stringify(this.exprBuilderService.tableNames));
 
     // run ExpressionBuilderService.showDialog() to show Expression builder dialog
     this.exprBuilderService.showDialog();
@@ -146,6 +151,10 @@ export class ParameterComponent implements OnInit {
     }
     else if (pi.format == "directoryPath") {
       options = { properties: ["openDirectory"], title: 'Select folder', defaultPath: this.ps.selectedProject.projectPath };
+    } else {
+      this.msgService.setMessage(pi.format + " is not implemented!");
+      this.msgService.showMessage();
+      return;
     }
 
     let filePath = await this.dataService.browsePath(options).toPromise();
