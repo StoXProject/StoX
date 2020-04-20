@@ -159,7 +159,7 @@ export class ProjectService {
     let jsonString = JSON.stringify(this.selectedProject == null ? "" : this.selectedProject.projectPath);
     console.log("StoX GUI: updating ActiveProject with string  " + jsonString)
     let status = await this.dataService.updateActiveProject(jsonString).toPromise();
-    console.log("status " + status); 
+    console.log("status " + status);
 
     // Update active process id.
     if (this.selectedProject != null) {
@@ -203,22 +203,26 @@ export class ProjectService {
     this.m_helpContent = content;
   }
 
-  async onSelectedProcessChanged() {
-    if (this.selectedProject != null &&
-      this.selectedProcess != null &&
-      this.selectedModel != null) {
+  onSelectedProcessChanged() {
+    this.updateProcessProperties();
+    this.updateHelp();
+  }
+  async updateProcessProperties() {
+    if (this.selectedProject != null && this.selectedProcess != null && this.selectedModel != null) {
       this.processProperties = await this.dataService.getProcessPropertySheet(this.selectedProject.projectPath, this.selectedModel.modelName,
         this.selectedProcessId).toPromise();
       if (this.processProperties != null) {
         this.propertyCategories = this.processProperties.propertySheet;
       }
-      this.updateHelp();
+
     }
   }
-
   async updateHelp() {
-    this.helpContent = await this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
-      this.selectedModel.modelName, this.selectedProcessId).toPromise();
+    if (this.selectedProject != null && this.selectedProcess != null && this.selectedModel != null) {
+      console.log('Update help');
+      this.helpContent = await this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
+        this.selectedModel.modelName, this.selectedProcessId).toPromise();
+    }
   }
 
   async initializeProperties() {
@@ -270,16 +274,16 @@ export class ProjectService {
     this.setModels(this.models);
     if (projectPath.length > 0 && this.models != null && this.models.length > 0) {
       //this.selectedModel = this.models[0]; 
-      this.openProject(projectPath);
+      this.openProject(projectPath, false);  
     }
   }
 
-  async openProject(projectPath: string) {
+  async openProject(projectPath: string, doThrow : boolean) {
     // the following should open the project and make it selected in the GUI
-    let project: Project = await this.dataService.openProject(projectPath).toPromise();
+    let project: Project = await this.dataService.openProject(projectPath, doThrow).toPromise();
     if (project != null) {
       this.projects = [project];
-      this.selectedProject = this.projects[0];
+      this.selectedProject = this.projects[0]; 
       this.onSelectedProcessChanged();
       this.iaMode = 'reset'; // reset interactive mode
     }

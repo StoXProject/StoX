@@ -1,10 +1,22 @@
 <mat-tab-group [@.disabled]="true">
     <mat-tab *ngFor="let item of ps.outputTables" label="{{item.table}}">
+        <ng-template mat-tab-label>
+            <div (contextmenu)="onContextMenu($event, item)">{{item.table}}</div>
+        </ng-template>
         <div style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
-        white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">{{item.output.data.join('\n')}}</div>
+        white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">
+            {{getItemOutput(item)}}</div>
     </mat-tab>
-</mat-tab-group>
 
+</mat-tab-group>
+<div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
+    [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu">
+</div>
+<mat-menu #contextMenu="matMenu">
+    <ng-template matMenuContent let-name="item">
+        <button mat-menu-item (click)="onContextMenuAction1(item)">Close</button>
+    </ng-template>
+</mat-menu>
 <!--<p-tabView>
     <p-tabPanel *ngFor="let tab of ['Test', 'Test2']" header="{{tab}}" [selected]="tab === 'Test'"> 
        <div style="user-select: text; height:inherit; width:inherit; overflow:scroll;">

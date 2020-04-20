@@ -54,6 +54,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   @HostListener('window:beforeunload', ['$event'])
   async unloadHandler(event: any) {
     //event.preventDefault();
+    console.log("window:beforeunload - reset project with save")
     //event.returnValue = true;
     await this.ds.resetProject(this.ps.selectedProject.projectPath, true, false).toPromise();
   }
