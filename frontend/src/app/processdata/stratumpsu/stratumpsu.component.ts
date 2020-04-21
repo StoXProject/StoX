@@ -48,7 +48,7 @@ export class StratumpsuComponent implements OnInit {
   // Accessors for selected node
   set selectedNode(val: TreeNode) {
     this.m_selectedNode = val;
-    this.pds.selectedPSU = val.data.id;
+    this.pds.selectedPSU = val.data.type == 'psu' ? val.data.id : null;
     console.log("selected node" + val.data.id);
   }
 

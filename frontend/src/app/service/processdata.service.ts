@@ -16,6 +16,9 @@ export class ProcessDataService {
     private m_selectedStratumSubject = new Subject<string>();
     private m_selectedPSU: string;
     private m_selectedPSUSubject = new Subject<string>();
+    
+    private m_assignmentSubject = new Subject<string>();
+    private m_assignment: any;
 
     constructor(private ds: DataService, private ps: ProjectService) {
         this.ps.iaModeSubject.subscribe({
@@ -28,6 +31,19 @@ export class ProcessDataService {
                         this.acousticPSU = v;
                         break;
                     } 
+                    case 'assignment': {
+                        console.log("Process data - listen on iamode=assignment")
+                        let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
+                            ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+                        //this.acousticPSU = v;
+                        break;
+                    } 
+                    case 'reset': {
+                        this.acousticPSU = null;
+                        this.selectedStratum = null;
+                        this.selectedPSU = null;
+                        break;
+                    }
                 }
                 //      console.log(newVal);
             }
@@ -40,6 +56,13 @@ export class ProcessDataService {
     set acousticPSU(val: AcousticPSU) {
         this.m_acousticPSU = val;
         this.m_acousticPSUSubject.next("data");
+    }
+    get assignment(): any {
+        return this.m_assignment;
+    }
+    set assignment(val: any) {
+        this.m_assignment = val;
+        this.m_assignmentSubject.next("data");
     }
 
     get acousticPSUSubject(): Subject<string> {
