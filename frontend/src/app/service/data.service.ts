@@ -485,8 +485,13 @@ export class DataService {
     return this.runProcessFunc<string[]>('getProcessOutputTableNames', projectPath, modelName, processID);
   }
 
-  getFilterOptionsAll(projectPath: string, modelName: string, processID: string): Observable<any> {
-    return this.runProcessFunc<any>('getFilterOptionsAll', projectPath, modelName, processID);
+  getFilterOptionsAll(projectPath: string, modelName: string, processID: string, includeNumeric: Boolean): Observable<any> {
+    return this.runFunction('getFilterOptionsAll', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "include.numeric": includeNumeric
+    });    
   }
 
   getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {
