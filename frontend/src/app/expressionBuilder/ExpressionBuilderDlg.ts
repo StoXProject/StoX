@@ -4,7 +4,7 @@ import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgServi
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { TableExpression } from '../data/tableexpression';
-import { SelectionModel } from '@angular/cdk/collections';
+// import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from '../message/MessageService';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
@@ -26,15 +26,11 @@ export class ExpressionBuilderDlg  implements OnInit {
     constructor(public service: ExpressionBuilderDlgService, private msgService: MessageService
         , private quBuilderService: QueryBuilderDlgService, private ps: ProjectService, 
         private dataService: DataService ) {
-        // console.log("start ExpressionBuilderDlg constructor");
-        // this.tableExpressions = Object.assign( ELEMENT_DATA);
-        // this.dataSource = new MatTableDataSource(this.service.tableExpressions);
-
-        this.service.currentTableExpressionsObservable.subscribe(te => this.dataSource = new MatTableDataSource<TableExpression>(te));
+        this.service.currentTableExpressionsObservable.subscribe(tes => this.dataSource = new MatTableDataSource<TableExpression>(tes));
     }
  
     async ngOnInit() {
-        // console.log("start ngOnInit in ExpressionBuilderDlg");
+        
     }    
 
     // deleteRecordAtIndex(index) {
@@ -142,7 +138,6 @@ export class ExpressionBuilderDlg  implements OnInit {
 
         this.service.updateQueryBuilderConfig();
 
-        // let the user get a new page of QueryBuilderDlg shown on screen
         // show query builder
         this.quBuilderService.showDialog();        
     }
@@ -152,8 +147,6 @@ export class ExpressionBuilderDlg  implements OnInit {
         //console.log(this.service.tableExpressions.findIndex(d => d === tableExpression));
         this.service.tableExpressions.splice(index,1);
         this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
-
-        // this.selection = new SelectionModel<TableExpression>(true, []);
     }
 
     async apply() {

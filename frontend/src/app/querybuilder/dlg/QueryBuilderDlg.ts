@@ -118,10 +118,10 @@ export class QueryBuilderDlg  implements OnInit {
                 // value2["type"] = "category";
                 value2["multiselect"] = true;
                 // console.log("type changed to 'category'!");
-                console.log("multiselect is true!");
+                // console.log("multiselect is true!");
               } else {
                 delete value2[key3];      
-                console.log("empty options deleted!");          
+                // console.log("empty options deleted!");          
               }
             }
           }

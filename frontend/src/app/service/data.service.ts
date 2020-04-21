@@ -485,6 +485,10 @@ export class DataService {
     return this.runProcessFunc<string[]>('getProcessOutputTableNames', projectPath, modelName, processID);
   }
 
+  getFilterOptionsAll(projectPath: string, modelName: string, processID: string): Observable<any> {
+    return this.runProcessFunc<any>('getFilterOptionsAll', projectPath, modelName, processID);
+  }
+
   getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {
     return this.runProcessFunc<string>('getInteractiveMode', projectPath, modelName, processID);
   }
