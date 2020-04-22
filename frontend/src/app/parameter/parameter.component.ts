@@ -109,7 +109,7 @@ export class ParameterComponent implements OnInit {
     //   tableNames = [];
     // }
 
-    let allOptions = await this.dataService.getFilterOptionsAll(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+    let allOptions = await this.dataService.getFilterOptionsAll(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, false).toPromise();
     console.log("allOptions : " + JSON.stringify(allOptions));
 
     if (this.ps.isEmpty(allOptions)) {
