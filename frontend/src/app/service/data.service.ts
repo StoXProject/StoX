@@ -130,13 +130,16 @@ export class DataService {
     });
   }
 
-  openProject(projectPath: string, dothrow : boolean): Observable<Project> {
+  openProject(projectPath: string, dothrow : boolean, force : boolean): Observable<Project> {
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
     return this.runFunctionThrowFramework('openProject', {
-      "projectPath": projectPath
+      "projectPath": projectPath, 
+      "showWarnings":false,
+      "force":force,
+      "reset":false
     }, dothrow);
   }
 
@@ -177,12 +180,12 @@ export class DataService {
     }, true);
   }
 
-  resetProject(projectPath: string, save: Boolean, dothrow: boolean): Observable<Project> {
+  /*resetProject(projectPath: string, save: Boolean, dothrow: boolean): Observable<Project> {
     return this.runFunctionThrowFramework('resetProject', {
       "projectPath": projectPath,
       "save": save
     }, dothrow);
-  }
+  }*/
 
   closeProject(projectPath: string, save: Boolean): Observable<any> {
     // const formData = new FormData();

@@ -66,7 +66,7 @@ export class OpenProjectDlg {
             }
 
             // the following should open the project and make it selected in the GUI
-            this.ps.openProject(this.service.projectPath, true);
+            this.ps.openProject(this.service.projectPath, true, false);
         } catch (error) {
             console.log(error); 
             var firstLine = error;//.error.split('\n', 1)[0];

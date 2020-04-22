@@ -56,7 +56,8 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     //event.preventDefault();
     console.log("window:beforeunload - reset project with save")
     //event.returnValue = true;
-    await this.ds.resetProject(this.ps.selectedProject.projectPath, true, false).toPromise();
+    // TODO: get a dialog when unloading page
+    await this.ds.closeProject(this.ps.selectedProject.projectPath, true).toPromise();
   }
 
   async ngOnInit() {

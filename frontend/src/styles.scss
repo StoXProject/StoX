@@ -76,7 +76,7 @@ $nodata: #acacac;
   white-space: nowrap;
 }
 
-.ui-listbox-item:focus, .ui-menuitem-link {  
+.ui-listbox-item:focus, .ui-menuitem-link, .ui-treenode-content:focus {  
   outline: none !important; // prevent webkit :focus outline.
   box-shadow: none !important; // add by primeng
 }

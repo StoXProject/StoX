@@ -54,9 +54,9 @@ export class ProjectService {
   set iaMode(iaMode: string) {
     this.m_iaMode = iaMode;
     this.m_iaModeSubject.next(iaMode); // propagate event
-    console.log("IAMode changed to " + iaMode);
   }
-  get iaMode(): string {
+
+  get iaMode(): string { 
     return this.m_iaMode;
   }
 
@@ -184,8 +184,10 @@ export class ProjectService {
     return this.m_selectedProcessId;
   }
   public set selectedProcessId(processId: string) {
-    this.m_selectedProcessId = processId;
-    this.onSelectedProcessChanged();
+    if (processId != this.m_selectedProcessId) {
+      this.m_selectedProcessId = processId;
+      this.onSelectedProcessChanged();
+    }
   }
   public get selectedProcess(): Process {
     return this.getProcessById(this.selectedProcessId);
@@ -274,16 +276,16 @@ export class ProjectService {
     this.setModels(this.models);
     if (projectPath.length > 0 && this.models != null && this.models.length > 0) {
       //this.selectedModel = this.models[0]; 
-      this.openProject(projectPath, false);  
+      this.openProject(projectPath, false, false);
     }
   }
 
-  async openProject(projectPath: string, doThrow : boolean) {
+  async openProject(projectPath: string, doThrow: boolean, force : boolean) {
     // the following should open the project and make it selected in the GUI
-    let project: Project = await this.dataService.openProject(projectPath, doThrow).toPromise();
+    let project: Project = await this.dataService.openProject(projectPath, doThrow, force).toPromise();
     if (project != null) {
       this.projects = [project];
-      this.selectedProject = this.projects[0]; 
+      this.selectedProject = this.projects[0];
       this.onSelectedProcessChanged();
       this.iaMode = 'reset'; // reset interactive mode
     }

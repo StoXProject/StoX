@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, HostListener, ElementRef, ViewChild } from '@angular/core';
-
+import { defer, merge, Observable } from 'rxjs';
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
 import Source from 'ol/source/Vector';
@@ -235,44 +235,9 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, proj);
 
-    this.ps.iaModeSubject.subscribe(async iaMode => {
-      let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
-      switch (iaMode) {
-        case "reset": {
-          this.layerMap.forEach((value, key, map) => {
-            value.forEach(l => this.map.removeLayer(l));
-          });
-          this.layerMap.clear();
-          break;
-        }
-        case "station": {
-          this.resetLayersToProcess(this.ps.activeProcessId);
-          let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, str, proj, [MapSetup.getStationPointStyle()], false, 4));
-          break;
-        }
-        case "EDSU": {
-          this.resetLayersToProcess(this.ps.activeProcessId);
-          let data: { EDSUPoints: string; EDSULines: string; } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2));
-          this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3));
-          break;
-        }
-        case "stratum": {
-          this.resetLayersToProcess(this.ps.activeProcessId);
-          let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, str, proj, [MapSetup.getStratumStyle()], false, 1);
-          this.addLayerToProcess(this.ps.activeProcessId, layer);
-          this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj);
-          break;
-        }
-        default: {
-          //this.map.removeLayer(this.map.getLayers()."station");
-          //this.resetInteractions();   
-          this.tool = "freemove";
-        }
-      }
-    })
+    this.ps.iaModeSubject.subscribe(iaMode => {
+      this.handleIaMode(iaMode, proj);
+    });
 
     this.pds.acousticPSUSubject.subscribe(async evt => {
       switch (evt) {
@@ -436,6 +401,45 @@ export class MapComponent implements OnInit, AfterViewInit {
     });*/
     this.map.on('pointermove', e => this.displayTooltip(e));
   } // end of ngOnInit()
+
+  async handleIaMode(iaMode: string, proj) {
+    let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
+    switch (iaMode) {
+      case "reset": {
+        this.layerMap.forEach((value, key, map) => {
+          value.forEach(l => this.map.removeLayer(l));
+        });
+        this.layerMap.clear();
+        break;
+      }
+      case "station": {
+        this.resetLayersToProcess(this.ps.activeProcessId);
+        let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, str, proj, [MapSetup.getStationPointStyle()], false, 4));
+        break;
+      }
+      case "EDSU": {
+        this.resetLayersToProcess(this.ps.activeProcessId);
+        let data: { EDSUPoints: string; EDSULines: string; } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2));
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3));
+        break;
+      }
+      case "stratum": {
+        this.resetLayersToProcess(this.ps.activeProcessId);
+        let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+        let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, str, proj, [MapSetup.getStratumStyle()], false, 1);
+        this.addLayerToProcess(this.ps.activeProcessId, layer);
+        this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj);
+        break;
+      }
+      default: {
+        //this.map.removeLayer(this.map.getLayers()."station");
+        //this.resetInteractions();   
+        this.tool = "freemove";
+      }
+    }
+  }
 
   ngAfterViewInit() {
     this.overlay = new Overlay({
