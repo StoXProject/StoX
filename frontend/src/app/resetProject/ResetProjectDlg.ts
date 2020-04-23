@@ -16,10 +16,10 @@ export class ResetProjectDlg implements OnInit {
     async ngOnInit() {
     }
 
-    async apply(save: boolean) {
+    async apply(continueWithoutSave: boolean) {
         try {
             //let project: Project = await this.service.ds.resetProject(this.service.ps.selectedProject.projectPath, save, true).toPromise();
-            if(this.service.ps.selectedProject != null && this.service.ps.selectedProject.projectPath != null && save) {
+            if(this.service.ps.selectedProject != null && this.service.ps.selectedProject.projectPath != null && continueWithoutSave) {
                 this.service.ps.openProject(this.service.ps.selectedProject.projectPath, true, true);               
             }
         } catch (error) {
