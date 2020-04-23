@@ -86,7 +86,7 @@ function logError(str: string) {
 }
 
 function setupLogger() {
-  var logDir = './log';
+  var logDir = fs.readdirSync('/tmp');;
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
   }
