@@ -38,7 +38,8 @@
     "@types/node": "^13.9.8",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "simple-node-logger": "^18.12.24"
+    "simple-node-logger": "^18.12.24",
+    "temp-dir": "^2.0.0"
   },
   "devDependencies": {
     "electron": "^8.2.0",
