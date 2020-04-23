@@ -288,6 +288,11 @@ export class ProjectService {
       this.selectedProject = this.projects[0];
       this.onSelectedProcessChanged();
       this.iaMode = 'reset'; // reset interactive mode
+    
+      this.activeProcessId = null; // the last run-ok process
+      this.runFailedProcessId = null; // the last run-failed process
+      this.runningProcessId = null; // current running process
+      this.m_isResetting = false; // current reset flag.      
     }
   }
   async closeProject(projectPath: string) {
