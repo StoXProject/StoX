@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RunService } from './run.service';
 import { DataService } from './data.service';
 import { ProjectService } from './project.service';
-import { AcousticPSU } from './../data/processdata';
+import { AcousticPSU, AcousticLayerData, BioticAssignmentData, BioticAssignment } from './../data/processdata';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -16,9 +16,12 @@ export class ProcessDataService {
     private m_selectedStratumSubject = new Subject<string>();
     private m_selectedPSU: string;
     private m_selectedPSUSubject = new Subject<string>();
-    
-    private m_assignmentSubject = new Subject<string>();
-    private m_assignment: any;
+
+    private m_bioticAssignmentDataSubject = new Subject<string>();
+    private m_bioticAssignmentData: BioticAssignmentData;
+
+    private m_AcousticLayerData: AcousticLayerData;
+    private m_AcousticLayerDataSubject = new Subject<string>();
 
     constructor(private ds: DataService, private ps: ProjectService) {
         this.ps.iaModeSubject.subscribe({
@@ -30,14 +33,21 @@ export class ProcessDataService {
                             ps.selectedModel.modelName, ps.activeProcessId).toPromise();
                         this.acousticPSU = v;
                         break;
-                    } 
-                    case 'assignment': {
-                        console.log("Process data - listen on iamode=assignment")
+                    }
+                    case 'acousticLayer': {
+                        console.log("Process data - listen on iamode=acousticLayer")
                         let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
                             ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-                        //this.acousticPSU = v;
+                        this.acousticLayerData = v;
                         break;
-                    } 
+                    }
+                    case 'bioticAssignment': {
+                        console.log("Process data - listen on iamode=bioticAssignment")
+                        let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
+                            ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+                        this.bioticAssignmentData = v;
+                        break;
+                    }
                     case 'reset': {
                         this.acousticPSU = null;
                         this.selectedStratum = null;
@@ -53,16 +63,28 @@ export class ProcessDataService {
     get acousticPSU(): AcousticPSU {
         return this.m_acousticPSU;
     }
+
     set acousticPSU(val: AcousticPSU) {
         this.m_acousticPSU = val;
         this.m_acousticPSUSubject.next("data");
     }
-    get assignment(): any {
-        return this.m_assignment;
+
+    get acousticLayerData(): AcousticLayerData {
+        return this.m_AcousticLayerData;
     }
-    set assignment(val: any) {
-        this.m_assignment = val;
-        this.m_assignmentSubject.next("data");
+
+    set acousticLayerData(val: AcousticLayerData) {
+        this.m_AcousticLayerData = val;
+        this.m_AcousticLayerDataSubject.next("data");
+    }
+
+    get biticAssignmentData(): any {
+        return this.m_bioticAssignmentData;
+    }
+
+    set bioticAssignmentData(val: any) {
+        this.m_bioticAssignmentData = val;
+        this.m_bioticAssignmentDataSubject.next("data");
     }
 
     get acousticPSUSubject(): Subject<string> {
@@ -80,7 +102,7 @@ export class ProcessDataService {
     get selectedPSUSubject(): Subject<string> {
         return this.m_selectedPSUSubject;
     }
-    
+
     get selectedStratum(): string {
         return this.m_selectedStratum;
     }
