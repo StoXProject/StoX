@@ -271,7 +271,7 @@ export class MapSetup {
      * @param selectable 
      */
     static getGeoJSONLayerFromFeatureString(name: string, layerType : string, zIndex : number, feat: string, proj: string, style: Style[],
-        selectable: boolean, layerOrder: number): Layer {
+        selectable: boolean, layerOrder: number, infoTables : any[]): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
             useSpatialIndex: false
@@ -301,6 +301,7 @@ export class MapSetup {
         v.set("style", style);
         v.set("hasTooltip", true);
         v.set("layerOrder", layerOrder);
+        v.set("infoTables", infoTables)
         // Create a feature->layer link
         //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));
         return v;
