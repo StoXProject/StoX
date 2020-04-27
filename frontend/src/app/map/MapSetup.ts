@@ -28,6 +28,7 @@ import { ProcessResult } from '../data/runresult';
 import { HTMLUtil } from '../utils/htmlutil'
 import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
 import { EDSU_PSU } from './../data/processdata'
+import { NamedStringTable } from './../data/types'
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
@@ -271,7 +272,7 @@ export class MapSetup {
      * @param selectable 
      */
     static getGeoJSONLayerFromFeatureString(name: string, layerType : string, zIndex : number, feat: string, proj: string, style: Style[],
-        selectable: boolean, layerOrder: number, infoTables : any[]): Layer {
+        selectable: boolean, layerOrder: number, infoTables : NamedStringTable[]): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
             useSpatialIndex: false

@@ -43,6 +43,7 @@ import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
 import { EDSU_PSU } from '../data/processdata';
 import { ProcessResult } from '../data/runresult';
+import { NamedStringTable } from '../data/types';
 
 @Component({
   selector: 'app-map',
@@ -414,13 +415,13 @@ export class MapComponent implements OnInit, AfterViewInit {
       }
       case "station": {
         this.resetLayersToProcess(this.ps.activeProcessId);
-        let data: { stationPoints: string; stationInfo: any[]; haulInfo : any[] } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();
+        let data: { stationPoints: string; stationInfo: NamedStringTable; haulInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();
         this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, [MapSetup.getStationPointStyle()], false, 4, [data.stationInfo, data.haulInfo]));
         break;
       }
       case "EDSU": {
         this.resetLayersToProcess(this.ps.activeProcessId);
-        let data: { EDSUPoints: string; EDSULines: string; EDSUInfo : any[] } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+        let data: { EDSUPoints: string; EDSULines: string; EDSUInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
         this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2, []));
         this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3, [data.EDSUInfo]));
         break;
@@ -495,6 +496,20 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
     this.tooltip.nativeElement.style.display = 'none';
   };
+  getFeatureProperties(feature: Feature): { [key: string]: any } {
+    let res: { [key: string]: any }
+    let l: Layer = <Layer>feature.get("layer");
+    let lt : string = <string>l.get("layerType");
+    let infoTables : NamedStringTable[] = <NamedStringTable[]>l.get("infoTables");
+    switch(lt) {
+      case 'station': {
+        let station : string = feature.get("station");
+
+      }
+
+    }
+    return res;
+  }
 }
 /*
 convert text delimited file with wkt geometry to arced topojson file
