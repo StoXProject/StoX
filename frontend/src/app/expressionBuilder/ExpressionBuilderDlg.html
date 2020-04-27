@@ -35,7 +35,7 @@
                 <mat-header-cell *matHeaderCellDef> Table Name </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <mat-form-field floatLabel="never">
-                        <mat-select placeholder = "choose table"  [(ngModel)] = "element.tableName" name = "element.tableName"
+                        <mat-select placeholder = "choose table"  [(ngModel)] = "element.tableName" (selectionChange)="onTableNameChange(element)" name = "element.tableName"
                         disableOptionCentering>
                             <mat-option *ngFor = "let tableName of service.tableNames" [value] = "tableName">
                                {{tableName}}

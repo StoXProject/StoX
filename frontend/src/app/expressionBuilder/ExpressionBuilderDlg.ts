@@ -125,6 +125,11 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     // }
 
+    onTableNameChange(tableExpression: TableExpression) {
+        // console.log("tableName changed => expression = null");
+        tableExpression.expression = null;
+    }
+
     edit(tableExpression: TableExpression) {
         if(tableExpression != null && tableExpression.tableName == null) {
             this.msgService.setMessage("Table name is not given in the selected row!");
