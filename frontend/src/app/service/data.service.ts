@@ -130,14 +130,17 @@ export class DataService {
     });
   }
 
-  openProject(projectPath: string): Observable<Project> {
+  openProject(projectPath: string, dothrow : boolean, force : boolean): Observable<Project> {
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
     return this.runFunctionThrowFramework('openProject', {
-      "projectPath": projectPath
-    }, true);
+      "projectPath": projectPath, 
+      "showWarnings":false,
+      "force":force,
+      "reset":false
+    }, dothrow);
   }
 
   isSaved(projectPath: string): Observable<boolean> {
@@ -165,11 +168,11 @@ export class DataService {
 
     return this.runFunctionThrowFramework('saveProject', {
       "projectPath": projectPath
-    }, true); 
+    }, true);
   }
 
   saveAsProject(projectPath: string, newProjectPath: string /*, ow: Boolean */): Observable<Project> {
-    
+
     return this.runFunctionThrowFramework('saveAsProject', {
       "projectPath": projectPath,
       "newProjectPath": newProjectPath
@@ -177,12 +180,12 @@ export class DataService {
     }, true);
   }
 
-  resetProject(projectPath: string, save: Boolean, dothrow : boolean): Observable<Project> {
+  /*resetProject(projectPath: string, save: Boolean, dothrow: boolean): Observable<Project> {
     return this.runFunctionThrowFramework('resetProject', {
       "projectPath": projectPath,
       "save": save
     }, dothrow);
-  }
+  }*/
 
   closeProject(projectPath: string, save: Boolean): Observable<any> {
     // const formData = new FormData();
@@ -423,12 +426,8 @@ export class DataService {
          r2.message = msg;
          // Now the runFunction result is complete with error, warning and message
          // deliver the result into the 
-         r2.message
-           .filter(elm => elm.startsWith("StoX: "))
-           .map(elm => elm.slice("StoX: ".length))
-           .forEach(elm => {
-             this.log.push(new UserLogEntry(UserLogType.MESSAGE, elm));
-           });*/
+         */
+
         if (dothrow) {
           if (r2.error.length > 0) {
             throw (r2.error[0]);
@@ -437,9 +436,12 @@ export class DataService {
              throw(r2.warning[0]); 
           }*/
         } else {
-          r2.warning.forEach(elm => {
-            this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
-          });
+          r2.warning
+            .filter(elm => elm.startsWith("StoX: "))
+            .map(elm => elm.slice("StoX: ".length))
+            .forEach(elm => {
+              this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
+            });
           r2.error.forEach(elm => {
             this.log.push(new UserLogEntry(UserLogType.ERROR, elm));
           });
@@ -484,6 +486,15 @@ export class DataService {
 
   getProcessOutputTableNames(projectPath: string, modelName: string, processID: string): Observable<string[]> {
     return this.runProcessFunc<string[]>('getProcessOutputTableNames', projectPath, modelName, processID);
+  }
+
+  getFilterOptionsAll(projectPath: string, modelName: string, processID: string, includeNumeric: Boolean): Observable<any> {
+    return this.runFunction('getFilterOptionsAll', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "include.numeric": includeNumeric
+    });    
   }
 
   getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {

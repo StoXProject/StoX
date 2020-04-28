@@ -29,11 +29,13 @@ export class RunService {
         //this.iaSubject.next('stratum');
         //this.reset();
     }
-
-    canRun(): boolean {
+    canAddProcess(): boolean {
         return this.ps.selectedProject != null && this.ps.selectedModel != null &&
-            this.ps.processes != null && this.ps.processes.length > 0 && this.ps.getRunningProcess() == null &&
-            !this.ps.isResetting;
+            this.ps.getRunningProcess() == null && !this.ps.isResetting;
+    }
+    canRun(): boolean {
+        return this.canAddProcess() &&
+            this.ps.processes != null && this.ps.processes.length > 0;
     }
     run() {
         let idx: number = this.ps.getActiveProcessIdx() === null ||
@@ -156,6 +158,9 @@ export class RunService {
                 // ok update active process id and continue the loop
                 this.ps.activeProcessId = res.activeProcess.processID;
                 this.ps.processes = res.processTable;
+                if(this.ps.selectedProcess.processID == this.ps.activeProcessId) {
+                    this.ps.updateProcessProperties(); // process properties may change on the selected process
+                }
                 //console.log("Hasbeenrun1" + res.processTable[0].hasBeenRun);
                 // get the interactive mode:
 

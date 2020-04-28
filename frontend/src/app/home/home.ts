@@ -54,8 +54,10 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   @HostListener('window:beforeunload', ['$event'])
   async unloadHandler(event: any) {
     //event.preventDefault();
+    console.log("window:beforeunload - reset project with save")
     //event.returnValue = true;
-    await this.ds.resetProject(this.ps.selectedProject.projectPath, true, false).toPromise();
+    // TODO: get a dialog when unloading page
+    await this.ds.closeProject(this.ps.selectedProject.projectPath, true).toPromise();
   }
 
   async ngOnInit() {
@@ -77,10 +79,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     },
     {
       label: 'Close project', command: async e => {
-        if (this.ps.selectedProject != null) {
-          await this.ds.closeProject(this.ps.selectedProject.projectPath, true).toPromise();
-        }
-        this.ps.selectedProject = null; 
+        this.ps.closeProject(this.ps.selectedProject.projectPath);
       }
     },
     // {

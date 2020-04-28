@@ -25,3 +25,7 @@
   .mat-column-select {
     flex: 0 0 75px;
   }
+
+  .action-link {
+    cursor: pointer;
+  }

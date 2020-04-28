@@ -42,7 +42,7 @@ export class RunComponent implements OnInit {
       case "runfromhere": return this.runService.canRunFromHere();
       case "runto": return this.runService.canRunToHere(); // or "Run this if selected process < active process"
       case "reset": return this.runService.canReset();
-      case "addprocess": return true;
+      case "addprocess": return this.runService.canAddProcess();
       default:
         throw "getActionEnabled(cmd) called with cmd=" + cmd;
     }

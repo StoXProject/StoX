@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DefinedColumns, ColumnPossibleValues } from '../../data/DefinedColumns';
+import { DefinedColumns, ColumnPossibleValues, ColumnType } from '../../data/DefinedColumns';
 import { PropertyItem } from '../../data/propertyitem';
 import { PropertyCategory } from '../../data/propertycategory';
 import { DataService } from '../../service/data.service';
@@ -35,7 +35,11 @@ export class DefinedColumnsService {
     columnPossibleValues: ColumnPossibleValues[] = [];
     private columnPossibleValuesSource = new BehaviorSubject(this.columnPossibleValues);
     columnPossibleValuesObservable = this.columnPossibleValuesSource.asObservable();
-  
+
+    columnTypes: ColumnType[] = [];
+    private columnTypesSource = new BehaviorSubject(this.columnTypes);
+    columnTypesObservable = this.columnTypesSource.asObservable();
+
     combinedExpression(): string {
 
       let combinedArray = [];
@@ -85,6 +89,7 @@ export class DefinedColumnsService {
         this.title = returnValue['parameterTableTitle'];
         this.currentTitleSource.next(this.title);
         console.log("returnValue['parameterTableColumnNames'] : " + returnValue['parameterTableColumnNames']);
+        console.log("returnValue['parameterTableVariableTypes'] : " + returnValue['parameterTableVariableTypes']);
         
         this.displayedColumns = ['select'];
         let columns = returnValue['parameterTableColumnNames'];
@@ -101,10 +106,16 @@ export class DefinedColumnsService {
           }
 
           this.columnPossibleValues.push(column);
+
+          let colType = new ColumnType();
+          colType.columnName = columns[i];
+          colType.type = returnValue['parameterTableVariableTypes'][i];
+          this.columnTypes.push(colType);
         }
 
         this.displayedColumnsSource.next(this.displayedColumns);
         this.columnPossibleValuesSource.next(this.columnPossibleValues);
+        this.columnTypesSource.next(this.columnTypes);
         
         console.log("returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
       }

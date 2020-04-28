@@ -16,3 +16,24 @@ export class AcousticPSU {
     EDSU_PSU : EDSU_PSU[];
     Stratum : Stratum[];
 }
+
+export class AcousticLayer {
+    Layer : string;
+    MinLayerDepth : string;
+    MaxLayerDepth : string;
+}
+
+export class AcousticLayerData {
+    AcousticLayer : AcousticLayer[];
+}
+
+export class BioticAssignment {
+    PSU : string;
+    Layer : string;
+    Haul : string; 
+    WeightingFactor : string; // Must be string pga R Inf
+}
+
+export class BioticAssignmentData {
+    BioticAssignment : BioticAssignment[];
+}

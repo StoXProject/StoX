@@ -54,9 +54,9 @@ export class ProjectService {
   set iaMode(iaMode: string) {
     this.m_iaMode = iaMode;
     this.m_iaModeSubject.next(iaMode); // propagate event
-    console.log("IAMode changed to " + iaMode);
   }
-  get iaMode(): string {
+
+  get iaMode(): string { 
     return this.m_iaMode;
   }
 
@@ -156,37 +156,38 @@ export class ProjectService {
     this.selectedModel = this.models[0]; // This will trigger update process list.
 
     // To do: make this property the project path instead of project object.
-    let jsonString = JSON.stringify(project.projectPath);
+    let jsonString = JSON.stringify(this.selectedProject == null ? "" : this.selectedProject.projectPath);
     console.log("StoX GUI: updating ActiveProject with string  " + jsonString)
     let status = await this.dataService.updateActiveProject(jsonString).toPromise();
     console.log("status " + status);
 
     // Update active process id.
-    let activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
-    let idx = activeProcess.processID == null ? null : this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
-    if (idx != null) {
-      for (let i: number = 0; i <= idx; i++) {
-        let p: Process = this.processes[i];
-        this.activeProcessId = this.processes[i].processID;
-        if (p.canShowInMap && p.showInMap || p.hasProcessData) {
-          let iaMode: string = await this.dataService.getInteractiveMode(this.selectedProject.projectPath, this.selectedModel.modelName, this.activeProcessId).toPromise();
-          this.iaMode = iaMode;
+    if (this.selectedProject != null) {
+      let activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+      let idx = activeProcess.processID == null ? null : this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
+      if (idx != null) {
+        for (let i: number = 0; i <= idx; i++) {
+          let p: Process = this.processes[i];
+          this.activeProcessId = this.processes[i].processID;
+          if (p.canShowInMap && p.showInMap || p.hasProcessData) {
+            let iaMode: string = await this.dataService.getInteractiveMode(this.selectedProject.projectPath, this.selectedModel.modelName, this.activeProcessId).toPromise();
+            this.iaMode = iaMode;
+          }
         }
+      } else {
+        this.activeProcessId = null;
+        this.iaMode = 'reset';
       }
-    } else {
-      this.activeProcessId = null;
-      this.iaMode = 'reset';
     }
-    //console.log("Backend active process id: " + activeProcessId);
-    // Loop from first process up to current process and read interactive processes.
-
   }
   public get selectedProcessId(): string {
     return this.m_selectedProcessId;
   }
   public set selectedProcessId(processId: string) {
-    this.m_selectedProcessId = processId;
-    this.onSelectedProcessChanged();
+    if (processId != this.m_selectedProcessId) {
+      this.m_selectedProcessId = processId;
+      this.onSelectedProcessChanged();
+    }
   }
   public get selectedProcess(): Process {
     return this.getProcessById(this.selectedProcessId);
@@ -204,62 +205,26 @@ export class ProjectService {
     this.m_helpContent = content;
   }
 
-  //processPropertiesSubscription: Subscription = null;
-  //functionHelpAsHtmlSubscription: Subscription = null;
-
-  async onSelectedProcessChanged() {
-
-    //this.initializeProperties();
-
-
-    if (this.selectedProject != null &&
-      this.selectedProcess != null &&
-      this.selectedModel != null) {
-      // propertyCategories: PropertyCategory[];
-      // var t0 = performance.now();
+  onSelectedProcessChanged() {
+    this.updateProcessProperties();
+    this.updateHelp();
+  }
+  async updateProcessProperties() {
+    if (this.selectedProject != null && this.selectedProcess != null && this.selectedModel != null) {
       this.processProperties = await this.dataService.getProcessPropertySheet(this.selectedProject.projectPath, this.selectedModel.modelName,
         this.selectedProcessId).toPromise();
       if (this.processProperties != null) {
         this.propertyCategories = this.processProperties.propertySheet;
       }
-      this.updateHelp();
-      /*if (this.processPropertiesSubscription != null) {
-        this.processPropertiesSubscription.unsubscribe();
-      }
-      this.processPropertiesSubscription = this.dataService.getProcessProperties(this.selectedProject.projectPath, this.selectedModel.modelName,
-        this.selectedProcessID).subscribe((prop: ProcessProperties) => {
-          this.processProperties = prop;
-          if (this.processProperties != null) {
-            this.propertyCategories = this.processProperties.propertySheet;
-          }
-        });*/
-
-      /*if (this.functionHelpAsHtmlSubscription != null) {
-        this.functionHelpAsHtmlSubscription.unsubscribe();
-      }
-      this.functionHelpAsHtmlSubscription = this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
-        this.selectedModel.modelName, this.selectedProcessID).subscribe((response: any) => {
-          this.helpContent = response;
-        });*/
-
-      // console.log("this")
-      /*if (this.processProperties != null) {
-          this.propertyCategories = this.processProperties.propertySheet;
-        }*/
-      // var t1 = performance.now();
-      // console.log("Call to dataService.getProcessProperties(...) took " + (t1 - t0) + " milliseconds.");
-      // console.log("this.propertyCategories.length : " + this.propertyCategories.length);
-      // this.propertyCategories.forEach(pc => pc.properties.forEach(p => {
-      //   // autounboxing is applied to avoid r strings to become javascript array.
-      //   p.possibleValues = typeof (p.possibleValues) == "string" ? [p.possibleValues] : p.possibleValues;
-      // }));
 
     }
   }
-
   async updateHelp() {
-    this.helpContent = await this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
-      this.selectedModel.modelName, this.selectedProcessId).toPromise();
+    if (this.selectedProject != null && this.selectedProcess != null && this.selectedModel != null) {
+      console.log('Update help');
+      this.helpContent = await this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
+        this.selectedModel.modelName, this.selectedProcessId).toPromise();
+    }
   }
 
   async initializeProperties() {
@@ -309,21 +274,37 @@ export class ProjectService {
     // Read models and set selected to the first model
     this.models = <Model[]>await this.dataService.getModelInfo().toPromise();
     this.setModels(this.models);
-    if (this.models != null && this.models.length > 0) {
+    if (projectPath.length > 0 && this.models != null && this.models.length > 0) {
       //this.selectedModel = this.models[0]; 
-      this.openProject(projectPath);
+      this.openProject(projectPath, false, false);
     }
   }
 
-  async openProject(projectPath: string) {
+  async openProject(projectPath: string, doThrow: boolean, force : boolean) {
     // the following should open the project and make it selected in the GUI
-    let project: Project = await this.dataService.openProject(projectPath).toPromise();
+    let project: Project = await this.dataService.openProject(projectPath, doThrow, force).toPromise();
     if (project != null) {
       this.projects = [project];
       this.selectedProject = this.projects[0];
       this.onSelectedProcessChanged();
       this.iaMode = 'reset'; // reset interactive mode
+    
+      this.activeProcessId = null; // the last run-ok process
+      this.runFailedProcessId = null; // the last run-failed process
+      this.runningProcessId = null; // current running process
+      this.m_isResetting = false; // current reset flag.      
     }
+  }
+  async closeProject(projectPath: string) {
+    // the following should open the project and make it selected in the GUI
+    await this.dataService.closeProject(projectPath, true).toPromise();
+    this.projects = [];
+    this.selectedProject = null;
+    this.iaMode = 'reset'; // reset interactive mode
+    this.processProperties = null;
+    this.propertyCategories = null;
+    this.processes = null;
+    this.dataService.log = [];
   }
   /*
   Returns:

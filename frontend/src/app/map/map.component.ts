@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, HostListener, ElementRef, ViewChild } from '@angular/core';
-
+import { defer, merge, Observable } from 'rxjs';
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
 import Source from 'ol/source/Vector';
@@ -41,8 +41,9 @@ import VectorSource from 'ol/source/Vector';
 import { MatDialog } from '@angular/material/dialog';
 import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
-import { EDSU_PSU } from '../data/processdata';
+import { EDSU_PSU, BioticAssignment } from '../data/processdata';
 import { ProcessResult } from '../data/runresult';
+import { NamedStringTable, NamedStringIndex } from '../data/types';
 
 @Component({
   selector: 'app-map',
@@ -235,44 +236,9 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, proj);
 
-    this.ps.iaModeSubject.subscribe(async iaMode => {
-      let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
-      switch (iaMode) {
-        case "reset": {
-          this.layerMap.forEach((value, key, map) => {
-            value.forEach(l => this.map.removeLayer(l));
-          });
-          this.layerMap.clear();
-          break;
-        }
-        case "station": {
-          this.resetLayersToProcess(this.ps.activeProcessId);
-          let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, str, proj, [MapSetup.getStationPointStyle()], false, 4));
-          break;
-        }
-        case "EDSU": {
-          this.resetLayersToProcess(this.ps.activeProcessId);
-          let data: { EDSUPoints: string; EDSULines: string; } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2));
-          this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3));
-          break;
-        }
-        case "stratum": {
-          this.resetLayersToProcess(this.ps.activeProcessId);
-          let str: string = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-          let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, str, proj, [MapSetup.getStratumStyle()], false, 1);
-          this.addLayerToProcess(this.ps.activeProcessId, layer);
-          this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj);
-          break;
-        }
-        default: {
-          //this.map.removeLayer(this.map.getLayers()."station");
-          //this.resetInteractions();   
-          this.tool = "freemove";
-        }
-      }
-    })
+    this.ps.iaModeSubject.subscribe(iaMode => {
+      this.handleIaMode(iaMode, proj);
+    });
 
     this.pds.acousticPSUSubject.subscribe(async evt => {
       switch (evt) {
@@ -308,15 +274,16 @@ export class MapComponent implements OnInit, AfterViewInit {
       }
     });
     /*this.pds.selectedPSUSubject.subscribe(async psu => {
-      if (psu != null) {
-        let edsupsuFiltered: EDSU_PSU[] = this.pds.acousticPSU.EDSU_PSU.filter(edsupsu => edsupsu.PSU == psu);
-        (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
-          let edsu: string = f.get("EDSU");
-          // An edsu is focused when it is selected as psu:
-          let edsuPsu: EDSU_PSU = edsupsuFiltered.find(edsupsu => edsupsu.EDSU == edsu);
-          f.set("focused", edsuPsu != null ? true : false);
-          MapSetup.updateEDSUSelection(f)
-        })
+      if (this.pds.selectedPSU != null) {
+        let psuAssignments : BioticAssignment[] = this.pds.bioticAssignmentData.BioticAssignment.filter(ba=>ba.PSU == this.pds.selectedPSU);
+        this.map.getLayers().getArray()
+        .filter(l => l.get("layerType") == "station")
+        .map(l => <VectorSource>(<Layer>l).getSource())
+        .forEach(s => s.getFeatures()
+          .forEach(f => {
+            // selected PSU.
+            MapSetup.updateStationSelection(f, psuAssignments);
+          }))
       }
     });*/
 
@@ -437,6 +404,45 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.map.on('pointermove', e => this.displayTooltip(e));
   } // end of ngOnInit()
 
+  async handleIaMode(iaMode: string, proj) {
+    let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
+    switch (iaMode) {
+      case "reset": {
+        this.layerMap.forEach((value, key, map) => {
+          value.forEach(l => this.map.removeLayer(l));
+        });
+        this.layerMap.clear();
+        break;
+      }
+      case "station": {
+        this.resetLayersToProcess(this.ps.activeProcessId);
+        let data: { stationPoints: string; stationInfo: NamedStringTable; haulInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, MapSetup.getStationPointStyleCache(), false, 4, [data.stationInfo, data.haulInfo]));
+        break; 
+      }
+      case "EDSU": {
+        this.resetLayersToProcess(this.ps.activeProcessId);
+        let data: { EDSUPoints: string; EDSULines: string; EDSUInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2, []));
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3, [data.EDSUInfo]));
+        break;
+      }
+      case "stratum": {
+        this.resetLayersToProcess(this.ps.activeProcessId);
+        let data: { stratumPolygon: string } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+        let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, data.stratumPolygon, proj, [MapSetup.getStratumStyle()], false, 1, []);
+        this.addLayerToProcess(this.ps.activeProcessId, layer);
+        this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj);
+        break;
+      }
+      default: {
+        //this.map.removeLayer(this.map.getLayers()."station");
+        //this.resetInteractions();   
+        this.tool = "freemove";
+      }
+    }
+  }
+
   ngAfterViewInit() {
     this.overlay = new Overlay({
       element: this.tooltip.nativeElement,
@@ -484,13 +490,26 @@ export class MapComponent implements OnInit, AfterViewInit {
     if (platformModifierKeyOnly(evt) && feature != null) {
 
       this.overlay.setPosition(evt.coordinate);
-      this.tooltip.nativeElement.innerHTML = this.getTooltip(feature.getProperties());
+      this.tooltip.nativeElement.innerHTML = this.getTooltip(this.getTooltipProperties(feature));
       this.tooltip.nativeElement.style.display = '';
       return;
 
     }
     this.tooltip.nativeElement.style.display = 'none';
   };
+
+  private getTooltipProperties(feature: Feature): { [key: string]: any } {
+    let res: NamedStringIndex = {};
+    let primaryIdx: NamedStringIndex = <NamedStringIndex>feature.get("primaryInfo");
+    let secondaryIdx: NamedStringIndex[] = <NamedStringIndex[]>feature.get("secondaryInfo");
+    if (primaryIdx != null) {
+      Object.assign(res, primaryIdx); // 
+    }
+    if (secondaryIdx != null && secondaryIdx.length == 1) {
+      Object.assign(res, secondaryIdx[0]);
+    }
+    return res;
+  }
 }
 /*
 convert text delimited file with wkt geometry to arced topojson file

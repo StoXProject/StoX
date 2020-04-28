@@ -26,7 +26,11 @@
   }
 
   .mat-column-tableName {
-    flex: 0 0 30%;
+    flex: 0 0 40%;
+  }
+
+  .action-link {
+    cursor: pointer;
   }
   
   /* .mat-column-action {

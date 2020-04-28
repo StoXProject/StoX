@@ -49,7 +49,8 @@
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"
                                             (click)="filter(category, propertyItem)"></button>
                                     </ng-container>
-                                    <ng-container *ngSwitchCase="propertyItem.format === 'speciesCategoryTable' || propertyItem.format === 'acousticCategoryTable' || propertyItem.format === 'catchCompensationTable' || propertyItem.format === 'selectivityTable' || propertyItem.format === 'speciesLinktable' || propertyItem.format === 'acousticTargetStrengthTable'">
+                                    <!--<ng-container *ngSwitchCase="propertyItem.format === '  ' || propertyItem.format === 'acousticCategoryTable' || propertyItem.format === 'catchCompensationTable' || propertyItem.format === 'selectivityTable' || propertyItem.format === 'speciesLinktable' || propertyItem.format === 'acousticTargetStrengthTable'">-->
+                                    <ng-container *ngSwitchCase="propertyItem.format === '  ' || propertyItem.format.endsWith('Table') || propertyItem.format.endsWith('table')">    
                                         <input style="width:calc(100% - 22px);" type="text" pInputText                                       
                                             [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category,  propertyItem)" />
                                         <button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h"

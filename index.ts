@@ -86,7 +86,8 @@ function logError(str: string) {
 }
 
 function setupLogger() {
-  var logDir = './log';
+  var logDir = require('temp-dir') + "/stox";
+  console.log("Logging to " + logDir);
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
   }
@@ -359,13 +360,9 @@ function setupServer() {
 
   server.post('/browse', function (req: any, res: any) {
     logInfo("select a folder... wait");
-    if (mainWindow == null) {
-      res.send("No electron window created");
-      return;
-    }
     let defPath = resolveDefaultPath(req.body.defaultpath); // correct slashes in default path
     logInfo("default folder " + defPath);
-    require('electron').dialog.showOpenDialog(mainWindow, {
+    require('electron').dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
       title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
       properties: [/*'openFile'*/'openDirectory']
     }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
@@ -381,14 +378,10 @@ function setupServer() {
 
   server.post('/browsePath', function (req: any, res: any) {
     logInfo("select a file/folder path(s)");
-    if (mainWindow == null) {
-      res.send("No electron window created");
-      return;
-    }
     if (JSON.stringify(req.body) != '{}') {
       let defPath = resolveDefaultPath(req.body.defaultPath); // correct slashes in default path
       logInfo("default folder " + defPath);
-      require('electron').dialog.showOpenDialog(mainWindow, {
+      require('electron').dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
         title: req.body.title, defaultPath: defPath,
         properties: req.body.properties
       }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
