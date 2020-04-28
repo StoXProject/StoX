@@ -4,7 +4,6 @@ export type NamedIndex<T> = {
 }
 
 /*Array of Standar objects - Named Indexes */
-export type NamedTable<T> = NamedIndex<T>[];
-
-export type NamedStringTable = NamedTable<string>;
+export type NamedStringIndex = NamedIndex<string>;
+export type NamedStringTable = NamedStringIndex[];
 
