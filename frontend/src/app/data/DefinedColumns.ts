@@ -1,15 +1,29 @@
 export class DefinedColumns {
     SpeciesCategory: string; 
-    NewSpeciesCategory: string;
-    NewAcousticCategory: string;
+    // NewSpeciesCategory: string;
+    // NewAcousticCategory: string;
     Alpha: number;
     Beta : number;
     LMin: number; 
     LMax: number; 
-    AcousticCategory: string;
+    // AcousticCategory: string;
     m: number;
     a: number;
     d: number; 
+
+    MinimumNumberOfStations: number;
+    DistanceNauticalMiles: number;
+    TimeHours: number;
+    BottomDepthMeters: number;
+    LatitudeDecimalDegrees: number;
+    LongitudeDecimalDegrees: number;
+    AcousticCategory: number;
+    Frequency: number;
+
+    TableName: string;
+    VariableName: string;
+    Value: string;
+    NewValue: string;   
 }
 
 export class ColumnPossibleValues {
