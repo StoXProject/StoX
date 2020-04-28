@@ -1,5 +1,5 @@
 import { MatTableDataSource } from '@angular/material/table';
-import { DefinedColumns, ColumnPossibleValues } from '../../data/DefinedColumns';
+import { DefinedColumns, ColumnPossibleValues, ColumnType } from '../../data/DefinedColumns';
 import { SelectionModel } from '@angular/cdk/collections';
 import { DefinedColumnsService } from './DefinedColumnsService';
 import { Component, OnInit } from '@angular/core';
@@ -19,6 +19,7 @@ export class DefinedColumnsTableDlg implements OnInit {
     title: string = "";
     displayedColumns = ['select'];
     columnPossibleValues: ColumnPossibleValues[] = [];
+    columnTypes: ColumnType[] = [];
 
     dataSource: MatTableDataSource<DefinedColumns> = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
     selection = new SelectionModel<DefinedColumns>(true, []);
@@ -41,6 +42,10 @@ export class DefinedColumnsTableDlg implements OnInit {
 
         service.columnPossibleValuesObservable.subscribe(cpv => {
             this.columnPossibleValues = cpv;
+        });
+
+        service.columnTypesObservable.subscribe(cdt => {
+            this.columnTypes = cdt;
         });
     }
 
@@ -99,6 +104,15 @@ export class DefinedColumnsTableDlg implements OnInit {
             }
         }
         return null;
+    }
+
+    getType(colName: string): string {
+        for (let i = 0; i < this.columnTypes.length; i++) {
+            if (this.columnTypes[i].columnName == colName) {
+                return this.columnTypes[i].type;
+            }
+        }
+        return null;        
     }
 
     // areOldNamesUnique() {
