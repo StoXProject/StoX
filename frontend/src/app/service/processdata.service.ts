@@ -78,7 +78,7 @@ export class ProcessDataService {
         this.m_AcousticLayerDataSubject.next("data");
     }
 
-    get biticAssignmentData(): BioticAssignmentData {
+    get bioticAssignmentData(): BioticAssignmentData {
         return this.m_bioticAssignmentData;
     }
 

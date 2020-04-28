@@ -273,7 +273,7 @@ export class MapComponent implements OnInit, AfterViewInit {
         }
       }
     });
-    /*this.pds.selectedPSUSubject.subscribe(async psu => {
+    this.pds.selectedPSUSubject.subscribe(async psu => {
       if (this.pds.selectedPSU != null) {
         let psuAssignments : BioticAssignment[] = this.pds.bioticAssignmentData.BioticAssignment.filter(ba=>ba.PSU == this.pds.selectedPSU);
         this.map.getLayers().getArray()
@@ -285,7 +285,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             MapSetup.updateStationSelection(f, psuAssignments);
           }))
       }
-    });*/
+    });
 
     //var selected = [];
 
