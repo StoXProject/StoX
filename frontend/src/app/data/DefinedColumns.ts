@@ -16,3 +16,8 @@ export class ColumnPossibleValues {
     columnName: string;
     possibleValues: string[];
 }
+
+export class ColumnType {
+    columnName: string;
+    type: string;    
+}

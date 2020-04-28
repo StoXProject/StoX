@@ -27,7 +27,6 @@
             </mat-cell>
             </ng-container>
 
-            
             <ng-container matColumnDef="SpeciesCategory">
                 <mat-header-cell *matHeaderCellDef> SpeciesCategory </mat-header-cell>
                 <mat-cell *matCellDef="let element">
@@ -48,7 +47,6 @@
                 </mat-cell>
             </ng-container>
 
-            
             <ng-container matColumnDef="NewSpeciesCategory">
                 <mat-header-cell *matHeaderCellDef> NewSpeciesCategory </mat-header-cell>
                 <mat-cell *matCellDef="let element">
@@ -57,7 +55,6 @@
                     </mat-form-field>
                 </mat-cell>
             </ng-container>  
-            
             
             <ng-container matColumnDef="AcousticCategory">
                 <mat-header-cell *matHeaderCellDef> AcousticCategory </mat-header-cell>
@@ -79,7 +76,6 @@
                 </mat-cell>
             </ng-container>  
             
-            
             <ng-container matColumnDef="NewAcousticCategory">
                 <mat-header-cell *matHeaderCellDef> NewAcousticCategory </mat-header-cell>
                 <mat-cell *matCellDef="let element">
@@ -89,74 +85,118 @@
                 </mat-cell>
             </ng-container>
 
-
             <ng-container matColumnDef="Alpha">
                 <mat-header-cell *matHeaderCellDef> Alpha </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.Alpha" [(ngModel)]="element.Alpha">
-                    </mat-form-field>
+                    <ng-container *ngIf="getType('Alpha') == 'double' || getType('Alpha') == 'numeric'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="any" [value]="element.Alpha" [(ngModel)]="element.Alpha">
+                        </mat-form-field>                
+                    </ng-container>
+                    <ng-container *ngIf="getType('Alpha') == 'integer'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="1" [value]="element.Alpha" [(ngModel)]="element.Alpha">
+                        </mat-form-field>            
+                    </ng-container>
                 </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="Beta">
                 <mat-header-cell *matHeaderCellDef> Beta </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.Beta" [(ngModel)]="element.Beta">
-                    </mat-form-field>
+                    <ng-container *ngIf="getType('Beta') == 'double' || getType('Beta') == 'numeric'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="any" [value]="element.Beta" [(ngModel)]="element.Beta">
+                        </mat-form-field>                
+                    </ng-container>
+                    <ng-container *ngIf="getType('Beta') == 'integer'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="1" [value]="element.Beta" [(ngModel)]="element.Beta">
+                        </mat-form-field>            
+                    </ng-container>
                 </mat-cell>
             </ng-container>     
             
             <ng-container matColumnDef="LMin">
                 <mat-header-cell *matHeaderCellDef> LMin </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.LMin" [(ngModel)]="element.LMin">
-                    </mat-form-field>
+                    <ng-container *ngIf="getType('LMin') == 'double' || getType('LMin') == 'numeric'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="any" [value]="element.LMin" [(ngModel)]="element.LMin">
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-container *ngIf="getType('LMin') == 'integer'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="1" [value]="element.LMin" [(ngModel)]="element.LMin">
+                        </mat-form-field>            
+                    </ng-container>                    
                 </mat-cell>
             </ng-container>  
-            
             
             <ng-container matColumnDef="LMax">
                 <mat-header-cell *matHeaderCellDef> LMax </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.LMax" [(ngModel)]="element.LMax">
-                    </mat-form-field>
+                    <ng-container *ngIf="getType('LMax') == 'double' || getType('LMax') == 'numeric'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="any" [value]="element.LMax" [(ngModel)]="element.LMax">
+                        </mat-form-field>                
+                    </ng-container>
+                    <ng-container *ngIf="getType('LMax') == 'integer'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="1" [value]="element.LMax" [(ngModel)]="element.LMax">
+                        </mat-form-field>            
+                    </ng-container>                    
                 </mat-cell>
             </ng-container>
-
 
             <ng-container matColumnDef="m">
                 <mat-header-cell *matHeaderCellDef> m </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.m" [(ngModel)]="element.m">
-                    </mat-form-field>
+                    <ng-container *ngIf="getType('m') == 'double' || getType('m') == 'numeric'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="any" [value]="element.m" [(ngModel)]="element.m">
+                        </mat-form-field>                
+                    </ng-container>
+                    <ng-container *ngIf="getType('m') == 'integer'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="1" [value]="element.m" [(ngModel)]="element.m">
+                        </mat-form-field>            
+                    </ng-container>                    
                 </mat-cell>
             </ng-container>     
             
             <ng-container matColumnDef="a">
                 <mat-header-cell *matHeaderCellDef> a </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.a" [(ngModel)]="element.a">
-                    </mat-form-field>
+                    <ng-container *ngIf="getType('a') == 'double' || getType('a') == 'numeric'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="any" [value]="element.a" [(ngModel)]="element.a">
+                        </mat-form-field>                
+                    </ng-container>
+                    <ng-container *ngIf="getType('a') == 'integer'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="1" [value]="element.a" [(ngModel)]="element.a">
+                        </mat-form-field>            
+                    </ng-container>                    
                 </mat-cell>
             </ng-container>  
-            
-            
+                        
             <ng-container matColumnDef="d">
                 <mat-header-cell *matHeaderCellDef>d </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.d" [(ngModel)]="element.d">
-                    </mat-form-field>
+                    <ng-container *ngIf="getType('d') == 'double' || getType('d') == 'numeric'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="any" [value]="element.d" [(ngModel)]="element.d">
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-container *ngIf="getType('d') == 'integer'">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="number" step="1" [value]="element.d" [(ngModel)]="element.d">
+                        </mat-form-field>
+                    </ng-container>
                 </mat-cell>
             </ng-container>
 
-      
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
         </mat-table>
