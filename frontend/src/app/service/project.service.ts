@@ -295,9 +295,10 @@ export class ProjectService {
       this.m_isResetting = false; // current reset flag.      
     }
   }
-  async closeProject(projectPath: string) {
+  
+  async closeProject(projectPath: string, save: boolean) {
     // the following should open the project and make it selected in the GUI
-    await this.dataService.closeProject(projectPath, true).toPromise();
+    await this.dataService.closeProject(projectPath, save).toPromise();
     this.projects = [];
     this.selectedProject = null;
     this.iaMode = 'reset'; // reset interactive mode
@@ -305,6 +306,11 @@ export class ProjectService {
     this.propertyCategories = null;
     this.processes = null;
     this.dataService.log = [];
+
+    this.activeProcessId = null; // the last run-ok process
+    this.runFailedProcessId = null; // the last run-failed process
+    this.runningProcessId = null; // current running process
+    this.m_isResetting = false; // current reset flag    
   }
   /*
   Returns:
