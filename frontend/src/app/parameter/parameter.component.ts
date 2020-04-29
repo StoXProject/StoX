@@ -47,8 +47,10 @@ export class ParameterComponent implements OnInit {
   onChanged(category: PropertyCategory, pi: PropertyItem) {
     console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
     if (pi.value == null) {
-      console.log("p.value==null")
-      pi.value = ""; // send null as empty string.
+      // function name change sends first pi.value == undefined from autocomplete
+      // console.log("p.value==null")
+      // pi.value = ""; // send null as empty string.
+      return;
     }
     //if (pi.value == "" && pi.format == "filePaths") {
     //pi.value = "[]";   
