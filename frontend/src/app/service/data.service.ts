@@ -7,7 +7,7 @@ import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
-import { RunResult, RunProcessesResult, ProcessResult, PSUResult } from '../data/runresult';
+import { RunResult, RunProcessesResult, ProcessResult, PSUResult, ActiveProcessResult } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
 import { ProcessProperties, ActiveProcess } from '../data/ProcessProperties';
@@ -130,16 +130,16 @@ export class DataService {
     });
   }
 
-  openProject(projectPath: string, dothrow : boolean, force : boolean): Observable<Project> {
+  openProject(projectPath: string, dothrow: boolean, force: boolean): Observable<Project> {
     // const formData = new FormData();
     // formData.set('projectPath', "'" + projectPath + "'");
     // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
     return this.runFunctionThrowFramework('openProject', {
-      "projectPath": projectPath, 
-      "showWarnings":false,
-      "force":force,
-      "reset":false
+      "projectPath": projectPath,
+      "showWarnings": false,
+      "force": force,
+      "reset": false
     }, dothrow);
   }
 
@@ -494,7 +494,7 @@ export class DataService {
       "modelName": modelName,
       "processID": processID,
       "include.numeric": includeNumeric
-    });    
+    });
   }
 
   getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {
@@ -526,6 +526,28 @@ export class DataService {
   addAcousticPSU(stratum: string, projectPath: string, modelName: string, processID: string): Observable<PSUResult> {
     return this.runFunction('addAcousticPSU', {
       "Stratum": stratum,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
+  addHaulToAssignment(projectPath: string, modelName: string, processID: string, stratum: string,
+    psu: string, layer: string[], haul: string[]): Observable<ActiveProcessResult> {
+    return this.runFunction('addHaulToAssignment', {
+      "Stratum": stratum,
+      "PSU": psu,
+      "Layer": layer,
+      "Haul": haul,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
+  removeHaulFromAssignment(projectPath: string, modelName: string, processID: string, stratum: string,
+    psu: string, layer: string[], haul: string[]): Observable<ActiveProcessResult> {
+    return this.runFunction('removeHaulFromAssignment', {
+      "Stratum": stratum,
+      "PSU": psu,
+      "Layer": layer,
+      "Haul": haul,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }

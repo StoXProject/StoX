@@ -274,17 +274,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       }
     });
     this.pds.selectedPSUSubject.subscribe(async psu => {
-      if (this.pds.selectedPSU != null) {
-        let psuAssignments : BioticAssignment[] = this.pds.bioticAssignmentData.BioticAssignment.filter(ba=>ba.PSU == this.pds.selectedPSU);
-        this.map.getLayers().getArray()
-        .filter(l => l.get("layerType") == "station")
-        .map(l => <VectorSource>(<Layer>l).getSource())
-        .forEach(s => s.getFeatures()
-          .forEach(f => {
-            // selected PSU.
-            MapSetup.updateStationSelection(f, psuAssignments);
-          }))
-      }
+      this.updateStationSelection();
     });
 
     //var selected = [];
@@ -308,52 +298,64 @@ export class MapComponent implements OnInit, AfterViewInit {
           let l: Layer = <Layer>f.get("layer");
           console.log("Z index: " + l.getZIndex());
           let fe: Feature = (<Feature>f);
-          if (this.ps.iaMode == "acousticPSU" && this.pds.selectedPSU != null) {
-            // Controlling focus.
-            //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
-            let prevClickIndex = l.get("lastClickedIndex");
-            let clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
-            l.set("lastClickedIndex", clickedIndex);
-            if (!shiftKeyOnly(e) || prevClickIndex == null) {
-              prevClickIndex = clickedIndex;
-            }
-            let fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
-            let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
-            if (edsuPsu1 == null) {
-              console.log(fi1.get("EDSU") + " is missing edsu  for " + fi1.get("EDSU") + " layer " + l.get("name"));
-            }
-            let psuToUse: string = edsuPsu1.PSU;
-            if (prevClickIndex == clickedIndex) {
-              psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
-            }
-            let iFirst = Math.min(prevClickIndex, clickedIndex);
-            let iLast = Math.max(prevClickIndex, clickedIndex);
-            let changedEDSUs: string[] = [];
-            for (let idx: number = iFirst; idx <= iLast; idx++) {
-              let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
-              let edsuPsu: EDSU_PSU = fi.get("edsupsu");
-              if (edsuPsu != null) {
-                if (edsuPsu.PSU != psuToUse) {
-                  changedEDSUs.push(edsuPsu.EDSU);
-                  edsuPsu.PSU = psuToUse;
-                  MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
-                }
-                //fi.changed();
-              }
-            }
-            if (changedEDSUs.length > 0) {
-              let res: ProcessResult = psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
-                this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
-                await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
-                  this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
-              this.ps.selectedProject.saved = res.saved;
-              /*if (res != null && res.activeProcessID != null) {
-                this.ps.activeProcessId = res.activeProcessID; // reset active process id
-              }*/
-            }
-            //l.changed();
-            //(<VectorSource>l.getSource()).changed();
+          if (this.pds.selectedPSU == null) {
+            return;
           }
+          switch (this.ps.iaMode) {
+            case "acousticPSU": {
+              // Controlling focus.
+              //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
+              let prevClickIndex = l.get("lastClickedIndex"); // handle range selection with respect to last clicked index
+              let clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
+              l.set("lastClickedIndex", clickedIndex);
+              if (!shiftKeyOnly(e) || prevClickIndex == null) {
+                prevClickIndex = clickedIndex;
+              }
+              let fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
+              let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
+              if (edsuPsu1 == null) {
+                console.log(fi1.get("EDSU") + " is missing edsu  for " + fi1.get("EDSU") + " layer " + l.get("name"));
+              }
+              let psuToUse: string = edsuPsu1.PSU;
+              if (prevClickIndex == clickedIndex) {
+                psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+              }
+              let iFirst = Math.min(prevClickIndex, clickedIndex);
+              let iLast = Math.max(prevClickIndex, clickedIndex);
+              let changedEDSUs: string[] = [];
+              for (let idx: number = iFirst; idx <= iLast; idx++) {
+                let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
+                let edsuPsu: EDSU_PSU = fi.get("edsupsu");
+                if (edsuPsu != null) {
+                  if (edsuPsu.PSU != psuToUse) {
+                    changedEDSUs.push(edsuPsu.EDSU);
+                    edsuPsu.PSU = psuToUse;
+                    MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+                  }
+                  //fi.changed();
+                }
+              }
+              if (changedEDSUs.length > 0) {
+                let res: ProcessResult = psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
+                  this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
+                  await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
+                    this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
+                this.ps.selectedProject.saved = res.saved;
+                /*if (res != null && res.activeProcessID != null) {
+                  this.ps.activeProcessId = res.activeProcessID; // reset active process id
+                }*/
+              }
+              //l.changed();
+              //(<VectorSource>l.getSource()).changed();
+              break;
+            }
+            case "bioticAssignment": {
+              let selected: boolean = MapSetup.isStationSelected(fe, this.pds.bioticAssignmentData.BioticAssignment);
+              MapSetup.selectStation(fe, this.ps, this.pds, this.dataService, !selected);
+              MapSetup.updateStationSelection(fe, this.pds.bioticAssignmentData.BioticAssignment);
+              break;
+            }
+          };
         });
     });
 
@@ -418,7 +420,7 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.resetLayersToProcess(this.ps.activeProcessId);
         let data: { stationPoints: string; stationInfo: NamedStringTable; haulInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();
         this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, MapSetup.getStationPointStyleCache(), false, 4, [data.stationInfo, data.haulInfo]));
-        break; 
+        break;
       }
       case "EDSU": {
         this.resetLayersToProcess(this.ps.activeProcessId);
@@ -509,6 +511,25 @@ export class MapComponent implements OnInit, AfterViewInit {
       Object.assign(res, secondaryIdx[0]);
     }
     return res;
+  }
+
+  /** Update station assignment due to psu selection or psu assignment add/remove operation
+   *  Iterate features in station layer and update the selection state based on assignments
+   *  according to biotic assignment data.
+   */
+  private updateStationSelection() {
+    let psuAssignments: BioticAssignment[] = [];
+    if (this.ps.iaMode == "bioticAssignment" && this.pds.bioticAssignmentData != null && this.pds.selectedPSU != null) {
+      psuAssignments = this.pds.bioticAssignmentData.BioticAssignment.filter(ba => ba.PSU == this.pds.selectedPSU);
+    }
+    this.map.getLayers().getArray()
+      .filter(l => l.get("layerType") == "station")
+      .map(l => <VectorSource>(<Layer>l).getSource())
+      .forEach(s => s.getFeatures()
+        .forEach(f => {
+          // selected PSU.
+          MapSetup.updateStationSelection(f, psuAssignments);
+        }))
   }
 }
 /*
