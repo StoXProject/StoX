@@ -20,14 +20,15 @@ import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
+import { ProcessDataService } from '../service/processdata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { Color } from './Color';
 import { clone } from 'ol/extent';
-import { ProcessResult } from '../data/runresult';
+import { ProcessResult, ActiveProcessResult } from '../data/runresult';
 import { HTMLUtil } from '../utils/htmlutil'
 import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
-import { EDSU_PSU, BioticAssignment } from './../data/processdata'
+import { EDSU_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata'
 import { NamedStringTable, NamedStringIndex } from './../data/types'
 
 export class MapSetup {
@@ -460,14 +461,55 @@ export class MapSetup {
                     selected != null && selected ? 1 : 0;
         f.set("selection", selection); // Set the style selection.
     }
-    static updateStationSelection(f: Feature, psuAssignments: BioticAssignment[]) {
-        let absent: boolean = f.get("absent");
+
+    static isStationSelected(f: Feature, bioticAssignments: BioticAssignment[]) {
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
         let selected: boolean = false;
         if (secInfos != null) {
-            selected = secInfos.find(secInfo => psuAssignments.find(asg => secInfo["Haul"] == asg.Haul) != null) != null;
+            selected = secInfos.find(secInfo => bioticAssignments.find(asg => secInfo["Haul"] == asg.Haul) != null) != null;
         }
-        let selection = selected != null && selected ? 1 : 0;
-        f.set("selection", selection); // Set the style selection.
+        return selected != null && selected;
+    }
+
+    static async selectStation(f: Feature, ps: ProjectService, pds: ProcessDataService, ds: DataService,
+        on: boolean) {
+        let psu = pds.selectedPSU;
+        if (psu == null) {
+            return; // not possible to select stratum when selected psu is null
+        }
+        let sp: Stratum_PSU = pds.acousticPSU.Stratum_PSU.find(sp => sp.PSU == psu);
+        let stratum = sp == null ? null : sp.Stratum;
+        if (stratum == null) {
+            return; // no stratum associated with the selected psu.
+        }
+        let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
+        let layers: string[] = pds.acousticLayerData.AcousticLayer.map(al => al.Layer);
+        let hauls: string[] = secInfos.map(secInfo => secInfo["Haul"]);
+        let res: ActiveProcessResult = await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
+            stratum, psu, layers, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
+                stratum, psu, layers, hauls).toPromise());
+        ps.selectedProject.saved = res.saved;
+        // update the cache - NOTE: should we get the new assignments from backend on result?
+        layers.forEach(layer =>
+            hauls.forEach(haul => {
+                let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Layer == layer && asg.Haul == haul);
+                if (on) {
+                    if (idx == 0) {
+                        pds.bioticAssignmentData.BioticAssignment.push({
+                            PSU: pds.selectedPSU, Layer: layer,
+                            Haul: haul, WeightingFactor: "1"
+                        });
+                    }
+                } else {
+                    if (idx >= 0) {
+                        pds.bioticAssignmentData.BioticAssignment.splice(idx, 1);
+                    }
+                }
+            })
+        );
+    }
+
+    static updateStationSelection(f: Feature, bioticAssignments: BioticAssignment[]) {
+        f.set("selection", MapSetup.isStationSelected(f, bioticAssignments));
     }
 }
