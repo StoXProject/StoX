@@ -462,7 +462,7 @@ export class MapSetup {
         f.set("selection", selection); // Set the style selection.
     }
 
-    static isStationSelected(f: Feature, bioticAssignments: BioticAssignment[]) {
+    static isStationSelected(f: Feature, bioticAssignments: BioticAssignment[]) : boolean {
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
         let selected: boolean = false;
         if (secInfos != null) {
@@ -510,6 +510,6 @@ export class MapSetup {
     }
 
     static updateStationSelection(f: Feature, bioticAssignments: BioticAssignment[]) {
-        f.set("selection", MapSetup.isStationSelected(f, bioticAssignments));
+        f.set("selection", MapSetup.isStationSelected(f, bioticAssignments) ? 1 : 0);
     }
 }

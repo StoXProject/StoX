@@ -195,7 +195,7 @@ export class ExpressionBuilderDlg  implements OnInit {
                     this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, 
                     this.ps.selectedProcessId)
                     .toPromise().then((s: ProcessProperties) => {
-                      this.ps.propertyCategories = s.propertySheet;
+                      this.ps.processProperties.propertySheet = s.propertySheet;
                       // TODO: introduce property service with onChanged
                       this.ps.processes = s.processTable
                       this.ps.activeProcessId = s.activeProcess.processID;

@@ -20,7 +20,7 @@ export class ProjectService {
   private m_iaMode: string;
   private m_iaModeSubject = new Subject<string>();
 
-  projects: Project[] = [];
+  private m_projects: Project[] = [];
   private m_selectedProject: Project = null;
   //private m_isSelectedProjectSaved = true;
   outputTables: { table: string, output: ProcessOutput }[] = [];
@@ -28,27 +28,45 @@ export class ProjectService {
   models: Model[];
 
   private m_selectedModel: Model = null;
-
-  public processes: Process[];
+  private m_processes: Process[];
   private m_selectedProcessId: string;
+  private m_processProperties: ProcessProperties = {};
+  private m_helpContent: string = "";
   //activeModelName: string = null; // the last run model
   activeProcessId: string = null; // the last run-ok process
   runFailedProcessId: string = null; // the last run-failed process
   runningProcessId: string = null; // current running process
   m_isResetting: boolean = false; // current reset flag.
 
-  propertyCategories: PropertyCategory[] = [];
-  private m_helpContent: string = "";
-
-  processProperties: ProcessProperties = null;
   userlog: string[] = [];
 
   constructor(private dataService: DataService/*, public rs: RunService*/) {
     this.initData();
   }
 
+  get processes(): Process[] {
+    return this.m_processes;
+  }
+
+  set processes(processes: Process[]) {
+    this.m_processes = processes;
+    if (this.selectedProcessId != null) {
+      // Ensure that selectedProcessid is among processes' id or cleared
+      this.selectedProcess = processes == null ? null :
+        processes.find(p => p.processID == this.selectedProcessId);
+    }
+  }
+
   get iaModeSubject(): Subject<string> {
     return this.m_iaModeSubject;
+  }
+
+  get processProperties(): ProcessProperties {
+    return this.m_processProperties;
+  }
+
+  set processProperties(processProperties: ProcessProperties) {
+    this.m_processProperties = processProperties;
   }
 
   set iaMode(iaMode: string) {
@@ -56,9 +74,19 @@ export class ProjectService {
     this.m_iaModeSubject.next(iaMode); // propagate event
   }
 
-  get iaMode(): string { 
+  get iaMode(): string {
     return this.m_iaMode;
   }
+
+  set projects(projects: Project[]) {
+    this.m_projects = projects;
+    this.selectedProject = projects == null || projects.length == 0 ? null : this.projects[0];
+  }
+
+  get projects(): Project[] {
+    return this.m_projects;
+  }
+
 
   /*get isSelectedProjectSaved(): boolean {
     return this.m_isSelectedProjectSaved;
@@ -99,31 +127,33 @@ export class ProjectService {
   set selectedModel(model: Model) {
     this.m_selectedModel = model;
     // To do in future: caching process list per model. For now update process list on each model click
-    this.updateProcessList();
+    this.onModelSelected();
   }
 
-  async updateProcessList() {
-    this.initializeProperties();
-    if (this.selectedProject != null) {
+  async onModelSelected() {
+    //this.initializeProperties();
+    if (this.selectedProject != null && this.selectedModel != null) {
       this.processes = await this.dataService.getProcessTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
       if (this.processes == null) {
         this.processes = [];
       }
-      if (this.selectedProcess == null && this.processes.length > 0) {
-        this.selectedProcess = this.processes[0];
-      }
+      /*if (this.selectedProcess == null && this.processes.length > 0) {
+      this.selectedProcess = this.processes[0];
+    }*/
+    } else {
+      this.processes = [];
     }
   }
 
   async removeSelectedProcess() {
-    this.initializeProperties();
+    //this.initializeProperties();
     if (this.selectedProject != null) {
       let pr: ProcessResult = await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise();
       this.processes = pr.processTable;
       this.selectedProject.saved = pr.saved;
-      if (this.selectedProcess == null && this.processes.length > 0) {
+      /*if (this.selectedProcess == null && this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
-      }
+      }*/
     }
   }
 
@@ -133,9 +163,9 @@ export class ProjectService {
       let pr: ProcessResult = await this.dataService.addProcess(this.selectedProject.projectPath, this.selectedModel.modelName, null).toPromise();
       this.processes = pr.processTable;
       this.selectedProject.saved = pr.saved;
-      if (this.selectedProcess == null && this.processes.length > 0) {
+      /*if (this.selectedProcess == null && this.processes.length > 0) {
         this.selectedProcess = this.processes[0];
-      }
+      }*/
     }
   }
 
@@ -148,12 +178,14 @@ export class ProjectService {
   }
 
   public set selectedProject(project: Project) {
-    this.setSelectedProject(project); // call async method
+    if (project != this.selectedProject) {
+      this.m_selectedProject = project;
+      this.OnProjectSelected(); // call async method
+    }
   }
 
-  public async setSelectedProject(project: Project) {
-    this.m_selectedProject = project;
-    this.selectedModel = this.models[0]; // This will trigger update process list.
+  public async OnProjectSelected() {
+    this.selectedModel = this.selectedProject == null ? null : this.models[0]; // This will trigger update process list.
 
     // To do: make this property the project path instead of project object.
     let jsonString = JSON.stringify(this.selectedProject == null ? "" : this.selectedProject.projectPath);
@@ -209,31 +241,30 @@ export class ProjectService {
     this.updateProcessProperties();
     this.updateHelp();
   }
+
   async updateProcessProperties() {
     if (this.selectedProject != null && this.selectedProcess != null && this.selectedModel != null) {
       this.processProperties = await this.dataService.getProcessPropertySheet(this.selectedProject.projectPath, this.selectedModel.modelName,
         this.selectedProcessId).toPromise();
-      if (this.processProperties != null) {
-        this.propertyCategories = this.processProperties.propertySheet;
-      }
-
+    } else {
+      this.processProperties = {};
     }
   }
+
   async updateHelp() {
     if (this.selectedProject != null && this.selectedProcess != null && this.selectedModel != null) {
       console.log('Update help');
       this.helpContent = await this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
         this.selectedModel.modelName, this.selectedProcessId).toPromise();
+    } else {
+      this.helpContent = '';
     }
   }
 
-  async initializeProperties() {
-    this.processProperties = null;
-    this.propertyCategories = [];
-    this.m_helpContent = ""; // this.sanitizer.bypassSecurityTrustHtml("<html><body><a nohref onclick='HelpComponent.myClickHandler();return false;'>Click me</a></body></html>");
-    // this.m_helpContent = "<html><body><a href='#' click='myClickHandler($event)'>Click me</a></body></html>";
-    // this.m_helpContent = this.sanitizer.bypassSecurityTrustHtml("");
-  }
+  /* async initializeProperties() {
+     this.processProperties = null;
+     this.m_helpContent = ""; 
+   }*/
 
   getProjects(): Project[] {
     return this.projects;
@@ -280,31 +311,29 @@ export class ProjectService {
     }
   }
 
-  async openProject(projectPath: string, doThrow: boolean, force : boolean) {
+  async openProject(projectPath: string, doThrow: boolean, force: boolean) {
     // the following should open the project and make it selected in the GUI
-    let project: Project = await this.dataService.openProject(projectPath, doThrow, force).toPromise();
-    if (project != null) {
-      this.projects = [project];
-      this.selectedProject = this.projects[0];
-      this.onSelectedProcessChanged();
-      this.iaMode = 'reset'; // reset interactive mode
-    
-      this.activeProcessId = null; // the last run-ok process
-      this.runFailedProcessId = null; // the last run-failed process
-      this.runningProcessId = null; // current running process
-      this.m_isResetting = false; // current reset flag.      
-    }
+    this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise());
   }
+
+  /*Activate project in gui - at the moment only one project is listed*/
+  activateProject(project: Project) {
+    this.dataService.log = [];   // triggered by project activation
+    this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
+    //this.processes = null;       // triggered by selected model
+    //this.selectedProcessId = null; // -> triggered by selection in gui or setProcesses
+    //this.processProperties = null; // triggered by selected processid
+    this.activeProcessId = null; // triggered by user run service, setprocesspropertyvalue or project selection
+    this.iaMode = 'reset'; // triggered by active process id
+    this.runFailedProcessId = null; // triggered by run service or active process id
+    this.runningProcessId = null; // current running process
+    this.m_isResetting = false; // current reset flag.      
+  }
+
   async closeProject(projectPath: string) {
     // the following should open the project and make it selected in the GUI
     await this.dataService.closeProject(projectPath, true).toPromise();
-    this.projects = [];
-    this.selectedProject = null;
-    this.iaMode = 'reset'; // reset interactive mode
-    this.processProperties = null;
-    this.propertyCategories = null;
-    this.processes = null;
-    this.dataService.log = [];
+    this.activateProject(null);
   }
   /*
   Returns:

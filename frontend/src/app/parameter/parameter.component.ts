@@ -62,7 +62,7 @@ export class ParameterComponent implements OnInit {
         this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.selectedProject.projectPath,
           this.ps.selectedModel.modelName, this.ps.selectedProcessId)
           .toPromise().then((s: ProcessProperties) => {
-            this.ps.propertyCategories = s.propertySheet;
+            this.ps.processProperties.propertySheet = s.propertySheet;
             this.ps.processes = s.processTable
             this.ps.activeProcessId = s.activeProcess.processID;
             this.ps.selectedProject.saved = s.saved;
@@ -175,22 +175,6 @@ export class ParameterComponent implements OnInit {
       pi.value = JSON.stringify(paths);
       // call setProcessPropertyValue
       this.onChanged(category, pi);
-
-      /*if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
-        try {
-          this.dataService.setProcessPropertyValue(category.groupName, pi.name,
-            pi.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName,
-            this.ps.selectedProcessId)
-            .toPromise().then((s: ProcessProperties) => {
-              this.ps.propertyCategories = s.propertySheet;
-            });
-        } catch (error) {
-          console.log(error.error);
-          var firstLine = error.error.split('\n', 1)[0];
-          this.msgService.setMessage(firstLine);
-          this.msgService.showMessage();
-          return;
-        }*/
     }
   }
 }

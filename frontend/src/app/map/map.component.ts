@@ -285,10 +285,10 @@ export class MapComponent implements OnInit, AfterViewInit {
         if (l == null || f == null) {
           return;
         }
-        switch (l.get("layerType")) {
-          case "EDSU": {
-            farr.push(<Feature>f);
-          }
+        let layerType: string = l.get("layerType");
+        if (this.ps.iaMode == "acousticPSU" && layerType == "EDSU" ||
+          this.ps.iaMode == "bioticAssignment" && layerType == "station") {
+          farr.push(<Feature>f);
         }
       });
       // handle the top feature only.
@@ -518,9 +518,9 @@ export class MapComponent implements OnInit, AfterViewInit {
    *  according to biotic assignment data.
    */
   private updateStationSelection() {
-    let psuAssignments: BioticAssignment[] = [];
+    let bioticAssignments: BioticAssignment[] = [];
     if (this.ps.iaMode == "bioticAssignment" && this.pds.bioticAssignmentData != null && this.pds.selectedPSU != null) {
-      psuAssignments = this.pds.bioticAssignmentData.BioticAssignment.filter(ba => ba.PSU == this.pds.selectedPSU);
+      bioticAssignments = this.pds.bioticAssignmentData.BioticAssignment.filter(ba => ba.PSU == this.pds.selectedPSU);
     }
     this.map.getLayers().getArray()
       .filter(l => l.get("layerType") == "station")
@@ -528,7 +528,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       .forEach(s => s.getFeatures()
         .forEach(f => {
           // selected PSU.
-          MapSetup.updateStationSelection(f, psuAssignments);
+          MapSetup.updateStationSelection(f, bioticAssignments);
         }))
   }
 }

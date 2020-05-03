@@ -6,9 +6,9 @@ export class ActiveProcess {
     modified? : boolean;
 }
 export class ProcessProperties {
-    propertySheet: PropertyCategory[];
-    activeProcess: ActiveProcess;
+    propertySheet?: PropertyCategory[];
+    activeProcess?: ActiveProcess;
     updateHelp?: boolean;
-    processTable : Process[];
-    saved : boolean;
+    processTable? : Process[];
+    saved? : boolean;
 }

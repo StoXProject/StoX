@@ -4,7 +4,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { DefinedColumnsService } from './DefinedColumnsService';
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from '../../message/MessageService';
-import { ProjectService } from '../../service/project.service';
+import { ProjectService } from '../../service/project.service'; 
 import { DataService } from '../../service/data.service';
 import { ProcessProperties } from '../../data/ProcessProperties';
 
@@ -194,7 +194,7 @@ export class DefinedColumnsTableDlg implements OnInit {
                         this.service.currentPropertyItem.name, this.service.currentPropertyItem.value,
                         this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
                         .toPromise().then((s: ProcessProperties) => {
-                            this.ps.propertyCategories = s.propertySheet;
+                            this.ps.processProperties.propertySheet = s.propertySheet;
                             // TODO: introduce property service with onChanged
                             this.ps.processes = s.processTable
                             this.ps.activeProcessId = s.activeProcess.processID;
