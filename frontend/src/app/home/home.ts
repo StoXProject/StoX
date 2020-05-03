@@ -1,4 +1,5 @@
 import { ResetProjectDlgService } from './../resetProject/ResetProjectDlgService';
+import { CloseProjectDlgService } from './../closeProject/CloseProjectDlgService';
 import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { tap } from 'rxjs/operators';
 // import { Observable, of } from 'rxjs';
@@ -36,6 +37,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     private openProjectDlgService: OpenProjectDlgService,
     public ps: ProjectService,
     private saveProjectAs: SaveAsProjectDlgService, private resetProject: ResetProjectDlgService,
+    private closeProject: CloseProjectDlgService,
     private ds: DataService
     /*,
     private dataService: DataService, 
@@ -79,7 +81,8 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     },
     {
       label: 'Close project', command: async e => {
-        this.ps.closeProject(this.ps.selectedProject.projectPath);
+        // this.ps.closeProject(this.ps.selectedProject.projectPath);
+        this.closeProject.checkSaved();
       }
     },
     // {
