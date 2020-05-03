@@ -294,7 +294,7 @@ export class ProjectService {
         //   }
       }
     }
-    return [];
+    return []; 
   }
 
   async initData() {
@@ -330,9 +330,9 @@ export class ProjectService {
     this.m_isResetting = false; // current reset flag.      
   }
 
-  async closeProject(projectPath: string) {
+  async closeProject(projectPath: string, save : Boolean) {
     // the following should open the project and make it selected in the GUI
-    await this.dataService.closeProject(projectPath, true).toPromise();
+    await this.dataService.closeProject(projectPath, save).toPromise();
     this.activateProject(null);
   }
   /*
