@@ -11,17 +11,11 @@ import { Subject } from 'rxjs';
 
 export class ProcessDataService {
     private m_acousticPSU: AcousticPSU;
-    private m_acousticPSUSubject = new Subject<string>();
+    private m_processDataSubject = new Subject<string>();
     private m_selectedStratum: string;
-    private m_selectedStratumSubject = new Subject<string>();
     private m_selectedPSU: string;
-    private m_selectedPSUSubject = new Subject<string>();
-
-    private m_bioticAssignmentDataSubject = new Subject<string>();
     private m_bioticAssignmentData: BioticAssignmentData;
-
     private m_AcousticLayerData: AcousticLayerData;
-    private m_AcousticLayerDataSubject = new Subject<string>();
 
     constructor(private ds: DataService, private ps: ProjectService) {
         this.ps.iaModeSubject.subscribe({
@@ -66,7 +60,7 @@ export class ProcessDataService {
 
     set acousticPSU(val: AcousticPSU) {
         this.m_acousticPSU = val;
-        this.m_acousticPSUSubject.next("data");
+        this.m_processDataSubject.next("acousticPSU");
     }
 
     get acousticLayerData(): AcousticLayerData {
@@ -75,7 +69,7 @@ export class ProcessDataService {
 
     set acousticLayerData(val: AcousticLayerData) {
         this.m_AcousticLayerData = val;
-        this.m_AcousticLayerDataSubject.next("data");
+        this.m_processDataSubject.next("acousticLayerData");
     }
 
     get bioticAssignmentData(): BioticAssignmentData {
@@ -84,11 +78,11 @@ export class ProcessDataService {
 
     set bioticAssignmentData(val: BioticAssignmentData) {
         this.m_bioticAssignmentData = val;
-        this.m_bioticAssignmentDataSubject.next("data");
+        this.m_processDataSubject.next("bioticAssignmentData");
     }
 
-    get acousticPSUSubject(): Subject<string> {
-        return this.m_acousticPSUSubject;
+    get processDataSubject(): Subject<string> {
+        return this.m_processDataSubject;
     }
 
     get selectedPSU(): string {
@@ -96,18 +90,15 @@ export class ProcessDataService {
     }
     set selectedPSU(val: string) {
         this.m_selectedPSU = val;
-        this.m_selectedPSUSubject.next("selectedpsu");
+        this.m_processDataSubject.next("selectedPSU");
     }
 
-    get selectedPSUSubject(): Subject<string> {
-        return this.m_selectedPSUSubject;
-    }
 
     get selectedStratum(): string {
         return this.m_selectedStratum;
     }
     set selectedStratum(val: string) {
         this.m_selectedStratum = val;
-        this.m_selectedStratumSubject.next(val);
+        this.m_processDataSubject.next("selectedStratum");
     }
 }

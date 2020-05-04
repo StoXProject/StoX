@@ -240,9 +240,9 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.handleIaMode(iaMode, proj);
     });
 
-    this.pds.acousticPSUSubject.subscribe(async evt => {
+    this.pds.processDataSubject.subscribe(async evt => {
       switch (evt) {
-        case "data": {
+        case "acousticPSU": {
           this.map.getLayers().getArray()
             .filter(l => l.get("layerType") == "EDSU")
             .map(l => <VectorSource>(<Layer>l).getSource())
@@ -255,26 +255,33 @@ export class MapComponent implements OnInit, AfterViewInit {
                   console.log("edsu " + edsu + " not mapped");
                 }
                 f.set("edsupsu", edsupsu);
+                // Get default any selection (not focused by user):
                 MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
               })
             )
           break;
         }
-        case "selectedpsu": {
-          this.map.getLayers().getArray()
-            .filter(l => l.get("layerType") == "EDSU")
-            .map(l => <VectorSource>(<Layer>l).getSource())
-            .forEach(s => s.getFeatures()
-              .forEach(f => {
-                // selected PSU.
-                MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-              }))
+        case "selectedPSU": {
+          switch(this.ps.iaMode) {
+            case "bioticAssignment": {
+              this.updateStationSelection();
+              // drop to EDSU selection to get EDSU focus change
+            }
+            case "acousticPSU": {
+              this.map.getLayers().getArray()
+                .filter(l => l.get("layerType") == "EDSU")
+                .map(l => <VectorSource>(<Layer>l).getSource())
+                .forEach(s => s.getFeatures()
+                  .forEach(f => {
+                    // selected PSU.
+                    MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+                  }))
+              break;
+            }
+          }
           break;
         }
       }
-    });
-    this.pds.selectedPSUSubject.subscribe(async psu => {
-      this.updateStationSelection();
     });
 
     //var selected = [];
