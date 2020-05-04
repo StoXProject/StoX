@@ -7,10 +7,13 @@ export class RunResult {
     error: string[];
 }
 
-export class ProcessResult {
-    processTable?: Process[];
+export class ActiveProcessResult {
     activeProcess?: ActiveProcess;
     saved?: boolean;
+}
+
+export class ProcessResult extends ActiveProcessResult{
+    processTable?: Process[];
 }
 
 export class RunProcessesResult extends ProcessResult {

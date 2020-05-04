@@ -1,4 +1,5 @@
 import { ResetProjectDlg } from './resetProject/ResetProjectDlg';
+import { CloseProjectDlg } from './closeProject/CloseProjectDlg';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HomeComponent } from './home/home';
@@ -238,6 +239,7 @@ export class MaterialModule { }
     FilePathDlg,
     SaveAsProjectDlg,
     ResetProjectDlg,
+    CloseProjectDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,

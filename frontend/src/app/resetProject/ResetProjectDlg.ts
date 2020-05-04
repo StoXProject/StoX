@@ -1,7 +1,7 @@
 import { MessageService } from './../message/MessageService';
 import { ResetProjectDlgService } from './ResetProjectDlgService';
 import { Component, OnInit } from '@angular/core';
-import { Project } from './../data/project';
+// import { Project } from './../data/project';
 
 @Component({
     selector: 'ResetProjectDlg',

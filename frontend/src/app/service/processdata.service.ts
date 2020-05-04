@@ -78,11 +78,11 @@ export class ProcessDataService {
         this.m_AcousticLayerDataSubject.next("data");
     }
 
-    get biticAssignmentData(): any {
+    get bioticAssignmentData(): BioticAssignmentData {
         return this.m_bioticAssignmentData;
     }
 
-    set bioticAssignmentData(val: any) {
+    set bioticAssignmentData(val: BioticAssignmentData) {
         this.m_bioticAssignmentData = val;
         this.m_bioticAssignmentDataSubject.next("data");
     }
@@ -96,7 +96,7 @@ export class ProcessDataService {
     }
     set selectedPSU(val: string) {
         this.m_selectedPSU = val;
-        this.m_acousticPSUSubject.next("selectedpsu");
+        this.m_selectedPSUSubject.next("selectedpsu");
     }
 
     get selectedPSUSubject(): Subject<string> {

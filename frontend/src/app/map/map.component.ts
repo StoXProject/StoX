@@ -41,9 +41,9 @@ import VectorSource from 'ol/source/Vector';
 import { MatDialog } from '@angular/material/dialog';
 import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
-import { EDSU_PSU } from '../data/processdata';
+import { EDSU_PSU, BioticAssignment } from '../data/processdata';
 import { ProcessResult } from '../data/runresult';
-import { NamedStringTable } from '../data/types';
+import { NamedStringTable, NamedStringIndex } from '../data/types';
 
 @Component({
   selector: 'app-map',
@@ -273,18 +273,9 @@ export class MapComponent implements OnInit, AfterViewInit {
         }
       }
     });
-    /*this.pds.selectedPSUSubject.subscribe(async psu => {
-      if (psu != null) {
-        let edsupsuFiltered: EDSU_PSU[] = this.pds.acousticPSU.EDSU_PSU.filter(edsupsu => edsupsu.PSU == psu);
-        (<VectorSource>this.edsuPointLayer.getSource()).getFeatures().forEach(f => {
-          let edsu: string = f.get("EDSU");
-          // An edsu is focused when it is selected as psu:
-          let edsuPsu: EDSU_PSU = edsupsuFiltered.find(edsupsu => edsupsu.EDSU == edsu);
-          f.set("focused", edsuPsu != null ? true : false);
-          MapSetup.updateEDSUSelection(f)
-        })
-      }
-    });*/
+    this.pds.selectedPSUSubject.subscribe(async psu => {
+      this.updateStationSelection();
+    });
 
     //var selected = [];
 
@@ -294,10 +285,10 @@ export class MapComponent implements OnInit, AfterViewInit {
         if (l == null || f == null) {
           return;
         }
-        switch (l.get("layerType")) {
-          case "EDSU": {
-            farr.push(<Feature>f);
-          }
+        let layerType: string = l.get("layerType");
+        if (this.ps.iaMode == "acousticPSU" && layerType == "EDSU" ||
+          this.ps.iaMode == "bioticAssignment" && layerType == "station") {
+          farr.push(<Feature>f);
         }
       });
       // handle the top feature only.
@@ -307,52 +298,64 @@ export class MapComponent implements OnInit, AfterViewInit {
           let l: Layer = <Layer>f.get("layer");
           console.log("Z index: " + l.getZIndex());
           let fe: Feature = (<Feature>f);
-          if (this.ps.iaMode == "acousticPSU" && this.pds.selectedPSU != null) {
-            // Controlling focus.
-            //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
-            let prevClickIndex = l.get("lastClickedIndex");
-            let clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
-            l.set("lastClickedIndex", clickedIndex);
-            if (!shiftKeyOnly(e) || prevClickIndex == null) {
-              prevClickIndex = clickedIndex;
-            }
-            let fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
-            let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
-            if (edsuPsu1 == null) {
-              console.log(fi1.get("EDSU") + " is missing edsu  for " + fi1.get("EDSU") + " layer " + l.get("name"));
-            }
-            let psuToUse: string = edsuPsu1.PSU;
-            if (prevClickIndex == clickedIndex) {
-              psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
-            }
-            let iFirst = Math.min(prevClickIndex, clickedIndex);
-            let iLast = Math.max(prevClickIndex, clickedIndex);
-            let changedEDSUs: string[] = [];
-            for (let idx: number = iFirst; idx <= iLast; idx++) {
-              let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
-              let edsuPsu: EDSU_PSU = fi.get("edsupsu");
-              if (edsuPsu != null) {
-                if (edsuPsu.PSU != psuToUse) {
-                  changedEDSUs.push(edsuPsu.EDSU);
-                  edsuPsu.PSU = psuToUse;
-                  MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
-                }
-                //fi.changed();
-              }
-            }
-            if (changedEDSUs.length > 0) {
-              let res: ProcessResult = psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
-                this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
-                await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
-                  this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
-              this.ps.selectedProject.saved = res.saved;
-              /*if (res != null && res.activeProcessID != null) {
-                this.ps.activeProcessId = res.activeProcessID; // reset active process id
-              }*/
-            }
-            //l.changed();
-            //(<VectorSource>l.getSource()).changed();
+          if (this.pds.selectedPSU == null) {
+            return;
           }
+          switch (this.ps.iaMode) {
+            case "acousticPSU": {
+              // Controlling focus.
+              //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
+              let prevClickIndex = l.get("lastClickedIndex"); // handle range selection with respect to last clicked index
+              let clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
+              l.set("lastClickedIndex", clickedIndex);
+              if (!shiftKeyOnly(e) || prevClickIndex == null) {
+                prevClickIndex = clickedIndex;
+              }
+              let fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
+              let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
+              if (edsuPsu1 == null) {
+                console.log(fi1.get("EDSU") + " is missing edsu  for " + fi1.get("EDSU") + " layer " + l.get("name"));
+              }
+              let psuToUse: string = edsuPsu1.PSU;
+              if (prevClickIndex == clickedIndex) {
+                psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+              }
+              let iFirst = Math.min(prevClickIndex, clickedIndex);
+              let iLast = Math.max(prevClickIndex, clickedIndex);
+              let changedEDSUs: string[] = [];
+              for (let idx: number = iFirst; idx <= iLast; idx++) {
+                let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
+                let edsuPsu: EDSU_PSU = fi.get("edsupsu");
+                if (edsuPsu != null) {
+                  if (edsuPsu.PSU != psuToUse) {
+                    changedEDSUs.push(edsuPsu.EDSU);
+                    edsuPsu.PSU = psuToUse;
+                    MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+                  }
+                  //fi.changed();
+                }
+              }
+              if (changedEDSUs.length > 0) {
+                let res: ProcessResult = psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
+                  this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
+                  await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
+                    this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
+                this.ps.selectedProject.saved = res.saved;
+                /*if (res != null && res.activeProcessID != null) {
+                  this.ps.activeProcessId = res.activeProcessID; // reset active process id
+                }*/
+              }
+              //l.changed();
+              //(<VectorSource>l.getSource()).changed();
+              break;
+            }
+            case "bioticAssignment": {
+              let selected: boolean = MapSetup.isStationSelected(fe, this.pds.bioticAssignmentData.BioticAssignment);
+              MapSetup.selectStation(fe, this.ps, this.pds, this.dataService, !selected);
+              MapSetup.updateStationSelection(fe, this.pds.bioticAssignmentData.BioticAssignment);
+              break;
+            }
+          };
         });
     });
 
@@ -416,7 +419,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       case "station": {
         this.resetLayersToProcess(this.ps.activeProcessId);
         let data: { stationPoints: string; stationInfo: NamedStringTable; haulInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();
-        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, [MapSetup.getStationPointStyle()], false, 4, [data.stationInfo, data.haulInfo]));
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, MapSetup.getStationPointStyleCache(), false, 4, [data.stationInfo, data.haulInfo]));
         break;
       }
       case "EDSU": {
@@ -489,26 +492,44 @@ export class MapComponent implements OnInit, AfterViewInit {
     if (platformModifierKeyOnly(evt) && feature != null) {
 
       this.overlay.setPosition(evt.coordinate);
-      this.tooltip.nativeElement.innerHTML = this.getTooltip(feature.getProperties());
+      this.tooltip.nativeElement.innerHTML = this.getTooltip(this.getTooltipProperties(feature));
       this.tooltip.nativeElement.style.display = '';
       return;
 
     }
     this.tooltip.nativeElement.style.display = 'none';
   };
-  getFeatureProperties(feature: Feature): { [key: string]: any } {
-    let res: { [key: string]: any }
-    let l: Layer = <Layer>feature.get("layer");
-    let lt : string = <string>l.get("layerType");
-    let infoTables : NamedStringTable[] = <NamedStringTable[]>l.get("infoTables");
-    switch(lt) {
-      case 'station': {
-        let station : string = feature.get("station");
 
-      }
-
+  private getTooltipProperties(feature: Feature): { [key: string]: any } {
+    let res: NamedStringIndex = {};
+    let primaryIdx: NamedStringIndex = <NamedStringIndex>feature.get("primaryInfo");
+    let secondaryIdx: NamedStringIndex[] = <NamedStringIndex[]>feature.get("secondaryInfo");
+    if (primaryIdx != null) {
+      Object.assign(res, primaryIdx); // 
+    }
+    if (secondaryIdx != null && secondaryIdx.length == 1) {
+      Object.assign(res, secondaryIdx[0]);
     }
     return res;
+  }
+
+  /** Update station assignment due to psu selection or psu assignment add/remove operation
+   *  Iterate features in station layer and update the selection state based on assignments
+   *  according to biotic assignment data.
+   */
+  private updateStationSelection() {
+    let bioticAssignments: BioticAssignment[] = [];
+    if (this.ps.iaMode == "bioticAssignment" && this.pds.bioticAssignmentData != null && this.pds.selectedPSU != null) {
+      bioticAssignments = this.pds.bioticAssignmentData.BioticAssignment.filter(ba => ba.PSU == this.pds.selectedPSU);
+    }
+    this.map.getLayers().getArray()
+      .filter(l => l.get("layerType") == "station")
+      .map(l => <VectorSource>(<Layer>l).getSource())
+      .forEach(s => s.getFeatures()
+        .forEach(f => {
+          // selected PSU.
+          MapSetup.updateStationSelection(f, bioticAssignments);
+        }))
   }
 }
 /*

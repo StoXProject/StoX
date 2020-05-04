@@ -72,28 +72,12 @@ export class CreateProjectDialog {
             this.msgService.showMessage();            
             return;
         }       
-         
         console.log("selectedTemplate : " + this.selectedTemplate ? this.selectedTemplate.name + " - " + this.selectedTemplate.description  : 'none');
-
         let absolutePath = this.projectRootPath + "/" + this.projectName;
-
         absolutePath = absolutePath.replace(/\\/g, "/");
-
         console.log("absolute path : " + absolutePath);
-
         try {
-            var t0 = performance.now();
-            let project = <Project> await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise();
-            var t1 = performance.now();
-            console.log("Call to dataService.createProject(...) took " + (t1 - t0) + " milliseconds.");
-            console.log("projectCreated : " + project.projectName);
-
-            if(!(project == null)) {
-                // this.projectService.PROJECTS.push(this.project);
-                this.ps.projects =  [{projectName: project.projectName, projectPath: project.projectPath}]; 
-
-                this.ps.selectedProject = project;
-            }
+            this.ps.activateProject(await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
         } catch(error) {
             console.log(error);
             var firstLine = error;

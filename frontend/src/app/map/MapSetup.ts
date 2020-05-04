@@ -4,7 +4,7 @@ import { FeatureLike } from 'ol/Feature';
 import { Coordinate } from 'ol/coordinate';
 import { Layer, Vector } from 'ol/layer';
 import BaseObject from 'ol/Object';
-import { Vector as VectorSource } from 'ol/source';
+import { Vector as VectorSource, UrlTile } from 'ol/source';
 import { GeoJSON } from 'ol/format';
 import { MultiPoint } from 'ol/geom';
 
@@ -20,21 +20,23 @@ import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
+import { ProcessDataService } from '../service/processdata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { Color } from './Color';
 import { clone } from 'ol/extent';
-import { ProcessResult } from '../data/runresult';
+import { ProcessResult, ActiveProcessResult } from '../data/runresult';
 import { HTMLUtil } from '../utils/htmlutil'
 import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
-import { EDSU_PSU } from './../data/processdata'
-import { NamedStringTable } from './../data/types'
+import { EDSU_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata'
+import { NamedStringTable, NamedStringIndex } from './../data/types'
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
     public static DISTANCE_ABSENT_POINT_COLOR: string = 'rgb(253, 244, 247)';
     public static DISTANCE_POINT_SELECTED_COLOR: string = 'rgb(166, 200, 176)';
     public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
+    public static STATION_POINT_SELECTED_COLOR: string = 'rgb(238, 215, 123, 0.95)';
     public static POINT_OUTLINE_COLOR: string = 'rgb(0, 0, 0, 0.3)';
     public static BG_COLOR = 'rgb(252, 255, 198)';
 
@@ -126,9 +128,9 @@ export class MapSetup {
     static getAcousticPointStyleSelected(): Style {
         return this.getPointStyleCircle(this.DISTANCE_POINT_SELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
     }
-    static getStationPointStyle(): Style {
+    /*static getStationPointStyle(): Style {
         return this.getPointStyleRect(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
-    }
+    }*/
     static getStyleCacheFunction(): StyleFunction {
         // This function lets the feature determine by callback the selection of style into the stylecache.
         return (feature: FeatureLike, resolution: number) => {
@@ -152,9 +154,18 @@ export class MapSetup {
         ];
     }
 
+    static getStationPointStyleCache(): Style[] {
+        let symSize: number = 14;
+        return [
+            this.getPointStyleRect(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, symSize),
+            this.getPointStyleRect(this.STATION_POINT_SELECTED_COLOR, this.POINT_OUTLINE_COLOR, symSize)
+        ];
+    }
+
     static getEDSULineStyle(): Style {
         return this.getLineStyle(Color.darken(this.DISTANCE_POINT_COLOR, 0.9), 2);
     }
+
     static getPolygonStyle(fillColor: string, strokeColor: string, strokeWidth: number): Style {
         return new Style({
             stroke: new Stroke({
@@ -189,11 +200,11 @@ export class MapSetup {
         m.on('modifyend', async function (e) {
             // Add the features back to API.
             //console.log(JSON.stringify(e.features.getArray()));
-            let fcloned: Feature[] = e.features.getArray().map(f => { 
-                let f2: Feature = f.clone(); 
+            let fcloned: Feature[] = e.features.getArray().map(f => {
+                let f2: Feature = f.clone();
                 f2.set("layer", null);
                 f2.set("styleCache", null);
-                return f2;  
+                return f2;
             });
             console.log(JSON.stringify(fcloned));
 
@@ -204,7 +215,7 @@ export class MapSetup {
             })*/
             //console.log(s);
             let res: ProcessResult = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-            this.ps.selectedProject.saved = res.saved; 
+            this.ps.selectedProject.saved = res.saved;
             //ps.activeProcessId = res.activeProcessID; // reset active processid
             console.log("res :" + res);
         });
@@ -257,7 +268,7 @@ export class MapSetup {
                 //e.setId(33); // find the max id + 1
                 let res: ProcessResult = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
                 //ps.activeProcessId = res.activeProcessID; // reset active processid
-                this.ps.selectedProject.saved = res.saved; 
+                this.ps.selectedProject.saved = res.saved;
             }            //console.log("res :" + res); 
 
         });
@@ -271,8 +282,8 @@ export class MapSetup {
      * @param style 
      * @param selectable 
      */
-    static getGeoJSONLayerFromFeatureString(name: string, layerType : string, zIndex : number, feat: string, proj: string, style: Style[],
-        selectable: boolean, layerOrder: number, infoTables : NamedStringTable[]): Layer {
+    static getGeoJSONLayerFromFeatureString(name: string, layerType: string, zIndex: number, feat: string, proj: string, style: Style[],
+        selectable: boolean, layerOrder: number, infoTables: NamedStringTable[]): Layer {
         var s: VectorSource = new VectorSource({
             format: new GeoJSON(),
             useSpatialIndex: false
@@ -282,18 +293,6 @@ export class MapSetup {
             style: this.getStyleCacheFunction(),
             zIndex: zIndex
         });
-        s.on("addfeature", evt => {
-            evt.feature.set("layer", v);
-            evt.feature.set("styleCache", style);
-            //evt.feature.set("absent", false); // this property must be provided in geojson
-            MapSetup.updateEDSUSelection(evt.feature, null);
-            //evt.feature.set("selection", 0); // selection 0 by default.
-            //ft.feature.set("feature", ft); // set a reference to itsself
-        })
-        s.addFeatures((new GeoJSON).readFeatures(JSON.parse(feat), {
-            dataProjection: 'EPSG:4326',
-            featureProjection: proj
-        }));
 
         // Set layer properties
         v.set("selectable", selectable);
@@ -303,10 +302,79 @@ export class MapSetup {
         v.set("hasTooltip", true);
         v.set("layerOrder", layerOrder);
         v.set("infoTables", infoTables)
+
+        s.on("addfeature", evt => {
+            evt.feature.set("layer", v);
+            evt.feature.set("styleCache", style);
+            //evt.feature.set("absent", false); // this property must be provided in geojson
+            evt.feature.set("selection", 0);
+            if (layerType == 'EDSU') {
+                MapSetup.updateEDSUSelection(evt.feature, null);
+            }
+            MapSetup.connectInfoProperties(evt.feature);
+            //evt.feature.set("selection", 0); // selection 0 by default.
+            //ft.feature.set("feature", ft); // set a reference to itsself
+        })
+        s.addFeatures((new GeoJSON).readFeatures(JSON.parse(feat), {
+            dataProjection: 'EPSG:4326',
+            featureProjection: proj
+        }));
+
+
         // Create a feature->layer link
         //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));
         return v;
     }
+
+    /** Connects primary and secondary tables to a given feature */
+    public static connectInfoProperties(feature: Feature) {
+        let l: Layer = <Layer>feature.get("layer");
+        let lt: string = <string>l.get("layerType");
+        let infoTables: NamedStringTable[] = <NamedStringTable[]>l.get("infoTables");
+        let primaryKeyName: string = null;
+        let secondaryKeyName: string = null;
+        let primaryKeyValue: string = null;
+        let primaryTable: NamedStringTable = null;
+        let secondaryTable: NamedStringTable = null;
+        switch (lt) {
+            case 'station': {
+                primaryKeyName = "Station";
+                secondaryKeyName = "Haul";
+                break;
+            }
+            case 'EDSU': {
+                primaryKeyName = "EDSU";
+                break;
+            }
+            case 'stratum': {
+                primaryKeyName = "polygonName";
+                let stratumIndex: NamedStringIndex = {};
+                stratumIndex[primaryKeyName] = feature.get(primaryKeyName);
+                infoTables = [[stratumIndex]];
+                break;
+
+            }
+        }
+        if (primaryKeyName != null) {
+            primaryKeyValue = feature.get(primaryKeyName);
+        }
+        primaryTable = infoTables.length > 0 ? infoTables[0] : null;
+        secondaryTable = infoTables.length > 1 ? infoTables[1] : null;
+        //Lookup primary key "Station": "2017102/4/2017/4174/2/160" into Station table 
+        if (primaryTable != null && primaryKeyName != null && primaryKeyValue != null) {
+
+            let primaryInfoLookup: NamedStringIndex = primaryTable.find(idx => idx[primaryKeyName] == primaryKeyValue);
+            feature.set("primaryInfo", primaryInfoLookup);
+            //Lookup primary key "Station": "2017102/4/2017/4174/2/160" into Haul table
+            if (secondaryTable != null) {
+                let secondaryTable: NamedStringTable = infoTables[1];
+                let secondaryInfoLookup: NamedStringIndex[] = secondaryTable.filter(idxs =>
+                    idxs[primaryKeyName] == primaryKeyValue);
+                feature.set("secondaryInfo", secondaryInfoLookup);
+            }
+        }
+    }
+
     public static getGridLayer(proj): Layer {
         var gridLines = {
             'type': 'FeatureCollection',
@@ -392,5 +460,56 @@ export class MapSetup {
                 focused != null && focused ? 2 :
                     selected != null && selected ? 1 : 0;
         f.set("selection", selection); // Set the style selection.
+    }
+
+    static isStationSelected(f: Feature, bioticAssignments: BioticAssignment[]) : boolean {
+        let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
+        let selected: boolean = false;
+        if (secInfos != null) {
+            selected = secInfos.find(secInfo => bioticAssignments.find(asg => secInfo["Haul"] == asg.Haul) != null) != null;
+        }
+        return selected != null && selected;
+    }
+
+    static async selectStation(f: Feature, ps: ProjectService, pds: ProcessDataService, ds: DataService,
+        on: boolean) {
+        let psu = pds.selectedPSU;
+        if (psu == null) {
+            return; // not possible to select stratum when selected psu is null
+        }
+        let sp: Stratum_PSU = pds.acousticPSU.Stratum_PSU.find(sp => sp.PSU == psu);
+        let stratum = sp == null ? null : sp.Stratum;
+        if (stratum == null) {
+            return; // no stratum associated with the selected psu.
+        }
+        let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
+        let layers: string[] = pds.acousticLayerData.AcousticLayer.map(al => al.Layer);
+        let hauls: string[] = secInfos.map(secInfo => secInfo["Haul"]);
+        let res: ActiveProcessResult = await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
+            stratum, psu, layers, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
+                stratum, psu, layers, hauls).toPromise());
+        ps.selectedProject.saved = res.saved;
+        // update the cache - NOTE: should we get the new assignments from backend on result?
+        layers.forEach(layer =>
+            hauls.forEach(haul => {
+                let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Layer == layer && asg.Haul == haul);
+                if (on) {
+                    if (idx == 0) {
+                        pds.bioticAssignmentData.BioticAssignment.push({
+                            PSU: pds.selectedPSU, Layer: layer,
+                            Haul: haul, WeightingFactor: "1"
+                        });
+                    }
+                } else {
+                    if (idx >= 0) {
+                        pds.bioticAssignmentData.BioticAssignment.splice(idx, 1);
+                    }
+                }
+            })
+        );
+    }
+
+    static updateStationSelection(f: Feature, bioticAssignments: BioticAssignment[]) {
+        f.set("selection", MapSetup.isStationSelected(f, bioticAssignments) ? 1 : 0);
     }
 }
