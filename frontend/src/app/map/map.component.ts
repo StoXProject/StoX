@@ -261,6 +261,10 @@ export class MapComponent implements OnInit, AfterViewInit {
             )
           break;
         }
+        case "bioticAssignmentData": {
+          this.updateStationSelection();
+          break;
+        }
         case "selectedPSU": {
           switch(this.ps.iaMode) {
             case "bioticAssignment": {
@@ -357,10 +361,10 @@ export class MapComponent implements OnInit, AfterViewInit {
               break;
             }
             case "bioticAssignment": {
-              let selected: boolean = MapSetup.isStationSelected(fe, this.pds.bioticAssignmentData.BioticAssignment);
+              let selected: boolean = MapSetup.isStationSelected(fe, this.pds);
               MapSetup.selectStation(fe, this.ps, this.pds, this.dataService, !selected);
-              MapSetup.updateStationSelection(fe, this.pds.bioticAssignmentData.BioticAssignment);
-              break;
+              MapSetup.updateStationSelection(fe, this.pds);
+              break; 
             }
           };
         });
@@ -535,7 +539,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       .forEach(s => s.getFeatures()
         .forEach(f => {
           // selected PSU.
-          MapSetup.updateStationSelection(f, bioticAssignments);
+          MapSetup.updateStationSelection(f, this.pds);
         }))
   }
 }
