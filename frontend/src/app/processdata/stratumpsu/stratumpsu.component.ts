@@ -28,7 +28,9 @@ export class StratumpsuComponent implements OnInit {
   }
 
   constructor(private pds: ProcessDataService, private ps: ProjectService, private ds: DataService) {
+    // TODO: connect stratum from process data stratum, and then add psu after that
     pds.processDataSubject.subscribe((evt: string) => {
+
       if (evt == "acousticPSU") { 
         // Convert Acoustic PSU to TreeNodes:
         if (pds.acousticPSU != null && pds.acousticPSU.Stratum != null) {
@@ -40,7 +42,7 @@ export class StratumpsuComponent implements OnInit {
               return StratumpsuComponent.asNode(s.Stratum, "stratum", psuNodes);
             });
         }
-      }
+      } 
     })
   }
 

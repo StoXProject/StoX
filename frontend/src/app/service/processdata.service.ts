@@ -10,6 +10,7 @@ import { Subject } from 'rxjs';
 })
 
 export class ProcessDataService {
+    private m_stratum: string[];
     private m_acousticPSU: AcousticPSU;
     private m_processDataSubject = new Subject<string>();
     private m_selectedStratum: string;
@@ -21,6 +22,13 @@ export class ProcessDataService {
         this.ps.iaModeSubject.subscribe({
             next: async (newVal) => {
                 switch (newVal) {
+                    case 'stratum': {
+                        console.log("Process data - listen on iamode=stratum")
+                        let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
+                            ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+                        this.m_stratum = v;
+                        break;
+                    }
                     case 'acousticPSU': {
                         console.log("Process data - listen on iamode=acousticPSU")
                         let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
@@ -43,6 +51,7 @@ export class ProcessDataService {
                         break;
                     }
                     case 'reset': {
+                        this.stratum = null;
                         this.acousticPSU = null;
                         this.selectedStratum = null;
                         this.selectedPSU = null;
@@ -52,6 +61,15 @@ export class ProcessDataService {
                 //      console.log(newVal);
             }
         });
+    }
+
+    get stratum(): string[] {
+        return this.m_stratum;
+    }
+
+    set stratum(val: string[]) {
+        this.m_stratum = val;
+        this.m_processDataSubject.next("stratum");
     }
 
     get acousticPSU(): AcousticPSU {
