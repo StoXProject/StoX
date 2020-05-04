@@ -229,10 +229,10 @@ const createMenu = function createMenu() {
 
 function startOpenCPU(): string {
   logInfo("Running on Platform: " + process.platform)
-  if (process.platform == "win32"/*windows*/ || process.platform == "darwin"/*mac*/) {
+  if (process.platform == "win32"/*windows*/ || process.platform == "darwin"/*mac*/ || process.platform == "linux") {
     // On linux, sudo is required and opencpu must be installed separatly. check this
     var rscriptBin = (properties.rPath == "" || properties.rPath == null ? "" : properties.rPath + "/") + "Rscript";
-    let p1 = child_process.spawnSync(rscriptBin, ["-e", "print(TRUE)"]);
+    let p1 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "print(TRUE)"]);
     logInfo('Check Rscript availability' + p1.stdout);
     if (p1.error) {
       return p1.error;
@@ -241,23 +241,23 @@ function startOpenCPU(): string {
       return "Rscript is not available. Set R path in the properties."
     }
     // Check for opencpu in installed packages
-    let p2 = child_process.spawnSync(rscriptBin, ["-e", "eval('opencpu' %in% rownames(installed.packages()))"]);
+    let p2 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "eval('opencpu' %in% rownames(installed.packages()))"]);
     if (p2.error) {
       return p2.error;
     }
     if (p2.stdout == null) {
       return "Rscript is not available. Set R path in the properties."
     }
-    if (p2.stdout.includes("FALSE")) {
+    if (p2.stdout.includes("FALSE") && process.platform != "linux") {
       // Open cpu is not installed
       logInfo("installing opencpu...");
-      child_process.execSync(rscriptBin + " -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+      child_process.execSync(rscriptBin + "--no-environ -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
       logInfo("opencpu installed.");
     }
     logInfo("Starting opencpu ...");
-    let ocpucmd = rscriptBin + " -e \"opencpu::ocpu_start_server(5307)\"";
+    let ocpucmd = rscriptBin + "--no-environ -e \"opencpu::ocpu_start_server(5307)\"";
     // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
-    let opencpuProcess: any = child_process.spawn(rscriptBin, ['-e', "opencpu::ocpu_start_server(5307, preload = ('RstoxAPI'), workers = 3)"]);
+    let opencpuProcess: any = child_process.spawn(rscriptBin, ['--no-environ', '-e', "opencpu::ocpu_start_server(5307, preload = ('RstoxAPI'), workers = 3)"]);
     opencpuProcess.on('error', (er: any) => { logInfo(er) });
     logInfo("Process " + opencpuProcess.pid + " started with " + ocpucmd)
     logInfo("opencpu started.");
