@@ -28,7 +28,7 @@ export class ProjectService {
   models: Model[];
 
   private m_selectedModel: Model = null;
-  private m_processes: Process[];
+  private m_processes: Process[] = [];
   private m_selectedProcessId: string;
   private m_processProperties: ProcessProperties = {};
   private m_helpContent: string = "";
