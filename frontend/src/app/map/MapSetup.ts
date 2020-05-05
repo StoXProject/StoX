@@ -30,6 +30,7 @@ import { HTMLUtil } from '../utils/htmlutil'
 import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
 import { EDSU_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata'
 import { NamedStringTable, NamedStringIndex } from './../data/types'
+import { asString } from 'ol/color';
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
@@ -462,11 +463,11 @@ export class MapSetup {
         f.set("selection", selection); // Set the style selection.
     }
 
-    static isStationSelected(f: Feature, bioticAssignments: BioticAssignment[]) : boolean {
+    static isStationSelected(f: Feature, pds: ProcessDataService): boolean {
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
         let selected: boolean = false;
         if (secInfos != null) {
-            selected = secInfos.find(secInfo => bioticAssignments.find(asg => secInfo["Haul"] == asg.Haul) != null) != null;
+            selected = secInfos.find(secInfo => pds.bioticAssignmentData.BioticAssignment.find(asg => secInfo["Haul"] == asg.Haul && pds.selectedPSU == asg.PSU) != null) != null;
         }
         return selected != null && selected;
     }
@@ -485,6 +486,7 @@ export class MapSetup {
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
         let layers: string[] = pds.acousticLayerData.AcousticLayer.map(al => al.Layer);
         let hauls: string[] = secInfos.map(secInfo => secInfo["Haul"]);
+        console.log('selectStation: ' + on ? 'on' : 'off');
         let res: ActiveProcessResult = await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
             stratum, psu, layers, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
                 stratum, psu, layers, hauls).toPromise());
@@ -492,9 +494,11 @@ export class MapSetup {
         // update the cache - NOTE: should we get the new assignments from backend on result?
         layers.forEach(layer =>
             hauls.forEach(haul => {
-                let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Layer == layer && asg.Haul == haul);
+                let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Layer == layer && asg.Haul == haul && psu == asg.PSU);
+                console.log('layer ' + layer + " haul "+ haul + " idx " + idx);
                 if (on) {
-                    if (idx == 0) {
+                    if (idx < 0) {
+                        console.log('push assignment');
                         pds.bioticAssignmentData.BioticAssignment.push({
                             PSU: pds.selectedPSU, Layer: layer,
                             Haul: haul, WeightingFactor: "1"
@@ -502,14 +506,16 @@ export class MapSetup {
                     }
                 } else {
                     if (idx >= 0) {
+                        console.log('remove assignment');
                         pds.bioticAssignmentData.BioticAssignment.splice(idx, 1);
                     }
                 }
             })
         );
+        MapSetup.updateStationSelection(f, pds);
     }
 
-    static updateStationSelection(f: Feature, bioticAssignments: BioticAssignment[]) {
-        f.set("selection", MapSetup.isStationSelected(f, bioticAssignments) ? 1 : 0);
+    static updateStationSelection(f: Feature, pds: ProcessDataService) {
+        f.set("selection", MapSetup.isStationSelected(f, pds) ? 1 : 0);
     }
 }

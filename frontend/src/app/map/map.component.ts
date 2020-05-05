@@ -240,9 +240,9 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.handleIaMode(iaMode, proj);
     });
 
-    this.pds.acousticPSUSubject.subscribe(async evt => {
+    this.pds.processDataSubject.subscribe(async evt => {
       switch (evt) {
-        case "data": {
+        case "acousticPSU": {
           this.map.getLayers().getArray()
             .filter(l => l.get("layerType") == "EDSU")
             .map(l => <VectorSource>(<Layer>l).getSource())
@@ -255,26 +255,37 @@ export class MapComponent implements OnInit, AfterViewInit {
                   console.log("edsu " + edsu + " not mapped");
                 }
                 f.set("edsupsu", edsupsu);
+                // Get default any selection (not focused by user):
                 MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
               })
             )
           break;
         }
-        case "selectedpsu": {
-          this.map.getLayers().getArray()
-            .filter(l => l.get("layerType") == "EDSU")
-            .map(l => <VectorSource>(<Layer>l).getSource())
-            .forEach(s => s.getFeatures()
-              .forEach(f => {
-                // selected PSU.
-                MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-              }))
+        case "bioticAssignmentData": {
+          this.updateStationSelection();
+          break;
+        }
+        case "selectedPSU": {
+          switch(this.ps.iaMode) {
+            case "bioticAssignment": {
+              this.updateStationSelection();
+              // drop to EDSU selection to get EDSU focus change
+            }
+            case "acousticPSU": {
+              this.map.getLayers().getArray()
+                .filter(l => l.get("layerType") == "EDSU")
+                .map(l => <VectorSource>(<Layer>l).getSource())
+                .forEach(s => s.getFeatures()
+                  .forEach(f => {
+                    // selected PSU.
+                    MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+                  }))
+              break;
+            }
+          }
           break;
         }
       }
-    });
-    this.pds.selectedPSUSubject.subscribe(async psu => {
-      this.updateStationSelection();
     });
 
     //var selected = [];
@@ -350,10 +361,10 @@ export class MapComponent implements OnInit, AfterViewInit {
               break;
             }
             case "bioticAssignment": {
-              let selected: boolean = MapSetup.isStationSelected(fe, this.pds.bioticAssignmentData.BioticAssignment);
+              let selected: boolean = MapSetup.isStationSelected(fe, this.pds);
               MapSetup.selectStation(fe, this.ps, this.pds, this.dataService, !selected);
-              MapSetup.updateStationSelection(fe, this.pds.bioticAssignmentData.BioticAssignment);
-              break;
+              MapSetup.updateStationSelection(fe, this.pds);
+              break; 
             }
           };
         });
@@ -528,7 +539,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       .forEach(s => s.getFeatures()
         .forEach(f => {
           // selected PSU.
-          MapSetup.updateStationSelection(f, bioticAssignments);
+          MapSetup.updateStationSelection(f, this.pds);
         }))
   }
 }
