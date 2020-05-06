@@ -1,16 +1,13 @@
 export class DefinedColumns {
+    /*
     SpeciesCategory: string; 
-    // NewSpeciesCategory: string;
-    // NewAcousticCategory: string;
     Alpha: number;
     Beta : number;
     LMin: number; 
     LMax: number; 
-    // AcousticCategory: string;
     m: number;
     a: number;
     d: number; 
-
     MinimumNumberOfStations: number;
     DistanceNauticalMiles: number;
     TimeHours: number;
@@ -19,11 +16,30 @@ export class DefinedColumns {
     LongitudeDecimalDegrees: number;
     AcousticCategory: number;
     Frequency: number;
-
     TableName: string;
     VariableName: string;
     Value: string;
-    NewValue: string;   
+    NewValue: string;   */
+
+    columnValues: ColumnValue[] = [];
+
+    getValue(columnName: string): any {
+        for(let i = 0; i< this.columnValues.length; i++) {
+            if(this.columnValues[i].columnName == columnName) {
+                return this.columnValues[i].value;
+            }
+        }
+        return null;
+    }
+
+    getColumn(columnName: string): ColumnValue {
+        for(let i = 0; i< this.columnValues.length; i++) {
+            if(this.columnValues[i].columnName == columnName) {
+                return this.columnValues[i]
+            }
+        }
+        return null;        
+    }
 }
 
 export class ColumnPossibleValues {
@@ -34,4 +50,9 @@ export class ColumnPossibleValues {
 export class ColumnType {
     columnName: string;
     type: string;    
+}
+
+export class ColumnValue {
+    columnName: string;
+    value: any;
 }
