@@ -456,6 +456,14 @@ export class DataService {
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
+
+  removeStratum(stratumName: string, projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
+    return this.runFunction('removeStratum', {
+      "stratumName": stratumName,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
   setRPath(rpath: string): Observable<any> {
     return this.postLocalNode('rpath', { rpath: rpath });
   }

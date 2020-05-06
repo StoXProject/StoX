@@ -25,8 +25,11 @@ export class OutputComponent implements OnInit {
         this.contextMenu.menu.focusFirstItem('mouse');
         this.contextMenu.openMenu();
     }
-    onContextMenuAction1(item: any) {
-        this.ps.outputTables.splice(this.ps.outputTables.findIndex(item), 1)
+    onContextMenuAction1() {
+        let item : any = this.contextMenu.menuData;
+        let idx = this.ps.outputTables.findIndex(t=>t.table == item.item.table);
+        console.log("index" + idx)
+        this.ps.outputTables.splice(idx, 1)
     }
 
     constructor(public ps: ProjectService) {
@@ -37,7 +40,7 @@ export class OutputComponent implements OnInit {
         return s.join("\n");
     }
     getItemOutput(item) {
-        return Object.keys(item.output.data).length > 0 ? item.output.data.join('\n') : '';
+        return item.output.data != null && Object.keys(item.output.data).length > 0 ? item.output.data.join('\n') : '';
     }
 }
 

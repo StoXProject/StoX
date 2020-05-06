@@ -5,7 +5,7 @@ import { ProcessDataService } from './../../service/processdata.service'
 import { ProjectService } from './../../service/project.service'
 import { DataService } from './../../service/data.service'
 import { AcousticPSU, Stratum, Stratum_PSU } from './../../data/processdata'
-import { PSUResult } from './../../data/runresult'
+import { PSUResult, ActiveProcessResult } from './../../data/runresult'
 @Component({
   selector: 'app-stratumpsu',
   templateUrl: './stratumpsu.component.html',
@@ -91,7 +91,13 @@ export class StratumpsuComponent implements OnInit {
               this.ps.selectedProject.saved = res.saved;
             }
           }
+        }, {
+        label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
+          // psu a new psu node
+          let res: ActiveProcessResult = await this.ds.removeStratum(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
+          this.nodes.splice(this.nodes.indexOf(node), 1);
         }
+      }
       );
     }
     this.contextMenu = m;

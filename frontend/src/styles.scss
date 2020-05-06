@@ -394,25 +394,21 @@ $nodata: #acacac;
 .emptyicon:before {
   @include icon_content("\f0c8", 1rem, rgb(33, 122, 196, 0));
 }
-.processmodelerroricon:after {
-  @include icon_content("\f071", 0.4rem, rgba(209, 53, 53));
-  top: 25%;
-}
 .runstatusokicon:after {
   @include icon_content("\f0c8", 0.4rem, rgb(107, 195, 195), true);
-  top: 68%;
+  top: 72%;
 }
 .runstatusfailedicon:after {
   @include icon_content("\f0c8", 0.4rem, rgb(247, 128, 59), true);
-  top: 68%;
+  top: 72%;
 }
 .runstatusmodifiedicon:after {
   @include icon_content("\f0c8", 0.4rem, rgb(180, 177, 175), true);
-  top: 68%;
+  top: 72%;
 }
 .functioninputerroricon:after {
   @include icon_content("\f0c8", 0.4rem, rgba(209, 53, 53), true);
-  top: 8%;
+  top: 28%;
 }
 .editicon:before {
   @include icon_content("\f040", 0.7rem, rgb(19, 40, 58));
