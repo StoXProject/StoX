@@ -26,7 +26,7 @@ export class ProcessDataService {
                         console.log("Process data - listen on iamode=stratum")
                         let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
                             ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-                        this.m_stratum = v;
+                        this.stratum = v; // change this to v
                         break;
                     }
                     case 'acousticPSU': {

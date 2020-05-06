@@ -64,7 +64,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
 
   async ngOnInit() {
     console.log("Home init")
-    this.stoxVersion = '2.9.9';
+    this.stoxVersion = '2.9.10';
     try {
       this.rstoxAPIVersion = await this.ds.getRstoxAPIVersion().toPromise();
     } catch (error) {
@@ -85,9 +85,9 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
         this.closeProject.checkSaved();
       }
     },
-    // {
-    //   label: 'Test defined columns ...', command: e => this.definedColumns.showDialog()
-    // },
+     {
+       label: 'Availabletemplates', command: e => this.ds.getAvailableTemplates().toPromise()
+     },
     // {
     //   label: 'Test query builder...', command: e => this.testDlgService.showDialog()
     // },    

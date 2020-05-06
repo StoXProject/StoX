@@ -251,13 +251,13 @@ function startOpenCPU(): string {
     if (p2.stdout.includes("FALSE") && process.platform != "linux") {
       // Open cpu is not installed
       logInfo("installing opencpu...");
-      child_process.execSync(rscriptBin + "--no-environ -e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
+      child_process.execSync(rscriptBin + "-e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
       logInfo("opencpu installed.");
     }
     logInfo("Starting opencpu ...");
-    let ocpucmd = rscriptBin + "--no-environ -e \"opencpu::ocpu_start_server(5307)\"";
+    let ocpucmd = rscriptBin + " -e \"opencpu::ocpu_start_server(5307, preload = ('RstoxAPI'), workers = 6)\"";
     // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
-    let opencpuProcess: any = child_process.spawn(rscriptBin, ['--no-environ', '-e', "opencpu::ocpu_start_server(5307, preload = ('RstoxAPI'), workers = 3)"]);
+    let opencpuProcess: any = child_process.spawn(rscriptBin, ['-e', "opencpu::ocpu_start_server(5307, preload = ('RstoxAPI'), workers = 6)"]);
     opencpuProcess.on('error', (er: any) => { logInfo(er) });
     logInfo("Process " + opencpuProcess.pid + " started with " + ocpucmd)
     logInfo("opencpu started.");

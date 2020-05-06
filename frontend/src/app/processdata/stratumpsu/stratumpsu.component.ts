@@ -31,18 +31,30 @@ export class StratumpsuComponent implements OnInit {
     // TODO: connect stratum from process data stratum, and then add psu after that
     pds.processDataSubject.subscribe((evt: string) => {
 
-      if (evt == "acousticPSU") { 
-        // Convert Acoustic PSU to TreeNodes:
-        if (pds.acousticPSU != null && pds.acousticPSU.Stratum != null) {
-          this.nodes = pds.acousticPSU.Stratum
-            .map((s: Stratum) => {
-              let psuNodes: TreeNode[] = pds.acousticPSU.Stratum_PSU
-                .filter((spsu: Stratum_PSU) => spsu.Stratum === s.Stratum)
-                .map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, "psu", []));
-              return StratumpsuComponent.asNode(s.Stratum, "stratum", psuNodes);
-            });
+      switch (evt) {
+        case "stratum": {
+          // Convert stratum to TreeNodes:
+          if (pds.stratum != null) {
+            this.nodes = pds.stratum
+              .map((s: string) => {
+                return StratumpsuComponent.asNode(s, "stratum", []);
+              });
+          }
+          break;
         }
-      } 
+        case "acousticPSU": {
+          // Connect Acoustic PSU to existing stratum TreeNodes:
+          if (pds.acousticPSU != null && this.nodes != null) {
+            this.nodes.forEach(n => {
+              let psuNodes: TreeNode[] = pds.acousticPSU.Stratum_PSU
+                .filter((spsu: Stratum_PSU) => spsu.Stratum === n.data.id)
+                .map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, "psu", []));
+              n.children = psuNodes;
+            });
+          }
+          break;
+        }
+      }
     })
   }
 
@@ -76,7 +88,7 @@ export class StratumpsuComponent implements OnInit {
             let res: PSUResult = await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
             if (res.PSU != null && res.PSU.length > 0) {
               node.children.push(StratumpsuComponent.asNode(res.PSU, "psu", []))
-              this.ps.selectedProject.saved = res.saved; 
+              this.ps.selectedProject.saved = res.saved;
             }
           }
         }

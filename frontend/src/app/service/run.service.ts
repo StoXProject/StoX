@@ -92,6 +92,7 @@ export class RunService {
     canRunToHere(): boolean {
         return this.canRun() && this.ps.getSelectedProcessIdx() != null;
     }
+    
     canRunThis(): boolean {
         let idxFrom: number = this.getRunToHereIndexFrom();
         let idxTo: number = this.getRunToHereIndexTo();
