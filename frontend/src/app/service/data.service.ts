@@ -7,7 +7,7 @@ import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
-import { RunResult, RunProcessesResult, ProcessResult, PSUResult, ActiveProcessResult } from '../data/runresult';
+import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
 import { ProcessProperties, ActiveProcess } from '../data/ProcessProperties';
@@ -326,7 +326,7 @@ export class DataService {
     });
   }
 
-  resetModel(projectPath: string, modelName: string): Observable<ProcessResult> {
+  resetModel(projectPath: string, modelName: string): Observable<ProcessTableResult> {
     return this.runFunction('resetModel', {
       "projectPath": projectPath, "modelName": modelName
     });
@@ -339,13 +339,13 @@ export class DataService {
     });
   }
 
-  removeProcess(projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  removeProcess(projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('removeProcess', {
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
 
-  addProcess(projectPath: string, modelName: string, value: any): Observable<ProcessResult> {
+  addProcess(projectPath: string, modelName: string, value: any): Observable<ProcessTableResult> {
     return this.runFunction('addProcess', {
       "projectPath": projectPath, "modelName": modelName, "value": value
     });
@@ -376,14 +376,14 @@ export class DataService {
     return this.runProcessFunc<any>('getInteractiveData', projectPath, modelName, processID);
   }
 
-  modifyStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  modifyStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('modifyStratum', {
       "stratum": stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
 
-  addStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  addStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('addStratum', {
       "stratum": stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
@@ -436,21 +436,21 @@ export class DataService {
 
   }
 
-  addEDSU(psu: string, edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  addEDSU(psu: string, edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('addEDSU', {
       "PSU": psu, "EDSU": edsu,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
 
-  rearrangeProcesses(projectPath: string, modelName: string, processID: string, afterProcessID: string): Observable<ProcessResult> {
+  rearrangeProcesses(projectPath: string, modelName: string, processID: string, afterProcessID: string): Observable<ProcessTableResult> {
     return this.runFunction('rearrangeProcesses', {
       "projectPath": projectPath, "modelName": modelName, "processID": processID,
       "afterProcessID": afterProcessID
     });
   }
 
-  removeEDSU(edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  removeEDSU(edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('removeEDSU', {
       "acousticPSU": null/* removed */, "EDSU": edsu,
       "projectPath": projectPath, "modelName": modelName, "processID": processID

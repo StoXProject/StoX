@@ -8,7 +8,7 @@ import { DataService } from '../service/data.service';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
-import { RunProcessesResult, ProcessResult } from './../data/runresult';
+import { RunProcessesResult, ProcessTableResult } from './../data/runresult';
 
 @Injectable({
     providedIn: 'root'
@@ -117,15 +117,7 @@ export class RunService {
         this.ps.isResetting = true;
         this.ps.runningProcessId = null;
         //   this.ps.activeModelName = null;
-        let pr: ProcessResult = await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise();
-        let activeProcessId: string = pr.activeProcess.processID
-        //let activeProcessId: string = await (await this.dataService.getActiveProcess(this.ps.selectedProject.projectPath, 
-        //  this.ps.selectedModel.modelName).toPromise()).processID;
-        console.log("Reset active process id : " + activeProcessId);
-        this.ps.processes = pr.processTable;
-        //console.log("Hasbeenrun1" + pr.processTable[0].hasBeenRun); 
-
-        this.ps.activeProcessId = activeProcessId;
+        this.ps.handleAPI(await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise());
         this.ps.runFailedProcessId = null;
         this.dataService.log.length = 0;
         this.ps.iaMode = 'reset'; // reset interactive mode set to reset
@@ -146,19 +138,16 @@ export class RunService {
             //console.log("Run process " + p.processName + " with id " + p.processID);
             this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "Process " + p.processName));
             this.ps.iaMode = '';
-            let res: RunProcessesResult = await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise();
+            let res: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise());
 
             //console.log("run result: " + res);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
-            if (typeof (res.activeProcess) == 'undefined') {
+            if (res.activeProcess === undefined) {
                 // getting empty object {} when interrupted by error
                 this.ps.runFailedProcessId = p.processID;
                 break;
             } else { // empty/missing result
-                // ok update active process id and continue the loop
-                this.ps.activeProcessId = res.activeProcess.processID;
-                this.ps.processes = res.processTable;
                 if(this.ps.selectedProcess.processID == this.ps.activeProcessId) {
                     this.ps.updateProcessProperties(); // process properties may change on the selected process
                 }

@@ -25,7 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { Color } from './Color';
 import { clone } from 'ol/extent';
-import { ProcessResult, ActiveProcessResult } from '../data/runresult';
+import { ProcessTableResult, ActiveProcessResult } from '../data/runresult';
 import { HTMLUtil } from '../utils/htmlutil'
 import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
 import { EDSU_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata'
@@ -121,16 +121,16 @@ export class MapSetup {
     }
 
     static getAcousticPointStyle(): Style {
-        return this.getPointStyleCircle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
+        return MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleFocused(): Style {
-        return this.getPointStyleCircle(Color.darken(this.DISTANCE_POINT_SELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
+        return MapSetup.getPointStyleCircle(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5), MapSetup.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleSelected(): Style {
-        return this.getPointStyleCircle(this.DISTANCE_POINT_SELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
+        return MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, 6);
     }
     /*static getStationPointStyle(): Style {
-        return this.getPointStyleRect(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
+        return MapSetup.getPointStyleRect(MapSetup.STATION_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, 14);
     }*/
     static getStyleCacheFunction(): StyleFunction {
         // This function lets the feature determine by callback the selection of style into the stylecache.
@@ -143,28 +143,28 @@ export class MapSetup {
     }
     static getEDSUPointStyleCache(): Style[] {
         let edsuRadius: number = 6; // px
-        let pointColor: string = this.DISTANCE_POINT_COLOR;
+        let pointColor: string = MapSetup.DISTANCE_POINT_COLOR;
         let outlineColor: string = 'rgb(0, 0, 0, 0.1)'
-        let focusColor: string = Color.darken(this.DISTANCE_POINT_SELECTED_COLOR, 0.5)
+        let focusColor: string = Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5)
         let focusLineColor: string = Color.darken(focusColor, 0.5)
         return [
-            this.getPointStyleCircle(pointColor, outlineColor, edsuRadius), // 0: present
-            this.getPointStyleCircle(this.DISTANCE_POINT_SELECTED_COLOR, outlineColor, edsuRadius), // 1: selected
-            this.getPointStyleCircle(focusColor, outlineColor, edsuRadius), // 2: focused
-            this.getPointStyleCircle(this.DISTANCE_ABSENT_POINT_COLOR, outlineColor, edsuRadius), // 3 : absent
+            MapSetup.getPointStyleCircle(pointColor, outlineColor, edsuRadius), // 0: present
+            MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_SELECTED_COLOR, outlineColor, edsuRadius), // 1: selected
+            MapSetup.getPointStyleCircle(focusColor, outlineColor, edsuRadius), // 2: focused
+            MapSetup.getPointStyleCircle(MapSetup.DISTANCE_ABSENT_POINT_COLOR, outlineColor, edsuRadius), // 3 : absent
         ];
     }
 
     static getStationPointStyleCache(): Style[] {
         let symSize: number = 14;
         return [
-            this.getPointStyleRect(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, symSize),
-            this.getPointStyleRect(this.STATION_POINT_SELECTED_COLOR, this.POINT_OUTLINE_COLOR, symSize)
+            MapSetup.getPointStyleRect(MapSetup.STATION_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize),
+            MapSetup.getPointStyleRect(MapSetup.STATION_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize)
         ];
     }
 
     static getEDSULineStyle(): Style {
-        return this.getLineStyle(Color.darken(this.DISTANCE_POINT_COLOR, 0.9), 2);
+        return MapSetup.getLineStyle(Color.darken(MapSetup.DISTANCE_POINT_COLOR, 0.9), 2);
     }
 
     static getPolygonStyle(fillColor: string, strokeColor: string, strokeWidth: number): Style {
@@ -215,10 +215,7 @@ export class MapSetup {
                 featureProjection: 'EPSG:4326',
             })*/
             //console.log(s);
-            let res: ProcessResult = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-            this.ps.selectedProject.saved = res.saved;
-            //ps.activeProcessId = res.activeProcessID; // reset active processid
-            console.log("res :" + res);
+            ps.handleAPI(await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
         });
         return m;
     }
@@ -229,7 +226,7 @@ export class MapSetup {
             layers: function (layer) {
                 return layer.get('layerType') == 'stratum';
             },
-            style: [this.getStratumSelectStyle(), MapSetup.getStratumNodeStyle()],
+            style: [MapSetup.getStratumSelectStyle(), MapSetup.getStratumNodeStyle()],
             multi: false
         });
     }
@@ -267,9 +264,7 @@ export class MapSetup {
                 console.log(stratum);
                 //source.getFeatures().map(f => f.getId())
                 //e.setId(33); // find the max id + 1
-                let res: ProcessResult = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-                //ps.activeProcessId = res.activeProcessID; // reset active processid
-                this.ps.selectedProject.saved = res.saved;
+                let res: ActiveProcessResult = ps.handleAPI(await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
             }            //console.log("res :" + res); 
 
         });
@@ -291,7 +286,7 @@ export class MapSetup {
         });
         var v: Vector = new Vector({
             source: s,
-            style: this.getStyleCacheFunction(),
+            style: MapSetup.getStyleCacheFunction(),
             zIndex: zIndex
         });
 
@@ -487,10 +482,9 @@ export class MapSetup {
         let layers: string[] = pds.acousticLayerData.AcousticLayer.map(al => al.Layer);
         let hauls: string[] = secInfos.map(secInfo => secInfo["Haul"]);
         console.log('selectStation: ' + on ? 'on' : 'off');
-        let res: ActiveProcessResult = await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
+        let res: ActiveProcessResult = ps.handleAPI(await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
             stratum, psu, layers, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
-                stratum, psu, layers, hauls).toPromise());
-        ps.selectedProject.saved = res.saved;
+                stratum, psu, layers, hauls).toPromise()));
         // update the cache - NOTE: should we get the new assignments from backend on result?
         layers.forEach(layer =>
             hauls.forEach(haul => {

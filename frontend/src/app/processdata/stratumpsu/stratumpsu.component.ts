@@ -85,17 +85,18 @@ export class StratumpsuComponent implements OnInit {
         {
           label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
             // psu a new psu node
-            let res: PSUResult = await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
+            let res: PSUResult = this.ps.handleAPI(await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
             if (res.PSU != null && res.PSU.length > 0) {
               node.children.push(StratumpsuComponent.asNode(res.PSU, "psu", []))
-              this.ps.selectedProject.saved = res.saved;
             }
           }
         }, {
         label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
           // psu a new psu node
-          let res: ActiveProcessResult = await this.ds.removeStratum(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
-          this.nodes.splice(this.nodes.indexOf(node), 1);
+          let res: ActiveProcessResult = this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeStratum(node.data.id, 
+            this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+          this.ps.iaMode = "stratum"; // trigger the gui
+          //this.nodes.splice(this.nodes.indexOf(node), 1);
         }
       }
       );

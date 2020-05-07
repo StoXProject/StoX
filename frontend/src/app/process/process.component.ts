@@ -11,7 +11,7 @@ import { ProcessOutput } from '../data/processoutput';
 
 //import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
-import { ProcessResult } from '../data/runresult';
+import { ProcessTableResult } from '../data/runresult';
 @Component({
   selector: 'app-process',
   templateUrl: './process.component.html',
@@ -110,10 +110,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   async drop(process: Process) {
     if (this.draggedProcessId != null) {
       console.log("dragging " + this.draggedProcessId + " to " + process.processID);
-      let pr : ProcessResult = await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise();
-      this.ps.processes = pr.processTable;
-      this.ps.selectedProject.saved = pr.saved;
-      //this.ps.updateProcessList();
+      let pr : ProcessTableResult = this.ps.handleAPI(await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise());
     }
   }
 }

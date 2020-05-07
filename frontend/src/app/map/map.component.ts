@@ -42,7 +42,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
 import { EDSU_PSU, BioticAssignment } from '../data/processdata';
-import { ProcessResult } from '../data/runresult';
+import { ActiveProcessResult } from '../data/runresult';
 import { NamedStringTable, NamedStringIndex } from '../data/types';
 
 @Component({
@@ -86,9 +86,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   tools = [
     { tool: "freemove", iclass: "freemoveicon" },
     { tool: "stratum-edit", iclass: "editicon" },
-    { tool: "stratum-add", iclass: "addicon" },
-    { tool: "stratum-delete", iclass: "deleteicon" }/*,
-    { tool: "stratum-delete", iclass: "editicon" }*/
+    { tool: "stratum-add", iclass: "addicon" }/*,
+    { tool: "stratum-delete", iclass: "deleteicon" }*/
 
   ];
   public getToolEnabled(tool: string): boolean {
@@ -347,14 +346,10 @@ export class MapComponent implements OnInit, AfterViewInit {
                 }
               }
               if (changedEDSUs.length > 0) {
-                let res: ProcessResult = psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
+                let res: ActiveProcessResult = this.ps.handleAPI(psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
                   this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
                   await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
-                    this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
-                this.ps.selectedProject.saved = res.saved;
-                /*if (res != null && res.activeProcessID != null) {
-                  this.ps.activeProcessId = res.activeProcessID; // reset active process id
-                }*/
+                    this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
               }
               //l.changed();
               //(<VectorSource>l.getSource()).changed();

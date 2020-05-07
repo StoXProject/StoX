@@ -7,19 +7,22 @@ export class RunResult {
     error: string[];
 }
 
-export class ActiveProcessResult {
-    activeProcess?: ActiveProcess;
+export class SavedResult {
     saved?: boolean;
 }
 
-export class ProcessResult extends ActiveProcessResult{
+export class ActiveProcessResult extends SavedResult {
+    activeProcess?: ActiveProcess;
+}
+
+export class ProcessTableResult extends ActiveProcessResult{
     processTable?: Process[];
 }
 
-export class RunProcessesResult extends ProcessResult {
+export class RunProcessesResult extends ProcessTableResult {
     interactiveMode: string;
 }
 
-export class PSUResult extends ProcessResult {
+export class PSUResult extends ProcessTableResult {
     PSU: string;
 }

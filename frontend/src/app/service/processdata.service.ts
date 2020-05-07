@@ -68,6 +68,9 @@ export class ProcessDataService {
     }
 
     set stratum(val: string[]) {
+        if(val != null && !Array.isArray(val)) {
+            return; // ensure that object is an array
+        }
         this.m_stratum = val;
         this.m_processDataSubject.next("stratum");
     }

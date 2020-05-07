@@ -1,6 +1,6 @@
 import { Injectable, SecurityContext } from '@angular/core';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, Observable } from 'rxjs';
 import { Project } from '../data/project';
 import { Process } from '../data/process';
 import { Model } from '../data/model';
@@ -8,7 +8,8 @@ import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
 import { ProcessProperties, ActiveProcess } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
-import { ProcessResult } from '../data/runresult'
+import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
+import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
 // import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -148,24 +149,14 @@ export class ProjectService {
   async removeSelectedProcess() {
     //this.initializeProperties();
     if (this.selectedProject != null) {
-      let pr: ProcessResult = await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise();
-      this.processes = pr.processTable;
-      this.selectedProject.saved = pr.saved;
-      /*if (this.selectedProcess == null && this.processes.length > 0) {
-        this.selectedProcess = this.processes[0];
-      }*/
+      this.handleAPI(await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise());
     }
   }
 
   async addProcess() {
     // this.initializeProperties();
     if (this.selectedProject != null) {
-      let pr: ProcessResult = await this.dataService.addProcess(this.selectedProject.projectPath, this.selectedModel.modelName, null).toPromise();
-      this.processes = pr.processTable;
-      this.selectedProject.saved = pr.saved;
-      /*if (this.selectedProcess == null && this.processes.length > 0) {
-        this.selectedProcess = this.processes[0];
-      }*/
+      this.handleAPI(await this.dataService.addProcess(this.selectedProject.projectPath, this.selectedModel.modelName, null).toPromise());
     }
   }
 
@@ -294,7 +285,7 @@ export class ProjectService {
         //   }
       }
     }
-    return []; 
+    return [];
   }
 
   async initData() {
@@ -330,7 +321,7 @@ export class ProjectService {
     this.m_isResetting = false; // current reset flag.      
   }
 
-  async closeProject(projectPath: string, save : Boolean) {
+  async closeProject(projectPath: string, save: Boolean) {
     // the following should open the project and make it selected in the GUI
     await this.dataService.closeProject(projectPath, save).toPromise();
     this.activateProject(null);
@@ -405,5 +396,19 @@ export class ProjectService {
     return this.processes[idx];
   }*/
 
+  handleAPI<T>(res: any): T {
+    if (res != null && this.selectedProject != null) {
+      if (res.saved !== undefined) {
+        this.selectedProject.saved = res.saved;
+        if (res.activeProcess !== undefined) {
+          this.activeProcessId = res.activeProcess.processID;
+          if (res.processTable !== undefined) {
+            this.processes = res.processTable;
+          }
+        }
+      }
+    }
+    return res;
+  }
 
 }

@@ -1,14 +1,12 @@
 import { PropertyCategory } from './propertycategory';
 import { Process } from './process'
+import { ProcessTableResult } from './runresult';
 
 export class ActiveProcess {
-    processID? : string;
-    modified? : boolean;
+    processID?: string;
+    modified?: boolean;
 }
-export class ProcessProperties {
+export class ProcessProperties extends ProcessTableResult {
     propertySheet?: PropertyCategory[];
-    activeProcess?: ActiveProcess;
     updateHelp?: boolean;
-    processTable? : Process[];
-    saved? : boolean;
 }
