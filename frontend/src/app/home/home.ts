@@ -1,6 +1,6 @@
 import { ResetProjectDlgService } from './../resetProject/ResetProjectDlgService';
 import { CloseProjectDlgService } from './../closeProject/CloseProjectDlgService';
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { ViewChild, Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { tap } from 'rxjs/operators';
 // import { Observable, of } from 'rxjs';
 // import { DataService } from '../service/data.service';
@@ -14,6 +14,7 @@ import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
 import { MenuItem } from 'primeng/api';
 import { DataService } from '../service/data.service';
 import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgService';
+import { MatTabGroup } from '@angular/material/tabs';
 
 @Component({
   selector: 'homeComponent',
@@ -22,13 +23,7 @@ import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgServic
 })
 
 export class HomeComponent /*implements OnInit, OnDestroy*/ {
-  /*@HostListener("window:beforeunload", ["$event"]) unloadHandler($event) {
-    // Cancel the event as stated by the standard.
-    event.preventDefault();
-    // Chrome requires returnValue to be set.
-    $event.returnValue = 'Data will be lost';
-    console.log($event);
-  }*/
+ @ViewChild("bottomTabGroup") bottomTabGroup : MatTabGroup; 
   title = 'StoX';
   stoxVersion: string;
   rstoxAPIVersion: string;
@@ -39,14 +34,8 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     private saveProjectAs: SaveAsProjectDlgService, private resetProject: ResetProjectDlgService,
     private closeProject: CloseProjectDlgService,
     private ds: DataService
-    /*,
-    private dataService: DataService, 
-    private expressionBuilderDlgService: ExpressionBuilderDlgService,
-    private testDlgService: QueryBuilderDlgService, 
-    private definedColumns: DefinedColumnsService
-    ,
-    private quBuilderDlgService: QueryBuilderDlgService */) {
-
+    ) {
+      ps.outputTableActivator.subscribe({next: (idx)=>{this.bottomTabGroup.selectedIndex = 1;}})
     // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
