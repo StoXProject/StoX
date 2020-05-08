@@ -1,4 +1,4 @@
-<mat-tab-group [@.disabled]="true">
+<mat-tab-group [@.disabled]="true" #outputTableGroup>
     <mat-tab *ngFor="let item of ps.outputTables" label="{{item.table}}">
         <ng-template mat-tab-label>
             <div (contextmenu)="onContextMenu($event, item)">{{item.table}}</div>

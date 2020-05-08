@@ -64,9 +64,9 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     }
     m.push(
       { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } },
-      { label: 'Delete', icon: 'rib absa emptyicon', command:  (event) => { this.ps.removeSelectedProcess(); } }
+      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { this.ps.removeSelectedProcess(); } }
     );
-     if (this.ps.selectedProcess.hasBeenRun) {
+    if (this.ps.selectedProcess.hasBeenRun) {
       let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
       if (tables.length > 0) {
@@ -74,10 +74,17 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
           label: 'View output', icon: 'rib absa emptyicon', items:
             tables.map(e => {
               return {
-                label: e, icon: 'rib absa emptyicon', command: async (event) => {
+                label: e, icon: 'rib absa emptyicon',
+                command: async (event) => {
                   let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
                     this.ps.selectedModel.modelName, this.ps.selectedProcessId, e).toPromise();
-                  this.ps.outputTables.push({ table: this.ps.selectedProcess.processName + "(" + e + ")", output: out });
+                  let fullTableName: string = this.ps.selectedProcess.processName + "(" + e + ")";
+                  let idx = this.ps.outputTables.findIndex(t => t.table == fullTableName);
+                  if (idx == -1) {
+                    this.ps.outputTables.push({ table: fullTableName, output: out });
+                    idx = this.ps.outputTables.length - 1;
+                  }
+                  this.ps.outputTableActivator.next(idx)
                 }
               };
             })
@@ -91,10 +98,10 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     // );
     this.contextMenu = m;
   }
-  async openCm(event : MouseEvent, cm : ContextMenu, process: Process) {
+  async openCm(event: MouseEvent, cm: ContextMenu, process: Process) {
     // TODO: Incorpoate dynamic ng-action-outlet with material. or support scrolling primeng menus
     // https://stackblitz.com/edit/ng-action-outlet-demo?file=src/app/app.component.ts
-    this.ps.selectedProcess = process; 
+    this.ps.selectedProcess = process;
     //console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
@@ -104,13 +111,13 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   }
   draggedProcessId: string = null;
   dragStart(process: Process) {
-     this.draggedProcessId = process.processID;
+    this.draggedProcessId = process.processID;
   }
 
   async drop(process: Process) {
     if (this.draggedProcessId != null) {
       console.log("dragging " + this.draggedProcessId + " to " + process.processID);
-      let pr : ProcessTableResult = this.ps.handleAPI(await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise());
+      let pr: ProcessTableResult = this.ps.handleAPI(await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise());
     }
   }
 }

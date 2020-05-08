@@ -25,6 +25,7 @@ export class ProjectService {
   private m_selectedProject: Project = null;
   //private m_isSelectedProjectSaved = true;
   outputTables: { table: string, output: ProcessOutput }[] = [];
+  public outputTableActivator : Subject<number> = new Subject<number>();
 
   models: Model[];
 

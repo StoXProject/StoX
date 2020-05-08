@@ -3,6 +3,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 
 import { DataService } from '../../service/data.service';
 import { ProjectService } from '../../service/project.service';
+import { MatTabGroup } from '@angular/material/tabs';
 
 
 @Component({
@@ -15,7 +16,8 @@ export class OutputComponent implements OnInit {
 
     @ViewChild(MatMenuTrigger)
     contextMenu: MatMenuTrigger;
-    contextMenuPosition = { x: '0px', y: '0px' }; 
+    contextMenuPosition = { x: '0px', y: '0px' };
+    @ViewChild("outputTableGroup") outputTableGroup: MatTabGroup;
 
     onContextMenu(event: MouseEvent, item: Object) {
         event.preventDefault();
@@ -26,13 +28,18 @@ export class OutputComponent implements OnInit {
         this.contextMenu.openMenu();
     }
     onContextMenuAction1() {
-        let item : any = this.contextMenu.menuData;
-        let idx = this.ps.outputTables.findIndex(t=>t.table == item.item.table);
+        let item: any = this.contextMenu.menuData;
+        let idx = this.ps.outputTables.findIndex(t => t.table == item.item.table);
         console.log("index" + idx)
         this.ps.outputTables.splice(idx, 1)
     }
 
     constructor(public ps: ProjectService) {
+        ps.outputTableActivator.subscribe({
+            next: (idx) => {
+                this.outputTableGroup.selectedIndex = idx; 
+            }
+        });
     }
     ngOnInit() {
     }
