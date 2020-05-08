@@ -257,7 +257,7 @@ function startOpenCPU(): string {
     logInfo("Starting opencpu ...");
     let ocpucmd = rscriptBin + " -e \"opencpu::ocpu_start_server(5307,  preload = c('RstoxAPI', 'data.table', 'rgdal', 'rgeos', 'sp', 'geojsonio', 'jsonlite', 'fst', 'Rcpp', 'xml2', 'readr'), workers = 5\"";
     // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
-    let opencpuProcess: any = child_process.spawn(rscriptBin, ['-e', "opencpu::ocpu_start_server(5307, preload = ('RstoxAPI'), workers = 6)"]);
+    let opencpuProcess: any = child_process.spawn(rscriptBin, ['-e', "opencpu::ocpu_start_server(5307, preload = c('RstoxAPI', 'data.table', 'rgdal', 'rgeos', 'sp', 'geojsonio', 'jsonlite', 'fst', 'Rcpp', 'xml2', 'readr'), workers = 5)"]);
     opencpuProcess.on('error', (er: any) => { logInfo(er) });
     logInfo("Process " + opencpuProcess.pid + " started with " + ocpucmd)
     logInfo("opencpu started.");
