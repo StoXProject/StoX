@@ -64,13 +64,7 @@ export class ParameterComponent implements OnInit {
         this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.selectedProject.projectPath,
           this.ps.selectedModel.modelName, this.ps.selectedProcessId)
           .toPromise().then((s: ProcessProperties) => {
-            this.ps.processProperties.propertySheet = s.propertySheet;
-            this.ps.processes = s.processTable
-            this.ps.activeProcessId = s.activeProcess.processID;
-            this.ps.selectedProject.saved = s.saved;
-            if (s.updateHelp) {
-              this.ps.updateHelp();
-            }
+            this.ps.handleAPI(s);
           });
       } catch (error) {
         console.log(error.error);

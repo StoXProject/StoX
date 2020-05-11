@@ -12,11 +12,11 @@ import { Subject } from 'rxjs';
 export class ProcessDataService {
     private m_stratum: string[];
     private m_acousticPSU: AcousticPSU;
-    private m_processDataSubject = new Subject<string>();
+    private m_AcousticLayerData: AcousticLayerData;
+    private m_bioticAssignmentData: BioticAssignmentData;
     private m_selectedStratum: string;
     private m_selectedPSU: string;
-    private m_bioticAssignmentData: BioticAssignmentData;
-    private m_AcousticLayerData: AcousticLayerData;
+    private m_processDataSubject = new Subject<string>();
 
     constructor(private ds: DataService, private ps: ProjectService) {
         this.ps.iaModeSubject.subscribe({
@@ -53,6 +53,8 @@ export class ProcessDataService {
                     case 'reset': {
                         this.stratum = null;
                         this.acousticPSU = null;
+                        this.acousticLayerData = null;
+                        this.bioticAssignmentData = null;
                         this.selectedStratum = null;
                         this.selectedPSU = null;
                         break;

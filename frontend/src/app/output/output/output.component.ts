@@ -49,5 +49,8 @@ export class OutputComponent implements OnInit {
     getItemOutput(item) {
         return item.output.data != null && Object.keys(item.output.data).length > 0 ? item.output.data.join('\n') : '';
     }
+    onResize(event) {
+        console.log(event);
+    }
 }
 

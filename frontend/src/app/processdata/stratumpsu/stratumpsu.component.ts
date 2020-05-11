@@ -39,6 +39,8 @@ export class StratumpsuComponent implements OnInit {
               .map((s: string) => {
                 return StratumpsuComponent.asNode(s, "stratum", []);
               });
+          } else {
+            this.nodes = null; 
           }
           break;
         }

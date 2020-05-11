@@ -7,14 +7,14 @@ import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
-import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult } from '../data/runresult';
+import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
-import { ProcessProperties, ActiveProcess } from '../data/ProcessProperties';
+import { ProcessProperties } from '../data/ProcessProperties';
 import { Process } from '../data/process';
 import { Project } from '../data/project';
 
-@Injectable({
+@Injectable({ 
   providedIn: 'root'
 })
 export class DataService {
@@ -427,7 +427,7 @@ export class DataService {
       "tableName": tableName,
       "flatten": true,
       "pretty": true,
-      "linesPerPage": 2000,
+      "linesPerPage": 200000,
       "pageindex": 1,
       "columnSeparator": " ",
       "na": "-",

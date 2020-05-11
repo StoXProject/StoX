@@ -48,12 +48,10 @@ export class RunService {
 
 
     runFromHere() {
-        /*let idx: number = this.ps.getActiveProcessIdx() === null ||
-            this.ps.getActiveProcessIdx() == this.ps.processes.length - 1 ? 0 :
-            this.ps.getActiveProcessIdx() + 1;*/
-        // Run from the active to the last process
-        //this.runProcessIdx(processIdx, this.ps.processes.length - 1);
+        let idxFrom: number = this.ps.getSelectedProcessIdx() ;
+        this.runProcessIdx(idxFrom, this.ps.processes.length - 1);
     }
+    
     runThis(processIdx: number) {
         // Run from this to this process
         this.runProcessIdx(processIdx, processIdx);
@@ -81,8 +79,8 @@ export class RunService {
 
     getRunToHereIndexFrom(): number {
         return this.ps.processes.length == 0 || this.ps.getSelectedProcessIdx() == null ? null :
-            this.ps.getActiveProcessIdx() == null ? 0 : Math.min(this.ps.getActiveProcessIdx() + 1,
-                this.ps.getSelectedProcessIdx());
+            this.ps.getActiveProcessIdx() == null ? 0 : Math.min(this.ps.getActiveProcessIdx() +
+                (this.ps.activeProcess.processDirty ? 0 : 1), this.ps.getSelectedProcessIdx());
     }
 
     getRunToHereIndexTo(): number {
@@ -92,7 +90,7 @@ export class RunService {
     canRunToHere(): boolean {
         return this.canRun() && this.ps.getSelectedProcessIdx() != null;
     }
-    
+
     canRunThis(): boolean {
         let idxFrom: number = this.getRunToHereIndexFrom();
         let idxTo: number = this.getRunToHereIndexTo();
@@ -147,20 +145,15 @@ export class RunService {
                 // getting empty object {} when interrupted by error
                 this.ps.runFailedProcessId = p.processID;
                 break;
-            } else { // empty/missing result
-                if(this.ps.selectedProcess.processID == this.ps.activeProcessId) {
+            } else {
+                if (this.ps.activeProcess.propertyDirty && this.ps.selectedProcess.processID == this.ps.activeProcessId) {
+                    //if(this.ps.selectedProcess.processID == this.ps.activeProcessId) {
                     this.ps.updateProcessProperties(); // process properties may change on the selected process
                 }
-                //console.log("Hasbeenrun1" + res.processTable[0].hasBeenRun);
-                // get the interactive mode:
-
-                //console.log("asking for ia mode");
-                let ia: string = res.interactiveMode;//await this.dataService.getInteractiveMode(projectPath, modelName, this.ps.activeProcessId).toPromise();
-                //console.log("ia mode " + ia);
+                let ia: string = res.interactiveMode;
                 if (ia.length > 0) {
                     this.ps.iaMode = ia;
                 }
-                //console.log("interactive mode:" + ia);
             }
         }
         this.ps.runningProcessId = null;

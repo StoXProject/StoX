@@ -9,8 +9,8 @@
             </span>
             <span class="rib fa emptyicon">
                 <span *ngIf="process.value===ps.getRunFailedProcess()" class="absa runstatusfailedicon"></span>
-                <span *ngIf="process.value.hasBeenRun && !process.value.modified" class="absa runstatusokicon"></span>
-                <span *ngIf="process.value.hasBeenRun && process.value.modified"
+                <span *ngIf="process.value.hasBeenRun && !ps.isProcessDirty(process.value)" class="absa runstatusokicon"></span>
+                <span *ngIf="process.value.hasBeenRun && ps.isProcessDirty(process.value)"
                     class="absa runstatusmodifiedicon"></span>
                 <span *ngIf="process.value.functionInputError"
                     class="absa functioninputerroricon"></span>

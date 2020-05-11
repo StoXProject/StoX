@@ -3,10 +3,11 @@ import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { Subject, Subscription, Observable } from 'rxjs';
 import { Project } from '../data/project';
 import { Process } from '../data/process';
+import { ActiveProcess } from '../data/runresult';
 import { Model } from '../data/model';
 import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
-import { ProcessProperties, ActiveProcess } from '../data/ProcessProperties';
+import { ProcessProperties } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
@@ -25,7 +26,7 @@ export class ProjectService {
   private m_selectedProject: Project = null;
   //private m_isSelectedProjectSaved = true;
   outputTables: { table: string, output: ProcessOutput }[] = [];
-  public outputTableActivator : Subject<number> = new Subject<number>();
+  public outputTableActivator: Subject<number> = new Subject<number>();
 
   models: Model[];
 
@@ -35,7 +36,7 @@ export class ProjectService {
   private m_processProperties: ProcessProperties = {};
   private m_helpContent: string = "";
   //activeModelName: string = null; // the last run model
-  activeProcessId: string = null; // the last run-ok process
+  private m_activeProcess: ActiveProcess = {}; // the last run-ok process
   runFailedProcessId: string = null; // the last run-failed process
   runningProcessId: string = null; // current running process
   m_isResetting: boolean = false; // current reset flag.
@@ -396,20 +397,51 @@ export class ProjectService {
     }
     return this.processes[idx];
   }*/
+  get activeProcessId() {
+    return this.m_activeProcess != null ? this.m_activeProcess.processID : null;
+  }
+
+  set activeProcessId(processId: string) {
+    if (this.m_activeProcess != null) {
+      this.m_activeProcess.processID = processId;
+    }
+  }
+
+  get activeProcess() {
+    return this.m_activeProcess;
+  }
+
+  set activeProcess(activeProcess: ActiveProcess) {
+    this.m_activeProcess = activeProcess;
+  }
 
   handleAPI<T>(res: any): T {
     if (res != null && this.selectedProject != null) {
       if (res.saved !== undefined) {
         this.selectedProject.saved = res.saved;
-        if (res.activeProcess !== undefined) {
-          this.activeProcessId = res.activeProcess.processID;
-          if (res.processTable !== undefined) {
-            this.processes = res.processTable;
-          }
-        }
+      }
+      if (res.activeProcess !== undefined) {
+        this.activeProcess = res.activeProcess;
+      }
+      if (res.processTable !== undefined) {
+        this.processes = res.processTable;
+      }
+      if (res.propertySheet !== undefined) {
+        this.processProperties.propertySheet = res.propertySheet;
+      }
+      if (res.updateHelp !== undefined) {
+        this.updateHelp(); 
       }
     }
     return res;
   }
-
+  /**
+   * A process is dirty if the process is active and the active process is dirty.
+   * @param p 
+   */
+  isProcessDirty(p: Process) {
+    if (p != null && this.activeProcess != null) {
+      return p.processID == this.activeProcess.processID && this.activeProcess.processDirty;
+    }
+  }
 }
