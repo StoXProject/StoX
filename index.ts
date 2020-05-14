@@ -21,19 +21,23 @@ var child_process = require('child_process');
 var fs = require('fs')
 var cors = require('cors');
 
+let useOpenCPU: boolean = false;
+let rserve: any = require('rserve-client');
+let rserve_client: any = null;
+
 var properties: any = null;
 var log: any = null;
 var server: any = null;
 
 var rspawn: any;
-var opencpuProcess: any; // Opencpu process
+var backendProcess: any; // Backend process
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 
-app.on('ready', function () {
+app.on('ready', async () => {
   if (setupEvents.handleSquirrelEvent()) {
     return;
   }
@@ -41,7 +45,7 @@ app.on('ready', function () {
   logInfo("lifecycle: ready")
   setupServer();
   readPropertiesFromFile();
-  startOpenCPU();
+  await startBackendServer();
   startNodeServer();
   createWindow()
 })
@@ -67,9 +71,12 @@ app.on('quit', function () {
   // Write app properties file to disc here.
   logInfo('ev:app quit');
   writePropertiesToFile();
-  if (opencpuProcess != null) {
-    logInfo("Terminating opencpu process " + opencpuProcess.pid);
-    process.exit(opencpuProcess.pid);
+  if (backendProcess != null) {
+    logInfo("Terminating backend process " + backendProcess.pid);
+    process.exit(backendProcess.pid);
+    if (rserve_client != null) {
+      rserve_client.end();
+    }
   }
 });
 
@@ -237,11 +244,24 @@ const createMenu = function createMenu() {
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
+async function connectRserve(rserve: any): Promise<any> {
+  console.log("Creating R session");
+  return new Promise((resolve) => {
+    rserve.connect('localhost', 6311, (err: any, client: any) => {
+      console.log("Connected");
+      resolve(client);
+    });
+  })
+}
 
-function startOpenCPU(): string {
+async function startBackendServer(): Promise<string> {
+  let backendLibName: string = useOpenCPU ? 'opencpu' : 'Rserve';
+  let backendStartServerCmd = backendLibName + "::" + (useOpenCPU ?
+    "ocpu_start_server(5307,  preload = c('RstoxAPI', 'data.table', 'rgdal', 'rgeos', 'sp', 'geojsonio', 'jsonlite', 'fst', 'Rcpp', 'xml2', 'readr'), workers = 5" :
+    "run.Rserve()");
   logInfo("Running on Platform: " + process.platform)
   if (process.platform == "win32"/*windows*/ || process.platform == "darwin"/*mac*/ || process.platform == "linux") {
-    // On linux, sudo is required and opencpu must be installed separatly. check this
+    // On linux, sudo is required and backend server lib must be installed separatly. check this
     var rscriptBin = (properties.rPath == "" || properties.rPath == null ? "" : properties.rPath + "/") + "Rscript";
     let p1 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "print(TRUE)"]);
     logInfo('Check Rscript availability' + p1.stdout);
@@ -251,8 +271,8 @@ function startOpenCPU(): string {
     if (p1.stdout == null || !p1.stdout.includes("TRUE")) {
       return "Rscript is not available. Set R path in the properties."
     }
-    // Check for opencpu in installed packages
-    let p2 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "eval('opencpu' %in% rownames(installed.packages()))"]);
+    // Check for backend lib in installed packages
+    let p2 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "eval('" + backendLibName + "' %in% rownames(installed.packages()))"]);
     if (p2.error) {
       return p2.error;
     }
@@ -261,17 +281,20 @@ function startOpenCPU(): string {
     }
     if (p2.stdout.includes("FALSE") && process.platform != "linux") {
       // Open cpu is not installed
-      logInfo("installing opencpu...");
-      child_process.execSync(rscriptBin + "-e \"install.packages('opencpu', repos='http://cran.us.r-project.org')\"");
-      logInfo("opencpu installed.");
+      logInfo("installing " + backendLibName + "...");
+      child_process.execSync(rscriptBin + "-e \"install.packages('" + backendLibName + "', repos='http://cran.us.r-project.org')\"");
+      logInfo("" + backendLibName + " installed.");
     }
-    logInfo("Starting opencpu ...");
-    let ocpucmd = rscriptBin + " -e \"opencpu::ocpu_start_server(5307,  preload = c('RstoxAPI', 'data.table', 'rgdal', 'rgeos', 'sp', 'geojsonio', 'jsonlite', 'fst', 'Rcpp', 'xml2', 'readr'), workers = 5\"";
+    logInfo("Starting " + backendLibName + " ...");
+
     // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
-    let opencpuProcess: any = child_process.spawn(rscriptBin, ['-e', "opencpu::ocpu_start_server(5307, preload = c('RstoxAPI', 'data.table', 'rgdal', 'rgeos', 'sp', 'geojsonio', 'jsonlite', 'fst', 'Rcpp', 'xml2', 'readr'), workers = 5)"]);
-    opencpuProcess.on('error', (er: any) => { logInfo(er) });
-    logInfo("Process " + opencpuProcess.pid + " started with " + ocpucmd)
-    logInfo("opencpu started.");
+    backendProcess = child_process.spawn(rscriptBin, ['-e', backendStartServerCmd]);
+    backendProcess.on('error', (er: any) => { logInfo(er) });
+    logInfo("Process " + backendProcess.pid + " started with " + " -e \"" + backendStartServerCmd + "\"")
+    logInfo(backendLibName + " started.");
+    if (!useOpenCPU) {
+      rserve_client = await connectRserve(rserve);
+    }
   }
   return "ok";
 }
@@ -342,10 +365,10 @@ function setupServer() {
     res.send("project root path updated");
   });
   // modify rpath in backend
-  server.post('/rpath', function (req: any, res: any) {
+  server.post('/rpath', async (req: any, res: any) => {
     properties.rPath = req.body.rpath;
     //logInfo('rpath ' + properties.rPath);
-    let resultstr: string = startOpenCPU();
+    let resultstr: string = await startBackendServer();
     res.send('post /rpath result:' + resultstr);
   });
   // observe project root path
@@ -362,6 +385,59 @@ function setupServer() {
   server.get('/rpath', function (req: any, res: any) {
     //logInfo('get rpath ' + properties.rPath);
     res.send(properties.rPath);
+  });
+  var callr_evaluate: boolean[] = [];
+
+  function callR(client: any, expr: any) {
+    const startTime = process.hrtime();
+    return new Promise(async (resolve) => {
+      while (callr_evaluate.length > 0) {
+        // pause when client is busy. 
+        await new Promise(r => setTimeout(() => { r(); }, 50/*ms*/));
+      }
+      callr_evaluate.push(true); // make my self ready. lock the other calls out if they appear at same time.
+      while (callr_evaluate.length > 1) {
+        // pause if 2 calls are released asynchronously from the first pause. (it could maybe happen) only one at the time.
+        await new Promise(r => setTimeout(() => { r(); }, 50/*ms*/));
+      }
+      client.evaluate(expr, (err: any, ans: any) => {
+        callr_evaluate.splice(callr_evaluate.length - 1, 1);
+        let resparsed = JSON.parse(ans);
+        let diff = process.hrtime(startTime);
+        resolve({ time: diff[0] + diff[1] / 1000000000, result: resparsed });
+      });
+    });
+  }
+
+  function callFunction(client: any, what: any, args: any, pkg: any = "RstoxFramework") {
+    let expr: string = "RstoxAPI::runFunction(what='" + what + "', package='" + pkg + "', args='" + args + "')";
+    console.log(expr);
+    // Apply json conversion
+    let jsonexpr: string = 'jsonlite::toJSON(' + expr + ', pretty=T, auto_unbox=T, na="string")';
+    return callR(client, jsonexpr);
+  }
+
+  async function logAPI(p: any, withResult: any = true, withTime: any = false) {
+    //console.log("call p")
+    //console.log("after p")
+    let res: { time: number, result: string } = await p;
+    if (withResult) {
+      console.log(JSON.stringify(res.result, null, 2));
+    }
+    const time2 = process.hrtime();
+    //let dt = diff[0] + (diff[1] / 1000000000.0);
+    if (withTime) {
+      console.log(" took " + res.time + " sec");
+    }
+    return res.result;
+  }
+
+  // observe rpath in backend
+  server.post('/callR', async (req: any, res: any) => {
+    //logInfo('get rpath ' + properties.rPath);
+    let s: any = await callFunction(rserve_client,
+      req.body.what, req.body.args, req.body.pkg);
+    res.send(s.result);
   });
 
   function resolveDefaultPath(defPath: string): string {

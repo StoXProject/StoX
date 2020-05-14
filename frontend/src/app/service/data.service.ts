@@ -96,8 +96,7 @@ export class DataService {
   }
 
   getRstoxAPIVersion(): Observable<string> {
-
-    return this.runFunctionThrowAPI('getRstoxAPIVersion', {}, true);
+    return this.runFunctionThrowAPI('getRstoxAPIVersion', {}, false);
   }
 
   saveProject(projectPath: string): Observable<Project> {
@@ -287,17 +286,15 @@ export class DataService {
   runFunctionThrow(what: string, argsobj: any, dothrow: boolean, pkg: string): Observable<any> {
     // runFunction wraps a doCall with what/args and exception handling that returns a list.
     let args: any = JSON.stringify(argsobj);
-    const body = new FormData();
+    /*const body = new FormData();
     body.set('what', "'" + what + "'");
     body.set('args', args);
     body.set('package', "'" + pkg + "'");
-    //let body: string = "what='" + what + "'" + "&" + "args='" + args + "'" + "&" + "package='" + pkg + "'";
-    //let body : string = `what='${what}'&args=${args}&package='${pkg}'`;   
-    //console.log(what + "(" + args + ")"); 
-    // Run RstoxAPI::runFunction with package parameter that is default RstoxFramework
-    return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', body, 'text', true, "json")
+    */
+    return <any>this.callR(what, args, pkg)
+    //return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', body, 'text', true, "json")
       .pipe(map(res => {
-        let r2: RunResult = JSON.parse(res.body);
+        let r2: RunResult = JSON.parse(res.body !== undefined ? res.body : res);
         if (dothrow) {
           if (r2.error.length > 0) {
             throw (r2.error[0]);
@@ -473,6 +470,10 @@ export class DataService {
 
   setRPath(rpath: string): Observable<any> {
     return this.postLocalNode('rpath', { rpath: rpath });
+  }
+
+  callR(what: string, args : string, pkg : string): Observable<any> {
+    return this.postLocalNode('callR', { what : what, args : args, pkg : pkg });
   }
 
   browse(defaultpath: string): Observable<any> {
