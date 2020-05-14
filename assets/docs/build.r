@@ -13,6 +13,8 @@ devtools::install_github("https://github.com/StoXProject/RstoxAPI", ref="master"
 # The following installs the versions of the Rstox packages used by StoX:
 # Restart R
 # Remove the Rstox packages:
+RstoxFramework::removeAcousticPSU
+
 RstoxPackages <- c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxAPI")
 remove.packages(RstoxPackages)
 # Install the Rstox packages:

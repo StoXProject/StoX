@@ -123,6 +123,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module';
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
+import { EdsutableComponent } from './processdata/edsutable/edsutable.component';
 
 @NgModule({
   exports: [
@@ -174,7 +175,7 @@ import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 //    MatTooltipModule,
 //    MatTreeModule,
   ],
-  declarations: []
+  declarations: [EdsutableComponent]
 })
 export class MaterialModule { }
 

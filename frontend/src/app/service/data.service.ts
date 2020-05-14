@@ -14,7 +14,7 @@ import { ProcessProperties } from '../data/ProcessProperties';
 import { Process } from '../data/process';
 import { Project } from '../data/project';
 
-@Injectable({ 
+@Injectable({
   providedIn: 'root'
 })
 export class DataService {
@@ -200,7 +200,7 @@ export class DataService {
     });
   }
 
-  
+
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
   static readonly OCPU_PORT: number = 5307;
@@ -287,7 +287,7 @@ export class DataService {
   runFunctionThrow(what: string, argsobj: any, dothrow: boolean, pkg: string): Observable<any> {
     // runFunction wraps a doCall with what/args and exception handling that returns a list.
     let args: any = JSON.stringify(argsobj);
-    const body = new FormData(); 
+    const body = new FormData();
     body.set('what', "'" + what + "'");
     body.set('args', args);
     body.set('package', "'" + pkg + "'");
@@ -460,6 +460,13 @@ export class DataService {
   removeStratum(stratumName: string, projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
     return this.runFunction('removeStratum', {
       "stratumName": stratumName,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
+  removeAcousticPSU(PSU: string[], projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
+    return this.runFunction('removeAcousticPSU', {
+      "PSU": PSU,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }

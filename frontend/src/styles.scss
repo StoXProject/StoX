@@ -395,7 +395,7 @@ $nodata: #acacac;
   @include icon_content("\f0c8", 1rem, rgb(33, 122, 196, 0));
 }
 .runstatusokicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(107, 195, 195), true);
+  @include icon_content("\f0c8", 0.4rem, rgb(63, 72, 204), true);
   top: 72%;
 }
 .runstatusfailedicon:after {
@@ -403,7 +403,7 @@ $nodata: #acacac;
   top: 72%;
 }
 .runstatusmodifiedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(180, 177, 175), true);
+  @include icon_content("\f0c8", 0.4rem,  rgb(208, 208, 211), true);
   top: 72%;
 }
 .functioninputerroricon:after {

@@ -40,7 +40,7 @@ export class StratumpsuComponent implements OnInit {
                 return StratumpsuComponent.asNode(s, "stratum", []);
               });
           } else {
-            this.nodes = null; 
+            this.nodes = null;
           }
           break;
         }
@@ -82,26 +82,40 @@ export class StratumpsuComponent implements OnInit {
   async prepCm(node: TreeNode) {
     // comment: add list of outputtablenames to runModel result. 
     let m: MenuItem[] = [];
-    if (node.data.type == "stratum") {
-      m.push(
-        {
-          label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
-            // psu a new psu node
-            let res: PSUResult = this.ps.handleAPI(await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
-            if (res.PSU != null && res.PSU.length > 0) {
-              node.children.push(StratumpsuComponent.asNode(res.PSU, "psu", []))
+    switch (node.data.type) {
+      case "stratum": {
+        m.push(
+          {
+            label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
+              // psu a new psu node
+              let res: PSUResult = this.ps.handleAPI(await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+              if (res.PSU != null && res.PSU.length > 0) {
+                node.children.push(StratumpsuComponent.asNode(res.PSU, "psu", []))
+              }
             }
+          }, {
+          label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
+            // psu a new psu node
+            let res: ActiveProcessResult = this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeStratum(node.data.id,
+              this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+            this.ps.iaMode = "stratum"; // trigger the gui
+            //this.nodes.splice(this.nodes.indexOf(node), 1);
           }
-        }, {
-        label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
-          // psu a new psu node
-          let res: ActiveProcessResult = this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeStratum(node.data.id, 
-            this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
-          this.ps.iaMode = "stratum"; // trigger the gui
-          //this.nodes.splice(this.nodes.indexOf(node), 1);
-        }
+        });
+        break;
       }
-      );
+      case "psu": {
+        m.push(
+          {
+            label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
+              // psu a new psu node
+              this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeAcousticPSU(
+                [node.data.id], this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+              this.ps.iaMode = "acousticPSU"; // trigger the gui
+            }
+          });
+        break;
+      }
     }
     this.contextMenu = m;
   }

@@ -23,7 +23,7 @@ import { MatTabGroup } from '@angular/material/tabs';
 })
 
 export class HomeComponent /*implements OnInit, OnDestroy*/ {
- @ViewChild("bottomTabGroup") bottomTabGroup : MatTabGroup; 
+  @ViewChild("bottomTabGroup") bottomTabGroup: MatTabGroup;
   title = 'StoX';
   stoxVersion: string;
   rstoxAPIVersion: string;
@@ -34,8 +34,8 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     private saveProjectAs: SaveAsProjectDlgService, private resetProject: ResetProjectDlgService,
     private closeProject: CloseProjectDlgService,
     private ds: DataService
-    ) {
-      ps.outputTableActivator.subscribe({next: (idx)=>{this.bottomTabGroup.selectedIndex = 1;}})
+  ) {
+    ps.outputTableActivator.subscribe({ next: (idx) => { this.bottomTabGroup.selectedIndex = 1; } })
     // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
@@ -49,6 +49,10 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     //event.returnValue = true;
     // TODO: get a dialog when unloading page
     await this.ds.closeProject(this.ps.selectedProject.projectPath, true).toPromise();
+  }
+
+  getPropertiesHdr() {
+    return "Properties" + (this.ps.selectedProcess != null ? (" - " + this.ps.selectedProcess.processName) : '');
   }
 
   async ngOnInit() {
@@ -74,9 +78,9 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
         this.closeProject.checkSaved();
       }
     },
-     {
-       label: 'Availabletemplates', command: e => this.ds.getAvailableTemplates().toPromise()
-     },
+    {
+      label: 'Availabletemplates', command: e => this.ds.getAvailableTemplates().toPromise()
+    },
     // {
     //   label: 'Test query builder...', command: e => this.testDlgService.showDialog()
     // },    

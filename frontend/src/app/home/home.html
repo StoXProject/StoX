@@ -90,10 +90,17 @@
 		</as-split-area>
 		<as-split-area size="20">
 			<as-split direction="vertical" gutterSize=6>
-				<as-split-area size="50">
+				<as-split-area size="70">
 					<ExpressionBuilderDlg></ExpressionBuilderDlg>
 					<QueryBuilderDlg></QueryBuilderDlg>
-					<app-parameter></app-parameter>
+					<mat-tab-group #rightTabGroup> 
+						<mat-tab label="{{getPropertiesHdr()}}">
+							<app-parameter></app-parameter>
+						</mat-tab>
+						<mat-tab label="Distance table">
+							<app-edsutable></app-edsutable>
+						</mat-tab>
+					</mat-tab-group>
 				</as-split-area>
 				<as-split-area size="50">
 					<!-- <p>Parameter description</p> -->

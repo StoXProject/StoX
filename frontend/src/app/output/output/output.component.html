@@ -6,7 +6,8 @@
         <!--<div style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
         white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">
             {{getItemOutput(item)}}</div>-->
-        <cdk-virtual-scroll-viewport itemSize="10" style="width: 100%; height: 100%"
+        <cdk-virtual-scroll-viewport itemSize="10" style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
+        white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;"
         (window:resize)="onResize($event)">
             <div *cdkVirtualFor="let item of item.output.data">{{item}}</div>
         </cdk-virtual-scroll-viewport>
