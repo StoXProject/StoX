@@ -10,7 +10,9 @@ import { DataService } from './../../service/data.service'
 })
 export class EdsutableComponent implements OnInit {
 
-  constructor(private pds: ProcessDataService, private ps: ProjectService, private ds: DataService) { }
+  constructor(public pds: ProcessDataService, private ps: ProjectService, private ds: DataService) { 
+    //pds.acousticPSU.EDSU_PSU
+  }
 
   ngOnInit(): void {
   }

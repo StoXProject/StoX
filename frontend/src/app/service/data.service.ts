@@ -291,6 +291,7 @@ export class DataService {
     body.set('args', args);
     body.set('package', "'" + pkg + "'");
     */
+   console.log("RstoxAPI::runFunction(package='" + pkg + "', what='" + what + "', args='" + args + "')")
     return <any>this.callR(what, args, pkg)
     //return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', body, 'text', true, "json")
       .pipe(map(res => {

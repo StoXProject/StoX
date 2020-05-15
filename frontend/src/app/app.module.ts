@@ -174,8 +174,7 @@ import { EdsutableComponent } from './processdata/edsutable/edsutable.component'
     MatStepperModule,*/
 //    MatTooltipModule,
 //    MatTreeModule,
-  ],
-  declarations: [EdsutableComponent]
+  ]
 })
 export class MaterialModule { }
 
@@ -246,6 +245,7 @@ export class MaterialModule { }
     ProjectComponent,
     MapComponent,
     StratumpsuComponent,
+    EdsutableComponent,
     ProcessComponent,
     ParameterComponent,
     ModelComponent,
