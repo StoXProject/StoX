@@ -71,12 +71,12 @@ app.on('quit', function () {
   // Write app properties file to disc here.
   logInfo('ev:app quit');
   writePropertiesToFile();
-  if (backendProcess != null) {
+  if (backendProcess != null && process.platform != "darwin") {
     logInfo("Terminating backend process " + backendProcess.pid);
     process.exit(backendProcess.pid);
-    if (rserve_client != null) {
-      rserve_client.end();
-    }
+  }
+  if (rserve_client != null) {
+    rserve_client.end();
   }
 });
 
@@ -256,9 +256,9 @@ async function connectRserve(rserve: any): Promise<any> {
 
 async function startBackendServer(): Promise<string> {
   let backendLibName: string = useOpenCPU ? 'opencpu' : 'Rserve';
-  let backendStartServerCmd = backendLibName + "::" + (useOpenCPU ?
-    "ocpu_start_server(5307,  preload = c('RstoxAPI', 'data.table', 'rgdal', 'rgeos', 'sp', 'geojsonio', 'jsonlite', 'fst', 'Rcpp', 'xml2', 'readr'), workers = 5" :
-    "run.Rserve()");
+  let rservecmd: string = process.platform == "darwin" ? "Rserve(args=\"--no-save\")" : "run.Rserve()";
+  let ocpucmd: string = "ocpu_start_server(5307,  preload = c('RstoxAPI', 'data.table', 'rgdal', 'rgeos', 'sp', 'geojsonio', 'jsonlite', 'fst', 'Rcpp', 'xml2', 'readr'), workers = 5";
+  let backendStartServerCmd = backendLibName + "::" + (useOpenCPU ? ocpucmd : rservecmd);
   logInfo("Running on Platform: " + process.platform)
   if (process.platform == "win32"/*windows*/ || process.platform == "darwin"/*mac*/ || process.platform == "linux") {
     // On linux, sudo is required and backend server lib must be installed separatly. check this
@@ -285,18 +285,38 @@ async function startBackendServer(): Promise<string> {
       child_process.execSync(rscriptBin + " -e \"install.packages('" + backendLibName + "', repos='http://cran.us.r-project.org')\"");
       logInfo("" + backendLibName + " installed.");
     }
-    logInfo("Starting " + backendLibName + " ...");
 
+    let doStartBackend = useOpenCPU || !await isRunning("Rserve.exe", "Rserve", "Rserve");
     // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
-    backendProcess = child_process.spawn(rscriptBin, ['-e', backendStartServerCmd]);
-    backendProcess.on('error', (er: any) => { logInfo(er) });
-    logInfo("Process " + backendProcess.pid + " started with " + " -e \"" + backendStartServerCmd + "\"")
-    logInfo(backendLibName + " started.");
+    if (doStartBackend) {
+      logInfo("Starting " + backendLibName + " ...");
+      backendProcess = child_process.spawn(rscriptBin, ['-e', backendStartServerCmd]);
+      backendProcess.on('error', (er: any) => { logInfo(er) });
+      logInfo("Process " + backendProcess.pid + " started with " + " -e \"" + backendStartServerCmd + "\"")
+      logInfo(backendLibName + " started.");
+    } else {
+      logInfo(backendLibName + " is allready running.");
+    }
     if (!useOpenCPU) {
       rserve_client = await connectRserve(rserve);
     }
   }
   return "ok";
+}
+
+
+function isRunning(win: string, mac: string, linux: string) {
+  return new Promise(function (resolve, reject) {
+    const plat = process.platform
+    const cmd = plat == 'win32' ? 'tasklist' : (plat == 'darwin' ? 'ps -ax | grep ' + mac : (plat == 'linux' ? 'ps -A' : ''))
+    const proc = plat == 'win32' ? win : (plat == 'darwin' ? mac : (plat == 'linux' ? linux : ''))
+    if (cmd === '' || proc === '') {
+      resolve(false)
+    }
+    child_process.exec(cmd, function (err: any, stdout: any, stderr: any) {
+      resolve(stdout.toLowerCase().indexOf(proc.toLowerCase()) > -1)
+    })
+  })
 }
 
 const readPropertiesFromFile = function readPropertiesFromFile() {
