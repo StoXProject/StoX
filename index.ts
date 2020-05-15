@@ -282,7 +282,7 @@ async function startBackendServer(): Promise<string> {
     if (p2.stdout.includes("FALSE") && process.platform != "linux") {
       // Open cpu is not installed
       logInfo("installing " + backendLibName + "...");
-      child_process.execSync(rscriptBin + "-e \"install.packages('" + backendLibName + "', repos='http://cran.us.r-project.org')\"");
+      child_process.execSync(rscriptBin + " -e \"install.packages('" + backendLibName + "', repos='http://cran.us.r-project.org')\"");
       logInfo("" + backendLibName + " installed.");
     }
     logInfo("Starting " + backendLibName + " ...");
@@ -402,9 +402,9 @@ function setupServer() {
       }
       client.evaluate(expr, (err: any, ans: any) => {
         callr_evaluate.splice(callr_evaluate.length - 1, 1);
-        let resparsed = JSON.parse(ans);
+        //let resparsed = JSON.parse(ans);
         let diff = process.hrtime(startTime);
-        resolve({ time: diff[0] + diff[1] / 1000000000, result: resparsed });
+        resolve({ time: diff[0] + diff[1] / 1000000000, result: ans });
       });
     });
   }
