@@ -534,43 +534,44 @@ function body(what: string, args: string, pkg: string) {
 async function evaluate(client: any, s: string) {
   let lens = "" + s.length;
   await client.write("" + s.length);
-  await new Promise(r => {
+  await new Promise(resolve => {
     client.handle = (data: any) => {
-      console.log('Received1: ' + data);
       if (data == lens) {
         // The length is send forth and back, we an proceed
-        r();
+        resolve();
       }
     };
   });
   await client.write(s); // may lead to throttling on the server side, but the server uses length info to get the string
   let nResp = 0;
-  await new Promise(r => {
+  await new Promise(resolve => {
     client.handle = (data: any) => {
-      console.log('Received resp len: ' + data);
       nResp = Number(data);
       if (nResp != null) {
         // recevied response length 
-        r();
+        resolve();
       }
     };
   });
   await client.write("" + nResp); // handshake response length
-  let s2 = "";
+  // Total buffered preallocated before throttling, to avoid dynamic allocation time loss
+  let buf = Buffer.alloc(nResp);
+  let bufLen = 0;
   let nChunks = 0;
-  await new Promise(r => {
+  await new Promise(resolve => {
+    // calling handler from socket data event, registered once upon connection
     client.handle = (data: any) => {
-      //console.log('Received2: ' + data);
-      s2 = s2 + data;
+      // Writing chunks (throttling) into total buffer
+      buf.write(data.toString(), bufLen);
+      bufLen = bufLen + data.length;
       nChunks++;
-      if (s2.length == nResp) { // test on length
+      if (bufLen == nResp) { // test on length
         // The response is received - finish
-        r();
+        resolve();
       }
     };
   });
-  console.log('Received2-total: in ' + nChunks);
-  return s2;
+  return buf.toString();
 }
 
 
