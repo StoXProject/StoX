@@ -26,9 +26,9 @@ const net = require("net")
 //const { PromiseSocket } = require("promise-socket")
 const client = new net.Socket();
 
-client.on('data', function (data : any) {
+client.on('data', function (data: any) {
   if (client.handle != null) {
-      client.handle(data);
+    client.handle(data);
   }
 });
 
@@ -60,6 +60,78 @@ app.on('ready', async () => {
   startNodeServer();
   createWindow()
 })
+
+
+const server_str: string =
+  "# read all chunks and throttle with client handshake\n" +
+  "read.socket.all <- function(s) {\n" +
+  "    maxlen <- 256L\n" +
+  "    len <- read.socket(s, maxlen)\n" +
+  "    #print(paste('length received ', len))\n" +
+  "    write.socket(s, len); # tell client to continue\n" +
+  "    nChunks <- ((as.numeric(len) - 1) %/% maxlen) + 1\n" +
+  "    buf = ''\n" +
+  "    # read nChunks chunks and concatenate\n" +
+  "    for(c in 1:nChunks) {\n" +
+  "        buf <- paste0(buf, read.socket(s, maxlen))\n" +
+  "        #print(paste('throttle step' , buf))\n" +
+  "    }\n" +
+  "    buf\n" +
+  "}\n" +
+  "\n" +
+  "# write all chunks and client handshake (client will throttle)\n" +
+  "write.socket.all <- function(s, r){\n" +
+  "    respl <- as.character(nchar(r))\n" +
+  "    #print(paste('sending response length', respl))\n" +
+  "    write.socket(s, respl)\n" +
+  "    resplr <- read.socket(s) # wait for client berfore sending response\n" +
+  "    #print(paste('received response length handshake', resplr))\n" +
+  "    write.socket(s, paste0(r));\n" +
+  "    \n" +
+  "}\n" +
+  "\n" +
+  "handle <- function(cmd){\n" +
+  "      # Service command/response handler\n" +
+  "tryCatch({\n" +
+  "    cmdj <- jsonlite::fromJSON(cmd)\n" +
+  "   res <- RstoxAPI::runFunction(cmdj$what, cmdj$args, cmdj$package)\n" +
+  "    r <- jsonlite::toJSON(res, pretty=T, auto_unbox=T, na='string')\n" +
+  "    r    \n" +
+  "}, warning = function(warning_condition) {\n" +
+  "    'warning'\n" +
+  "}, error = function(error_condition) {\n" +
+  "    'error'\n" +
+  "})\n" +
+  "    \n" +
+  "}\n" +
+  "\n" +
+  "# runFunction service - loop and wait on socket\n" +
+  "s <- make.socket(host='localhost',port=6312,server=TRUE)\n" +
+  "while(TRUE) {\n" +
+  "\n" +
+  "cmd <- read.socket.all(s)\n" +
+  "#print(paste0('received cmd ', cmd))\n" +
+  "if (nchar(cmd)==0) {\n" +
+  " # client control command. called when client connection ends\n" +
+  "break\n" +
+  "}\n" +
+  "# Service command/response handler\n" +
+  "r <- handle(cmd)\n" +
+  "write.socket.all(s, r)\n" +
+  "}\n" +
+  "\n" +
+  "app.on('ready', async () => {\n" +
+  "if (setupEvents.handleSquirrelEvent()) {\n" +
+  "return;\n" +
+  "}\n" +
+  "setupLogger();\n" +
+  "logInfo('lifecycle: ready')\n" +
+  "setupServer();\n" +
+  "readPropertiesFromFile();\n" +
+  "await startBackendServer();\n" +
+  "startNodeServer();\n" +
+  "createWindow()\n" +
+  "})";
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -283,16 +355,16 @@ async function startBackendServer(): Promise<string> {
       return "Rscript is not available. Set R path in the properties."
     }
     console.log("Starting R socket server ...");
-    let serverScript = await new Promise((rs) => {
+    /*let serverScript = await new Promise((rs) => {
       fs.readFile('assets/server.R', 'utf8',
         (err: any, data: any) => {
           if (err) throw err;
           rs(data);
         });
-    });
+    });*/
     let fileName = require('temp-dir') + "/stox.server.R";
     console.log("Writing file " + fileName);
-    await fs.writeFile(fileName, serverScript, () => { });
+    await fs.writeFile(fileName, server_str, () => { });
     let serverCmd = rscriptBin + " " + fileName;
     // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
     backendProcess = child_process.spawn(rscriptBin, [fileName]);
@@ -459,43 +531,43 @@ function body(what: string, args: string, pkg: string) {
   });
 }
 
-async function evaluate(client : any, s : string) {
+async function evaluate(client: any, s: string) {
   let lens = "" + s.length;
   await client.write("" + s.length);
   await new Promise(r => {
-      client.handle = (data : any) => {
-          console.log('Received1: ' + data);
-          if (data == lens) {
-              // The length is send forth and back, we an proceed
-              r();
-          }
-      };
+    client.handle = (data: any) => {
+      console.log('Received1: ' + data);
+      if (data == lens) {
+        // The length is send forth and back, we an proceed
+        r();
+      }
+    };
   });
   await client.write(s); // may lead to throttling on the server side, but the server uses length info to get the string
   let nResp = 0;
   await new Promise(r => {
-      client.handle = (data : any) => {
-          console.log('Received resp len: ' + data);
-          nResp = Number(data);
-          if (nResp != null) {
-              // recevied response length 
-              r();
-          }
-      };
+    client.handle = (data: any) => {
+      console.log('Received resp len: ' + data);
+      nResp = Number(data);
+      if (nResp != null) {
+        // recevied response length 
+        r();
+      }
+    };
   });
   await client.write("" + nResp); // handshake response length
   let s2 = "";
   let nChunks = 0;
   await new Promise(r => {
-      client.handle = (data : any) => {
-          //console.log('Received2: ' + data);
-          s2 = s2 + data;
-          nChunks++;
-          if (s2.length == nResp) { // test on length
-              // The response is received - finish
-              r();
-          }
-      };
+    client.handle = (data: any) => {
+      //console.log('Received2: ' + data);
+      s2 = s2 + data;
+      nChunks++;
+      if (s2.length == nResp) { // test on length
+        // The response is received - finish
+        r();
+      }
+    };
   });
   console.log('Received2-total: in ' + nChunks);
   return s2;

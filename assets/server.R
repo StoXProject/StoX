@@ -6,7 +6,7 @@ read.socket.all <- function(s) {
     #print(paste('length received ', len))
     write.socket(s, len); # tell client to continue
     nChunks <- ((as.numeric(len) - 1) %/% maxlen) + 1
-    buf = ""
+    buf = ''
     # read nChunks chunks and concatenate
     for(c in 1:nChunks) {
         buf <- paste0(buf, read.socket(s, maxlen))
@@ -34,9 +34,9 @@ tryCatch({
     r <- jsonlite::toJSON(res, pretty=T, auto_unbox=T, na='string')
     r    
 }, warning = function(warning_condition) {
-    "warning"
+    'warning'
 }, error = function(error_condition) {
-    "error"
+    'error'
 })
     
 }
