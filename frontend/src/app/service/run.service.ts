@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, RendererFactory2, Renderer2 } from '@angular/core';
 //import { Observable, of } from 'rxjs';
 import { Project } from '../data/project';
 import { Process } from '../data/process';
@@ -19,7 +19,7 @@ import { RunProcessesResult, ProcessTableResult } from './../data/runresult';
 export class RunService {
 
 
-    constructor(private ps: ProjectService, private dataService: DataService) {
+    constructor(private ps: ProjectService, private dataService: DataService, private rf: RendererFactory2) {
         //this.iaMode = this.iaSubject.asObservable();
         this.ps.iaModeSubject.subscribe({
             next: (newVal) => {
@@ -28,6 +28,8 @@ export class RunService {
         });
         //this.iaSubject.next('stratum');
         //this.reset();
+        let r: Renderer2 = rf.createRenderer(null, null)
+        r.listen(document, 'document:keydown', (evt) => { console.log(evt); this.runToHere(); })
     }
     canAddProcess(): boolean {
         return this.ps.selectedProject != null && this.ps.selectedModel != null &&
@@ -48,10 +50,10 @@ export class RunService {
 
 
     runFromHere() {
-        let idxFrom: number = this.ps.getSelectedProcessIdx() ;
+        let idxFrom: number = this.ps.getSelectedProcessIdx();
         this.runProcessIdx(idxFrom, this.ps.processes.length - 1);
     }
-    
+
     runThis(processIdx: number) {
         // Run from this to this process
         this.runProcessIdx(processIdx, processIdx);

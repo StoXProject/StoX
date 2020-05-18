@@ -501,7 +501,7 @@ export class DataService {
     return this.getLocalNode('projectrootpath');
   }
 
-  public readActiveProject(): Observable<any> {
+  public readActiveProject(): Observable<any> { 
     return this.getLocalNode('readactiveproject');
   }
 

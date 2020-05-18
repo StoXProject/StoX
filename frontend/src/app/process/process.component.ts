@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, Renderer2, HostListener, DoCheck, AfterViewInit } from '@angular/core';
 import { Process } from '../data/process';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
@@ -23,13 +23,30 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   //processes: Process[];
   //selectedProcesses: Process[];
   contextMenu: MenuItem[];
+  //@HostListener('document:keydown.control.y')
+  keydown(event: KeyboardEvent) {
+    if (this.ps.processes != null && this.ps.processes.length > 0) {
+      switch (event.key) {
+        case "ArrowDown":
+        case "ArrowUp": {
+          let idx: number = event.key == "ArrowDown" ?
+            Math.min(this.ps.processes.length - 1, this.ps.getSelectedProcessIdx() + 1)
+            : Math.max(0, this.ps.getSelectedProcessIdx() - 1);
+          this.ps.selectedProcess = this.ps.processes[idx];
+          break;
+        }
+      }
+    }
+  }
 
-  constructor(private ds: DataService, public ps: ProjectService, private rs: RunService) {
+  constructor(private ds: DataService, public ps: ProjectService, private rs: RunService,
+    private renderer: Renderer2) {
   }
 
   async ngOnInit() {
     //this.ngDoCheck();
     this.contextMenu = [{ label: "Run from here   " }];
+    //  this.renderer.listen(document, 'keydown.control.y', (event)=>{this.doSomething()})
   }
 
   @ViewChild('input', { static: false }) input: ElementRef;

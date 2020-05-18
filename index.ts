@@ -20,10 +20,21 @@ var bodyParser = require('body-parser');
 var child_process = require('child_process');
 var fs = require('fs')
 var cors = require('cors');
+var callr_evaluate: boolean[] = [];
+
+const net = require("net")
+//const { PromiseSocket } = require("promise-socket")
+const client = new net.Socket();
+
+client.on('data', function (data : any) {
+  if (client.handle != null) {
+      client.handle(data);
+  }
+});
 
 let useOpenCPU: boolean = false;
 let rserve: any = require('rserve-client');
-let rserve_client: any = null;
+//let rserve_client: any = null;
 
 var properties: any = null;
 var log: any = null;
@@ -75,8 +86,8 @@ app.on('quit', function () {
     logInfo("Terminating backend process " + backendProcess.pid);
     process.exit(backendProcess.pid);
   }
-  if (rserve_client != null) {
-    rserve_client.end();
+  if (client != null) {
+    client.destroy();
   }
 });
 
@@ -244,7 +255,7 @@ const createMenu = function createMenu() {
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
-async function connectRserve(rserve: any): Promise<any> {
+/*async function connectRserve(rserve: any): Promise<any> {
   console.log("Creating R session");
   return new Promise((resolve) => {
     rserve.connect('localhost', 6311, (err: any, client: any) => {
@@ -252,13 +263,13 @@ async function connectRserve(rserve: any): Promise<any> {
       resolve(client);
     });
   })
-}
+}*/
 
 async function startBackendServer(): Promise<string> {
-  let backendLibName: string = useOpenCPU ? 'opencpu' : 'Rserve';
+  /*let backendLibName: string = useOpenCPU ? 'opencpu' : 'Rserve';
   let rservecmd: string = process.platform == "darwin" ? "Rserve(args=\"--no-save\")" : "run.Rserve()";
   let ocpucmd: string = "ocpu_start_server(5307,  preload = c('RstoxAPI', 'data.table', 'rgdal', 'rgeos', 'sp', 'geojsonio', 'jsonlite', 'fst', 'Rcpp', 'xml2', 'readr'), workers = 5";
-  let backendStartServerCmd = backendLibName + "::" + (useOpenCPU ? ocpucmd : rservecmd);
+  let backendStartServerCmd = backendLibName + "::" + (useOpenCPU ? ocpucmd : rservecmd);*/
   logInfo("Running on Platform: " + process.platform)
   if (process.platform == "win32"/*windows*/ || process.platform == "darwin"/*mac*/ || process.platform == "linux") {
     // On linux, sudo is required and backend server lib must be installed separatly. check this
@@ -271,7 +282,25 @@ async function startBackendServer(): Promise<string> {
     if (p1.stdout == null || !p1.stdout.includes("TRUE")) {
       return "Rscript is not available. Set R path in the properties."
     }
-    // Check for backend lib in installed packages
+    console.log("Starting R socket server ...");
+    let serverScript = await new Promise((rs) => {
+      fs.readFile('assets/server.R', 'utf8',
+        (err: any, data: any) => {
+          if (err) throw err;
+          rs(data);
+        });
+    });
+    let fileName = require('temp-dir') + "/stox.server.R";
+    console.log("Writing file " + fileName);
+    await fs.writeFile(fileName, serverScript, () => { });
+    let serverCmd = rscriptBin + " " + fileName;
+    // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
+    backendProcess = child_process.spawn(rscriptBin, [fileName]);
+    backendProcess.on('error', (er: any) => { console.log(er) });
+    console.log("Process " + backendProcess.pid + " started with " + serverCmd)
+    console.log("R Server started.");
+    console.log(backendProcess.pid);
+    /*// Check for backend lib in installed packages
     let p2 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "eval('" + backendLibName + "' %in% rownames(installed.packages()))"]);
     if (p2.error) {
       return p2.error;
@@ -296,16 +325,34 @@ async function startBackendServer(): Promise<string> {
       logInfo(backendLibName + " started.");
     } else {
       logInfo(backendLibName + " is allready running.");
-    }
+    }*/
     if (!useOpenCPU) {
-      rserve_client = await connectRserve(rserve);
+      //rserve_client = await connectRserve(rserve);
+      console.log("Before connection has been synchronously set");
+      await new Promise((r) => {
+        client.connect(6312, 'localhost', () => {
+          console.log('Node connected to 6312 as client. Ready to write R calls');
+          r();
+        });
+      });
+      client.buffers = <string[]>[];
+      client.on('data', (data: any) => {
+        client.buffers.push(<string>data);
+      });
+
+      console.log("After connection has been synchronously set");
+      client.on('close', function () {
+        console.log('Node client connection 6312 closed');
+      });
+      client.setEncoding("utf8"); // to get chunks read as strings
+      //console.log(await callFunction("getAvailableTemplatesDescriptions", "{}", "RstoxFramework"));
     }
   }
   return "ok";
 }
 
 
-function isRunning(win: string, mac: string, linux: string) {
+/*function isRunning(win: string, mac: string, linux: string) {
   return new Promise(function (resolve, reject) {
     const plat = process.platform
     const cmd = plat == 'win32' ? 'tasklist' : (plat == 'darwin' ? 'ps -ax | grep ' + mac : (plat == 'linux' ? 'ps -A' : ''))
@@ -317,7 +364,7 @@ function isRunning(win: string, mac: string, linux: string) {
       resolve(stdout.toLowerCase().indexOf(proc.toLowerCase()) > -1)
     })
   })
-}
+}*/
 
 const readPropertiesFromFile = function readPropertiesFromFile() {
   let propFileName = require('os').homedir() + "/.stox.properties.json";
@@ -359,6 +406,120 @@ const writePropertiesToFile = function writePropertiesToFile() {
     logInfo("Error writing properties " + err);
   }
 }
+
+function callR(what: any, args: any, pkg: any) {
+  const startTime = process.hrtime();
+  return new Promise(async (resolve) => {
+    while (callr_evaluate.length > 0) {
+      // pause when client is busy. 
+      await new Promise(r => setTimeout(() => { r(); }, 50/*ms*/));
+    }
+    callr_evaluate.push(true); // make my self ready. lock the other calls out if they appear at same time.
+    while (callr_evaluate.length > 1) {
+      // pause if 2 calls are released asynchronously from the first pause. (it could maybe happen) only one at the time.
+      await new Promise(r => setTimeout(() => { r(); }, 50/*ms*/));
+    }
+    let ans: any = await evaluate(client, body(what, args, pkg));
+
+    callr_evaluate.splice(callr_evaluate.length - 1, 1);
+    //let resparsed = JSON.parse(ans);
+    let diff = process.hrtime(startTime);
+    resolve({ time: diff[0] + diff[1] / 1000000000, result: ans });
+  });
+}
+
+function callFunction(what: any, args: any, pkg: any = "RstoxFramework") {
+  let expr: string = "RstoxAPI::runFunction(what='" + what + "', package='" + pkg + "', args='" + args + "')";
+  console.log(expr);
+  // Apply json conversion
+  //let jsonexpr: string = 'jsonlite::toJSON(' + expr + ', pretty=T, auto_unbox=T, na="string")';
+  return callR(what, args, pkg);
+}
+
+async function logAPI(p: any, withResult: any = true, withTime: any = false) {
+  //console.log("call p")
+  //console.log("after p")
+  let res: { time: number, result: string } = await p;
+  if (withResult) {
+    console.log(JSON.stringify(res.result, null, 2));
+  }
+  const time2 = process.hrtime();
+  //let dt = diff[0] + (diff[1] / 1000000000.0);
+  if (withTime) {
+    console.log(" took " + res.time + " sec");
+  }
+  return res.result;
+}
+
+function body(what: string, args: string, pkg: string) {
+  return JSON.stringify({
+    "what": what,
+    "args": args,
+    "package": pkg
+  });
+}
+
+async function evaluate(client : any, s : string) {
+  let lens = "" + s.length;
+  await client.write("" + s.length);
+  await new Promise(r => {
+      client.handle = (data : any) => {
+          console.log('Received1: ' + data);
+          if (data == lens) {
+              // The length is send forth and back, we an proceed
+              r();
+          }
+      };
+  });
+  await client.write(s); // may lead to throttling on the server side, but the server uses length info to get the string
+  let nResp = 0;
+  await new Promise(r => {
+      client.handle = (data : any) => {
+          console.log('Received resp len: ' + data);
+          nResp = Number(data);
+          if (nResp != null) {
+              // recevied response length 
+              r();
+          }
+      };
+  });
+  await client.write("" + nResp); // handshake response length
+  let s2 = "";
+  let nChunks = 0;
+  await new Promise(r => {
+      client.handle = (data : any) => {
+          //console.log('Received2: ' + data);
+          s2 = s2 + data;
+          nChunks++;
+          if (s2.length == nResp) { // test on length
+              // The response is received - finish
+              r();
+          }
+      };
+  });
+  console.log('Received2-total: in ' + nChunks);
+  return s2;
+}
+
+
+/*async function runSocketFunction(body: string) {
+  client.buffers = <string[]>[]; // empty buffers before write.
+  await client.write(Buffer.from(body));
+
+  console.log('Before received: ');
+  let totalchunk: string = await new Promise(resolve => {
+    let s: string;
+
+    client.on('drain', () => {
+      resolve(s);
+      console.log('Drained');
+    });
+  });
+  console.log('After received: ');
+
+  return totalchunk;
+}*/
+
 
 function setupServer() {
   server = express();
@@ -406,57 +567,11 @@ function setupServer() {
     //logInfo('get rpath ' + properties.rPath);
     res.send(properties.rPath);
   });
-  var callr_evaluate: boolean[] = [];
-
-  function callR(client: any, expr: any) {
-    const startTime = process.hrtime();
-    return new Promise(async (resolve) => {
-      while (callr_evaluate.length > 0) {
-        // pause when client is busy. 
-        await new Promise(r => setTimeout(() => { r(); }, 50/*ms*/));
-      }
-      callr_evaluate.push(true); // make my self ready. lock the other calls out if they appear at same time.
-      while (callr_evaluate.length > 1) {
-        // pause if 2 calls are released asynchronously from the first pause. (it could maybe happen) only one at the time.
-        await new Promise(r => setTimeout(() => { r(); }, 50/*ms*/));
-      }
-      client.evaluate(expr, (err: any, ans: any) => {
-        callr_evaluate.splice(callr_evaluate.length - 1, 1);
-        //let resparsed = JSON.parse(ans);
-        let diff = process.hrtime(startTime);
-        resolve({ time: diff[0] + diff[1] / 1000000000, result: ans });
-      });
-    });
-  }
-
-  function callFunction(client: any, what: any, args: any, pkg: any = "RstoxFramework") {
-    let expr: string = "RstoxAPI::runFunction(what='" + what + "', package='" + pkg + "', args='" + args + "')";
-    console.log(expr);
-    // Apply json conversion
-    let jsonexpr: string = 'jsonlite::toJSON(' + expr + ', pretty=T, auto_unbox=T, na="string")';
-    return callR(client, jsonexpr);
-  }
-
-  async function logAPI(p: any, withResult: any = true, withTime: any = false) {
-    //console.log("call p")
-    //console.log("after p")
-    let res: { time: number, result: string } = await p;
-    if (withResult) {
-      console.log(JSON.stringify(res.result, null, 2));
-    }
-    const time2 = process.hrtime();
-    //let dt = diff[0] + (diff[1] / 1000000000.0);
-    if (withTime) {
-      console.log(" took " + res.time + " sec");
-    }
-    return res.result;
-  }
 
   // observe rpath in backend
   server.post('/callR', async (req: any, res: any) => {
     //logInfo('get rpath ' + properties.rPath);
-    let s: any = await callFunction(rserve_client,
-      req.body.what, req.body.args, req.body.pkg);
+    let s: any = await callFunction(req.body.what, req.body.args, req.body.pkg);
     res.send(s.result);
   });
 
