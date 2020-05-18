@@ -26,13 +26,8 @@ const net = require("net")
 //const { PromiseSocket } = require("promise-socket")
 const client = new net.Socket();
 
-client.on('data', function (data: any) {
-  if (client.handle != null) {
-    client.handle(data);
-  }
-});
-
 let useOpenCPU: boolean = false;
+
 let rserve: any = require('rserve-client');
 //let rserve_client: any = null;
 
@@ -55,14 +50,14 @@ app.on('ready', async () => {
   setupLogger();
   logInfo("lifecycle: ready")
   setupServer();
+  startNodeServer();
   readPropertiesFromFile();
   await startBackendServer();
-  startNodeServer();
   createWindow()
 })
 
 
-const server_str: string =
+/*const server_str: string =
   "# read all chunks and throttle with client handshake\n" +
   "read.socket.all <- function(s) {\n" +
   "    maxlen <- 256L\n" +
@@ -131,7 +126,7 @@ const server_str: string =
   "await startBackendServer();\n" +
   "startNodeServer();\n" +
   "createWindow()\n" +
-  "})";
+  "})";*/
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -154,10 +149,6 @@ app.on('quit', function () {
   // Write app properties file to disc here.
   logInfo('ev:app quit');
   writePropertiesToFile();
-  if (backendProcess != null && process.platform != "darwin") {
-    logInfo("Terminating backend process " + backendProcess.pid);
-    process.exit(backendProcess.pid);
-  }
   if (client != null) {
     client.destroy();
   }
@@ -355,62 +346,37 @@ async function startBackendServer(): Promise<string> {
       return "Rscript is not available. Set R path in the properties."
     }
     console.log("Starting R socket server ...");
-    /*let serverScript = await new Promise((rs) => {
-      fs.readFile('assets/server.R', 'utf8',
-        (err: any, data: any) => {
-          if (err) throw err;
-          rs(data);
+    let serverScript = await new Promise(r => {
+      require("http").get({ port: 3000, path: '/static/server.R' }, (res: any) => {
+        res.on('data', (chunk: any) => {
+          r(chunk + "");
         });
-    });*/
+      })
+    });
     let fileName = require('temp-dir') + "/stox.server.R";
     console.log("Writing file " + fileName);
-    await fs.writeFile(fileName, server_str, () => { });
+    await fs.writeFile(fileName, serverScript, () => { });
     let serverCmd = rscriptBin + " " + fileName;
     // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
     backendProcess = child_process.spawn(rscriptBin, [fileName]);
     backendProcess.on('error', (er: any) => { console.log(er) });
-    console.log("Process " + backendProcess.pid + " started with " + serverCmd)
-    console.log("R Server started.");
-    console.log(backendProcess.pid);
-    /*// Check for backend lib in installed packages
-    let p2 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "eval('" + backendLibName + "' %in% rownames(installed.packages()))"]);
-    if (p2.error) {
-      return p2.error;
-    }
-    if (p2.stdout == null) {
-      return "Rscript is not available. Set R path in the properties."
-    }
-    if (p2.stdout.includes("FALSE") && process.platform != "linux") {
-      // Open cpu is not installed
-      logInfo("installing " + backendLibName + "...");
-      child_process.execSync(rscriptBin + " -e \"install.packages('" + backendLibName + "', repos='http://cran.us.r-project.org')\"");
-      logInfo("" + backendLibName + " installed.");
-    }
-
-    let doStartBackend = useOpenCPU || !await isRunning("Rserve.exe", "Rserve", "Rserve");
-    // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
-    if (doStartBackend) {
-      logInfo("Starting " + backendLibName + " ...");
-      backendProcess = child_process.spawn(rscriptBin, ['-e', backendStartServerCmd]);
-      backendProcess.on('error', (er: any) => { logInfo(er) });
-      logInfo("Process " + backendProcess.pid + " started with " + " -e \"" + backendStartServerCmd + "\"")
-      logInfo(backendLibName + " started.");
-    } else {
-      logInfo(backendLibName + " is allready running.");
-    }*/
+    // console.log("Process " + backendProcess.pid + " started with " + serverCmd)
+    console.log("Backend started.");
+    //console.log(backendProcess.pid);
     if (!useOpenCPU) {
       //rserve_client = await connectRserve(rserve);
-      console.log("Before connection has been synchronously set");
       await new Promise((r) => {
         client.connect(6312, 'localhost', () => {
           console.log('Node connected to 6312 as client. Ready to write R calls');
           r();
         });
       });
-      client.buffers = <string[]>[];
-      client.on('data', (data: any) => {
-        client.buffers.push(<string>data);
+      client.on('data', function (data: any) {
+        if (client.handle != null) {
+          client.handle(data);
+        }
       });
+
 
       console.log("After connection has been synchronously set");
       client.on('close', function () {
@@ -508,7 +474,7 @@ function callFunction(what: any, args: any, pkg: any = "RstoxFramework") {
   return callR(what, args, pkg);
 }
 
-async function logAPI(p: any, withResult: any = true, withTime: any = false) {
+/*async function logAPI(p: any, withResult: any = true, withTime: any = false) {
   //console.log("call p")
   //console.log("after p")
   let res: { time: number, result: string } = await p;
@@ -521,7 +487,7 @@ async function logAPI(p: any, withResult: any = true, withTime: any = false) {
     console.log(" took " + res.time + " sec");
   }
   return res.result;
-}
+}*/
 
 function body(what: string, args: string, pkg: string) {
   return JSON.stringify({
@@ -575,29 +541,10 @@ async function evaluate(client: any, s: string) {
 }
 
 
-/*async function runSocketFunction(body: string) {
-  client.buffers = <string[]>[]; // empty buffers before write.
-  await client.write(Buffer.from(body));
-
-  console.log('Before received: ');
-  let totalchunk: string = await new Promise(resolve => {
-    let s: string;
-
-    client.on('drain', () => {
-      resolve(s);
-      console.log('Drained');
-    });
-  });
-  console.log('After received: ');
-
-  return totalchunk;
-}*/
-
-
 function setupServer() {
   server = express();
   server.use(bodyParser.json())
-
+  server.use('/static', express.static('public'))
   server.use(cors()) // enable cors in header (http call from static resources)
   server.options(cors());
 
