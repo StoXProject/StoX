@@ -552,7 +552,7 @@ async function evaluate(client: any, s: string) {
 function setupServer() {
   server = express();
   server.use(bodyParser.json())
-  server.use('/static', express.static('public'))
+  //server.use('/static', express.static('public'))
   server.use(cors()) // enable cors in header (http call from static resources)
   server.options(cors());
 
