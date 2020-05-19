@@ -47,12 +47,18 @@ export class ParameterComponent implements OnInit {
   onChanged(category: PropertyCategory, pi: PropertyItem) {
     console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
     // function name change sends first pi.value == undefined from autocomplete
-    if(pi.value == undefined) {
+
+    if (pi.value == undefined) {
       return;
     }
     if (pi.value == null) {
       console.log("p.value==null")
       pi.value = ""; // send null as empty string.
+    }
+    let val = pi.value;
+    // Quote strings to let backend smoothly transform all values to its corresponding types(jsonlite::fromJSON removes the quotes)
+    if (pi.type == "character") {
+      val = "\"" + val + "\"";
     }
     //if (pi.value == "" && pi.format == "filePaths") {
     //pi.value = "[]";   
@@ -61,7 +67,7 @@ export class ParameterComponent implements OnInit {
     // groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string
     if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
       try {
-        this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.selectedProject.projectPath,
+        this.dataService.setProcessPropertyValue(category.groupName, pi.name, val, this.ps.selectedProject.projectPath,
           this.ps.selectedModel.modelName, this.ps.selectedProcessId)
           .toPromise().then((s: ProcessProperties) => {
             this.ps.handleAPI(s);

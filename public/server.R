@@ -28,17 +28,7 @@ write.socket.all <- function(s, r){
 
 handle <- function(cmd){
     # Service command/response handler
-tryCatch({
-    cmdj <- jsonlite::fromJSON(cmd)
-    res <- RstoxAPI::runFunction(cmdj$what, cmdj$args, cmdj$package)
-    r <- jsonlite::toJSON(res, pretty=T, auto_unbox=T, na='string')
-    r    
-}, warning = function(warning_condition) {
-    'warning'
-}, error = function(error_condition) {
-    'error'
-})
-    
+    RstoxAPI::runFunction.JSON(cmd)
 }
 
 # runFunction service - loop and wait on socket

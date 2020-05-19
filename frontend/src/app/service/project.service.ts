@@ -40,6 +40,8 @@ export class ProjectService {
   runFailedProcessId: string = null; // the last run-failed process
   runningProcessId: string = null; // current running process
   m_isResetting: boolean = false; // current reset flag.
+  rstoxAPIVersion: string;
+  rAvailable: boolean = false;
 
   userlog: string[] = [];
 
@@ -271,36 +273,23 @@ export class ProjectService {
     this.models = models;
   }
 
-  getProcessesByModelAndProject(model: String, project: string): Process[] {
-    if (this.selectedProject != null) {
-      switch (this.selectedProject.projectName) {
-        // case 'Gytetokt 2004':
-        //   switch (model) {
-        //     case 'baseline': return [{ processName: 'ReadBioticXML', model: 'baseline', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  /*, breakingui:true*/ }, { processName: 'ReadAcousticXML', model: 'baseline', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }];
-        //     case 'statistics': return [{ processName: 'runBootstrap', model: 'statistics', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }, { processName: 'saveProjectData', model: 'statistics', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }];
-        //   }
-        //   break;
-        // case 'Tobis 2006':
-        //   switch (model) {
-        //     case 'baseline': return [{ processName: 'ReadBioticXML', model: 'baseline', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }, { processName: 'DefineStratum', model: 'baseline', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }];
-        //     case 'statistics': return [{ processName: 'runBootstrap', model: 'statistics', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }, { processName: 'saveProjectData', model: 'statistics', geoJson: '', hasProcessData: true, canShowInMap: true, doShowInMap: true  }];
-        //   }
-      }
-    }
-    return [];
-  }
-
   async initData() {
-
+    this.checkRAvailability();
     let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
 
     console.log("Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);
     // Read models and set selected to the first model
-    this.models = <Model[]>await this.dataService.getModelInfo().toPromise();
-    this.setModels(this.models);
-    if (projectPath.length > 0 && this.models != null && this.models.length > 0) {
+    if (projectPath.length > 0 && this.rAvailable) {
       //this.selectedModel = this.models[0]; 
       this.openProject(projectPath, false, false);
+    }
+  }
+
+  async checkRAvailability() {
+    this.rAvailable = await this.dataService.rAvailable().toPromise();
+    if (this.rAvailable) {
+      this.rstoxAPIVersion = await this.dataService.getRstoxAPIVersion().toPromise();
+      this.setModels(await this.dataService.getModelInfo().toPromise());
     }
   }
 
@@ -430,7 +419,7 @@ export class ProjectService {
         this.processProperties.propertySheet = res.propertySheet;
       }
       if (res.updateHelp !== undefined) {
-        this.updateHelp(); 
+        this.updateHelp();
       }
     }
     return res;

@@ -504,6 +504,10 @@ export class DataService {
   public readActiveProject(): Observable<any> { 
     return this.getLocalNode('readactiveproject');
   }
+  
+  public rAvailable(): Observable<any> { 
+    return this.getLocalNode('rAvailable');
+  } 
 
   public updateActiveProject(projectPath: string): Observable<any> {
     return this.postLocalNode('updateactiveproject', { jsonString: projectPath });

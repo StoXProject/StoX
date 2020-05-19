@@ -34,7 +34,7 @@ let rserve: any = require('rserve-client');
 var properties: any = null;
 var log: any = null;
 var server: any = null;
-
+var rAvailable: boolean = false;
 var rspawn: any;
 var backendProcess: any; // Backend process
 // Modules to control application life and create native browser window
@@ -333,67 +333,71 @@ const createMenu = function createMenu() {
     });
   })
 }*/
+function rScriptBin() {
+  return (properties.rPath == "" || properties.rPath == null ? "" : properties.rPath + "/") + "Rscript";
+}
+
+async function checkRAvailable(): Promise<boolean> {
+  var rscriptBin = rScriptBin();
+  let p1 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "print(TRUE)"]);
+  logInfo('Check Rscript availability ' + p1.stdout);
+
+  if (p1.stdout == null || !p1.stdout.includes("TRUE")) {
+    rAvailable = false;
+    logInfo('Rscript is not available. Set R path in the properties."');
+    return false;
+  }
+  logInfo('Rscript is available.');
+  return true;
+}
 
 async function startBackendServer(): Promise<string> {
-  /*let backendLibName: string = useOpenCPU ? 'opencpu' : 'Rserve';
-  let rservecmd: string = process.platform == "darwin" ? "Rserve(args=\"--no-save\")" : "run.Rserve()";
-  let ocpucmd: string = "ocpu_start_server(5307,  preload = c('RstoxAPI', 'data.table', 'rgdal', 'rgeos', 'sp', 'geojsonio', 'jsonlite', 'fst', 'Rcpp', 'xml2', 'readr'), workers = 5";
-  let backendStartServerCmd = backendLibName + "::" + (useOpenCPU ? ocpucmd : rservecmd);*/
-  logInfo("Running on Platform: " + process.platform)
-  if (process.platform == "win32"/*windows*/ || process.platform == "darwin"/*mac*/ || process.platform == "linux") {
-    // On linux, sudo is required and backend server lib must be installed separatly. check this
-    var rscriptBin = (properties.rPath == "" || properties.rPath == null ? "" : properties.rPath + "/") + "Rscript";
-    let p1 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "print(TRUE)"]);
-    logInfo('Check Rscript availability ' + p1.stdout);
-    if (p1.error) {
-      return p1.error;
-    }
-    if (p1.stdout == null || !p1.stdout.includes("TRUE")) {
-      return "Rscript is not available. Set R path in the properties."
-    }
-    const path = require('path');
-    const resPath = __dirname + '/../public';
-    logInfo('Resource file ' + resPath);
-    let resFile = path.join(resPath, 'server.R');
-    logInfo('Resource file ' + resFile);
-    let serverScript = fs.readFileSync(resFile, { encoding: 'utf-8', flag: 'r' })
-    let fileName = require('temp-dir') + "/stox.server.R";
-    logInfo("Writing server.R into " + fileName);
-    await fs.writeFile(fileName, serverScript, () => { });
-    let serverCmd = rscriptBin + " " + fileName;
-    // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
-    logInfo("Spawning " + rscriptBin + " " + fileName);
-    backendProcess = child_process.spawn(rscriptBin, [fileName]);
-    /*backendProcess.on('error', (er: any) => { 
-      logInfo("Spawning error " + er);
-    });*/
-    // console.log("Process " + backendProcess.pid + " started with " + serverCmd)
-    logInfo("Backend started.");
-    //console.log(backendProcess.pid);
-    if (!useOpenCPU) {
-      //rserve_client = await connectRserve(rserve);
-      logInfo("Connecting to 6312 on localhost");
-      await new Promise((r) => {
-        client.connect(6312, 'localhost', () => {
-          logInfo('Node connected to 6312 as client. Ready to write R calls');
-          r();
-        });
-      });
-      client.on('data', function (data: any) {
-        if (client.handle != null) {
-          client.handle(data);
-        }
-      });
-
-
-      logInfo("After connection has been synchronously set");
-      client.on('close', function () {
-        logInfo('Node client connection 6312 closed');
-      });
-      client.setEncoding("utf8"); // to get chunks read as strings
-      //console.log(await callFunction("getAvailableTemplatesDescriptions", "{}", "RstoxFramework"));
-    }
+  rAvailable = await checkRAvailable();
+  if (!rAvailable) {
+    logInfo('R is not available- quitting startBackendServer');
+    return "";
   }
+  var rscriptBin = rScriptBin();
+  const path = require('path');
+  const resPath = __dirname + '/../public';
+  logInfo('Resource file ' + resPath);
+  let resFile = path.join(resPath, 'server.R');
+  logInfo('Resource file ' + resFile);
+  let serverScript = fs.readFileSync(resFile, { encoding: 'utf-8', flag: 'r' })
+  let fileName = require('temp-dir') + "/stox.server.R";
+  logInfo("Writing server.R into " + fileName);
+  await fs.writeFile(fileName, serverScript, () => { });
+  let serverCmd = rscriptBin + " " + fileName;
+  // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
+  logInfo("Spawning " + rscriptBin + " " + fileName);
+  backendProcess = child_process.spawn(rscriptBin, [fileName]);
+  /*backendProcess.on('error', (er: any) => { 
+    logInfo("Spawning error " + er);
+  });*/
+  // console.log("Process " + backendProcess.pid + " started with " + serverCmd)
+  logInfo("Backend started.");
+  //console.log(backendProcess.pid);
+  //rserve_client = await connectRserve(rserve);
+  logInfo("Connecting to 6312 on localhost");
+  await new Promise((r) => {
+    client.connect(6312, 'localhost', () => {
+      logInfo('Node connected to 6312 as client. Ready to write R calls');
+      r();
+    });
+  });
+  client.on('data', function (data: any) {
+    if (client.handle != null) {
+      client.handle(data);
+    }
+  });
+
+  logInfo("After connection has been synchronously set");
+  client.on('close', function () {
+    logInfo('Node client connection 6312 closed');
+  });
+  logInfo('Setting encoding');
+  client.setEncoding("utf8"); // to get chunks read as strings
+  //console.log(await callFunction("getAvailableTemplatesDescriptions", "{}", "RstoxFramework"));
   return "ok";
 }
 
@@ -506,6 +510,7 @@ function body(what: string, args: string, pkg: string) {
 }
 
 async function evaluate(client: any, s: string) {
+  console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
   let lens = "" + s.length;
   await client.write("" + s.length);
   await new Promise(resolve => {
@@ -576,7 +581,7 @@ function setupServer() {
   // modify rpath in backend
   server.post('/rpath', async (req: any, res: any) => {
     properties.rPath = req.body.rpath;
-    //logInfo('rpath ' + properties.rPath);
+    logInfo('set rpath ' + properties.rPath);
     let resultstr: string = await startBackendServer();
     res.send('post /rpath result:' + resultstr);
   });
@@ -660,6 +665,12 @@ function setupServer() {
       }
     }
   });
+
+  server.get('/rAvailable', async (req: any, res: any) => {
+    logInfo("check if r is available");
+    res.send(rAvailable);
+  });
+
 
   server.post('/makeDirectory', function (req: any, res: any) {
     logInfo("make directory");
