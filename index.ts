@@ -50,7 +50,7 @@ app.on('ready', async () => {
   setupLogger();
   logInfo("lifecycle: ready")
   setupServer();
-  startNodeServer();
+  await startNodeServer();
   readPropertiesFromFile();
   await startBackendServer();
   createWindow()
@@ -149,9 +149,9 @@ app.on('quit', function () {
   // Write app properties file to disc here.
   logInfo('ev:app quit');
   writePropertiesToFile();
-  if (client != null) {
+  /*if (client != null) {
     client.destroy();
-  }
+  }*/
 });
 
 function logInfo(str: string) {
@@ -181,12 +181,17 @@ function setupLogger() {
   log = simpleNodeLogger.createRollingFileLogger(opts);
 }
 
-function startNodeServer() {
+async function startNodeServer() {
   // start server
   var port = 3000;
   logInfo("Starting Node Server at port " + port + "...");
-  server.listen(port);
-  logInfo('Node Server started at http://localhost:' + port);
+  await new Promise(r => {
+    server.listen(port, () => {
+      logInfo('Node Server started at http://localhost:' + port);
+      r()
+    });
+  });
+
 }
 
 function createWindow() {
@@ -214,6 +219,7 @@ function createWindow() {
 
   // and load the index.html of the app.
   //mainWindow.loadFile(`../frontend/dist/stox/index.html`)
+  logInfo(`log to file://${__dirname}/`)
   mainWindow.loadURL(`file://${__dirname}/../frontend/dist/stox/index.html`)
 
   // Open the DevTools.
@@ -338,36 +344,38 @@ async function startBackendServer(): Promise<string> {
     // On linux, sudo is required and backend server lib must be installed separatly. check this
     var rscriptBin = (properties.rPath == "" || properties.rPath == null ? "" : properties.rPath + "/") + "Rscript";
     let p1 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "print(TRUE)"]);
-    logInfo('Check Rscript availability' + p1.stdout);
+    logInfo('Check Rscript availability ' + p1.stdout);
     if (p1.error) {
       return p1.error;
     }
     if (p1.stdout == null || !p1.stdout.includes("TRUE")) {
       return "Rscript is not available. Set R path in the properties."
     }
-    console.log("Starting R socket server ...");
-    let serverScript = await new Promise(r => {
-      require("http").get({ port: 3000, path: '/static/server.R' }, (res: any) => {
-        res.on('data', (chunk: any) => {
-          r(chunk + "");
-        });
-      })
-    });
+    const path = require('path');
+    const resPath = __dirname + '/../public';
+    logInfo('Resource file ' + resPath);
+    let resFile = path.join(resPath, 'server.R');
+    logInfo('Resource file ' + resFile);
+    let serverScript = fs.readFileSync(resFile, { encoding: 'utf-8', flag: 'r' })
     let fileName = require('temp-dir') + "/stox.server.R";
-    console.log("Writing file " + fileName);
+    logInfo("Writing server.R into " + fileName);
     await fs.writeFile(fileName, serverScript, () => { });
     let serverCmd = rscriptBin + " " + fileName;
     // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
+    logInfo("Spawning " + rscriptBin + " " + fileName);
     backendProcess = child_process.spawn(rscriptBin, [fileName]);
-    backendProcess.on('error', (er: any) => { console.log(er) });
+    /*backendProcess.on('error', (er: any) => { 
+      logInfo("Spawning error " + er);
+    });*/
     // console.log("Process " + backendProcess.pid + " started with " + serverCmd)
-    console.log("Backend started.");
+    logInfo("Backend started.");
     //console.log(backendProcess.pid);
     if (!useOpenCPU) {
       //rserve_client = await connectRserve(rserve);
+      logInfo("Connecting to 6312 on localhost");
       await new Promise((r) => {
         client.connect(6312, 'localhost', () => {
-          console.log('Node connected to 6312 as client. Ready to write R calls');
+          logInfo('Node connected to 6312 as client. Ready to write R calls');
           r();
         });
       });
@@ -378,9 +386,9 @@ async function startBackendServer(): Promise<string> {
       });
 
 
-      console.log("After connection has been synchronously set");
+      logInfo("After connection has been synchronously set");
       client.on('close', function () {
-        console.log('Node client connection 6312 closed');
+        logInfo('Node client connection 6312 closed');
       });
       client.setEncoding("utf8"); // to get chunks read as strings
       //console.log(await callFunction("getAvailableTemplatesDescriptions", "{}", "RstoxFramework"));
