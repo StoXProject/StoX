@@ -286,11 +286,16 @@ export class ProjectService {
   }
 
   async checkRAvailability() {
-    this.rAvailable = await this.dataService.rAvailable().toPromise();
+    this.rAvailable = (await this.dataService.rAvailable().toPromise()) == "true";
     if (this.rAvailable) {
       this.rstoxAPIVersion = await this.dataService.getRstoxAPIVersion().toPromise();
       this.setModels(await this.dataService.getModelInfo().toPromise());
+    } else {
+      this.rstoxAPIVersion = null;
+      this.setModels(null);
+      this.activateProject(null);
     }
+    return "";
   }
 
   async openProject(projectPath: string, doThrow: boolean, force: boolean) {

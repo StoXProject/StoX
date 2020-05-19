@@ -24,7 +24,7 @@ var callr_evaluate: boolean[] = [];
 
 const net = require("net")
 //const { PromiseSocket } = require("promise-socket")
-const client = new net.Socket();
+let client : any = null;
 
 let useOpenCPU: boolean = false;
 
@@ -352,6 +352,10 @@ async function checkRAvailable(): Promise<boolean> {
 }
 
 async function startBackendServer(): Promise<string> {
+  if(client != null) {
+    client.destroy();
+  }
+  client = new net.Socket();
   rAvailable = await checkRAvailable();
   if (!rAvailable) {
     logInfo('R is not available- quitting startBackendServer');
@@ -597,7 +601,7 @@ function setupServer() {
   });
   // observe rpath in backend
   server.get('/rpath', function (req: any, res: any) {
-    //logInfo('get rpath ' + properties.rPath);
+    logInfo('get rpath ' + properties.rPath);
     res.send(properties.rPath);
   });
 
