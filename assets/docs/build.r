@@ -2,7 +2,7 @@
 devtools::install_github("https://github.com/StoXProject/RstoxData", ref="NewStoxAcoustic", force=T, upgrade = FALSE) 
 devtools::install_github("https://github.com/StoXProject/RstoxBase", ref="develop", force=T,  upgrade = FALSE) 
 devtools::install_github("https://github.com/StoXProject/RstoxFramework", ref="develop", force=T, upgrade=FALSE) 
-devtools::install_github("https://github.com/StoXProject/RstoxAPI", ref="master", force=T, upgrade=FALSE) 
+devtools::install_github("https://github.com/StoXProject/RstoxAPI", ref="develop", force=T, upgrade=FALSE) 
 
 #Release scripts
 devtools::install_github("https://github.com/StoXProject/RstoxData", ref="master", force=T, upgrade = FALSE) 
@@ -27,3 +27,5 @@ jsonlite::fromJSON("[]")
 
 jsonlite::toJSON(list(a=), auto_unbox=T)
 str(jsonlite::fromJSON("{\"a\":\"Inf\"}"))
+
+RstoxAPI::runFunction.JSON

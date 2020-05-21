@@ -76,7 +76,9 @@ $nodata: #acacac;
   white-space: nowrap;
 }
 
-.ui-listbox-item:focus, .ui-menuitem-link, .ui-treenode-content:focus {  
+.ui-listbox-item:focus,
+.ui-menuitem-link,
+.ui-treenode-content:focus {
   outline: none !important; // prevent webkit :focus outline.
   box-shadow: none !important; // add by primeng
 }
@@ -175,12 +177,16 @@ $nodata: #acacac;
   white-space: nowrap;
   overflow: hidden;
   button {
+    border: 1px solid darken(#f0f0f0, 20%);
     vertical-align: middle !important;
     display: inline !important;
     float: none;
     margin-right: 2px;
     padding: 1px 1px;
   }
+}
+button:focus, input:focus { 
+  outline: none !important;
 }
 .ui-tabview {
   padding: 0 !important;
@@ -403,7 +409,7 @@ $nodata: #acacac;
   top: 72%;
 }
 .runstatusmodifiedicon:after {
-  @include icon_content("\f0c8", 0.4rem,  rgb(208, 208, 211), true);
+  @include icon_content("\f0c8", 0.4rem, rgb(208, 208, 211), true);
   top: 72%;
 }
 .functioninputerroricon:after {
@@ -566,7 +572,7 @@ $nodata: #acacac;
 .mat-menu-item {
   line-height: 1.2rem !important;
   height: 1.2rem !important;
-  padding:0 !important;
+  padding: 0 !important;
 }
 .mat-menu-item:focus {
   outline: none;
