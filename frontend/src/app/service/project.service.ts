@@ -183,7 +183,7 @@ export class ProjectService {
     this.selectedModel = this.selectedProject == null ? null : this.models[0]; // This will trigger update process list.
 
     // To do: make this property the project path instead of project object.
-    let jsonString = JSON.stringify(this.selectedProject == null ? "" : this.selectedProject.projectPath);
+    let jsonString = this.selectedProject == null ? "" : this.selectedProject.projectPath;
     console.log("StoX GUI: updating ActiveProject with string  " + jsonString)
     let status = await this.dataService.updateActiveProject(jsonString).toPromise();
     console.log("status " + status);

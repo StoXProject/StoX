@@ -29,10 +29,6 @@ export class SaveAsProjectDlg  implements OnInit {
         console.log("browse");
         this.projectRootPath = await this.dataService.browse(this.projectRootPath).toPromise();
         this.projectRootPath = this.projectRootPath.replace(/\\/g, "/");
-
-        // let jsonString = JSON.stringify(this.projectRootPath);
-        // let status = <string> await this.dataService.updateProjectRootPath(jsonString).toPromise();
-        // console.log(status); 
     }
 
     async apply() {

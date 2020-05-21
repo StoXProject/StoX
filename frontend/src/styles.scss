@@ -185,7 +185,8 @@ $nodata: #acacac;
     padding: 1px 1px;
   }
 }
-button:focus, input:focus { 
+button:focus,
+input:focus {
   outline: none !important;
 }
 .ui-tabview {
@@ -492,7 +493,9 @@ button:focus, input:focus {
 .mat-tab-header-pagination {
   background-color: lighten(#f0f0f0, 4%) !important;
 }
-
+.mat-input-element {
+  border: none !important;
+}
 .mat-tab-links {
   width: 100%;
 }

@@ -293,7 +293,7 @@ export class DataService {
     body.set('package', "'" + pkg + "'");
     */
 
-    console.log("RstoxAPI::runFunction(package='" + pkg + "', what='" + what + "', args='" + args + "')")
+    console.log("RstoxAPI::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
     return <any>this.callR({ what: what, args: args, package: pkg })
       //return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', body, 'text', true, "json")
       .pipe(map(res => {
@@ -476,7 +476,7 @@ export class DataService {
   }
 
   callR(j: any): Observable<any> {
-    console.log("RstoxAPI::runFunction.JSON('" + JSON.stringify(j).replace(/"/g, '\\"') + "')");
+    console.log("RstoxAPI::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
     return this.postLocalNode('callR', j);
   }
 
