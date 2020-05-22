@@ -1,31 +1,98 @@
-#install Rstox
-devtools::install_github("https://github.com/StoXProject/RstoxData", ref="NewStoxAcoustic", force=T, upgrade = FALSE) 
-devtools::install_github("https://github.com/StoXProject/RstoxBase", ref="develop", force=T,  upgrade = FALSE) 
-devtools::install_github("https://github.com/StoXProject/RstoxFramework", ref="develop", force=T, upgrade=FALSE) 
-devtools::install_github("https://github.com/StoXProject/RstoxAPI", ref="develop", force=T, upgrade=FALSE) 
+cmd <- '{"what":"setProcessPropertyValue","args":"{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P001\"}\","package":"RstoxFramework"}' 
+    RstoxAPI::runFunction.JSON(cmd)
+    
+       cmdj <- jsonlite::fromJSON(cmd)
 
-#Release scripts
-devtools::install_github("https://github.com/StoXProject/RstoxData", ref="master", force=T, upgrade = FALSE) 
-devtools::install_github("https://github.com/StoXProject/RstoxBase", ref="master", force=T,  upgrade = FALSE) 
-devtools::install_github("https://github.com/StoXProject/RstoxFramework", ref="master", force=T, upgrade=FALSE) 
-devtools::install_github("https://github.com/StoXProject/RstoxAPI", ref="master", force=T, upgrade=FALSE) 
+       jsonlite::fromJSON('{"args":"{\"value\":\"\\\"a\\\"\"}"}')    
+runFunction.JSON2 <- function(cmd) {
+    r <- ""
+   tryCatch({
+        cmdj <- jsonlite::fromJSON(cmd)
+        res <- RstoxAPI::runFunction(cmdj$what, cmdj$args, cmdj$package)
+        r <- jsonlite::toJSON(res, pretty = T, auto_unbox = T, 
+            na = "string")
+    }, warning = function(warning_condition) {
+        "warning"
+        r <- ""
+    }, error = function(error_condition) {
+        "error"
+        r <- ""
+    })
+    return(r)
+}
 
-# The following installs the versions of the Rstox packages used by StoX:
-# Restart R
-# Remove the Rstox packages:
-RstoxFramework::removeAcousticPSU
+jsonlite::fromJSON("\"a\"")    
+s <- jsonlite::toJSON(jsonlite::toJSON(list(args=jsonlite::toJSON(list(value=jsonlite::toJSON("a", auto_unbox=T)), auto_unbox=T)), auto_unbox=T), auto_unbox=T)
+s
+RstoxAPI::runFunction.JSON(s)
+jsonlite::fromJSON(jsonlite::fromJSON(jsonlite::fromJSON(s)$args)$value)
 
-RstoxPackages <- c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxAPI")
-remove.packages(RstoxPackages)
-# Install the Rstox packages:
-devtools::install_github("StoXProject/RstoxAPI", upgrade = FALSE, force = TRUE)
+RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args="{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}")
 
+RstoxAPI::runFunction.JSON("{\"what\":\"setProcessPropertyValue\",\"args\":\"{\\\"groupName\\\":\\\"processArguments\\\",\\\"name\\\":\\\"functionName\\\",\\\"value\\\":\\\"\\\\\\\"DefineStratumPolygon\\\\\\\"\\\",\\\"projectPath\\\":\\\"C:/Users/aasmunds/Test4.2\\\",\\\"modelName\\\":\\\"baseline\\\",\\\"processID\\\":\\\"P002\\\"}\",\"package\":\"RstoxFramework\"}")
+RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args='{"groupName":"processArguments","name":"functionName","value":"\"DefineStratumPolygon\"","projectPath":"C:/Users/aasmunds/Test4.2","modelName":"baseline","processID":"P002"}')
+traceback()
+args<-"{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}"
+RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args)
+jsonlite::fromJSON(args)
+RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args="{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}")
+args<-"{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}"
+    RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args)
+jsonlite::fromJSON(args)
+    RstoxAPI::runFunction.JSON("{\"what\":\"setProcessPropertyValue\",\"args\":\"{\\\"groupName\\\":\\\"processArguments\\\",\\\"name\\\":\\\"functionName\\\",\\\"value\\\":\\\"\\\\\\\"DefineStratumPolygon\\\\\\\"\\\",\\\"projectPath\\\":\\\"C:/Users/aasmunds/Test4.2\\\",\\\"modelName\\\":\\\"baseline\\\",\\\"processID\\\":\\\"P002\\\"}\",\"package\":\"RstoxFramework\"}")
 
-dt <- data.table::data.table(x= c(list(1),list(2, 2)))
-jsonlite::toJSON(dt[1], auto_unbox = T)
-jsonlite::fromJSON("[]")
+    RstoxFramework::setProcessPropertyValue(groupName="processArguments", name="functionName", 
+    value="\"DefineStratumPolygon\"", projectPath="C:/Users/aasmunds/Test4.2",
+    modelName="baseline", processID="P002")
 
-jsonlite::toJSON(list(a=), auto_unbox=T)
-str(jsonlite::fromJSON("{\"a\":\"Inf\"}"))
+projectPath <- "C:/Users/aasmunds/Test4.2"
+modelName <- "baseline" 
+processID <- "P002" 
+argumentFilePaths <- NULL
 
-RstoxAPI::runFunction.JSON
+getArgumentsToShow <- function(projectPath, modelName, processID, argumentFilePaths = NULL) {
+    
+    # Get the function name and arguments:
+        functionName <- RstoxFramework:::getFunctionName(projectPath = projectPath, modelName = modelName, processID = processID, argumentFilePaths = argumentFilePaths)
+    functionInputs <- RstoxFramework:::getFunctionInputs(projectPath = projectPath, modelName = modelName, processID = processID, argumentFilePaths = argumentFilePaths)
+    functionParameters <- RstoxFramework:::getFunctionParameters(projectPath = projectPath, modelName = modelName, processID = processID, argumentFilePaths = argumentFilePaths)
+    functionArguments <- c(functionInputs, functionParameters)
+    
+    # Get the function argument hierarchy:
+    functionArgumentHierarchy <- RstoxFramework:::getStoxFunctionMetaData(functionName, "functionArgumentHierarchy", showWarnings = FALSE)
+    
+    # Loop through the arguments given by parent tags in the functionArgumentHierarchy, and set toShow to FALSE if not any of the criterias are fulfilled:
+    toShow <- logical(length(functionArguments))
+    names(toShow) <- names(functionArguments)
+    for(argumentName in names(toShow)) {
+        # Check whether the argument is given in the functionArgumentHierarchy. If not, it will be shown:
+        atArgumentName <- which(argumentName == names(functionArgumentHierarchy))
+        if(length(atArgumentName)) {
+            # Loop through the occurrences of the argumentName in the functionArgumentHierarchy, applying &&:
+            hitsAnd <- logical(length(atArgumentName))
+            browser()
+            for(ind in seq_along(atArgumentName)) {
+                # Loop through the conditions and set hitsAnd tot TRUE if at least one condition is fullfilled:
+                conditionNames <- names(functionArgumentHierarchy[[atArgumentName[ind]]])
+                hitsOr <- logical(length(conditionNames))
+                names(hitsOr) <- conditionNames
+                browser()
+                for(conditionName in conditionNames) {
+                    browser()
+                    if(functionArguments[[conditionName]] %in% functionArgumentHierarchy[[atArgumentName[ind]]][[conditionName]]) {
+                        hitsOr[conditionName] <- TRUE
+                    }
+                }
+                # Apply the OR condition, implying that hitsOr is TRUE if any are TRUE:
+                hitsAnd[ind] <- any(hitsOr)
+            }
+            toShow[[argumentName]] <- all(hitsAnd)
+        }
+        else {
+            toShow[[argumentName]] <- TRUE
+        }
+    }
+    
+    # Return only the names of the arguments to show:
+    return(names(toShow)[toShow])
+}

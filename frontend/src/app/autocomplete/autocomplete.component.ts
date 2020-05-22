@@ -66,6 +66,7 @@ export class AutocompleteComponent {
   updateSelectedItem(val: string) {
     //if (this.selectedItem != val) {
     this.selectedItem = val;
+    console.log("Emmitting change event " + this.selectedItem + " on autocomplete")
     this.change.emit({ selectedItem: this.selectedItem });
     //}
   }

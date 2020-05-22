@@ -292,8 +292,18 @@ export class DataService {
     body.set('args', args);
     body.set('package', "'" + pkg + "'");
     */
-
-    console.log("RstoxAPI::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
+    let rVal = (o: any) => {
+      if (o != null) {
+        switch (typeof o) {
+          case 'string': return JSON.stringify(o);
+          case 'boolean': return o ? 'TRUE' : 'FALSE'
+          default: return o;
+        }
+      }
+      return o;
+    }
+    console.log(pkg + "::" + what + "(" + Object.keys(argsobj).map(k => k + "=" + rVal(argsobj[k])).join() + ")");
+    // console.log("RstoxAPI::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
     return <any>this.callR({ what: what, args: args, package: pkg })
       //return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', body, 'text', true, "json")
       .pipe(map(res => {
