@@ -30,7 +30,7 @@
                             <div *ngIf="propertyItem.possibleValues.length > 0">
                                 <app-autocomplete  class="ellipsiscolumn" [items]="propertyItem.possibleValues" 
                                     [selectedItem]="propertyItem.value"
-                                    (change)="propertyItem.value = $event.selectedItem; onChanged(category, propertyItem)"
+                                    (complete)="propertyItem.value = $event.selectedItem; onChanged(category, propertyItem)"
                                     >
                                 </app-autocomplete>
                                 <!--<select

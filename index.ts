@@ -352,9 +352,13 @@ async function checkRAvailable(): Promise<boolean> {
 }
 
 async function startBackendServer(): Promise<string> {
+  logInfo('Start backend');
   if (client != null) {
+    logInfo('Close existing client');
     client.destroy();
+    logInfo('Client closed');
   }
+  logInfo('Create client socket');
   client = new net.Socket();
   rAvailable = await checkRAvailable();
   if (!rAvailable) {
@@ -375,9 +379,9 @@ async function startBackendServer(): Promise<string> {
   // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
   logInfo("Spawning " + rscriptBin + " " + fileName);
   backendProcess = child_process.spawn(rscriptBin, [fileName]);
-  /*backendProcess.on('error', (er: any) => { 
+  backendProcess.on('error', (er: any) => { 
     logInfo("Spawning error " + er);
-  });*/
+  });
   // console.log("Process " + backendProcess.pid + " started with " + serverCmd)
   logInfo("Backend started.");
   //console.log(backendProcess.pid);
@@ -610,7 +614,7 @@ function setupServer() {
   // observe rpath in backend
   server.post('/callR', async (req: any, res: any) => {
     // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
-    //logInfo("RstoxAPI::runFunction.JSON('" + req.body.replace(/"/g, '\\"') + "')");
+    logInfo(req.body);
     let s: any = await callR(req.body);
     //logInfo('call R result' + require('util').inspect(s));
     // res.type('text/plain');

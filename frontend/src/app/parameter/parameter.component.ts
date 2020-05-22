@@ -48,9 +48,9 @@ export class ParameterComponent implements OnInit {
     console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
     // function name change sends first pi.value == undefined from autocomplete
 
-    if (pi.value == undefined) {
+    /*if (pi.value == undefined) {
       return;
-    }
+    }*/
     if (pi.value == null) {
       console.log("p.value==null")
       pi.value = ""; // send null as empty string.
