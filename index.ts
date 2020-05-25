@@ -23,12 +23,10 @@ var cors = require('cors');
 var callr_evaluate: boolean[] = [];
 
 const net = require("net")
-//const { PromiseSocket } = require("promise-socket")
 let client : any = null;
 
 let useOpenCPU: boolean = false;
 
-let rserve: any = require('rserve-client');
 //let rserve_client: any = null;
 
 var properties: any = null;
