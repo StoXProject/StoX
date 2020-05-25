@@ -22,21 +22,10 @@ export class CreateProjectDialog {
     }
 
     ngOnInit() {
-        //console.log("start ngOnInit");
-        //console.log("end ngOnInit");
     }
 
     async initData() {
-        //console.log("start initData");
-        // this.templates = <Template[]> JSON.parse( await this.dataService.getAvailableTemplates().toPromise());
         this.templates = <Template[]>await this.dataService.getAvailableTemplates().toPromise();
-        //console.log("templates retrieved: " + this.templates.length);
-        this.projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
-        this.projectRootPath = this.projectRootPath.replace(/\\/g, "/");
-        //console.log("project root path retrieved: " + this.projectRootPath);
-        // this.project = <string>await this.dataService.getProjectPath().toPromise();
-        // console.log("project path retrieved: " + this.project);
-        //console.log("end initData");
     }
 
     async browse() {
@@ -44,22 +33,18 @@ export class CreateProjectDialog {
         console.log("browse");
         this.projectRootPath = await this.dataService.browse(this.projectRootPath).toPromise();
         this.projectRootPath = this.projectRootPath.replace(/\\/g, "/");
-
-        let jsonString = JSON.stringify(this.projectRootPath);
-        let status = <string>await this.dataService.updateProjectRootPath(jsonString).toPromise();
+        let status = <string>await this.dataService.updateProjectRootPath(this.projectRootPath).toPromise();
         console.log(status);
     }
 
     async apply() {
         console.log("start apply");
-
         if (!this.projectName) {
             this.msgService.setMessage("Project name is empty!");
             this.msgService.showMessage();
             return;
         }
         console.log("project : " + this.projectName);
-
         if (!this.projectRootPath) {
             this.msgService.setMessage("Project folder is empty!");
             this.msgService.showMessage();

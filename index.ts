@@ -25,6 +25,7 @@ var callr_evaluate: boolean[] = [];
 const net = require("net")
 let client : any = null;
 
+
 let useOpenCPU: boolean = false;
 
 //let rserve_client: any = null;
@@ -350,9 +351,13 @@ async function checkRAvailable(): Promise<boolean> {
 }
 
 async function startBackendServer(): Promise<string> {
-  if(client != null) {
+  logInfo('Start backend');
+  if (client != null) {
+    logInfo('Close existing client');
     client.destroy();
+    logInfo('Client closed');
   }
+  logInfo('Create client socket');
   client = new net.Socket();
   rAvailable = await checkRAvailable();
   if (!rAvailable) {
@@ -361,7 +366,7 @@ async function startBackendServer(): Promise<string> {
   }
   var rscriptBin = rScriptBin();
   const path = require('path');
-  const resPath = __dirname + '/../public';
+  const resPath = __dirname + '/../srv';
   logInfo('Resource file ' + resPath);
   let resFile = path.join(resPath, 'server.R');
   logInfo('Resource file ' + resFile);
@@ -373,9 +378,9 @@ async function startBackendServer(): Promise<string> {
   // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
   logInfo("Spawning " + rscriptBin + " " + fileName);
   backendProcess = child_process.spawn(rscriptBin, [fileName]);
-  /*backendProcess.on('error', (er: any) => { 
+  backendProcess.on('error', (er: any) => { 
     logInfo("Spawning error " + er);
-  });*/
+  });
   // console.log("Process " + backendProcess.pid + " started with " + serverCmd)
   logInfo("Backend started.");
   //console.log(backendProcess.pid);
@@ -436,6 +441,9 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       };
       logInfo("Properties initialized.");
     }
+    if (properties.projectRootPath == null || properties.projectRootPath == "") {
+      properties.projectRootPath = require('os').homedir()
+    }
   } catch (err) {
     logInfo("Error reading properties: " + err);
   }
@@ -459,7 +467,7 @@ const writePropertiesToFile = function writePropertiesToFile() {
   }
 }
 
-function callR(what: any, args: any, pkg: any) {
+function callR(arg: string) {
   const startTime = process.hrtime();
   return new Promise(async (resolve) => {
     while (callr_evaluate.length > 0) {
@@ -471,21 +479,13 @@ function callR(what: any, args: any, pkg: any) {
       // pause if 2 calls are released asynchronously from the first pause. (it could maybe happen) only one at the time.
       await new Promise(r => setTimeout(() => { r(); }, 50/*ms*/));
     }
-    let ans: any = await evaluate(client, body(what, args, pkg));
+    let ans: any = await evaluate(client, arg);
 
     callr_evaluate.splice(callr_evaluate.length - 1, 1);
     //let resparsed = JSON.parse(ans);
     let diff = process.hrtime(startTime);
     resolve({ time: diff[0] + diff[1] / 1000000000, result: ans });
   });
-}
-
-function callFunction(what: any, args: any, pkg: any = "RstoxFramework") {
-  let expr: string = "RstoxAPI::runFunction(what='" + what + "', package='" + pkg + "', args='" + args + "')";
-  console.log(expr);
-  // Apply json conversion
-  //let jsonexpr: string = 'jsonlite::toJSON(' + expr + ', pretty=T, auto_unbox=T, na="string")';
-  return callR(what, args, pkg);
 }
 
 /*async function logAPI(p: any, withResult: any = true, withTime: any = false) {
@@ -503,16 +503,16 @@ function callFunction(what: any, args: any, pkg: any = "RstoxFramework") {
   return res.result;
 }*/
 
-function body(what: string, args: string, pkg: string) {
+/*function body(what: string, args: string, pkg: string) {
   return JSON.stringify({
     "what": what,
     "args": args,
     "package": pkg
   });
-}
+}*/
 
 async function evaluate(client: any, s: string) {
-  console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
+  // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
   let lens = "" + s.length;
   await client.write("" + s.length);
   await new Promise(resolve => {
@@ -558,13 +558,20 @@ async function evaluate(client: any, s: string) {
 
 function setupServer() {
   server = express();
-  server.use(bodyParser.json())
-  //server.use('/static', express.static('public'))
+  //server.use(bodyParser.json())
+  server.use(bodyParser.text())
+  //server.use('/static', express.static('srv'))
   server.use(cors()) // enable cors in header (http call from static resources)
-  server.options(cors());
+  //server.options(cors());
+
+  // Global content-type handler for all responses. text/plain is trusted by cors
+  server.use(function (req: any, res: any, next: any) {
+    res.type('text/plain');
+    next();
+  });
 
   server.post('/updateactiveproject', function (req: any, res: any) {
-    properties.activeProject = JSON.parse(req.body.jsonString);
+    properties.activeProject = req.body;
     logInfo("update active project: " + properties.activeProject)
     res.send("ok");
   });
@@ -575,14 +582,14 @@ function setupServer() {
   });
 
   server.post('/updateprojectrootpath', function (req: any, res: any) {
-    let jsonString = req.body.jsonString;
+    let projectRootPath = req.body;
     //logInfo("in updateprojectrootpath jsonString : " + jsonString);
-    properties.projectRootPath = JSON.parse(jsonString);
+    properties.projectRootPath = projectRootPath;
     res.send("project root path updated");
   });
   // modify rpath in backend
   server.post('/rpath', async (req: any, res: any) => {
-    properties.rPath = req.body.rpath;
+    properties.rPath = req.body;
     logInfo('set rpath ' + properties.rPath);
     let resultstr: string = await startBackendServer();
     res.send('post /rpath result:' + resultstr);
@@ -605,19 +612,22 @@ function setupServer() {
 
   // observe rpath in backend
   server.post('/callR', async (req: any, res: any) => {
-    //logInfo('get rpath ' + properties.rPath);
-    let s: any = await callFunction(req.body.what, req.body.args, req.body.pkg);
+    // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
+    //logInfo(req.body);
+    let s: any = await callR(req.body);
+    //logInfo('call R result' + require('util').inspect(s));
+    // res.type('text/plain');
     res.send(s.result);
   });
 
   function resolveDefaultPath(defPath: string): string {
     // electron showOpenDialog defaultPath requires c:\\temp\\test on win32, otherwise c:/temp/test on mac/linux
-    return process.platform == "win32" ? defPath.replace(/\//g, "\\") : defPath.replace(/\\/g, "/")
+    return defPath == null ? require('os').homedir() : process.platform == "win32" ? defPath.replace(/\//g, "\\") : defPath.replace(/\\/g, "/");
   }
 
   server.post('/browse', function (req: any, res: any) {
     logInfo("select a folder... wait");
-    let defPath = resolveDefaultPath(req.body.defaultpath); // correct slashes in default path
+    let defPath = resolveDefaultPath(req.body); // correct slashes in default path
     logInfo("default folder " + defPath);
     require('electron').dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
       title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
@@ -635,12 +645,13 @@ function setupServer() {
 
   server.post('/browsePath', function (req: any, res: any) {
     logInfo("select a file/folder path(s)");
-    if (JSON.stringify(req.body) != '{}') {
-      let defPath = resolveDefaultPath(req.body.defaultPath); // correct slashes in default path
+    let options: any = JSON.parse(req.body);
+    if (Object.keys(options).length) {
+      let defPath = resolveDefaultPath(options.defaultPath); // correct slashes in default path
       logInfo("default folder " + defPath);
       require('electron').dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
-        title: req.body.title, defaultPath: defPath,
-        properties: req.body.properties
+        title: options.title, defaultPath: defPath,
+        properties: options.properties
       }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
         if (!object.filePaths || !object.filePaths.length) {
           logInfo("You didn't select anything");
@@ -657,14 +668,11 @@ function setupServer() {
   server.post('/fileExists', function (req: any, res: any) {
     logInfo("check if a file exists");
 
-    if (JSON.stringify(req.body) != '{}') {
-      var filePath = req.body.filePath;
-
-      if (fs.existsSync(filePath)) {
-        res.send("true");
-      } else {
-        res.send("false");
-      }
+    let filePath: string = req.body;
+    if (filePath.length > 0 && fs.existsSync(filePath)) {
+      res.send("true");
+    } else {
+      res.send("false");
     }
   });
 
@@ -676,15 +684,16 @@ function setupServer() {
 
   server.post('/makeDirectory', function (req: any, res: any) {
     logInfo("make directory");
-
-    if (JSON.stringify(req.body) != '{}') {
-      var dirPath = req.body.dirPath;
+    var dirPath = req.body;
+    if (dirPath.length > 0) {
       try {
         fs.mkdirSync(dirPath);
         res.send("true");
       } catch (error) {
         res.send(error);
       }
+    } else {
+      res.send("false");
     }
   });
 

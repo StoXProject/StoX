@@ -52,7 +52,7 @@ export class AutocompleteComponent {
   get selectedItem(): string {
     return this.m_selectedItem;
   }
-  @Output() change = new EventEmitter();
+  @Output() complete = new EventEmitter();
 
   constructor() {
     //this.formCtrl = new FormControl();
@@ -66,7 +66,8 @@ export class AutocompleteComponent {
   updateSelectedItem(val: string) {
     //if (this.selectedItem != val) {
     this.selectedItem = val;
-    this.change.emit({ selectedItem: this.selectedItem });
+    console.log("Emmitting complete event " + this.selectedItem + " on autocomplete")
+    this.complete.emit({ selectedItem: this.selectedItem });
     //}
   }
   optionSelected(event: MatAutocompleteSelectedEvent) {

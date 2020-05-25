@@ -208,12 +208,13 @@ export class DataService {
     return "http://" + host + ":" + port + "/" + api;
   }
   public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<HttpResponse<any>> {
+    //console.log(api + " post " + JSON.stringify(body));
     return this.httpClient.post(DataService.getURL(host, port, api), body,
       {
         observe: 'response', // 'body' or 'response'
-        /*headers: new HttpHeaders({
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }),*/
+        headers: new HttpHeaders({
+          'Content-Type': 'text/plain'//'text/plain; charset=utf-8'
+        }),
         responseType: <any>responseType
       })
       .pipe(tap(_ => _, error => this.handleError(error)));
@@ -291,9 +292,20 @@ export class DataService {
     body.set('args', args);
     body.set('package', "'" + pkg + "'");
     */
-   console.log("RstoxAPI::runFunction(package='" + pkg + "', what='" + what + "', args='" + args + "')")
-    return <any>this.callR(what, args, pkg)
-    //return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', body, 'text', true, "json")
+    let rVal = (o: any) => {
+      if (o != null) {
+        switch (typeof o) {
+          case 'string': return JSON.stringify(o);
+          case 'boolean': return o ? 'TRUE' : 'FALSE'
+          default: return o;
+        }
+      }
+      return o;
+    }
+    console.log(pkg + "::" + what + "(" + Object.keys(argsobj).map(k => k + "=" + rVal(argsobj[k])).join() + ")");
+    // console.log("RstoxAPI::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
+    return <any>this.callR({ what: what, args: args, package: pkg })
+      //return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', body, 'text', true, "json")
       .pipe(map(res => {
         let r2: RunResult = JSON.parse(res.body !== undefined ? res.body : res);
         if (dothrow) {
@@ -470,27 +482,28 @@ export class DataService {
   }
 
   setRPath(rpath: string): Observable<any> {
-    return this.postLocalNode('rpath', { rpath: rpath });
+    return this.postLocalNode('rpath', rpath);
   }
 
-  callR(what: string, args : string, pkg : string): Observable<any> {
-    return this.postLocalNode('callR', { what : what, args : args, pkg : pkg });
+  callR(j: any): Observable<any> {
+    console.log("RstoxAPI::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
+    return this.postLocalNode('callR', j);
   }
 
   browse(defaultpath: string): Observable<any> {
-    return this.postLocalNode('browse', { defaultpath: defaultpath });
+    return this.postLocalNode('browse', defaultpath);
   }
 
   browsePath(options: any): Observable<any> {
     return this.postLocalNode('browsePath', options);
   }
 
-  fileExists(options: any): Observable<any> {
-    return this.postLocalNode('fileExists', options);
+  fileExists(filePath: string): Observable<any> {
+    return this.postLocalNode('fileExists', filePath);
   }
 
-  makeDirectory(options: any): Observable<any> {
-    return this.postLocalNode('makeDirectory', options);
+  makeDirectory(dirPath: string): Observable<any> {
+    return this.postLocalNode('makeDirectory', dirPath);
   }
 
   public getRPath(): Observable<any> {
@@ -501,19 +514,19 @@ export class DataService {
     return this.getLocalNode('projectrootpath');
   }
 
-  public readActiveProject(): Observable<any> { 
+  public readActiveProject(): Observable<any> {
     return this.getLocalNode('readactiveproject');
   }
-  
-  public rAvailable(): Observable<any> { 
-    return this.getLocalNode('rAvailable');
-  } 
 
-  public updateActiveProject(projectPath: string): Observable<any> {
-    return this.postLocalNode('updateactiveproject', { jsonString: projectPath });
+  public rAvailable(): Observable<any> {
+    return this.getLocalNode('rAvailable');
   }
 
-  public updateProjectRootPath(jsonString: string): Observable<any> {
-    return this.postLocalNode('updateprojectrootpath', { jsonString: jsonString });
+  public updateActiveProject(projectPath: string): Observable<any> {
+    return this.postLocalNode('updateactiveproject', projectPath);
+  }
+
+  public updateProjectRootPath(projectRootPath: string): Observable<any> {
+    return this.postLocalNode('updateprojectrootpath', projectRootPath);
   }
 }
