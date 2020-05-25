@@ -57,8 +57,8 @@ export class ParameterComponent implements OnInit {
     }
     let val = pi.value;
     // Quote strings to let backend smoothly transform all values to its corresponding types(jsonlite::fromJSON removes the quotes)
-    if (pi.type == "character") {
-      val = "\"" + val + "\"";
+    if (pi.type == "character" && pi.format == "none") { // single value string as json compatible
+      val = JSON.stringify(val);
     }
     //if (pi.value == "" && pi.format == "filePaths") {
     //pi.value = "[]";   

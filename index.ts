@@ -614,7 +614,7 @@ function setupServer() {
   // observe rpath in backend
   server.post('/callR', async (req: any, res: any) => {
     // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
-    logInfo(req.body);
+    //logInfo(req.body);
     let s: any = await callR(req.body);
     //logInfo('call R result' + require('util').inspect(s));
     // res.type('text/plain');
