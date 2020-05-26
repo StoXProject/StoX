@@ -23,7 +23,7 @@ var cors = require('cors');
 var callr_evaluate: boolean[] = [];
 
 const net = require("net")
-let client : any = null;
+let client: any = null;
 
 
 let useOpenCPU: boolean = false;
@@ -359,7 +359,12 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
   let propFileName = require('os').homedir() + "/.stox.properties.json";
   try {
     if (fs.existsSync(propFileName)) {
-      properties = JSON.parse(fs.readFileSync(propFileName, { encoding: 'utf-8', flag: 'r' }));
+      try {
+        properties = JSON.parse(fs.readFileSync(propFileName, { encoding: 'utf-8', flag: 'r' }));
+      } catch (err) { 
+        properties = null;
+        logInfo("Properties not read due to error " + err);
+      }
       logInfo("Properties read from file: " + propFileName);
     }
     if (properties == null) {
