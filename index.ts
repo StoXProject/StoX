@@ -310,8 +310,8 @@ async function startBackendServer(): Promise<string> {
  * Create a safe connection to socket with timeout loop. Either success or failure in each try.
  */
 async function createConnection() {
-  for (let i = 1; i <= 120; i++) {
-    //await new Promise(r => setTimeout(() => { r(); }, 200/*ms*/)); // createConnection synchr. takes however 1 sec.
+  for (let i = 1; i <= 10000; i++) {
+    await new Promise(r => setTimeout(() => { r(); }, 400/*ms*/)); // createConnection synchr. takes however 1 sec.
     logInfo("Connecting to " + "localhost" + ":" + 6312 + " try " + i);
     let connected = false;
     await new Promise(resolve => {
