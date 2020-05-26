@@ -461,7 +461,7 @@ export class MapSetup {
     static isStationSelected(f: Feature, pds: ProcessDataService): boolean {
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
         let selected: boolean = false;
-        if (secInfos != null) {
+        if (secInfos != null && pds.bioticAssignmentData != null) {
             selected = secInfos.find(secInfo => pds.bioticAssignmentData.BioticAssignment.find(asg => secInfo["Haul"] == asg.Haul && pds.selectedPSU == asg.PSU) != null) != null;
         }
         return selected != null && selected;
