@@ -56,78 +56,6 @@ app.on('ready', async () => {
   createWindow()
 })
 
-
-/*const server_str: string =
-  "# read all chunks and throttle with client handshake\n" +
-  "read.socket.all <- function(s) {\n" +
-  "    maxlen <- 256L\n" +
-  "    len <- read.socket(s, maxlen)\n" +
-  "    #print(paste('length received ', len))\n" +
-  "    write.socket(s, len); # tell client to continue\n" +
-  "    nChunks <- ((as.numeric(len) - 1) %/% maxlen) + 1\n" +
-  "    buf = ''\n" +
-  "    # read nChunks chunks and concatenate\n" +
-  "    for(c in 1:nChunks) {\n" +
-  "        buf <- paste0(buf, read.socket(s, maxlen))\n" +
-  "        #print(paste('throttle step' , buf))\n" +
-  "    }\n" +
-  "    buf\n" +
-  "}\n" +
-  "\n" +
-  "# write all chunks and client handshake (client will throttle)\n" +
-  "write.socket.all <- function(s, r){\n" +
-  "    respl <- as.character(nchar(r))\n" +
-  "    #print(paste('sending response length', respl))\n" +
-  "    write.socket(s, respl)\n" +
-  "    resplr <- read.socket(s) # wait for client berfore sending response\n" +
-  "    #print(paste('received response length handshake', resplr))\n" +
-  "    write.socket(s, paste0(r));\n" +
-  "    \n" +
-  "}\n" +
-  "\n" +
-  "handle <- function(cmd){\n" +
-  "      # Service command/response handler\n" +
-  "tryCatch({\n" +
-  "    cmdj <- jsonlite::fromJSON(cmd)\n" +
-  "   res <- RstoxAPI::runFunction(cmdj$what, cmdj$args, cmdj$package)\n" +
-  "    r <- jsonlite::toJSON(res, pretty=T, auto_unbox=T, na='string')\n" +
-  "    r    \n" +
-  "}, warning = function(warning_condition) {\n" +
-  "    'warning'\n" +
-  "}, error = function(error_condition) {\n" +
-  "    'error'\n" +
-  "})\n" +
-  "    \n" +
-  "}\n" +
-  "\n" +
-  "# runFunction service - loop and wait on socket\n" +
-  "s <- make.socket(host='localhost',port=6312,server=TRUE)\n" +
-  "while(TRUE) {\n" +
-  "\n" +
-  "cmd <- read.socket.all(s)\n" +
-  "#print(paste0('received cmd ', cmd))\n" +
-  "if (nchar(cmd)==0) {\n" +
-  " # client control command. called when client connection ends\n" +
-  "break\n" +
-  "}\n" +
-  "# Service command/response handler\n" +
-  "r <- handle(cmd)\n" +
-  "write.socket.all(s, r)\n" +
-  "}\n" +
-  "\n" +
-  "app.on('ready', async () => {\n" +
-  "if (setupEvents.handleSquirrelEvent()) {\n" +
-  "return;\n" +
-  "}\n" +
-  "setupLogger();\n" +
-  "logInfo('lifecycle: ready')\n" +
-  "setupServer();\n" +
-  "readPropertiesFromFile();\n" +
-  "await startBackendServer();\n" +
-  "startNodeServer();\n" +
-  "createWindow()\n" +
-  "})";*/
-
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
   // On macOS it is common for applications and their menu bar
@@ -149,9 +77,6 @@ app.on('quit', function () {
   // Write app properties file to disc here.
   logInfo('ev:app quit');
   writePropertiesToFile();
-  /*if (client != null) {
-    client.destroy();
-  }*/
 });
 
 function logInfo(str: string) {
@@ -324,15 +249,7 @@ const createMenu = function createMenu() {
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
-/*async function connectRserve(rserve: any): Promise<any> {
-  console.log("Creating R session");
-  return new Promise((resolve) => {
-    rserve.connect('localhost', 6311, (err: any, client: any) => {
-      console.log("Connected");
-      resolve(client);
-    });
-  })
-}*/
+
 function rScriptBin() {
   return (properties.rPath == "" || properties.rPath == null ? "" : properties.rPath + "/") + "Rscript";
 }
@@ -359,7 +276,7 @@ async function startBackendServer(): Promise<string> {
     logInfo('Client closed');
   }
   logInfo('Create client socket');
-  client = new net.Socket();
+  client = null;//new net.Socket();
   rAvailable = await checkRAvailable();
   if (!rAvailable) {
     logInfo('R is not available- quitting startBackendServer');
@@ -379,34 +296,49 @@ async function startBackendServer(): Promise<string> {
   // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
   logInfo("Spawning " + rscriptBin + " " + fileName);
   backendProcess = child_process.spawn(rscriptBin, [fileName]);
-  backendProcess.on('error', (er: any) => { 
+  backendProcess.on('error', (er: any) => {
     logInfo("Spawning error " + er);
   });
   // console.log("Process " + backendProcess.pid + " started with " + serverCmd)
   logInfo("Backend started.");
   //console.log(backendProcess.pid);
   //rserve_client = await connectRserve(rserve);
-  logInfo("Connecting to 6312 on localhost");
-  await new Promise((r) => {
-    client.connect(6312, 'localhost', () => {
-      logInfo('Node connected to 6312 as client. Ready to write R calls');
-      r();
-    });
-  });
-  client.on('data', function (data: any) {
-    if (client.handle != null) {
-      client.handle(data);
-    }
-  });
-
-  logInfo("After connection has been synchronously set");
-  client.on('close', function () {
-    logInfo('Node client connection 6312 closed');
-  });
-  logInfo('Setting encoding');
-  client.setEncoding("utf8"); // to get chunks read as strings
-  //console.log(await callFunction("getAvailableTemplatesDescriptions", "{}", "RstoxFramework"));
+  await createConnection();
   return "ok";
+}
+
+/**
+ * Create a safe connection to socket with timeout loop. Either success or failure in each try.
+ */
+async function createConnection() {
+  for (let i = 1; i <= 120; i++) {
+    //await new Promise(r => setTimeout(() => { r(); }, 200/*ms*/)); // createConnection synchr. takes however 1 sec.
+    logInfo("Connecting to " + "localhost" + ":" + 6312 + " try " + i);
+    let connected = false;
+    await new Promise(resolve => {
+      client = new net.createConnection(6312, "localhost")
+        .on('connect', function () {
+          connected = true;
+          logInfo("Connected in try " + i);
+          resolve();
+        }).on('error', function (err: any) {
+          logInfo(err);
+          resolve();
+        });
+    });
+    if (connected) {
+      break;
+    }
+  }
+  if (client != null) {
+    client.on('data', function (data: any) {
+      if (client.handle != null) {
+        client.handle(data);
+      }
+    });
+    client.setEncoding("utf8"); // to get chunks read as strings
+    return "";
+  };
 }
 
 
