@@ -346,7 +346,7 @@ export class ProjectService {
     return this.processes != null ? this.processes.findIndex(p => p.processID === id) : null;
   }
   public getProcessIdxByProcessesAndId(processes: Process[], id: string): number {
-    return this.processes != null ? processes.findIndex(p => p.processID === id) : null;
+    return this.processes != null && id != null ? processes.findIndex(p => p.processID === id) : null;
   }
   public getActiveProcess(): Process {
     return this.getProcessById(this.activeProcessId);
@@ -391,8 +391,12 @@ export class ProjectService {
     }
     return this.processes[idx];
   }*/
-  get activeProcessId() {
-    return this.m_activeProcess != null ? this.m_activeProcess.processID : null;
+  get activeProcessId() : string {
+    let res = this.m_activeProcess != null ? this.m_activeProcess.processID : null;
+    if(res === "NA") { // NA maps to null in gui
+      res = null; 
+    }
+    return res;
   }
 
   set activeProcessId(processId: string) {

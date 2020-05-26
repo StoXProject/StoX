@@ -338,7 +338,9 @@ export class DataService {
 
   resetModel(projectPath: string, modelName: string): Observable<ProcessTableResult> {
     return this.runFunction('resetModel', {
-      "projectPath": projectPath, "modelName": modelName
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "returnProcessTable": true
     });
   }
 
