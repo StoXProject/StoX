@@ -255,7 +255,8 @@ function rScriptBin() {
 
 async function checkRAvailable(): Promise<boolean> {
   var rscriptBin = rScriptBin();
-  let p1 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "print(TRUE)"]);
+  logInfo('Rscript bin ' + rscriptBin);
+  let p1 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "TRUE"]);
   logInfo('Check Rscript availability ' + p1.stdout);
 
   if (p1.stdout == null || !p1.stdout.includes("TRUE")) {
