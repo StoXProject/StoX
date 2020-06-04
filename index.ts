@@ -482,7 +482,7 @@ async function evaluate(client: any, s: string) {
     client.handle = (data: any) => {
       // Writing chunks (throttling) into total buffer
       buf.write(data.toString(), bufLen);
-      bufLen = bufLen + data.length;
+      bufLen = bufLen +  Buffer.byteLength(data);
       nChunks++;
       if (bufLen == nResp) { // test on length
         // The response is received - finish
