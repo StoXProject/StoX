@@ -481,8 +481,8 @@ async function evaluate(client: any, s: string) {
     // calling handler from socket data event, registered once upon connection
     client.handle = (data: any) => {
       // Writing chunks (throttling) into total buffer
-      buf.write(data.toString(), bufLen);
-      bufLen = bufLen +  Buffer.byteLength(data);
+      buf.write(data, bufLen);
+      bufLen = bufLen + data.length;
       nChunks++;
       if (bufLen == nResp) { // test on length
         // The response is received - finish
@@ -490,7 +490,7 @@ async function evaluate(client: any, s: string) {
       }
     };
   });
-  return buf.toString();
+  return Buffer.from(buf.toString(), 'hex');
 }
 
 

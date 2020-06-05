@@ -22,13 +22,13 @@ write.socket.all <- function(s, r){
     write.socket(s, respl)
     resplr <- read.socket(s) # wait for client berfore sending response
     #print(paste('received response length handshake', resplr))
-    write.socket(s, paste0(r));
-    
+    write.socket(s, r);
 }
 
 handle <- function(cmd){
     # Service command/response handler
-    try(RstoxAPI::runFunction.JSON(cmd))
+    r <- try(RstoxAPI::runFunction.JSON(cmd))
+    paste0(as.character(charToRaw(r)), collapse='')
 }
 
 # runFunction service - loop and wait on socket
