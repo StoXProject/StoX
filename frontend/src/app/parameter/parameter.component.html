@@ -84,12 +84,17 @@
                                 style="vertical-align: middle !important;" />
                         </div>
                         <div *ngSwitchCase="'double'">
-                            <input type="number" step="any" value="{{propertyItem.value}}"
+                            <input type="text" value="{{propertyItem.value}}"
                                 (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
                                 style="width:100%;">
                         </div>
+                        <div *ngSwitchCase="'numeric'"> 
+                            <input type="text" value="{{propertyItem.value}}"
+                                (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
+                                style="width:100%;"> 
+                        </div>
                         <div *ngSwitchCase="'integer'">
-                            <input type="number" step="1" value="{{propertyItem.value}}"
+                            <input type="text" value="{{propertyItem.value}}"
                                 (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)"
                                 style="width:100%;">
                         </div>
