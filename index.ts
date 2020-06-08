@@ -449,8 +449,9 @@ function callR(arg: string) {
   });
 }*/
 
-async function evaluate(client: any, s: string) {
+async function evaluate(client: any, cmd: string) {
   // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
+  let s = Buffer.from(cmd, 'utf8').toString('hex'); // Encode command as hex
   let lens = "" + s.length;
   await client.write("" + s.length);
   await new Promise(resolve => {
@@ -490,7 +491,7 @@ async function evaluate(client: any, s: string) {
       }
     };
   });
-  return Buffer.from(buf.toString(), 'hex');
+  return Buffer.from(buf.toString(), 'hex').toString("utf8");
 }
 
 
