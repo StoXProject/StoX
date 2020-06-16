@@ -101,15 +101,15 @@ export class MapComponent implements OnInit, AfterViewInit {
   ];
   projectionsMenu = [
     {
-      label: 'Lambert Azimuthal Equal Area - North Sea', command: e => {
+      label: 'STOX:001: Lambert Azimuthal Equal Area - North Sea', command: e => {
 
         this.setProjectionProj4('STOX:001', 3);
       }
     },
     {
-      label: 'Lambert Azimuthal Equal Area - South pole', command: e => {
+      label: 'ESRI:102020: Lambert Azimuthal Equal Area - South pole', command: e => {
 
-        this.setProjectionProj4('STOX:002', 2);
+        this.setProjectionProj4('ESRI:102020', 2);
       }
     }
   ];
@@ -236,7 +236,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     // Lambert Azimuthal Equal Area
     proj4.defs('STOX:001', '+proj=laea +lat_0=60 +lon_0=10 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
-    proj4.defs('STOX:002', '+proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ');
+    proj4.defs('ESRI:102020', '+proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ');
 
 
     proj4.defs('STOX:003', '+proj=laea +lat_0=75 +lon_0=30 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
@@ -264,8 +264,8 @@ export class MapComponent implements OnInit, AfterViewInit {
     var stox001 = getProjection('STOX:001');
     stox001.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'STOX:001'));//[-1040784.5135, -2577524.9210, 9668901.4484, 4785105.1096]); 
     //stox001.setExtent([1267000, 1826000, 5261000, 6575000]);  
-    var stox002 = getProjection('STOX:002');
-    stox002.setExtent(transformExtent([-100, -90, 100, 40], 'EPSG:4326', 'STOX:002'));//[-1040784.5135, -2577524.9210, 9668901.4484, 4785105.1096]); 
+    var stox002 = getProjection('ESRI:102020');
+    stox002.setExtent(transformExtent([-100, -90, 100, 40], 'EPSG:4326', 'ESRI:102020'));//[-1040784.5135, -2577524.9210, 9668901.4484, 4785105.1096]); 
     // var test_coordinate = transform([-79.4460, 37.7890], 'EPSG:4326', 'EPSG:2284');
     //console.log(test_coordinate);
 
