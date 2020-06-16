@@ -5,17 +5,19 @@ import OlXYZ from 'ol/source/XYZ';
 import Source from 'ol/source/Vector';
 import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
+//import Extent from 'ol/extent';
 import Overlay from 'ol/Overlay';
 import OverlayPositioning from 'ol/OverlayPositioning';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
+import { Geometry } from 'ol/geom';
 //import Projection from 'ol/proj';
 import TopoJSON from 'ol/format/TopoJSON';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Vector, Layer } from 'ol/layer';
 import { DoCheck } from '@angular/core';
 
-import { fromLonLat, transform } from 'ol/proj';
+import { fromLonLat, transform, transformExtent } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import * as proj4x from 'proj4';
 
@@ -44,6 +46,10 @@ import { isDefined } from '@angular/compiler/src/util';
 import { EDSU_PSU, BioticAssignment } from '../data/processdata';
 import { ActiveProcessResult } from '../data/runresult';
 import { NamedStringTable, NamedStringIndex } from '../data/types';
+import { applyTransform, Extent, getCenter } from 'ol/extent';
+const proj4 = (proj4x as any).default;
+import { get as getProjection, getTransform } from 'ol/proj';
+import { Coordinate } from 'ol/coordinate';
 
 @Component({
   selector: 'app-map',
@@ -57,7 +63,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   // source: OlXYZ;
   // toposource: VectorSource;
   // layer: OlTileLayer;
-  vector: Vector;
+  coastLine: Vector;
+  grid: Vector;
   view: OlView;
   /*stationLayer: Layer = null;
   edsuPointLayer: Layer = null;
@@ -69,6 +76,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   stratumDraw: Draw;
   overlay: Overlay;
   private m_Tool: string = "freemove";
+  proj = 'STOX:001';//'ESRI:54003'//'EPSG:3857';//'ESRI:54003';//'EPSG:3857';//'EPSG:4326';//'ESRI:54003';//'EPSG:9820';
+
   constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
   /*@HostListener('window:keyup', ['$event'])
@@ -90,6 +99,21 @@ export class MapComponent implements OnInit, AfterViewInit {
     { tool: "stratum-delete", iclass: "deleteicon" }*/
 
   ];
+  projectionsMenu = [
+    {
+      label: 'Lambert Azimuthal Equal Area - North Sea', command: e => {
+
+        this.setProjectionProj4('STOX:001', 3);
+      }
+    },
+    {
+      label: 'Lambert Azimuthal Equal Area - South pole', command: e => {
+
+        this.setProjectionProj4('STOX:002', 2);
+      }
+    }
+  ];
+
   public getToolEnabled(tool: string): boolean {
     switch (tool) {
       case "freemove": return true;
@@ -167,13 +191,55 @@ export class MapComponent implements OnInit, AfterViewInit {
     });
   }
 
+
+  setProjectionProj4(newProjCode, zoom) {
+    var newProj = getProjection(newProjCode);
+    var newProjExtent = newProj.getExtent();
+    //  console.log(newProjExtent.toString());
+    var newView = new OlView({
+      projection: newProj,
+      center: getCenter(newProjExtent),//fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
+      zoom: zoom//,
+      //extent: newProjExtent || undefined
+    });
+    this.map.setView(newView);
+    //this.map.getLayers().forEach(l=>l.)
+    //this.map.getLayers().forEach(l=>this.map.removeLayer(l));
+    this.map.removeLayer(this.grid);
+    // this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
+    this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
+      .forEach(f => f.getGeometry().transform(this.proj, newProjCode)));
+
+    this.proj = newProjCode;
+    this.grid = MapSetup.getGridLayer(this.proj);
+    this.map.addLayer(this.grid);
+
+    //this.grid.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
+    //this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
+    //this.grid = MapSetup.getGridLayer(this.proj);
+    //this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
+    //  .forEach(f => f.getGeometry().transform(this.proj, newProjCode)));
+
+    // Example how to prevent double occurrence of map by limiting layer extent
+    if (newProj == getProjection('EPSG:3857')) {
+      // this.map.getLayers().forEach(l=> l.setExtent([-1057216, 6405988, 404315, 8759696]));
+    } else {
+      //this.map.getLayers().forEach(l=> l.setExtent(undefined));
+    }
+  }
+
+
   async ngOnInit() {
 
-    const proj4 = (proj4x as any).default;
+
     // Two example-projections (2nd is included anyway)
 
     // Lambert Azimuthal Equal Area
-    proj4.defs('EPSG:9820', '+proj=laea +lat_0=60 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+    proj4.defs('STOX:001', '+proj=laea +lat_0=60 +lon_0=10 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+    proj4.defs('STOX:002', '+proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ');
+
+
+    proj4.defs('STOX:003', '+proj=laea +lat_0=75 +lon_0=30 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
     // World Miller Cylindrical
     proj4.defs('ESRI:54003', '+proj=mill +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R_A +datum=WGS84 +units=m +no_defs');
     // Sea Ice Polar Stereographic
@@ -195,11 +261,15 @@ export class MapComponent implements OnInit, AfterViewInit {
     */
     //    +proj=mill +lon_0=90w
     register(proj4);
+    var stox001 = getProjection('STOX:001');
+    stox001.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'STOX:001'));//[-1040784.5135, -2577524.9210, 9668901.4484, 4785105.1096]); 
+    //stox001.setExtent([1267000, 1826000, 5261000, 6575000]);  
+    var stox002 = getProjection('STOX:002');
+    stox002.setExtent(transformExtent([-100, -90, 100, 40], 'EPSG:4326', 'STOX:002'));//[-1040784.5135, -2577524.9210, 9668901.4484, 4785105.1096]); 
     // var test_coordinate = transform([-79.4460, 37.7890], 'EPSG:4326', 'EPSG:2284');
     //console.log(test_coordinate);
-    var proj = 'EPSG:9820';//'ESRI:54003'//'EPSG:3857';//'ESRI:54003';//'EPSG:3857';//'EPSG:4326';//'ESRI:54003';//'EPSG:9820';
 
-    this.vector = new Vector({
+    this.coastLine = new Vector({
       source: new Source({
         //url: 'assets/landflate_verden.json',
         url: 'assets/landflate_verden.json',
@@ -211,7 +281,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         }),
         overlaps: false,
       }),
-      style: MapSetup.getMapStyle()
+      style: MapSetup.getMapStyle(),
+      zIndex: 11
     });
 
 
@@ -219,24 +290,29 @@ export class MapComponent implements OnInit, AfterViewInit {
       source: this.source
     });*/
 
-    this.view = new OlView({
-      //center: fromLonLat([170, 10], proj),
-      center: fromLonLat([1, 68], proj),
-      projection: proj,
-      zoom: 4.9,
-    });
+    /* this.view = new OlView({
+       //center: fromLonLat([170, 10], proj),
+       center: fromLonLat([1, 68], this.proj),
+       projection: this.proj,
+       zoom: 2,
+     });*/
 
     this.map = new OlMap({
       target: 'map',
-      layers: [MapSetup.getGridLayer(proj), this.vector],
-      view: this.view,
+      //layers: [this.grid, this.coastLine],
+      //  view: this.view,
       controls: [MapSetup.getMousePositionControl()]
     });
+    this.grid = MapSetup.getGridLayer(this.proj);
+    this.map.addLayer(this.grid);
+    this.map.addLayer(this.coastLine);
+
+    this.setProjectionProj4("STOX:001", 2);
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
-    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, proj);
+    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this.proj);
 
     this.ps.iaModeSubject.subscribe(iaMode => {
-      this.handleIaMode(iaMode, proj);
+      this.handleIaMode(iaMode, this.proj);
     });
 
     this.pds.processDataSubject.subscribe(async evt => {
@@ -265,7 +341,7 @@ export class MapComponent implements OnInit, AfterViewInit {
           break;
         }
         case "selectedPSU": {
-          switch(this.ps.iaMode) {
+          switch (this.ps.iaMode) {
             case "bioticAssignment": {
               this.updateStationSelection();
               // drop to EDSU selection to get EDSU focus change
@@ -359,7 +435,7 @@ export class MapComponent implements OnInit, AfterViewInit {
               let selected: boolean = MapSetup.isStationSelected(fe, this.pds);
               MapSetup.selectStation(fe, this.ps, this.pds, this.dataService, !selected);
               MapSetup.updateStationSelection(fe, this.pds);
-              break; 
+              break;
             }
           };
         });

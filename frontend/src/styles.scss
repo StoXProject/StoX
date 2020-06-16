@@ -123,6 +123,7 @@ $nodata: #acacac;
           color: black !important;
           font-weight: 600;
           font-size: 0.75rem;
+          white-space: nowrap;
         }
       }
     }
@@ -150,6 +151,15 @@ $nodata: #acacac;
   text-decoration: none !important;
   .ui-menuitem-text {
     font-size: 0.75rem;
+  }
+}
+.ui-menu {
+  width: unset;
+  .ui-menuitem-link {
+    padding: 2px 2px 2px 2px !important; 
+  }
+  .ui-menuitem-text {
+    white-space: nowrap;
   }
 }
 //.ui-menuitem-link {
@@ -363,6 +373,11 @@ input:focus {
   @include icon_content("\f0ac", 0.5rem, rgb(21, 40, 216));
   top: 20%;
   left: 20%;
+}
+.globeicon:after {
+  @include icon_content("\f0ac", 0.9rem, rgb(21, 40, 216));
+  top: 10%;
+  left: 50%;
 }
 
 .runicon:before {

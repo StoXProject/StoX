@@ -31,6 +31,7 @@ import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
 import { EDSU_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata'
 import { NamedStringTable, NamedStringIndex } from './../data/types'
 import { asString } from 'ol/color';
+declare const Buffer;
 
 export class MapSetup {
     public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
@@ -256,7 +257,7 @@ export class MapSetup {
                             featureProjection: proj
                         })*/
             if (typeof (strataName) == 'string') {
-                console.log("converting " + strataName);
+                console.log("Strata name " + strataName + " with hex " + MapSetup.toHex(strataName));
                 // a valid stratum name has been entered
                 //f.setId(Math.max(...source.getFeatures().map(f2 => f2.getId() != null ? +f2.getId() : 0)) + 1);
                 f.setProperties({ 'polygonName': strataName });
@@ -271,6 +272,14 @@ export class MapSetup {
         return d;
     }
 
+    // hex helper in typescript
+    static toHex(str: string) {
+        var result = '';
+        for (var i = 0; i < str.length; i++) {
+            result += str.charCodeAt(i).toString(16);
+        }
+        return result;
+    }
     /**
      * getGEOJSONLayerFromURL - create a GEOJSON layer
      * @param name 
@@ -371,7 +380,7 @@ export class MapSetup {
         }
     }
 
-    public static getGridLayer(proj): Layer {
+    public static getGridLayer(proj): Vector {
         var gridLines = {
             'type': 'FeatureCollection',
             'features': []
@@ -384,16 +393,16 @@ export class MapSetup {
         });
         let lines = []
         // Why is -50 a limit here?
-        for (let iy = -50; iy <= 90; iy += 5) {
+        for (let iy = -80; iy <= 80; iy += 5) {
             let line = [];
-            for (let ix = -180; ix <= 180; ix += 5) {
+            for (let ix = -100; ix <= 150; ix += 5) {
                 line.push([ix, iy]);
             }
             lines.push(line);
         }
-        for (let ix = -180; ix <= 180; ix += 5) {
+        for (let ix = -100; ix <= 150; ix += 5) {
             let line = [];
-            for (let iy = -50; iy <= 90; iy += 5) {
+            for (let iy = -80; iy <= 80; iy += 5) {  
                 line.push([ix, iy]);
             }
             lines.push(line);
@@ -489,7 +498,7 @@ export class MapSetup {
         layers.forEach(layer =>
             hauls.forEach(haul => {
                 let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Layer == layer && asg.Haul == haul && psu == asg.PSU);
-                console.log('layer ' + layer + " haul "+ haul + " idx " + idx);
+                console.log('layer ' + layer + " haul " + haul + " idx " + idx);
                 if (on) {
                     if (idx < 0) {
                         console.log('push assignment');
