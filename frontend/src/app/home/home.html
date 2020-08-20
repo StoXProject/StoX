@@ -7,15 +7,7 @@
 <SaveAsProjectDlg></SaveAsProjectDlg>
 <ResetProjectDlg></ResetProjectDlg>
 <CloseProjectDlg></CloseProjectDlg>
-<div class="navbar d-flex" style="height:3rem; z-index:100; flex-wrap: nowrap;">
-	<div class="stox-logo" style="height:100%; display:inline-block;">
-		<img src="./assets/images/stox.svg" style="height:100%;width:100px;display:inline-block;">
-		<span
-			style="margin-left:10px;display:inline;font-size:1.0rem;font-weight:bold; vertical-align: bottom; color:#4d6277">{{stoxVersion}} / RstoxAPI {{ps.rstoxAPIVersion}}
-		</span>
-	</div>
-	<div class="flex-grow-1" style="height:100%;">
-	</div>
+<div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0.2rem 0.2rem; line-height:0.8rem;">
 	<!--<svg height="35" width="100px">
 		<defs>
 			<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -26,14 +18,53 @@
 		<ellipse cx="60" cy="16" rx="60" ry="16" fill="url(#grad1)" />
 		<text fill="#ffffff" font-size="25" font-family="Verdana" x="30" y="25">3.0.9</text>
 	</svg>-->
-	<p-menu #menu popup="popup" [model]="items">
+	<!--<button mat-button [matMenuTriggerFor]="filemenu">File
+		<mat-menu  #filemenu="matMenu">
+		</mat-menu>                                                                                   
+	</button>      -->
+	<button mat-button [matMenuTriggerFor]="projectmenu">Project
+		<mat-menu #projectmenu="matMenu">
+			<button mat-menu-item (click)="this.createProjectDialogService.showDialog()">Create new project</button>
+			<button mat-menu-item (click)="this.openProjectDlgService.showDialog()">Open project</button>
+			<button mat-menu-item (click)="this.closeProject.checkSaved()">Close project</button>
+			<button mat-menu-item (click)="ps.save()"
+				[disabled]="ps.selectedProject == null ||  ps.selectedProject.saved">Save</button>
+			<button mat-menu-item (click)="this.saveProjectAs.show()">Save project as</button>
+			<button mat-menu-item (click)="this.resetProject.checkSaved()">Reset project</button>
+		</mat-menu>
+	</button>
+	<button mat-button [matMenuTriggerFor]="toolsmenu">Tools
+		<mat-menu #toolsmenu="matMenu">
+			<button mat-menu-item (click)="this.rConnectionDlgService.showDialog()">R connection</button>
+		</mat-menu>
+	</button>
+
+	<div class="flex-grow-1" style="height:100%;">
+	</div>
+	<!--	<p-menu #menu popup="popup" [model]="items">
 	</p-menu>
 	<button type="button" style="margin-left:4px; padding:2px !important;" (click)="ps.save()" pButton icon="pi pi-save"
 		[disabled]="ps.selectedProject == null ||  ps.selectedProject.saved">
 
 	</button>
 	<button type="button" style="margin-left:4px;" (click)="menu.toggle($event)" pButton icon="pi pi-bars"></button>
-	<!--<button type="button" class="btn btn-danger">bootstrap</button>-->
+-->
+
+</div>
+<div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0.2rem 0.2rem; line-height:1.0rem;">
+	<button type="button" style="margin-left:4px;" (click)="menu.toggle($event)" pButton icon="pi pi-clone"></button>
+	<button type="button" style="margin-left:4px;" (click)="menu.toggle($event)" pButton icon="pi pi-folder-open"></button>
+	<button type="button" style="margin-left:4px;" (click)="menu.toggle($event)" pButton icon="pi pi-save"></button>
+	<div class="flex-grow-1" style="height:100%;">
+	</div>
+	<div class="stox-logo" style="display:inline-block; vertical-align: middle; line-height:0.7rem; ">
+		<img src="./assets/images/stox.svg"
+			style="height:0.7rem;width:45px;display:inline-block; vertical-align: middle; line-height:0.7rem;">
+		<span
+			style="margin-left:10px;display:inline-block;font-size:0.5rem;font-weight:bold; vertical-align: middle; color:#4d6277">{{stoxVersion}}
+			/ RstoxAPI {{ps.rstoxAPIVersion}}
+		</span>
+	</div> 
 </div>
 <div style="height: calc(100vh - 3rem);">
 	<as-split direction="horizontal" gutterSize=6>
@@ -93,7 +124,7 @@
 				<as-split-area size="70">
 					<ExpressionBuilderDlg></ExpressionBuilderDlg>
 					<QueryBuilderDlg></QueryBuilderDlg>
-					<mat-tab-group #rightTabGroup> 
+					<mat-tab-group #rightTabGroup>
 						<mat-tab label="{{getPropertiesHdr()}}">
 							<app-parameter></app-parameter>
 						</mat-tab>

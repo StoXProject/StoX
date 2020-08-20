@@ -64,12 +64,12 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   async ngOnInit() {
     console.log("Home init")
     this.stoxVersion = '2.9.14';
-    this.items = [{
+    this.items = [/*{
       label: 'R connection...', command: e => this.rConnectionDlgService.showDialog()
-    }];
+    }*/];
     //if (this.ps.rAvailable) {
     this.items.push(...[
-      {
+      /*{
         label: 'Create project...', command: e => this.createProjectDialogService.showDialog()
       },
       {
@@ -90,7 +90,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
         label: 'Reset project', command: e => {
           this.resetProject.checkSaved();
         }
-      }
+      }*/
     ]);
     //   }
   }

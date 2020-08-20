@@ -1,13 +1,14 @@
 @charset "UTF-8";
 
-$stoxColor: #9cc6f0;
+//$stoxColor: #9cc6f0;
+$stoxColor: #e8edf1;
 
 .nav-link {
   padding: 3px 0 0 0;
 }
 
 .navbar {
-  background-image: linear-gradient(to bottom, darken($stoxColor, 15%) , lighten($stoxColor, 15%)); 
+  background-image: linear-gradient(to bottom, darken($stoxColor, 2%) , lighten($stoxColor, 2%)); 
 }
 .stox-logo {
   background-image: radial-gradient(lighten($stoxColor, 20%), lighten($stoxColor, 5%), $stoxColor);
@@ -15,6 +16,11 @@ $stoxColor: #9cc6f0;
   border-radius:5px;
   box-shadow: 0.8px 0.8px darken($stoxColor, 10%); 
   //box-shadow:20px 20px 50px 15px grey;  
+}
+
+.ui-button {
+  height:1.2rem !important;
+  width:1.2rem !important;
 }
 
 
@@ -34,7 +40,7 @@ $stoxColor: #9cc6f0;
 }*/
 
 /* Application-wide Styles */
-h1 {
+/*h1 {
   color: #369;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 250%;
@@ -47,17 +53,17 @@ h3 {
 }
 body {
   margin: 0;
-}
-body,
+}*/
+/*body,
 input[type="text"],
 button {
   color: #888;
   font-family: Cambria, Georgia;
 }
 /* everywhere else */
-* {
+/* {
   font-family: Arial, Helvetica, sans-serif;
-}
+}*/
 
 /* base selector-class for stox panes*/
 [class*="stox-pane"] {

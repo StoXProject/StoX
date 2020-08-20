@@ -554,6 +554,11 @@ input:focus {
   overflow: hidden !important;
 }
 
+.mat-button {
+  font-size: 12px !important;
+  padding:0px 6px !important; 
+}
+
 .mat-button-base {
   line-height: 1.3rem !important;
   min-width: 0px !important;
