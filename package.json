@@ -13,13 +13,15 @@
     "package-linux": "tsc && electron-packager . stox --platform linux --arch x64 --out dist/ --overwrite",
     "installer-win": "node installers/windows/createinstaller.js",
     "installer-mac": "electron-installer-dmg ./dist/stox-darwin-x64/stox.app ./dist/stoxdmg",
-    "installer-linux": "electron-installer-debian --src dist/app-linux-x64/ --dest dist/installers/ --arch amd64  ",
+    "installer-linux": "electron-installer-debian --src dist/stox-linux-x64/ --dest dist/installers/ --arch amd64  ",
     "package-and-installer-win": "npm run package-win && npm run installer-win",
     "package-and-installer-sign-win": "npm run package-win && npm run signstox && npm run installer-win && npm run signinstaller",
     "package-and-installer-mac": "npm run package-mac && npm run installer-mac",
+    "package-and-installer-linux": "npm run package-linux && npm run installer-linux",
     "build-frontend": "cd frontend && npm install --no-fund && ng build --prod --base-href --aot=true --build--optimizer=true && cd ..",
     "build-win": "npm run build-frontend && npm run package-and-installer-sign-win",
     "build-mac": "npm run build-frontend && npm run package-and-installer-mac",
+    "build-linux": "npm run build-frontend && npm run package-and-installer-linux",
     "signstox": "signtool.exe sign /a ./dist/stox-win32-x64/stox.exe",
     "signinstaller": "signtool.exe sign /a ./dist/windows-installer/stoxInstaller.exe",
     "tsc": "tsc"
@@ -43,12 +45,15 @@
   },
   "devDependencies": {
     "electron": "^8.2.0",
+    "electron-installer-debian": "^3.1.0",
     "electron-installer-dmg": "^3.0.0",
     "electron-packager": "^14.2.1",
     "electron-winstaller": "^4.0.0",
     "typescript": "^3.8.3"
   },
   "build": {
-    "public": ["./srv/**"]
-    }
+    "public": [
+      "./srv/**"
+    ]
+  }
 }

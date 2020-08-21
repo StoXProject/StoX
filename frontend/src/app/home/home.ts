@@ -30,8 +30,9 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
     public ps: ProjectService,
-    private saveProjectAs: SaveAsProjectDlgService, private resetProject: ResetProjectDlgService,
-    private closeProject: CloseProjectDlgService,
+    private saveProjectAsService: SaveAsProjectDlgService,
+    private resetProjectService: ResetProjectDlgService,
+    private closeProjectServ: CloseProjectDlgService,
     private ds: DataService
   ) {
     ps.outputTableActivator.subscribe({ next: (idx) => { this.bottomTabGroup.selectedIndex = 1; } })
@@ -48,8 +49,8 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     //event.returnValue = true;
     // TODO: get a dialog when unloading page
     // await this.ds.closeProject(this.ps.selectedProject.projectPath, true).toPromise();
-    
-    await this.closeProject.checkSaved();
+
+    await this.closeProjectServ.checkSaved();
 
     event.preventDefault();
     event.stopPropagation();
@@ -94,4 +95,31 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     ]);
     //   }
   }
+
+  createNewProject() {
+    this.createProjectDialogService.showDialog();
+  }
+
+  openProject() {
+    this.openProjectDlgService.showDialog();
+  }
+  closeProject() {
+    this.closeProjectServ.checkSaved();
+  }
+  save() {
+    this.ps.save();
+  }
+  saveProjectAs() {
+    this.saveProjectAsService.show()
+  }
+  resetProject() {
+    this.resetProjectService.checkSaved();
+  }
+  rConnection() {
+    this.rConnectionDlgService.showDialog();
+  }
+  isSaved(): boolean {
+    return this.ps.selectedProject == null || this.ps.selectedProject.saved
+  }
+
 }

@@ -362,7 +362,7 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
     if (fs.existsSync(propFileName)) {
       try {
         properties = JSON.parse(fs.readFileSync(propFileName, { encoding: 'utf-8', flag: 'r' }));
-      } catch (err) { 
+      } catch (err) {
         properties = null;
         logInfo("Properties not read due to error " + err);
       }
@@ -636,4 +636,10 @@ function setupServer() {
     }
   });
 
+  server.post('/close', function (req: any, res: any) {
+    const remote = require('electron').remote
+    let w = remote.getCurrentWindow()
+    w.close()
+    res.send("true");
+  });
 }

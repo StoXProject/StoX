@@ -24,18 +24,18 @@
 	</button>      -->
 	<button mat-button [matMenuTriggerFor]="projectmenu">Project
 		<mat-menu #projectmenu="matMenu">
-			<button mat-menu-item (click)="this.createProjectDialogService.showDialog()">Create new project</button>
-			<button mat-menu-item (click)="this.openProjectDlgService.showDialog()">Open project</button>
-			<button mat-menu-item (click)="this.closeProject.checkSaved()">Close project</button>
-			<button mat-menu-item (click)="ps.save()"
-				[disabled]="ps.selectedProject == null ||  ps.selectedProject.saved">Save</button>
-			<button mat-menu-item (click)="this.saveProjectAs.show()">Save project as</button>
-			<button mat-menu-item (click)="this.resetProject.checkSaved()">Reset project</button>
+			<button mat-menu-item (click)="createNewProject()">Create new project</button>
+			<button mat-menu-item (click)="openProject()">Open project</button>
+			<button mat-menu-item (click)="closeProject()">Close project</button>
+			<button mat-menu-item (click)="save()"
+				[disabled]="isSaved()">Save</button>
+			<button mat-menu-item (click)="saveProjectAs()">Save project as</button>
+			<button mat-menu-item (click)="resetProject()">Reset project</button>
 		</mat-menu>
 	</button>
 	<button mat-button [matMenuTriggerFor]="toolsmenu">Tools
 		<mat-menu #toolsmenu="matMenu">
-			<button mat-menu-item (click)="this.rConnectionDlgService.showDialog()">R connection</button>
+			<button mat-menu-item (click)="rConnection()">R connection</button>
 		</mat-menu>
 	</button>
 
@@ -52,16 +52,16 @@
 
 </div>
 <div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0.2rem 0.2rem; line-height:1.0rem;">
-	<button type="button" style="margin-left:4px;" (click)="menu.toggle($event)" pButton icon="pi pi-clone"></button>
-	<button type="button" style="margin-left:4px;" (click)="menu.toggle($event)" pButton icon="pi pi-folder-open"></button>
-	<button type="button" style="margin-left:4px;" (click)="menu.toggle($event)" pButton icon="pi pi-save"></button>
+	<button type="button" style="margin-left:4px;" (click)="createNewProject()" pButton icon="pi pi-clone"></button>
+	<button type="button" style="margin-left:4px;" (click)="openProject()" pButton icon="pi pi-folder-open"></button>
+	<button type="button" style="margin-left:4px;" (click)="save()" [disabled]="isSaved()" pButton icon="pi pi-save"></button>
 	<div class="flex-grow-1" style="height:100%;">
 	</div>
 	<div class="stox-logo" style="display:inline-block; vertical-align: middle; line-height:0.7rem; ">
 		<img src="./assets/images/stox.svg"
 			style="height:0.7rem;width:45px;display:inline-block; vertical-align: middle; line-height:0.7rem;">
 		<span
-			style="margin-left:10px;display:inline-block;font-size:0.5rem;font-weight:bold; vertical-align: middle; color:#4d6277">{{stoxVersion}}
+			style="margin-left:10px;display:inline-block;font-size:0.7rem;font-weight:bold; vertical-align: middle; color:#4d6277">{{stoxVersion}}
 			/ RstoxAPI {{ps.rstoxAPIVersion}}
 		</span>
 	</div> 
