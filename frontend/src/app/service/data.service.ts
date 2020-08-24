@@ -508,6 +508,14 @@ export class DataService {
     return this.postLocalNode('makeDirectory', dirPath);
   }
 
+  stoxHome(): Observable<any> {
+    return this.postLocalNode('stoxhome', {});
+  }
+  
+  exit(): Observable<any> {
+    return this.postLocalNode('exit', {});
+  }
+
   public getRPath(): Observable<any> {
     return this.getLocalNode('rpath');
   }

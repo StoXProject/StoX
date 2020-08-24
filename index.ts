@@ -139,7 +139,8 @@ function createWindow() {
     return;
   }
   // mainWindow.setMenu(null);
-  createMenu();
+  //createMenu();
+  Menu.setApplicationMenu(null)
 
   // and load the index.html of the app.
   //mainWindow.loadFile(`../frontend/dist/stox/index.html`)
@@ -636,10 +637,19 @@ function setupServer() {
     }
   });
 
-  server.post('/close', function (req: any, res: any) {
-    const remote = require('electron').remote
-    let w = remote.getCurrentWindow()
-    w.close()
-    res.send("true");
+  server.post('/exit', function (req: any, res: any) {
+    logInfo("/exit");
+    logInfo(mainWindow);
+    if (mainWindow != null) {
+      logInfo("have window");
+      mainWindow.close()
+      res.send("true");
+    }
+  });
+
+  server.post('/stoxhome', async function (req: any, res: any) {
+    logInfo("/stoxhome");
+    const { shell } = require('electron');
+    await shell.openExternal('http://www.imr.no/forskning/prosjekter/stox/');
   });
 }

@@ -116,10 +116,17 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.resetProjectService.checkSaved();
   }
   rConnection() {
-    this.rConnectionDlgService.showDialog();
+    this.rConnectionDlgService.showDialog();         
   }
-  isSaved(): boolean {
-    return this.ps.selectedProject == null || this.ps.selectedProject.saved
+
+  isSaved(): boolean { 
+    return  this.ps.selectedProject == null || this.ps.selectedProject.saved 
   }
+  async stoxHome() { 
+    await this.ds.stoxHome().toPromise();     
+  }   
+  async exit() { 
+    await this.ds.exit().toPromise();     
+  }   
 
 }
