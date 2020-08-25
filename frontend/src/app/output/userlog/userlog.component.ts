@@ -14,14 +14,18 @@ export class UserLogComponent implements OnInit {
     //  projects: Project[];
     @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
     constructor(public ds: DataService) {
+        ds.logSubject.subscribe(s=>{
+            var self = this;
+            setTimeout(()=>{          
+                self.scrollToBottom();
+           }, 1);
+        
+        })
     }
 
     ngOnInit() {
     }
 
-    handleClick(event: Event) {
-        this.scrollToBottom();
-    }
     scrollToBottom(): void {
         try {
             this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;

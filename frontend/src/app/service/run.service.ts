@@ -120,6 +120,7 @@ export class RunService {
         this.ps.handleAPI(await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise());
         this.ps.runFailedProcessId = null;
         this.dataService.log.length = 0;
+        this.dataService.logSubject.next('log-reset');        
         this.ps.iaMode = 'reset'; // reset interactive mode set to reset
         this.ps.isResetting = false;
         // Reset in backend
@@ -137,6 +138,7 @@ export class RunService {
             this.ps.runningProcessId = p.processID;
             //console.log("Run process " + p.processName + " with id " + p.processID);
             this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "Process " + p.processName));
+            this.dataService.logSubject.next('log-message');
             this.ps.iaMode = '';
             let res: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise());
 

@@ -20,6 +20,8 @@ import { Project } from '../data/project';
 export class DataService {
 
   log: UserLogEntry[] = []; // user log.
+  private m_logSubject = new Subject<string>();
+  public get logSubject() { return this.m_logSubject; }
 
   // private featuresUrl = '/api/features';
   private geojsonUrl = '/api/geojson';
@@ -318,9 +320,11 @@ export class DataService {
             .map(elm => elm.slice("StoX: ".length))
             .forEach(elm => {
               this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
+              this.m_logSubject.next('log-warning');
             });
           r2.error.forEach(elm => {
             this.log.push(new UserLogEntry(UserLogType.ERROR, elm));
+            this.m_logSubject.next('log-error');
           });
         }
         return r2.value;
@@ -511,7 +515,7 @@ export class DataService {
   stoxHome(): Observable<any> {
     return this.postLocalNode('stoxhome', {});
   }
-  
+
   exit(): Observable<any> {
     return this.postLocalNode('exit', {});
   }
