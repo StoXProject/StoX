@@ -467,8 +467,7 @@ export class DataService {
   }
 
   removeEDSU(edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
-    return this.runFunction('removeEDSU', {
-      "acousticPSU": null/* removed */, "EDSU": edsu,
+    return this.runFunction('removeEDSU', {"EDSU": edsu,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
