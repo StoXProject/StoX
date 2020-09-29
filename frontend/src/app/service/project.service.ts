@@ -274,7 +274,7 @@ export class ProjectService {
   }
 
   async initData() {
-    this.checkRAvailability();
+    await this.checkRAvailability();
     let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
 
     console.log("Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);

@@ -1,7 +1,7 @@
 <p-tabView>
     <p-tabPanel header="Function description">
         <ng-template pTemplate="content">
-             <div helpContent [innerHTML]="ps.helpContent | sanitizeHtml" style="overflow:scroll;height:inherit;"></div>
+             <div class="helpcontent" helpContent [innerHTML]="ps.helpContent | sanitizeHtml" style="overflow:scroll;height:inherit;"></div>
         </ng-template>
     </p-tabPanel>
 </p-tabView>

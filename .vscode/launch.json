@@ -10,7 +10,7 @@
             "type": "node",
             "request": "launch",
             "name": "StoX backend",
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/electron",
             "program": "${workspaceFolder}/build/index.js"
         },
         {

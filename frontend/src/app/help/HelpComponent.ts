@@ -70,7 +70,7 @@ export class HelpContentHandler {
 @Component({
   selector: 'app-help',
   templateUrl: './HelpComponent.html',
-  styleUrls: [],
+  styleUrls: ['./HelpComponent.scss'],
 })
 export class HelpComponent {
   constructor(private ps: ProjectService, ) { }
