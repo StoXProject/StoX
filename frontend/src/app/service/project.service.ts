@@ -314,7 +314,8 @@ export class ProjectService {
     this.iaMode = 'reset'; // triggered by active process id
     this.runFailedProcessId = null; // triggered by run service or active process id
     this.runningProcessId = null; // current running process
-    this.m_isResetting = false; // current reset flag.      
+    this.m_isResetting = false; // current reset flag.    
+    this.outputTables = []; // clear output tables
   }
 
   async closeProject(projectPath: string, save: Boolean) {
