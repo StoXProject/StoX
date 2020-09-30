@@ -39,10 +39,11 @@ export class RunService {
         return this.canAddProcess() &&
             this.ps.processes != null && this.ps.processes.length > 0;
     }
-    run() {
+    run() { 
+        let d = this.ps.activeProcess != null && this.ps.activeProcess.processDirty ? 1 : 0;
         let idx: number = this.ps.getActiveProcessIdx() === null ||
-            this.ps.getActiveProcessIdx() == this.ps.processes.length - 1 ? 0 :
-            this.ps.getActiveProcessIdx() + 1;
+            this.ps.getActiveProcessIdx() - d == this.ps.processes.length - 1 ? 0 :
+            this.ps.getActiveProcessIdx() - d + 1;
         this.runProcessIdx(idx, this.ps.processes.length - 1);
         // If the active process is the last, use the first.
         // Run from next to the active to the last process
