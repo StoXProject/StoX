@@ -518,7 +518,9 @@ export class DataService {
   toggleDevTools(): Observable<any> {
     return this.postLocalNode('toggledevtools', {});
   }
-
+  isdesktop() : Observable<any> {
+    return this.postLocalNode('isdesktop', {});
+  }
   exit(): Observable<any> {
     return this.postLocalNode('exit', {});
   }
