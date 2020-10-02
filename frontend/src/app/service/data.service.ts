@@ -515,6 +515,10 @@ export class DataService {
     return this.postLocalNode('stoxhome', {});
   }
 
+  toggleDevTools(): Observable<any> {
+    return this.postLocalNode('toggledevtools', {});
+  }
+
   exit(): Observable<any> {
     return this.postLocalNode('exit', {});
   }
