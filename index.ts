@@ -653,6 +653,10 @@ function setupServer() {
     await shell.openExternal('http://www.imr.no/forskning/prosjekter/stox/');
   });
 
+  server.post('/isdesktop',function (req: any, res: any) {
+    res.send(mainWindow != null ? true : false);
+  });
+
   server.post('/toggledevtools', async function (req: any, res: any) {
     logInfo("/toggledevtools");
     if (mainWindow.webContents.isDevToolsOpened()) {

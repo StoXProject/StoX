@@ -39,6 +39,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
+  m_isDesktop: boolean = true;
   /*async ngOnDestroy() {
     await this.ds.resetProject(this.ps.selectedProject.projectPath, false, false).toPromise();
   }*/
@@ -84,7 +85,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
       },
       {
         label: 'Save project as...', command: e => {
-          this.saveProjectAs.show();
+          this.saveProjectAs.show(); 
         }
       },
       {
@@ -93,6 +94,8 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
         }
       }*/
     ]);
+    this.m_isDesktop = "true" == await this.ds.isdesktop().toPromise();
+    console.log("isdesktop=" + typeof(this.m_isDesktop))
     //   }
   }
 
@@ -116,20 +119,25 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.resetProjectService.checkSaved();
   }
   rConnection() {
-    this.rConnectionDlgService.showDialog();         
+    this.rConnectionDlgService.showDialog();
   }
 
-  isSaved(): boolean { 
-    return  this.ps.selectedProject == null || this.ps.selectedProject.saved 
+  isSaved(): boolean {
+    return this.ps.selectedProject == null || this.ps.selectedProject.saved
   }
-  async stoxHome() { 
-    await this.ds.stoxHome().toPromise();     
-  }   
-  async toggleDevTools() { 
-    await this.ds.toggleDevTools().toPromise();     
-  }   
-  async exit() { 
-    await this.ds.exit().toPromise();     
-  }   
+  async stoxHome() {
+    await this.ds.stoxHome().toPromise();
+  }
+
+  async toggleDevTools() {
+    await this.ds.toggleDevTools().toPromise();
+  }
+  isDesktop() : boolean {
+    return this.m_isDesktop;
+
+  }
+  async exit() {
+    await this.ds.exit().toPromise();
+  }
 
 }

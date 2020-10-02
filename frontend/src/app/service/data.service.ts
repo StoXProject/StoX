@@ -514,6 +514,9 @@ export class DataService {
   stoxHome(): Observable<any> {
     return this.postLocalNode('stoxhome', {});
   }
+  isdesktop() : Observable<any> {
+    return this.postLocalNode('isdesktop', {});
+  }
 
   toggleDevTools(): Observable<any> {
     return this.postLocalNode('toggledevtools', {});
