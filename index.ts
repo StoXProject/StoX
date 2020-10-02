@@ -652,4 +652,14 @@ function setupServer() {
     const { shell } = require('electron');
     await shell.openExternal('http://www.imr.no/forskning/prosjekter/stox/');
   });
+
+  server.post('/toggledevtools', async function (req: any, res: any) {
+    logInfo("/toggledevtools");
+    if (mainWindow.webContents.isDevToolsOpened()) {
+      mainWindow.webContents.closeDevTools();
+    } else {
+      mainWindow.webContents.openDevTools();
+    }
+    res.send("true");
+  });
 }

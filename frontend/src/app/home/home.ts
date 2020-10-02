@@ -125,6 +125,9 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   async stoxHome() { 
     await this.ds.stoxHome().toPromise();     
   }   
+  async toggleDevTools() { 
+    await this.ds.toggleDevTools().toPromise();     
+  }   
   async exit() { 
     await this.ds.exit().toPromise();     
   }   
