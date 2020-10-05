@@ -34,10 +34,10 @@ import { asString } from 'ol/color';
 declare const Buffer;
 
 export class MapSetup {
-    public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
+    //public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
     public static DISTANCE_ABSENT_POINT_COLOR: string = 'rgb(253, 244, 247)';
     public static DISTANCE_POINT_SELECTED_COLOR: string = 'rgb(166, 200, 176)';
-    public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
+    //public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
     public static STATION_POINT_SELECTED_COLOR: string = 'rgb(238, 215, 123, 0.95)';
     public static POINT_OUTLINE_COLOR: string = 'rgb(0, 0, 0, 0.3)';
     public static BG_COLOR = 'rgb(252, 255, 198)';
@@ -121,7 +121,7 @@ export class MapSetup {
         });
     }
 
-    static getAcousticPointStyle(): Style {
+   /* static getAcousticPointStyle(): Style {
         return MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleFocused(): Style {
@@ -129,7 +129,7 @@ export class MapSetup {
     }
     static getAcousticPointStyleSelected(): Style {
         return MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, 6);
-    }
+    }*/
     /*static getStationPointStyle(): Style {
         return MapSetup.getPointStyleRect(MapSetup.STATION_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, 14);
     }*/
@@ -142,9 +142,9 @@ export class MapSetup {
             return styleCache[styleSelection];
         }
     }
-    static getEDSUPointStyleCache(): Style[] {
+    static getEDSUPointStyleCache(layerIdx: number): Style[] {
         let edsuRadius: number = 6; // px
-        let pointColor: string = MapSetup.DISTANCE_POINT_COLOR;
+        let pointColor: string = MapSetup.DISTANCE_POINT_COLORS[layerIdx % MapSetup.DISTANCE_POINT_COLORS.length];
         let outlineColor: string = 'rgb(0, 0, 0, 0.1)'
         let focusColor: string = Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5)
         let focusLineColor: string = Color.darken(focusColor, 0.5)
@@ -155,17 +155,21 @@ export class MapSetup {
             MapSetup.getPointStyleCircle(MapSetup.DISTANCE_ABSENT_POINT_COLOR, outlineColor, edsuRadius), // 3 : absent
         ];
     }
+    static STATION_POINT_COLORS: string[] = ['rgb(92,172,238)', 'rgb(46,86,188)', 'rgb(0,0,139)', 'rgb(99,10,196)', 'rgb(199,21,133)'];
+    static DISTANCE_POINT_COLORS: string[] = ['rgb(255,192,203)', 'rgb(196,96,101)', 'rgb(139,0,0)', 'rgb(188,59,0)', 'rgb(238,118,0)'];
 
-    static getStationPointStyleCache(): Style[] {
+    static getStationPointStyleCache(layerIdx: number): Style[] {
+        let ptCol = MapSetup.STATION_POINT_COLORS[layerIdx % MapSetup.STATION_POINT_COLORS.length];
         let symSize: number = 14;
         return [
-            MapSetup.getPointStyleRect(MapSetup.STATION_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize),
+            MapSetup.getPointStyleRect(ptCol, MapSetup.POINT_OUTLINE_COLOR, symSize),
             MapSetup.getPointStyleRect(MapSetup.STATION_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize)
         ];
     }
 
-    static getEDSULineStyle(): Style {
-        return MapSetup.getLineStyle(Color.darken(MapSetup.DISTANCE_POINT_COLOR, 0.9), 2);
+    static getEDSULineStyle(layerIdx: number): Style {
+        let ptCol = MapSetup.DISTANCE_POINT_COLORS[layerIdx % MapSetup.DISTANCE_POINT_COLORS.length];
+        return MapSetup.getLineStyle(Color.darken(ptCol, 0.9), 2);
     }
 
     static getPolygonStyle(fillColor: string, strokeColor: string, strokeWidth: number): Style {
@@ -402,7 +406,7 @@ export class MapSetup {
         }
         for (let ix = -100; ix <= 150; ix += 5) {
             let line = [];
-            for (let iy = -80; iy <= 80; iy += 5) {  
+            for (let iy = -80; iy <= 80; iy += 5) {
                 line.push([ix, iy]);
             }
             lines.push(line);

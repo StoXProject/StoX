@@ -163,6 +163,12 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
+  getNumLayersWithLayerType(lt): number {
+    return []
+      .concat(...Array.from(this.layerMap.values())) // flatting by concatinated spread elements
+      .filter(l => l.get("layerType") == lt).length; // filter and count up
+  }
+
   addLayerToProcess(pid: string, l: Layer) {
     let la = this.layerMap.get(pid);
     if (la == null) {
@@ -187,7 +193,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       if (la != null) {
         la.forEach(l => this.map.removeLayer(l));
       }
-      this.layerMap.set(id, null);
+      this.layerMap.delete(id);
     });
   }
 
@@ -324,7 +330,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             .forEach(s => s.getFeatures()
               .forEach(f => {
                 let edsu: string = f.get("EDSU");
-                let edsupsu: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu);
+                let edsupsu: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU != null ? this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu) : null;
                 // Connect EDSU_PSU to feature
                 if (edsupsu == null) {
                   console.log("edsu " + edsu + " not mapped");
@@ -501,14 +507,16 @@ export class MapComponent implements OnInit, AfterViewInit {
       case "station": {
         this.resetLayersToProcess(this.ps.activeProcessId);
         let data: { stationPoints: string; stationInfo: NamedStringTable; haulInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();
-        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, MapSetup.getStationPointStyleCache(), false, 4, [data.stationInfo, data.haulInfo]));
+        let layerIdx = this.getNumLayersWithLayerType(iaMode);
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, MapSetup.getStationPointStyleCache(layerIdx), false, 4, [data.stationInfo, data.haulInfo]));
         break;
       }
       case "EDSU": {
         this.resetLayersToProcess(this.ps.activeProcessId);
         let data: { EDSUPoints: string; EDSULines: string; EDSUInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2, []));
-        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3, [data.EDSUInfo]));
+        let layerIdx = this.getNumLayersWithLayerType(iaMode);
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle(layerIdx)], false, 2, []));
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(layerIdx), false, 3, [data.EDSUInfo]));
         break;
       }
       case "stratum": {
