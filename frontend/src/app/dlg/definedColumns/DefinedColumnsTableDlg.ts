@@ -205,15 +205,7 @@ export class DefinedColumnsTableDlg implements OnInit {
                         this.service.currentPropertyItem.name, this.service.currentPropertyItem.value,
                         this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
                         .toPromise().then((s: ProcessProperties) => {
-                            this.ps.processProperties.propertySheet = s.propertySheet;
-                            // TODO: introduce property service with onChanged
-                            this.ps.processes = s.processTable
-                            this.ps.activeProcessId = s.activeProcess.processID;
-                            this.ps.selectedProject.saved = s.saved;
-                            if (s.updateHelp) {
-                                this.ps.updateHelp();
-                            }
-
+                            this.ps.handleAPI(s);
                         });
                 } catch (error) {
                     console.log(error.error);
