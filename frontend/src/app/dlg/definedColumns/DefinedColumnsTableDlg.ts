@@ -55,7 +55,9 @@ export class DefinedColumnsTableDlg implements OnInit {
         this.title = "";
         this.displayedColumns = ['select'];
         this.columnPossibleValues = [];
-        this.columnTypes = [];        
+        this.columnTypes = [];  
+        this.service.definedColumnsData  = [];
+        this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);              
     }
 
     addRow() {
