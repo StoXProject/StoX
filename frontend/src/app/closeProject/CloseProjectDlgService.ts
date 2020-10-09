@@ -14,10 +14,8 @@ export class CloseProjectDlgService {
 
         console.log("CloseProjectDlgService.checkSaved()");
 
-        if(this.ps.selectedProject.saved) {
-            if(this.ps.selectedProject != null && this.ps.selectedProject.projectPath != null) {
-                this.ps.closeProject(this.ps.selectedProject.projectPath, false);
-            }
+        if (this.ps.selectedProject != null && this.ps.selectedProject.saved && this.ps.selectedProject.projectPath != null) {
+            await this.ps.closeProject(this.ps.selectedProject.projectPath, false);
             return;
         }
         this.display = true;

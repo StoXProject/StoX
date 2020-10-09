@@ -45,18 +45,6 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   }*/
   @HostListener('window:beforeunload', ['$event'])
   async unloadHandler(event: any) {
-    //event.preventDefault();
-    console.log("window:beforeunload - reset project with save")
-    //event.returnValue = true;
-    // TODO: get a dialog when unloading page
-    // await this.ds.closeProject(this.ps.selectedProject.projectPath, true).toPromise();
-
-    await this.closeProjectServ.checkSaved();
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    event.returnValue = '';
   }
 
   getPropertiesHdr() {

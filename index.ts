@@ -31,6 +31,7 @@ let useOpenCPU: boolean = false;
 //let rserve_client: any = null;
 
 var properties: any = null;
+var activeProjectSaved: boolean = true;
 var log: any = null;
 var server: any = null;
 var rAvailable: boolean = false;
@@ -149,7 +150,31 @@ function createWindow() {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
-
+  // Emitted when the window is closed.
+  mainWindow.on('close', (e: any) => {
+    logInfo('close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
+    if (properties != null && properties.activeProject !== null) {
+      let save = false;
+      if (!activeProjectSaved) {
+        var choice = require('electron').dialog.showMessageBoxSync(null,
+          {
+            type: 'question',
+            buttons: ['Yes', 'No', 'Cancel'],
+            title: 'Save project',
+            message: 'Save changes to project before closing?'
+          });
+        if (choice == 0) {
+          save = true;
+        }
+        if (choice == 2) { // cancel
+          e.preventDefault();
+          return;
+        }
+      }
+      //{ what: "saveProject", args: args, package: pkg }
+      callR('{"what":"saveProject","args":"{\\"projectPath\\":\\"' + properties.activeProject + '\\"}","package":"RstoxFramework"}'); // save string
+    }
+  })
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
@@ -407,6 +432,7 @@ const writePropertiesToFile = function writePropertiesToFile() {
 }
 
 function callR(arg: string) {
+  logInfo(arg);
   const startTime = process.hrtime();
   return new Promise(async (resolve) => {
     while (callr_evaluate.length > 0) {
@@ -513,6 +539,11 @@ function setupServer() {
   server.post('/updateactiveproject', function (req: any, res: any) {
     properties.activeProject = req.body;
     logInfo("update active project: " + properties.activeProject)
+    res.send("ok");
+  });
+  server.post('/updateactiveprojectsavedstatus', function (req: any, res: any) {
+    activeProjectSaved = req.body === "true";
+    logInfo("update active project saved status: " + activeProjectSaved)
     res.send("ok");
   });
 
@@ -653,7 +684,7 @@ function setupServer() {
     await shell.openExternal('http://www.imr.no/forskning/prosjekter/stox/');
   });
 
-  server.post('/isdesktop',function (req: any, res: any) {
+  server.post('/isdesktop', function (req: any, res: any) {
     res.send(mainWindow != null ? true : false);
   });
 

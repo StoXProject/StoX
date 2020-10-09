@@ -113,6 +113,7 @@ export class ProjectService {
   }
   async save() {
     this.selectedProject.saved = (await this.dataService.saveProject(this.selectedProject.projectPath).toPromise()).saved;
+    await this.dataService.updateActiveProjectSavedStatus(this.selectedProject.saved).toPromise();
     // TODO: get save status on return
     //this.isSelectedProjectSaved = await this.dataService.isSaved(this.selectedProject.projectPath).toPromise();
   }
@@ -304,9 +305,12 @@ export class ProjectService {
   }
 
   /*Activate project in gui - at the moment only one project is listed*/
-  activateProject(project: Project) {
+  async activateProject(project: Project) {
     this.dataService.log = [];   // triggered by project activation
     this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
+    await this.dataService.updateActiveProject(project != null ? project.projectPath : '').toPromise();
+    await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();
+
     //this.processes = null;       // triggered by selected model
     //this.selectedProcessId = null; // -> triggered by selection in gui or setProcesses
     //this.processProperties = null; // triggered by selected processid
@@ -417,7 +421,10 @@ export class ProjectService {
   handleAPI<T>(res: any): T {
     if (res != null && this.selectedProject != null) {
       if (res.saved !== undefined) {
-        this.selectedProject.saved = res.saved;
+        if(this.selectedProject.saved !== res.saved) {
+          this.selectedProject.saved = res.saved;
+          this.dataService.updateActiveProjectSavedStatus(this.selectedProject.saved).toPromise();
+        }
       }
       if (res.activeProcess !== undefined) {
         this.activeProcess = res.activeProcess;
