@@ -152,28 +152,7 @@ function createWindow() {
   // mainWindow.webContents.openDevTools()
   // Emitted when the window is closed.
   mainWindow.on('close', (e: any) => {
-    logInfo('close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
-    if (properties != null && properties.activeProject !== null) {
-      let save = false;
-      if (!activeProjectSaved) {
-        var choice = require('electron').dialog.showMessageBoxSync(null,
-          {
-            type: 'question',
-            buttons: ['Yes', 'No', 'Cancel'],
-            title: 'Save project',
-            message: 'Save changes to project before closing?'
-          });
-        if (choice == 0) {
-          save = true;
-        }
-        if (choice == 2) { // cancel
-          e.preventDefault();
-          return;
-        }
-      }
-      //{ what: "saveProject", args: args, package: pkg }
-      callR('{"what":"saveProject","args":"{\\"projectPath\\":\\"' + properties.activeProject + '\\"}","package":"RstoxFramework"}'); // save string
-    }
+    onClosed(e);
   })
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -186,7 +165,48 @@ function createWindow() {
   })
 
 }
+function showElecronMessageBox(title : string, message :  string, buttons : string[]) : number {
+  return require('electron').dialog.showMessageBoxSync(null,
+    {
+      type: 'question',
+      buttons: ['Yes', 'No', 'Cancel'],
+      title: 'Save project',
+      message: 'Save changes to project before closing?'
+    });
+}
 
+function onClosed(e : any){
+  logInfo('close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
+  if (properties != null && properties.activeProject !== null) {
+    let save = false;
+    if (!activeProjectSaved) {
+      var choice = showElecronMessageBox('Save project', 'Save changes to project before closing?',['Yes', 'No', 'Cancel']);
+      require('electron').dialog.showMessageBoxSync(null,
+        {
+          type: 'question',
+          buttons: ['Yes', 'No', 'Cancel'],
+          title: 'Save project',
+          message: 'Save changes to project before closing?'
+        });
+      if (choice == 0) {
+        save = true;
+      }
+      if (choice == 2) { // cancel
+        e.preventDefault();
+        return;
+      }
+    }
+    //{ what: "saveProject", args: args, package: pkg }
+    let cmd = JSON.stringify({
+      what: "closeProject",
+      args: JSON.stringify({ projectPath: properties.activeProject, save: save }),
+      package: "RstoxFramework"
+    })
+    //logInfo(JSON.stringify(cmd)) // to use in R - copy from log window
+    callR(cmd).then((r: any) => logInfo(r));
+  }
+
+}
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
@@ -432,7 +452,6 @@ const writePropertiesToFile = function writePropertiesToFile() {
 }
 
 function callR(arg: string) {
-  logInfo(arg);
   const startTime = process.hrtime();
   return new Promise(async (resolve) => {
     while (callr_evaluate.length > 0) {
