@@ -9,6 +9,7 @@ import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
 import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
 import { QueryBuilderDlg } from './querybuilder/dlg/QueryBuilderDlg';
 import { DefinedColumnsTableDlg } from './dlg/definedColumns/DefinedColumnsTableDlg';
+import { SelectedVariablesDlg } from './dlg/selectedVariables/SelectedVariablesDlg';
 import { FilePathDlg } from './dlg/filePath/FilePathDlg';
 import { SaveAsProjectDlg } from './saveAsProject/SaveAsProjectDlg';
 import { MessageDlg } from './message/MessageDlg';
@@ -236,6 +237,7 @@ export class MaterialModule { }
     ExpressionBuilderDlg,
     QueryBuilderDlg,
     DefinedColumnsTableDlg,
+    SelectedVariablesDlg,
     FilePathDlg,
     SaveAsProjectDlg,
     ResetProjectDlg,

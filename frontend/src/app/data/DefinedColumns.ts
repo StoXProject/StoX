@@ -56,3 +56,7 @@ export class ColumnValue {
     columnName: string;
     value: any;
 }
+
+export class SelectedVariable {
+    variableName: string;
+}

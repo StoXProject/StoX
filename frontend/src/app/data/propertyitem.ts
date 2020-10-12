@@ -7,4 +7,5 @@ export class PropertyItem {
     default: string;
     possibleValues: string[];
     value: string;
+    formatClass: string;
 }
