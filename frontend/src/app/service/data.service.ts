@@ -201,6 +201,14 @@ export class DataService {
     });
   }
 
+  getParameterVectorInfo(projectPath: string, modelName: string, processID: string, format: string): Observable<any> {
+    return this.runFunction('getParameterVectorInfo', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "format": format
+    });
+  }
 
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;

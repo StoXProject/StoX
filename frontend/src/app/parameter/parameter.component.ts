@@ -1,5 +1,6 @@
 import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBuilderDlgService';
 import { DefinedColumnsService } from './../dlg/definedColumns/DefinedColumnsService';
+import { SelectedVariablesService } from './../dlg/selectedVariables/SelectedVariablesService';
 import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
 //import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProjectService } from '../service/project.service';
@@ -28,7 +29,8 @@ export class ParameterComponent implements OnInit {
   //  booleanForm: FormGroup; private msgService: MessageService,
   constructor(private msgService: MessageService, public ps: ProjectService,
     private dataService: DataService, private exprBuilderService: ExpressionBuilderDlgService,
-    private definedColumnsService: DefinedColumnsService, private filePathDlgService: FilePathDlgService) { }
+    private definedColumnsService: DefinedColumnsService, private filePathDlgService: FilePathDlgService,
+    private selectedVariablesService: SelectedVariablesService) { }
 
   async ngOnInit() {
     /*    let a = [];
@@ -136,6 +138,25 @@ export class ParameterComponent implements OnInit {
 
     this.definedColumnsService.showDialog();
   }
+
+  async definedVector(category: PropertyCategory, pi: PropertyItem) {
+
+    let returnValue  = <any> await this.dataService.getParameterVectorInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, pi.format).toPromise();
+    console.log("returnValue : " + JSON.stringify(returnValue));
+
+    if(this.ps.isEmpty(returnValue)) {
+      this.msgService.setMessage("You have to run the previous process before this action!");
+      this.msgService.showMessage();
+      this.selectedVariablesService.returnValue = null;
+      return;
+    }
+
+    this.selectedVariablesService.currentPropertyCategory = category;
+    this.selectedVariablesService.currentPropertyItem = pi;    
+    this.selectedVariablesService.returnValue = returnValue;
+    
+    this.selectedVariablesService.showDialog();
+  } 
 
   async filePath(category: PropertyCategory, pi: PropertyItem) {
 
