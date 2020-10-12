@@ -11,6 +11,9 @@ import { ProcessProperties } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
+import { MatDialog } from '@angular/material/dialog';
+import {MessageDlgComponent} from '../dlg/messageDlg/messageDlg.component';
+
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
 // import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -45,7 +48,7 @@ export class ProjectService {
 
   userlog: string[] = [];
 
-  constructor(private dataService: DataService/*, public rs: RunService*/) {
+  constructor(private dataService: DataService/*, public rs: RunService*/, private dialog : MatDialog) {
     this.initData();
   }
 
@@ -175,6 +178,11 @@ export class ProjectService {
 
   public set selectedProject(project: Project) {
     if (project != this.selectedProject) {
+      if(this.selectedProject != null && !this.selectedProject.saved) {
+        // #263 requires a save before close message
+        let res = MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project before closing?')
+        console.log(res); 
+      }
       this.m_selectedProject = project;
       this.OnProjectSelected(); // call async method
     }

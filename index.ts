@@ -56,12 +56,12 @@ app.on('ready', async () => {
   createWindow()
 })
 
-// Quit when all windows are closed.
+/*// Quit when all windows are closed. // AS added Break the OS convention and close the process when window closes
 app.on('window-all-closed', function () {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') app.quit()
-})
+})*/
 
 app.on('activate', function () {
   // On macOS it's common to re-create a window in the app when the
@@ -152,7 +152,7 @@ function createWindow() {
   // mainWindow.webContents.openDevTools()
   // Emitted when the window is closed.
   mainWindow.on('close', (e: any) => {
-    onClosed(e);
+    onClosed(e)
   })
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -165,29 +165,22 @@ function createWindow() {
   })
 
 }
-function showElecronMessageBox(title : string, message :  string, buttons : string[]) : number {
+function showElectronMessageBox(title: string, message: string, buttons: string[]): number {
   return require('electron').dialog.showMessageBoxSync(null,
     {
       type: 'question',
-      buttons: ['Yes', 'No', 'Cancel'],
-      title: 'Save project',
-      message: 'Save changes to project before closing?'
+      buttons: buttons,
+      title: title,
+      message: message
     });
 }
 
-function onClosed(e : any){
+function onClosed(e: any) {
   logInfo('close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
   if (properties != null && properties.activeProject !== null) {
     let save = false;
     if (!activeProjectSaved) {
-      var choice = showElecronMessageBox('Save project', 'Save changes to project before closing?',['Yes', 'No', 'Cancel']);
-      require('electron').dialog.showMessageBoxSync(null,
-        {
-          type: 'question',
-          buttons: ['Yes', 'No', 'Cancel'],
-          title: 'Save project',
-          message: 'Save changes to project before closing?'
-        });
+      var choice = showElectronMessageBox('Save project', 'Save changes to project before closing?', ['Yes', 'No', 'Cancel']);
       if (choice == 0) {
         save = true;
       }
@@ -196,14 +189,12 @@ function onClosed(e : any){
         return;
       }
     }
-    //{ what: "saveProject", args: args, package: pkg }
     let cmd = JSON.stringify({
       what: "closeProject",
       args: JSON.stringify({ projectPath: properties.activeProject, save: save }),
       package: "RstoxFramework"
     })
-    //logInfo(JSON.stringify(cmd)) // to use in R - copy from log window
-    callR(cmd).then((r: any) => logInfo(r));
+    callR(cmd).then((r: any) => logInfo(r));        //callR(cmd).then((r: any)=>logInfo(r));
   }
 
 }
@@ -499,18 +490,18 @@ async function evaluate(client: any, cmd: string) {
   // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
   let s = Buffer.from(cmd, 'utf8').toString('hex'); // Encode command as hex
   let lens = "" + s.length;
-  await client.write("" + s.length);
-  await new Promise(resolve => {
+  await new Promise(async resolve => {
     client.handle = (data: any) => {
       if (data == lens) {
         // The length is send forth and back, we an proceed
         resolve();
       }
     };
+    await client.write("" + s.length);
+
   });
-  await client.write(s); // may lead to throttling on the server side, but the server uses length info to get the string
   let nResp = 0;
-  await new Promise(resolve => {
+  await new Promise(async resolve => {
     client.handle = (data: any) => {
       nResp = Number(data);
       if (nResp != null) {
@@ -518,13 +509,13 @@ async function evaluate(client: any, cmd: string) {
         resolve();
       }
     };
+    await client.write(s); // may lead to throttling on the server side, but the server uses length info to get the string
   });
-  await client.write("" + nResp); // handshake response length
   // Total buffered preallocated before throttling, to avoid dynamic allocation time loss
   let buf = Buffer.alloc(nResp);
   let bufLen = 0;
   let nChunks = 0;
-  await new Promise(resolve => {
+  await new Promise(async resolve => {
     // calling handler from socket data event, registered once upon connection
     client.handle = (data: any) => {
       // Writing chunks (throttling) into total buffer
@@ -536,6 +527,7 @@ async function evaluate(client: any, cmd: string) {
         resolve();
       }
     };
+    await client.write("" + nResp); // handshake response length
   });
   return Buffer.from(buf.toString(), 'hex').toString("utf8");
 }
