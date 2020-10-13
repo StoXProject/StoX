@@ -1,5 +1,4 @@
 import { ResetProjectDlg } from './resetProject/ResetProjectDlg';
-import { CloseProjectDlg } from './closeProject/CloseProjectDlg';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HomeComponent } from './home/home';
@@ -63,6 +62,7 @@ import { TooltipDirective } from './directive/TooltipDirective'
 //import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { StratumNameDlgComponent } from './dlg/stratum-name-dlg/stratum-name-dlg.component';
+import { MessageDlgComponent } from './dlg/messageDlg/messageDlg.component';
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
 import { MatCommonModule } from '@angular/material/core';
@@ -228,7 +228,7 @@ export class MaterialModule { }
     MatCardModule,
     QueryBuilderModule
   ],
-  entryComponents: [StratumNameDlgComponent],
+  entryComponents: [StratumNameDlgComponent, MessageDlgComponent],
   declarations: [
     HomeComponent,
     RConnectionDlg,
@@ -241,7 +241,6 @@ export class MaterialModule { }
     FilePathDlg,
     SaveAsProjectDlg,
     ResetProjectDlg,
-    CloseProjectDlg,
     MessageDlg,
     FileUploadComponent,
     ProjectComponent,
@@ -254,7 +253,7 @@ export class MaterialModule { }
     RunComponent,
     UserLogComponent,
     OutputComponent,
-    HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent,
+    HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent, MessageDlgComponent,
     AutocompleteComponent, TooltipDirective
   ],
   bootstrap: [HomeComponent],

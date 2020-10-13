@@ -59,10 +59,7 @@ export class OpenProjectDlg {
                     this.msgService.setMessage("Project with name " + this.ps.selectedProject.projectName + " is already open in the GUI!");
                     this.msgService.showMessage();
                     return;
-                } /*else {
-                    // close the previous project after saving it if it is edited 
-                    await this.dataService.closeProject(this.ps.selectedProject.projectPath, new Boolean(true)).toPromise();
-                }*/
+                }
             }
 
             // the following should open the project and make it selected in the GUI
