@@ -1,5 +1,4 @@
 import { ResetProjectDlgService } from './../resetProject/ResetProjectDlgService';
-import { CloseProjectDlgService } from './../closeProject/CloseProjectDlgService';
 import { ViewChild, Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { tap } from 'rxjs/operators';
 // import { Observable, of } from 'rxjs';
@@ -32,7 +31,6 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     public ps: ProjectService,
     private saveProjectAsService: SaveAsProjectDlgService,
     private resetProjectService: ResetProjectDlgService,
-    private closeProjectServ: CloseProjectDlgService,
     private ds: DataService
   ) {
     ps.outputTableActivator.subscribe({ next: (idx) => { this.bottomTabGroup.selectedIndex = 1; } })
@@ -45,18 +43,6 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   }*/
   @HostListener('window:beforeunload', ['$event'])
   async unloadHandler(event: any) {
-    //event.preventDefault();
-    console.log("window:beforeunload - reset project with save")
-    //event.returnValue = true;
-    // TODO: get a dialog when unloading page
-    // await this.ds.closeProject(this.ps.selectedProject.projectPath, true).toPromise();
-
-    await this.closeProjectServ.checkSaved();
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    event.returnValue = '';
   }
 
   getPropertiesHdr() {
@@ -71,28 +57,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     }*/];
     //if (this.ps.rAvailable) {
     this.items.push(...[
-      /*{
-        label: 'Create project...', command: e => this.createProjectDialogService.showDialog()
-      },
-      {
-        label: 'Open project...', command: e => this.openProjectDlgService.showDialog()
-      },
-      {
-        label: 'Close project', command: async e => {
-          // this.ps.closeProject(this.ps.selectedProject.projectPath);
-          this.closeProject.checkSaved();
-        }
-      },
-      {
-        label: 'Save project as...', command: e => {
-          this.saveProjectAs.show();
-        }
-      },
-      {
-        label: 'Reset project', command: e => {
-          this.resetProject.checkSaved();
-        }
-      }*/
+     
     ]);
     this.m_isDesktop = "true" == await this.ds.isdesktop().toPromise();
     console.log("isdesktop=" + typeof (this.m_isDesktop))
@@ -107,7 +72,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.openProjectDlgService.showDialog();
   }
   closeProject() {
-    this.closeProjectServ.checkSaved();
+    this.ps.activateProject(null); 
   }
   save() {
     this.ps.save();
@@ -122,8 +87,11 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.rConnectionDlgService.showDialog();
   }
 
+  isProjectSelected() : boolean {
+    return this.ps.selectedProject != null;
+  }
   isSaved(): boolean {
-    return this.ps.selectedProject == null || this.ps.selectedProject.saved
+    return !this.isProjectSelected() || this.ps.selectedProject.saved
   }
   async stoxHome() {
     await this.ds.stoxHome().toPromise();

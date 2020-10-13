@@ -553,6 +553,10 @@ export class DataService {
     return this.postLocalNode('updateactiveproject', projectPath);
   }
 
+  public updateActiveProjectSavedStatus(saved : boolean): Observable<any> {
+    return this.postLocalNode('updateactiveprojectsavedstatus', saved);
+  }
+
   public updateProjectRootPath(projectRootPath: string): Observable<any> {
     return this.postLocalNode('updateprojectrootpath', projectRootPath);
   }
