@@ -194,7 +194,7 @@ function onClosed(e: any) {
       args: JSON.stringify({ projectPath: properties.activeProject, save: save }),
       package: "RstoxFramework"
     })
-    callR(cmd).then((r: any) => logInfo(r));        //callR(cmd).then((r: any)=>logInfo(r));
+    callR(cmd);//.then((r: any) => logInfo(r));        //callR(cmd).then((r: any)=>logInfo(r));
   }
 
 }

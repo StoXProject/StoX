@@ -12,7 +12,7 @@ import { ProcessOutput } from '../data/processoutput';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MatDialog } from '@angular/material/dialog';
-import {MessageDlgComponent} from '../dlg/messageDlg/messageDlg.component';
+import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
@@ -48,7 +48,7 @@ export class ProjectService {
 
   userlog: string[] = [];
 
-  constructor(private dataService: DataService/*, public rs: RunService*/, private dialog : MatDialog) {
+  constructor(private dataService: DataService/*, public rs: RunService*/, private dialog: MatDialog) {
     this.initData();
   }
 
@@ -177,12 +177,7 @@ export class ProjectService {
   }
 
   public set selectedProject(project: Project) {
-    if (project != this.selectedProject) {
-      if(this.selectedProject != null && !this.selectedProject.saved) {
-        // #263 requires a save before close message
-        let res = MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project before closing?')
-        console.log(res); 
-      }
+    if (project !== this.selectedProject) {
       this.m_selectedProject = project;
       this.OnProjectSelected(); // call async method
     }
@@ -190,12 +185,6 @@ export class ProjectService {
 
   public async OnProjectSelected() {
     this.selectedModel = this.selectedProject == null ? null : this.models[0]; // This will trigger update process list.
-
-    // To do: make this property the project path instead of project object.
-    let jsonString = this.selectedProject == null ? "" : this.selectedProject.projectPath;
-    console.log("StoX GUI: updating ActiveProject with string  " + jsonString)
-    let status = await this.dataService.updateActiveProject(jsonString).toPromise();
-    console.log("status " + status);
 
     // Update active process id.
     if (this.selectedProject != null) {
@@ -315,9 +304,28 @@ export class ProjectService {
   /*Activate project in gui - at the moment only one project is listed*/
   async activateProject(project: Project) {
     this.dataService.log = [];   // triggered by project activation
-    this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
+    if (this.selectedProject != null) {
+      let save: boolean = false;
+      if (!this.selectedProject.saved) {
+        // #263 requires a save before close message
+        let res = await MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project before closing?');
+        switch (res) {
+          case 'yes':
+            save = true;
+            break;
+          case 'no':
+            save = false;
+            break;
+          case '':
+            return; // interrupt activation
+        }
+      } 
+      await this.dataService.closeProject(this.selectedProject.projectPath, save).toPromise()
+    }
     await this.dataService.updateActiveProject(project != null ? project.projectPath : '').toPromise();
     await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();
+
+    this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
 
     //this.processes = null;       // triggered by selected model
     //this.selectedProcessId = null; // -> triggered by selection in gui or setProcesses
@@ -330,11 +338,7 @@ export class ProjectService {
     this.outputTables = []; // clear output tables
   }
 
-  async closeProject(projectPath: string, save: Boolean) {
-    // the following should open the project and make it selected in the GUI
-    await this.dataService.closeProject(projectPath, save).toPromise();
-    this.activateProject(null);
-  }
+
   /*
   Returns:
     true: undefined, null, "", [], {}
@@ -404,10 +408,10 @@ export class ProjectService {
     }
     return this.processes[idx];
   }*/
-  get activeProcessId() : string {
+  get activeProcessId(): string {
     let res = this.m_activeProcess != null ? this.m_activeProcess.processID : null;
-    if(res === "NA") { // NA maps to null in gui
-      res = null; 
+    if (res === "NA") { // NA maps to null in gui
+      res = null;
     }
     return res;
   }
@@ -429,7 +433,7 @@ export class ProjectService {
   handleAPI<T>(res: any): T {
     if (res != null && this.selectedProject != null) {
       if (res.saved !== undefined) {
-        if(this.selectedProject.saved !== res.saved) {
+        if (this.selectedProject.saved !== res.saved) {
           this.selectedProject.saved = res.saved;
           this.dataService.updateActiveProjectSavedStatus(this.selectedProject.saved).toPromise();
         }
