@@ -13,8 +13,8 @@ optionLabel="processName" (document:keydown)="keydown($event)" >
                 <span *ngIf="process.value===ps.getRunFailedProcess()" class="absa runstatusfailedicon"></span>
                 <span *ngIf="process.value.hasBeenRun && !ps.isProcessDirty(process.value)"
                     class="absa runstatusokicon"></span>
-                <span *ngIf="process.value.hasBeenRun && ps.isProcessDirty(process.value)"
-                    class="absa runstatusmodifiedicon"></span>
+                <!--<span *ngIf="process.value.hasBeenRun && ps.isProcessDirty(process.value)"
+                    class="absa runstatusmodifiedicon"></span>--> 
                 <span *ngIf="process.value.functionInputError" class="absa functioninputerroricon"></span>
             </span>
             <span style="display:inline-block; line-height:1.1;">{{process.value.processName}}</span>
