@@ -44,7 +44,7 @@
                             <ng-container *ngIf="possibleValues(column) == null">
                                 <ng-container *ngIf="getType(column) == 'double' || getType(column) == 'numeric'">
                                     <mat-form-field floatLabel="never">
-                                        <input matInput placeholder="" type="number" step="any" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value">
+                                        <input matInput placeholder="" type="number" step="0.01" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value">
                                     </mat-form-field>
                                 </ng-container>
                                 <ng-container *ngIf="getType(column) == 'integer'">
