@@ -330,9 +330,9 @@ export class MapComponent implements OnInit, AfterViewInit {
             .forEach(s => s.getFeatures()
               .forEach(f => {
                 let edsu: string = f.get("EDSU");
-                let edsupsu: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU != null ? this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu) : null;
+                let edsupsu: EDSU_PSU = this.pds.acousticPSU != null && this.pds.acousticPSU.EDSU_PSU != null ? this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu) : null;
                 // Connect EDSU_PSU to feature
-                if (edsupsu == null) {
+                if (this.pds.acousticPSU != null && this.pds.acousticPSU.EDSU_PSU != null && edsupsu == null) {
                   console.log("edsu " + edsu + " not mapped");
                 }
                 f.set("edsupsu", edsupsu);
