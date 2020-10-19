@@ -151,7 +151,7 @@ export class RunService {
                 this.ps.runFailedProcessId = p.processID;
                 break;
             } else {
-                if (this.ps.activeProcess.propertyDirty && this.ps.selectedProcess.processID == this.ps.activeProcessId) {
+                if (this.ps.activeProcess.propertyDirty && this.ps.selectedProcess != null && this.ps.selectedProcess.processID == this.ps.activeProcessId) {
                     //if(this.ps.selectedProcess.processID == this.ps.activeProcessId) {
                     this.ps.updateProcessProperties(); // process properties may change on the selected process
                 }
