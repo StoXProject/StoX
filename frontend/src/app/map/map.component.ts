@@ -497,6 +497,10 @@ export class MapComponent implements OnInit, AfterViewInit {
   async handleIaMode(iaMode: string, proj) {
     let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
     switch (iaMode) {
+      case "none": {
+        this.resetLayersToProcess(this.ps.activeProcessId);
+        break;
+      }
       case "reset": {
         this.layerMap.forEach((value, key, map) => {
           value.forEach(l => this.map.removeLayer(l));
