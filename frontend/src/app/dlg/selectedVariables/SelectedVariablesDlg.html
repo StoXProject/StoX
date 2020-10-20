@@ -14,13 +14,20 @@
             <ng-container matColumnDef="variableName">
                 <mat-header-cell *matHeaderCellDef> Variable Name </mat-header-cell>
                 <mat-cell *matCellDef="let element">                         
-                    <mat-form-field floatLabel="never">
-                        <mat-select placeholder = ""  [(ngModel)] = "element.variableName" name = "element.variableName">
-                            <mat-option *ngFor = "let variable of service.possibleValues" [value] = "variable">
-                            {{variable}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                    <ng-container *ngIf="!isEmpty(service.possibleValues)">
+                        <mat-form-field floatLabel="never">
+                            <mat-select placeholder = ""  [(ngModel)] = "element.variableName" name = "element.variableName">
+                                <mat-option *ngFor = "let variable of service.possibleValues" [value] = "variable">
+                                {{variable}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-container *ngIf="isEmpty(service.possibleValues)">
+                        <mat-form-field floatLabel="never">
+                            <input matInput placeholder="" type="text" [value]="element.variableName" [(ngModel)]="element.variableName">
+                        </mat-form-field>
+                    </ng-container>
                 </mat-cell>
             </ng-container>                        
                 

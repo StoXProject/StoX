@@ -21,7 +21,7 @@ export class SelectedVariablesDlg implements OnInit {
     dataSource: MatTableDataSource<SelectedVariable> = new MatTableDataSource<SelectedVariable>(this.service.selectedVariables);
     // selection = new SelectionModel<SelectedVariable>(true, []);
 
-    combinedExpression = "";
+    combinedExpression: string = "";
 
     constructor(public service: SelectedVariablesService, private msgService: MessageService, private ps: ProjectService,
         private dataService: DataService) {
@@ -70,27 +70,18 @@ export class SelectedVariablesDlg implements OnInit {
         this.dataSource = new MatTableDataSource<SelectedVariable>(this.service.selectedVariables);
     }
 
-    /** Whether the number of selected elements matches the total number of rows. */
-    // isAllSelected() {
-    //     const numSelected = this.selection.selected.length;
-    //     const numRows = this.dataSource.data.length;
-    //     return numSelected === numRows;
-    // }
-
-    // atLeastOneSelected() {
-    //     return this.selection.selected.length > 0;
-    // }
-
-    // isOnlyOneSelected() {
-    //     return this.selection.selected.length === 1;
-    // }
-
-    // /** Selects all rows if they are not all selected; otherwise clear selection. */
-    // masterToggle() {
-    //     this.isAllSelected() ?
-    //         this.selection.clear() :
-    //         this.dataSource.data.forEach(row => this.selection.select(row));
-    // }
+    isEmpty(value): boolean {
+        return (
+          // null or undefined
+          (value == null) ||
+    
+          // has length and it's zero
+          (value.hasOwnProperty('length') && value.length === 0) ||
+    
+          // is an Object and has no keys
+          (value.constructor === Object && Object.keys(value).length === 0)
+        )
+    }
 
     hasDuplicates(arr: SelectedVariable[]) {
         var counts = [];
