@@ -40,7 +40,7 @@ export class SelectedVariablesService {
 
       let combinedArray = [];
       this.selectedVariables.forEach( 
-        t => { combinedArray.push(t.variableName) }
+        t => { combinedArray.push(new String(t.variableName)) }
       );      
 
       console.log("combinedArray : " + JSON.stringify(combinedArray));
