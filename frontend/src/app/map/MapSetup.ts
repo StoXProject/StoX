@@ -492,27 +492,27 @@ export class MapSetup {
             return; // no stratum associated with the selected psu.
         }
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
-        let layers: string[] = pds.acousticLayerData != null ? pds.acousticLayerData.AcousticLayer.map(al => al.Layer) : null;
+/*        let layers: string[] = pds.acousticLayerData != null ? pds.acousticLayerData.AcousticLayer.map(al => al.Layer) : null;
         if(layers == null) {
             console.log('Missing acoustic layer definition when changing assignment');
             return;
-        }
+        }*/
         let hauls: string[] = secInfos.map(secInfo => secInfo["Haul"]);
         console.log('selectStation: ' + on ? 'on' : 'off');
         let res: ActiveProcessResult = ps.handleAPI(await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
-            stratum, psu, layers, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
-                stratum, psu, layers, hauls).toPromise()));
+            stratum, psu, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
+                stratum, psu, hauls).toPromise()));
         // update the cache - NOTE: should we get the new assignments from backend on result?
-        layers.forEach(layer =>
+        //layers.forEach(layer =>
             hauls.forEach(haul => {
-                let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Layer == layer && asg.Haul == haul && psu == asg.PSU);
-                console.log('layer ' + layer + " haul " + haul + " idx " + idx);
+                let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Haul == haul && psu == asg.PSU);
+                console.log("haul " + haul + " idx " + idx);
                 if (on) {
                     if (idx < 0) {
                         console.log('push assignment');
                         pds.bioticAssignmentData.BioticAssignment.push({
-                            PSU: pds.selectedPSU, Layer: layer,
-                            Haul: haul, WeightingFactor: "1"
+                            PSU: pds.selectedPSU, /*Layer: layer,*/
+                            Haul: haul/*, WeightingFactor: "1"*/
                         });
                     }
                 } else {
@@ -522,7 +522,7 @@ export class MapSetup {
                     }
                 }
             })
-        );
+       // );
         MapSetup.updateStationSelection(f, pds);
     }
 
