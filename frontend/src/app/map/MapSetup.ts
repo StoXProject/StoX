@@ -492,7 +492,11 @@ export class MapSetup {
             return; // no stratum associated with the selected psu.
         }
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
-        let layers: string[] = pds.acousticLayerData.AcousticLayer.map(al => al.Layer);
+        let layers: string[] = pds.acousticLayerData != null ? pds.acousticLayerData.AcousticLayer.map(al => al.Layer) : null;
+        if(layers == null) {
+            console.log('Missing acoustic layer definition when changing assignment');
+            return;
+        }
         let hauls: string[] = secInfos.map(secInfo => secInfo["Haul"]);
         console.log('selectStation: ' + on ? 'on' : 'off');
         let res: ActiveProcessResult = ps.handleAPI(await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
