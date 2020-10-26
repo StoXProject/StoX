@@ -422,22 +422,20 @@ export class DataService {
   }
 
   addHaulToAssignment(projectPath: string, modelName: string, processID: string, stratum: string,
-    psu: string, layer: string[], haul: string[]): Observable<ActiveProcessResult> {
+    psu: string, haul: string[]): Observable<ActiveProcessResult> {
     return this.runFunction('addHaulToAssignment', {
       "Stratum": stratum,
       "PSU": psu,
-      "Layer": layer,
       "Haul": haul,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
 
   removeHaulFromAssignment(projectPath: string, modelName: string, processID: string, stratum: string,
-    psu: string, layer: string[], haul: string[]): Observable<ActiveProcessResult> {
+    psu: string, haul: string[]): Observable<ActiveProcessResult> {
     return this.runFunction('removeHaulFromAssignment', {
       "Stratum": stratum,
       "PSU": psu,
-      "Layer": layer,
       "Haul": haul,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
