@@ -119,7 +119,7 @@ export class ParameterComponent implements OnInit {
     console.log("allOptions : " + JSON.stringify(allOptions));
 
     if (this.ps.isEmpty(allOptions)) {
-      this.msgService.setMessage("You have to run the previous process before this action!");
+      this.msgService.setMessage("Can not get filter options. See user log.");
       this.msgService.showMessage();
       return;
     }
@@ -145,7 +145,7 @@ export class ParameterComponent implements OnInit {
     console.log("returnValue : " + JSON.stringify(returnValue));
 
     if(this.ps.isEmpty(returnValue)) {
-      this.msgService.setMessage("You have to run the previous process before this action!");
+      this.msgService.setMessage("Empty object from backend. See user log.");
       this.msgService.showMessage();
       this.selectedVariablesService.returnValue = null;
       return;
