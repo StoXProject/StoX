@@ -82,7 +82,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-  
+import { MatTooltipModule} from '@angular/material/tooltip';  
 
 
 /*import {
@@ -125,6 +125,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module';
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 import { EdsutableComponent } from './processdata/edsutable/edsutable.component';
+import { DirectiveAccessor } from './autocomplete/directive-accessor';
 
 @NgModule({
   exports: [
@@ -156,7 +157,8 @@ import { EdsutableComponent } from './processdata/edsutable/edsutable.component'
     MatTableModule,
     MatTabsModule,
     MatToolbarModule,
-    MatAutocompleteModule,
+    MatTooltipModule,
+    MatAutocompleteModule
    /* MatDatepickerModule,*/
    /* MatDividerModule,
     MatExpansionModule,*/
@@ -180,6 +182,7 @@ import { EdsutableComponent } from './processdata/edsutable/edsutable.component'
 export class MaterialModule { }
 
 @NgModule({
+  exports: [DirectiveAccessor],
   imports: [
     MaterialModule,
     BrowserModule,
@@ -254,7 +257,7 @@ export class MaterialModule { }
     UserLogComponent,
     OutputComponent,
     HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent, MessageDlgComponent,
-    AutocompleteComponent, TooltipDirective
+    AutocompleteComponent, TooltipDirective,DirectiveAccessor
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },

@@ -73,7 +73,8 @@ export class AutocompleteComponent {
   optionSelected(event: MatAutocompleteSelectedEvent) {
     this.updateSelectedItem(event.option.value);
   }
-  onKeydown(event: KeyboardEvent) {
+  /*onKeydown(event: KeyboardEvent) {
+    console.log(event);
     if (event.key === "Enter") {
       let val = (event.target as HTMLInputElement).value;
       if (val == "") {
@@ -81,5 +82,5 @@ export class AutocompleteComponent {
         this.autocomplete.closePanel();
       }
     }
-  }
+  }*/
 }
