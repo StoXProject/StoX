@@ -432,6 +432,9 @@ export class ProjectService {
 
   handleAPI<T>(res: any): T {
     if (res != null && this.selectedProject != null) {
+      if (res.processTable !== undefined) {
+        this.processes = res.processTable;
+      }
       if (res.saved !== undefined) {
         if (this.selectedProject.saved !== res.saved) {
           this.selectedProject.saved = res.saved;
@@ -440,9 +443,6 @@ export class ProjectService {
       }
       if (res.activeProcess !== undefined) {
         this.activeProcess = res.activeProcess;
-      }
-      if (res.processTable !== undefined) {
-        this.processes = res.processTable;
       }
       if (res.propertySheet !== undefined) {
         this.processProperties.propertySheet = res.propertySheet;

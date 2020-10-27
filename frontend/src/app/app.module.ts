@@ -83,7 +83,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule} from '@angular/material/tooltip';  
-
+import {DragDropModule as MatDragDropModule} from '@angular/cdk/drag-drop';
 
 /*import {
   MatBadgeModule,
@@ -209,6 +209,7 @@ export class MaterialModule { }
     TabMenuModule,
     ToolbarModule,
     DragDropModule,
+    MatDragDropModule,
     TreeModule,
     ContextMenuModule,
     KeyboardShortcutsModule.forRoot(),
