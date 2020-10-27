@@ -1,5 +1,5 @@
 <p-listbox #listBox [options]="ps.processes" [(ngModel)]="ps.selectedProcess" 
-optionLabel="processName" (document:keydown)="keydown($event)" >
+optionLabel="processName" (keydown)="keydown($event)" >
     <ng-template let-process pTemplate="item">
         <div (contextmenu)="openCm($event, cm, process.value)" pDraggable="process.value"
             pDroppable="process.value"
