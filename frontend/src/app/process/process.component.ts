@@ -8,6 +8,7 @@ import { ContextMenuModule, ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
 import { ProcessOutput } from '../data/processoutput';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 //import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
@@ -126,15 +127,20 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     cm.show(event);
     return false;
   }
-  draggedProcessId: string = null;
-  dragStart(process: Process) {
-    this.draggedProcessId = process.processID;
-  }
 
-  async drop(process: Process) {
-    if (this.draggedProcessId != null) {
-      console.log("dragging " + this.draggedProcessId + " to " + process.processID);
-      let pr: ProcessTableResult = this.ps.handleAPI(await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise());
+ 
+  async drop(event: CdkDragDrop<string[]>) {
+    if(event.previousIndex == event.currentIndex) {
+      return;
+    }
+    console.log(event.previousIndex, event.currentIndex);
+    let draggedProcessId : string= this.ps.processes[event.previousIndex].processID;
+    let droppedProcessAfterIndex : number = event.previousIndex < event.currentIndex ? event.currentIndex : event.currentIndex - 1;
+    let droppedProcessAfterId = droppedProcessAfterIndex >= 0 ? this.ps.processes[droppedProcessAfterIndex].processID : null; 
+    if (draggedProcessId != null) {
+      console.log("dragging " + draggedProcessId + " to after " + droppedProcessAfterId);
+      let pr: ProcessTableResult = this.ps.handleAPI(await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, 
+        this.ps.selectedModel.modelName, draggedProcessId, droppedProcessAfterId).toPromise());
     }
   }
 }
