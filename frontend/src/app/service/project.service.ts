@@ -279,7 +279,7 @@ export class ProjectService {
     // Read models and set selected to the first model
     if (projectPath.length > 0 && this.rAvailable) {
       //this.selectedModel = this.models[0]; 
-      this.openProject(projectPath, false, false);
+      this.openProject(projectPath, false, false, false);
     }
   }
 
@@ -291,35 +291,37 @@ export class ProjectService {
     } else {
       this.rstoxAPIVersion = null;
       this.setModels(null);
-      this.activateProject(null);
+      this.activateProject(null, false);
     }
     return "";
   }
 
-  async openProject(projectPath: string, doThrow: boolean, force: boolean) {
+  async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave : boolean) {
     // the following should open the project and make it selected in the GUI
-    this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise());
+    this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise(), askSave);
   }
 
   /*Activate project in gui - at the moment only one project is listed*/
-  async activateProject(project: Project) {
+  async activateProject(project: Project, askSave: boolean) { 
     this.dataService.log = [];   // triggered by project activation
     if (this.selectedProject != null) {
       let save: boolean = false;
-      if (!this.selectedProject.saved) {
-        // #263 requires a save before close message
-        let res = await MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project before closing?');
-        switch (res) {
-          case 'yes':
-            save = true;
-            break;
-          case 'no':
-            save = false;
-            break;
-          case '':
-            return; // interrupt activation
+      if (askSave) {
+        if (!this.selectedProject.saved) {
+          // #263 requires a save before close message
+          let res = await MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project before closing?');
+          switch (res) {
+            case 'yes':
+              save = true;
+              break;
+            case 'no':
+              save = false;
+              break;
+            case '':
+              return; // interrupt activation
+          }
         }
-      } 
+      }
       await this.dataService.closeProject(this.selectedProject.projectPath, save).toPromise()
     }
     await this.dataService.updateActiveProject(project != null ? project.projectPath : '').toPromise();
