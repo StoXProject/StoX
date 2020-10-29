@@ -20,7 +20,7 @@ export class ResetProjectDlg implements OnInit {
         try {
             //let project: Project = await this.service.ds.resetProject(this.service.ps.selectedProject.projectPath, save, true).toPromise();
             if(this.service.ps.selectedProject != null && this.service.ps.selectedProject.projectPath != null && continueWithoutSave) {
-                this.service.ps.openProject(this.service.ps.selectedProject.projectPath, true, true);               
+                this.service.ps.openProject(this.service.ps.selectedProject.projectPath, true, true, true);               
             }
         } catch (error) {
             this.msgService.setMessage(error);
