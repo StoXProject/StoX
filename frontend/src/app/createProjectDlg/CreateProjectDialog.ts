@@ -62,7 +62,7 @@ export class CreateProjectDialog {
         absolutePath = absolutePath.replace(/\\/g, "/");
         console.log("absolute path : " + absolutePath);
         try {
-            this.ps.activateProject(await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise());
+            this.ps.activateProject(await this.dataService.createProject(absolutePath, this.selectedTemplate.name).toPromise(), true);
         } catch (error) {
             console.log(error);
             var firstLine = error;
