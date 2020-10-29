@@ -70,15 +70,16 @@ export class SaveAsProjectDlg  implements OnInit {
         } 
 
         try {
-            let dirCreated = await this.dataService.makeDirectory(wholePath).toPromise();
+          /*  let dirCreated = await this.dataService.makeDirectory(wholePath).toPromise();
 
             if(dirCreated != "true") {
                 this.msgService.setMessage("Couldn't create directory : " + dirCreated);
                 this.msgService.showMessage();            
                 return; 
-            }
+            }*/
 
             let project: Project = await this.dataService.saveAsProject(this.ps.selectedProject.projectPath, wholePath).toPromise();
+            await this.ps.openProject(wholePath, true, true, false);
             // third parameter in saveAsProject
             // make a shift to this project (make it as current project??)
             

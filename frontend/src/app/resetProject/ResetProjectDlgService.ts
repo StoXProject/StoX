@@ -17,7 +17,7 @@ export class ResetProjectDlgService {
 
         if(this.ps.selectedProject.saved) {
             if(this.ps.selectedProject != null && this.ps.selectedProject.projectPath != null) {
-                this.ps.openProject(this.ps.selectedProject.projectPath, false, true);
+                this.ps.openProject(this.ps.selectedProject.projectPath, false, true, true);
             }
             return;
         }
