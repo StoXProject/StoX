@@ -72,7 +72,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.openProjectDlgService.showDialog();
   }
   closeProject() {
-    this.ps.activateProject(null); 
+    this.ps.activateProject(null, true); 
   }
   save() {
     this.ps.save();
