@@ -487,7 +487,7 @@ function callR(arg: string) {
 }*/
 
 async function evaluate(client: any, cmd: string) {
-  // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
+  //console.log("cmd: " + cmd);
   let s = Buffer.from(cmd, 'utf8').toString('hex'); // Encode command as hex
   let lens = "" + s.length;
   await new Promise(async resolve => {
@@ -495,8 +495,12 @@ async function evaluate(client: any, cmd: string) {
       if (data == lens) {
         // The length is send forth and back, we an proceed
         resolve();
-      }
+        //console.log("length received: " + data);
+      } /*else {
+        console.log("length error: " + data);
+      }*/
     };
+    //console.log("write length: " + lens);
     await client.write("" + s.length);
 
   });
@@ -507,8 +511,12 @@ async function evaluate(client: any, cmd: string) {
       if (nResp != null) {
         // recevied response length 
         resolve();
-      }
+        //console.log("write data nChar = " + nResp);
+      } /*else {
+        console.log("write data error nChar = null");
+      }*/
     };
+    //console.log("write cmd hex: " + s);
     await client.write(s); // may lead to throttling on the server side, but the server uses length info to get the string
   });
   // Total buffered preallocated before throttling, to avoid dynamic allocation time loss
@@ -524,9 +532,15 @@ async function evaluate(client: any, cmd: string) {
       nChunks++;
       if (bufLen == nResp) { // test on length
         // The response is received - finish
+        //console.log("throttling bufLen == nResp " + bufLen);
         resolve();
-      }
+      } /*else if(bufLen < nResp) {
+        console.log("throttling bufLen, nResp " + bufLen + "," + nResp);
+      } else {
+        console.log("throttling overflow error bufLen=" + bufLen, ", nResp=" + nResp);
+      }*/
     };
+    //console.log("write response length " + nResp);
     await client.write("" + nResp); // handshake response length
   });
   return Buffer.from(buf.toString(), 'hex').toString("utf8");
@@ -596,6 +610,9 @@ function setupServer() {
   server.post('/callR', async (req: any, res: any) => {
     // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
     //logInfo(req.body);
+    // this is a timout for a specific route for node express server.
+    // This will make long r calls like bootstrapping work.
+    req.setTimeout(2073600000); // use 24days proxy timeout.
     let s: any = await callR(req.body);
     //logInfo('call R result' + require('util').inspect(s));
     // res.type('text/plain');
