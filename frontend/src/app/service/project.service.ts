@@ -279,7 +279,7 @@ export class ProjectService {
     // Read models and set selected to the first model
     if (projectPath.length > 0 && this.rAvailable) {
       //this.selectedModel = this.models[0]; 
-      this.openProject(projectPath, false, false, false);
+      this.openProject(projectPath, false, true, false);
     }
   }
 
