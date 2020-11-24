@@ -83,6 +83,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule} from '@angular/material/tooltip';  
+import {MatListModule} from '@angular/material/list';
+
 import {DragDropModule as MatDragDropModule} from '@angular/cdk/drag-drop';
 
 /*import {
@@ -158,6 +160,7 @@ import { DirectiveAccessor } from './autocomplete/directive-accessor';
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatListModule,
     MatAutocompleteModule
    /* MatDatepickerModule,*/
    /* MatDividerModule,

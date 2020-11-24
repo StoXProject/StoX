@@ -68,16 +68,23 @@
 		icon="pi pi-save"></button>
 	<div class="flex-grow-1" style="height:100%;">
 	</div>
-	<div class="stox-logo" style="display:inline-block; vertical-align: middle; line-height:0.7rem; ">
+	<div class="stox-logo popup" (click)="myFunction()"
+		style="display:inline-block; vertical-align: middle; line-height:0.7rem; ">
 		<img src="./assets/images/stox.svg"
 			style="height:0.7rem;width:45px;display:inline-block; vertical-align: middle; line-height:0.7rem;">
-		<span
-			style="margin-left:10px;display:inline-block;font-size:0.7rem;font-weight:bold; vertical-align: middle; color:#4d6277">{{stoxVersion}}
-			/ RstoxAPI {{ps.rstoxAPIVersion}}
+		<span style="margin-left:10px;display:inline-block;font-size:0.7rem;font-weight:bold; vertical-align: middle; 
+			color:black;">{{stoxVersion}}</span>
+		<span style="font-size:0.7rem;font-weight:bold;" [style.color]="isMainPackageOfficial() ? 'black' : 
+			'rgb(255,30,78)'">{{getMainPackageDescr()}}
 		</span>
+		<mat-list class="popuptext mat-elevation-z4" id="myPopup">
+			<mat-list-item *ngFor="let pkg of ps.rstoxPackages"
+			style="font-size:0.7rem !important;font-weight:bold !important;" [style.color]="isPackageOfficial(pkg) ? 'black' : 
+			'rgb(255,30,78)'" matTooltip="Official package: {{pkg.official}}">{{pkg.packageName}} {{pkg.version}}</mat-list-item>
+		</mat-list> 
 	</div>
 </div>
-<div style="height: calc(100vh - 3.4rem);">
+<div style="height: calc(100vh - 3.4rem);"> 
 	<as-split direction="horizontal" gutterSize=6>
 		<as-split-area size="25">
 			<as-split direction="vertical" gutterSize=6>
