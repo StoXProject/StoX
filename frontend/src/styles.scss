@@ -156,7 +156,7 @@ $nodata: #acacac;
 .ui-menu {
   width: unset;
   .ui-menuitem-link {
-    padding: 2px 2px 2px 2px !important; 
+    padding: 2px 2px 2px 2px !important;
   }
   .ui-menuitem-text {
     white-space: nowrap;
@@ -556,7 +556,7 @@ input:focus {
 
 .mat-button {
   font-size: 12px !important;
-  padding:0px 6px !important; 
+  padding: 0px 6px !important;
 }
 
 .mat-button-base {
@@ -586,11 +586,11 @@ input:focus {
   height: 18px !important;
 }
 
-mat-option.mat-option{
+mat-option.mat-option {
   position: relative;
-  height: 18px!important;
-  line-height: 18px!important;
-  max-height: 18px!important;
+  height: 18px !important;
+  line-height: 18px !important;
+  max-height: 18px !important;
 }
 
 .ellipsiscolumn {
@@ -599,11 +599,22 @@ mat-option.mat-option{
   width: 100%;
 }
 
-.mat-menu-item {
+.mat-menu-item,
+.mat-list-item {
   line-height: 1.2rem !important;
   height: 1.2rem !important;
   padding: 0 !important;
+  font-size: 14px !important; 
 }
+
+.mat-list-item-content, .mat-list-base {
+  padding: 1px !important; 
+}
+.mat-list-base {
+  padding: 2px !important;
+}
+
+
 .mat-menu-item:focus {
   outline: none;
 }
@@ -617,14 +628,14 @@ mat-option.mat-option{
 }
 
 .helpcontent h2 {
-  font-size: 1.5rem !important; 
+  font-size: 1.5rem !important;
 }
 .helpcontent h3 {
-  font-size: 1.25rem !important; 
+  font-size: 1.25rem !important;
 }
 
 input.mat-input-element {
-   margin-top: auto !important;  
+  margin-top: auto !important;
 }
 
 .mat-tab-label-active {

@@ -1,7 +1,7 @@
 # list of API usage in GUI (2.9.8)
 
 # Backend info API
-getRstoxAPIVersion()
+getRstoxPackages()
 getAvailableTemplatesDescriptions()
 getModelInfo()
 # Project APIs

@@ -13,6 +13,7 @@ import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builde
 import { ProcessProperties } from '../data/ProcessProperties';
 import { Process } from '../data/process';
 import { Project } from '../data/project';
+import { PackageVersion } from '../data/PackageVersion';
 
 @Injectable({
   providedIn: 'root'
@@ -53,7 +54,6 @@ export class DataService {
 
 
   getAvailableTemplates(): Observable<any> {
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPI/R/getAvailableTemplatesDescriptions/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
     return this.runFunction('getAvailableTemplatesDescriptions', {});
   }
@@ -97,8 +97,8 @@ export class DataService {
     }, true);
   }
 
-  getRstoxAPIVersion(): Observable<string> {
-    return this.runFunctionThrowAPI('getRstoxAPIVersion', {}, false);
+  getRstoxPackageVersions(): Observable<PackageVersion[]> {
+    return this.runFunctionThrowFramework('getRstoxPackageVersions', {}, false);
   }
 
   saveProject(projectPath: string): Observable<Project> {
@@ -290,9 +290,7 @@ export class DataService {
     return this.runFunctionThrow(what, argsobj, dothrow, 'RstoxFramework');
   }
 
-  runFunctionThrowAPI(what: string, argsobj: any, dothrow: boolean): Observable<any> {
-    return this.runFunctionThrow(what, argsobj, dothrow, 'RstoxAPI');
-  }
+
   /** runFunction API wrapper - includes logging of user message/warning/errors from R*/
   runFunctionThrow(what: string, argsobj: any, dothrow: boolean, pkg: string): Observable<any> {
     // runFunction wraps a doCall with what/args and exception handling that returns a list.
@@ -313,9 +311,8 @@ export class DataService {
       return o;
     }
     console.log(pkg + "::" + what + "(" + Object.keys(argsobj).map(k => k + "=" + rVal(argsobj[k])).join() + ")");
-    // console.log("RstoxAPI::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
+    // console.log("RstoxFramework::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
     return <any>this.callR({ what: what, args: args, package: pkg })
-      //return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', body, 'text', true, "json")
       .pipe(map(res => {
         let r2: RunResult = JSON.parse(res.body !== undefined ? res.body : res);
         if (dothrow) {
@@ -497,7 +494,7 @@ export class DataService {
   }
 
   callR(j: any): Observable<any> {
-    console.log("RstoxAPI::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
+    console.log("RstoxFramework::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
     return this.postLocalNode('callR', j);
   }
 

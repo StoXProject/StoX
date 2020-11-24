@@ -14,6 +14,7 @@ import { MenuItem } from 'primeng/api';
 import { DataService } from '../service/data.service';
 import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgService';
 import { MatTabGroup } from '@angular/material/tabs';
+import { PackageVersion } from './../data/PackageVersion';
 
 @Component({
   selector: 'homeComponent',
@@ -57,7 +58,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     }*/];
     //if (this.ps.rAvailable) {
     this.items.push(...[
-     
+
     ]);
     this.m_isDesktop = "true" == await this.ds.isdesktop().toPromise();
     console.log("isdesktop=" + typeof (this.m_isDesktop))
@@ -72,7 +73,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.openProjectDlgService.showDialog();
   }
   closeProject() {
-    this.ps.activateProject(null, true); 
+    this.ps.activateProject(null, true);
   }
   save() {
     this.ps.save();
@@ -87,7 +88,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.rConnectionDlgService.showDialog();
   }
 
-  isProjectSelected() : boolean {
+  isProjectSelected(): boolean {
     return this.ps.selectedProject != null;
   }
   isSaved(): boolean {
@@ -106,4 +107,38 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     await this.ds.exit().toPromise();
   }
 
+  getMainPackage(): PackageVersion {
+    return this.ps.rstoxPackages == null || this.ps.rstoxPackages.length == 0 ? null : this.ps.rstoxPackages[0];
+  }
+
+  getMainPackageDescr(): string {
+    if (this.getMainPackage() != null) {
+      return " / " + this.getMainPackage().packageName + " " + this.getMainPackage().version;
+    }
+    return "";
+  }
+
+  isPackageOfficial(pkg: PackageVersion) {
+    if (pkg != null) {
+      return pkg.official == pkg.version;
+    }
+    return false;
+  }
+
+  isMainPackageOfficial(): boolean {
+    return this.isPackageOfficial(this.getMainPackage());
+  }
+
+  myFunction() {
+    var popup = document.getElementById("myPopup");
+    popup.classList.toggle("show");
+  }
+  @HostListener('document:mousedown', ['$event'])
+  onMouseDown(event) {
+    var popup = document.getElementById("myPopup");
+    if (popup.classList.contains("show") && !event.target.classList.contains("popup")) {
+      popup.classList.remove("show");
+      event.preventDefault();
+    }
+  }
 }

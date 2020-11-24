@@ -1,12 +1,9 @@
 devtools::install_github("https://github.com/StoXProject/RstoxData") 
 devtools::install_github("https://github.com/StoXProject/RstoxBase", force=T) 
 devtools::install_github("https://github.com/StoXProject/RstoxFramework", ref="develop", force=T) 
-devtools::install_github("https://github.com/StoXProject/RstoxAPI", ref="develop", force=T) 
-runFunction
-POST 
-../library/RstoxAPI/R/runFunction/json?auto_unbox=TRUE
 
-    {"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes","modelName":"baseline","startProcess":2,"endProcess":2,"save":false}
+
+{"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes","modelName":"baseline","startProcess":2,"endProcess":2,"save":false}
 
 'closeProject'
 {"projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox3_24processes",

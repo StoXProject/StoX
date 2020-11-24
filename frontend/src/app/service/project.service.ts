@@ -13,7 +13,7 @@ import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/ru
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
-
+import { PackageVersion} from '../data/PackageVersion';
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
 // import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -43,7 +43,7 @@ export class ProjectService {
   runFailedProcessId: string = null; // the last run-failed process
   runningProcessId: string = null; // current running process
   m_isResetting: boolean = false; // current reset flag.
-  rstoxAPIVersion: string;
+  rstoxPackages: PackageVersion[];
   rAvailable: boolean = false;
 
   userlog: string[] = [];
@@ -286,10 +286,10 @@ export class ProjectService {
   async checkRAvailability() {
     this.rAvailable = (await this.dataService.rAvailable().toPromise()) == "true";
     if (this.rAvailable) {
-      this.rstoxAPIVersion = await this.dataService.getRstoxAPIVersion().toPromise();
+      this.rstoxPackages = await this.dataService.getRstoxPackageVersions().toPromise();
       this.setModels(await this.dataService.getModelInfo().toPromise());
     } else {
-      this.rstoxAPIVersion = null;
+      this.rstoxPackages = null;
       this.setModels(null);
       this.activateProject(null, false);
     }

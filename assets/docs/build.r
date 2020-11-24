@@ -1,5 +1,5 @@
 cmd <- '{"what":"setProcessPropertyValue","args":"{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P001\"}\","package":"RstoxFramework"}' 
-    RstoxAPI::runFunction.JSON(cmd)
+    RstoxFramework::runFunction.JSON(cmd)
     
        cmdj <- jsonlite::fromJSON(cmd)
 
@@ -8,7 +8,7 @@ runFunction.JSON2 <- function(cmd) {
     r <- ""
    tryCatch({
         cmdj <- jsonlite::fromJSON(cmd)
-        res <- RstoxAPI::runFunction(cmdj$what, cmdj$args, cmdj$package)
+        res <- RstoxFramework::runFunction(cmdj$what, cmdj$args, cmdj$package)
         r <- jsonlite::toJSON(res, pretty = T, auto_unbox = T, 
             na = "string")
     }, warning = function(warning_condition) {
@@ -24,22 +24,22 @@ runFunction.JSON2 <- function(cmd) {
 jsonlite::fromJSON("\"a\"")    
 s <- jsonlite::toJSON(jsonlite::toJSON(list(args=jsonlite::toJSON(list(value=jsonlite::toJSON("a", auto_unbox=T)), auto_unbox=T)), auto_unbox=T), auto_unbox=T)
 s
-RstoxAPI::runFunction.JSON(s)
+RstoxFramework::runFunction.JSON(s)
 jsonlite::fromJSON(jsonlite::fromJSON(jsonlite::fromJSON(s)$args)$value)
 
-RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args="{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}")
+RstoxFramework::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args="{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}")
 
-RstoxAPI::runFunction.JSON("{\"what\":\"setProcessPropertyValue\",\"args\":\"{\\\"groupName\\\":\\\"processArguments\\\",\\\"name\\\":\\\"functionName\\\",\\\"value\\\":\\\"\\\\\\\"DefineStratumPolygon\\\\\\\"\\\",\\\"projectPath\\\":\\\"C:/Users/aasmunds/Test4.2\\\",\\\"modelName\\\":\\\"baseline\\\",\\\"processID\\\":\\\"P002\\\"}\",\"package\":\"RstoxFramework\"}")
-RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args='{"groupName":"processArguments","name":"functionName","value":"\"DefineStratumPolygon\"","projectPath":"C:/Users/aasmunds/Test4.2","modelName":"baseline","processID":"P002"}')
+RstoxFramework::runFunction.JSON("{\"what\":\"setProcessPropertyValue\",\"args\":\"{\\\"groupName\\\":\\\"processArguments\\\",\\\"name\\\":\\\"functionName\\\",\\\"value\\\":\\\"\\\\\\\"DefineStratumPolygon\\\\\\\"\\\",\\\"projectPath\\\":\\\"C:/Users/aasmunds/Test4.2\\\",\\\"modelName\\\":\\\"baseline\\\",\\\"processID\\\":\\\"P002\\\"}\",\"package\":\"RstoxFramework\"}")
+RstoxFramework::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args='{"groupName":"processArguments","name":"functionName","value":"\"DefineStratumPolygon\"","projectPath":"C:/Users/aasmunds/Test4.2","modelName":"baseline","processID":"P002"}')
 traceback()
 args<-"{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}"
-RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args)
+RstoxFramework::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args)
 jsonlite::fromJSON(args)
-RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args="{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}")
+RstoxFramework::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args="{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}")
 args<-"{\"groupName\":\"processArguments\",\"name\":\"functionName\",\"value\":\"\\\"DefineStratumPolygon\\\"\",\"projectPath\":\"C:/Users/aasmunds/Test4.2\",\"modelName\":\"baseline\",\"processID\":\"P002\"}"
-    RstoxAPI::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args)
+    RstoxFramework::runFunction(package='RstoxFramework', what='setProcessPropertyValue', args)
 jsonlite::fromJSON(args)
-    RstoxAPI::runFunction.JSON("{\"what\":\"setProcessPropertyValue\",\"args\":\"{\\\"groupName\\\":\\\"processArguments\\\",\\\"name\\\":\\\"functionName\\\",\\\"value\\\":\\\"\\\\\\\"DefineStratumPolygon\\\\\\\"\\\",\\\"projectPath\\\":\\\"C:/Users/aasmunds/Test4.2\\\",\\\"modelName\\\":\\\"baseline\\\",\\\"processID\\\":\\\"P002\\\"}\",\"package\":\"RstoxFramework\"}")
+    RstoxFramework::runFunction.JSON("{\"what\":\"setProcessPropertyValue\",\"args\":\"{\\\"groupName\\\":\\\"processArguments\\\",\\\"name\\\":\\\"functionName\\\",\\\"value\\\":\\\"\\\\\\\"DefineStratumPolygon\\\\\\\"\\\",\\\"projectPath\\\":\\\"C:/Users/aasmunds/Test4.2\\\",\\\"modelName\\\":\\\"baseline\\\",\\\"processID\\\":\\\"P002\\\"}\",\"package\":\"RstoxFramework\"}")
 
     RstoxFramework::setProcessPropertyValue(groupName="processArguments", name="functionName", 
     value="\"DefineStratumPolygon\"", projectPath="C:/Users/aasmunds/Test4.2",
