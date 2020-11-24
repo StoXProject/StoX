@@ -675,6 +675,19 @@ function setupServer() {
     }
   });
 
+  server.post('/openUrl', function (req: any, res: any) {
+    logInfo("open url");
+    let url: string = req.body;
+    if (url.length > 0) {
+      try {
+        require('electron').shell.openExternal(url);
+        res.send("url opened");
+      } catch(error) {
+        res.send(error);
+      }
+    }
+  });  
+
   server.get('/rAvailable', async (req: any, res: any) => {
     logInfo("check if r is available");
     res.send(rAvailable);

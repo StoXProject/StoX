@@ -514,6 +514,10 @@ export class DataService {
     return this.postLocalNode('makeDirectory', dirPath);
   }
 
+  openUrl(url: string): Observable<any> {
+    return this.postLocalNode('openUrl', url);
+  }
+
   stoxHome(): Observable<any> {
     return this.postLocalNode('stoxhome', {});
   }
