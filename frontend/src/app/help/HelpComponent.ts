@@ -64,15 +64,12 @@ export class HelpContentHandler {
    * @param hRef on the form ../../packageName/html/objectName.html
    */
   private updateHelpContentByHref(oneMatch: string) {
-    // var matches = hRef.match(/\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html/ig);
-    //if (matches != null && matches.length == 1) {
-      var splitElms = oneMatch.split("/");
-      var packageName = splitElms[2];
-      var fileName = splitElms[4];
-      var fileNameElms = fileName.split(".");
-      var objectName = fileNameElms[0];
-      this.dataService.getObjectHelpAsHtml(packageName, objectName).toPromise().then(s =>this.ps.helpContent = s) 
-    //}
+    var splitElms = oneMatch.split("/");
+    var packageName = splitElms[2];
+    var fileName = splitElms[4];
+    var fileNameElms = fileName.split(".");
+    var objectName = fileNameElms[0];
+    this.dataService.getObjectHelpAsHtml(packageName, objectName).toPromise().then(s =>this.ps.helpContent = s);
   }
 }
 
@@ -83,4 +80,20 @@ export class HelpContentHandler {
 })
 export class HelpComponent {
   constructor(private ps: ProjectService, ) { }
+
+  hasNext(): boolean {
+    return this.ps.helpCache.hasNext();
+  }
+
+  hasPrevious(): boolean {
+    return this.ps.helpCache.hasPrevious();
+  } 
+
+  previous() {
+    this.ps.helpCache.previous();
+  }
+
+  next() {
+    this.ps.helpCache.next();
+  }
 }

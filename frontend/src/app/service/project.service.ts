@@ -14,6 +14,7 @@ import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion} from '../data/PackageVersion';
+import { HelpCache } from '../data/HelpCache';
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
 // import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -37,7 +38,7 @@ export class ProjectService {
   private m_processes: Process[] = [];
   private m_selectedProcessId: string;
   private m_processProperties: ProcessProperties = {};
-  private m_helpContent: string = "";
+  helpCache: HelpCache = new HelpCache();
   //activeModelName: string = null; // the last run model
   private m_activeProcess: ActiveProcess = {}; // the last run-ok process
   runFailedProcessId: string = null; // the last run-failed process
@@ -222,12 +223,12 @@ export class ProjectService {
   }
 
   public get helpContent(): string {
-    return this.m_helpContent;
+    return this.helpCache.current();
   }
 
   // Set accessor for help content
   public set helpContent(content: string) {
-    this.m_helpContent = content;
+    this.helpCache.add(content);
   }
 
   onSelectedProcessChanged() {
@@ -255,8 +256,7 @@ export class ProjectService {
   }
 
   /* async initializeProperties() {
-     this.processProperties = null;
-     this.m_helpContent = ""; 
+     this.processProperties = null;     
    }*/
 
   getProjects(): Project[] {
