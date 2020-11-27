@@ -1,7 +1,11 @@
 <p-tabView>
     <p-tabPanel header="Function description">
-        <button pButton type="button" icon="pi pi-caret-left" iconPos="left" [disabled]="!hasPrevious()" (click)="previous()"></button>
-        <button pButton type="button" icon="pi pi-caret-right" iconPos="left" [disabled]="!hasNext()" (click)="next()"></button>
+        <p-toolbar name="toolbar">
+            <div class="ui-toolbar-group-left">
+                  <button pButton type="button" icon="pi pi-caret-left" iconPos="left" [disabled]="!hasPrevious()" (click)="previous()"></button>
+                  <button pButton type="button" icon="pi pi-caret-right" iconPos="left" [disabled]="!hasNext()" (click)="next()"></button>
+            </div>
+        </p-toolbar>
         <ng-template pTemplate="content">
              <div class="helpcontent" helpContent [innerHTML]="ps.helpContent | sanitizeHtml" style="overflow:scroll;height:inherit;"></div>
         </ng-template>
