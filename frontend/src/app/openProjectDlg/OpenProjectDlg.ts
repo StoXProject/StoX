@@ -53,14 +53,14 @@ export class OpenProjectDlg {
                 this.msgService.showMessage();
                 return;
             }
-            if (this.ps.selectedProject != null) {
+            /*if (this.ps.selectedProject != null) {
                 // Check if project is open in GUI
                 if (this.ps.selectedProject.projectPath == this.service.projectPath) {
                     this.msgService.setMessage("Project with name " + this.ps.selectedProject.projectName + " is already open in the GUI!");
                     this.msgService.showMessage();
                     return;
                 }
-            }
+            }*/
 
             // the following should open the project and make it selected in the GUI
             this.ps.openProject(this.service.projectPath, true, true, true);
