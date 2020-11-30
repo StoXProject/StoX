@@ -680,13 +680,13 @@ function setupServer() {
   });
 
   server.post('/openUrl', function (req: any, res: any) {
-    logInfo("open url");
     let url: string = req.body;
+    logInfo("open url: " + url);
     if (url.length > 0) {
       try {
         require('electron').shell.openExternal(url);
-        res.send("url opened");
-      } catch (error) {
+        res.send("url opened: " + url);
+      } catch(error) {
         res.send(error);
       }
     }
