@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion} from '../data/PackageVersion';
 import { HelpCache } from '../data/HelpCache';
+
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
 // import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -296,13 +297,13 @@ export class ProjectService {
     return "";
   }
 
-  async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave : boolean) {
+  async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave: boolean) {
     // the following should open the project and make it selected in the GUI
     this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise(), askSave);
   }
 
   /*Activate project in gui - at the moment only one project is listed*/
-  async activateProject(project: Project, askSave: boolean) { 
+  async activateProject(project: Project, askSave: boolean) {
     this.dataService.log = [];   // triggered by project activation
     if (this.selectedProject != null) {
       let save: boolean = false;
@@ -322,7 +323,9 @@ export class ProjectService {
           }
         }
       }
-      await this.dataService.closeProject(this.selectedProject.projectPath, save).toPromise()
+      if (project.projectPath != this.selectedProject.projectPath) {
+        await this.dataService.closeProject(this.selectedProject.projectPath, save).toPromise()
+      }
     }
     await this.dataService.updateActiveProject(project != null ? project.projectPath : '').toPromise();
     await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();

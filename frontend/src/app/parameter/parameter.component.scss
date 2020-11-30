@@ -1,9 +1,9 @@
 p-table {
-    width:100%;
+    width: 100%;
 }
 td {
     //font-size: 0.8em ;
-    padding : 0px !important;
+    padding: 0px !important;
 }
 /*
 .mat-input-element {
@@ -11,4 +11,6 @@ td {
     text-overflow: ellipsis;
     overflow: hidden;
   }*/
-  
+tr:nth-child(even) {
+    background-color: inherit !important;
+}

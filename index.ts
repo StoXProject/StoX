@@ -608,6 +608,10 @@ function setupServer() {
 
   // observe rpath in backend
   server.post('/callR', async (req: any, res: any) => {
+    if (!rAvailable) {
+      res.send({ value: null, message: [], warning: [], error: ['R is not available. Set path to R bin in Tools->R connection.'] });
+      return;
+    }
     // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
     //logInfo(req.body);
     // this is a timout for a specific route for node express server.
@@ -686,7 +690,7 @@ function setupServer() {
         res.send(error);
       }
     }
-  });  
+  });
 
   server.get('/rAvailable', async (req: any, res: any) => {
     logInfo("check if r is available");
