@@ -460,12 +460,12 @@ export class MapSetup {
 
     }
     static updateEDSUSelection(f: Feature, selectedPSU) {
-        let absent: boolean = f.get("absent");
         let edsuPsu: EDSU_PSU = f.get("edsupsu");
-        let selected: boolean = edsuPsu != null && edsuPsu.PSU != null && edsuPsu.PSU.length > 0;//f.get("selected");
+        //let absent: boolean = edsuPsu == null /*error not mapped*/ || edsuPsu.PSU === "NA";  
+        let selected: boolean = edsuPsu != null && edsuPsu.PSU != null && edsuPsu.PSU.length > 0 && edsuPsu.PSU !== "NA";//f.get("selected");
         let focused: boolean = selected && selectedPSU != null && edsuPsu.PSU == selectedPSU;
         let selection =
-            absent != null && absent ? 3 :
+           // absent != null && absent ? 3 :
                 focused != null && focused ? 2 :
                     selected != null && selected ? 1 : 0;
         f.set("selection", selection); // Set the style selection.
