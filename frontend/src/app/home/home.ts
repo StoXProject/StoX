@@ -52,7 +52,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
 
   async ngOnInit() {
     console.log("Home init")
-    this.stoxVersion = '2.9.16';
+    this.stoxVersion = '2.9.17';
     this.items = [/*{
       label: 'R connection...', command: e => this.rConnectionDlgService.showDialog()
     }*/];
