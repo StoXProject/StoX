@@ -210,12 +210,18 @@ export class ExpressionBuilderDlg  implements OnInit {
         this.onHide();
     }
 
+    init() {
+        this.service.tableExpressions  = [];
+        this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);           
+    }    
+
     cancel() {
         this.onHide();
     }
 
     onHide() {
         // this.selection.clear();
-        this.service.display = false;          
+        this.service.display = false;  
+        this.init();        
     }
 }
