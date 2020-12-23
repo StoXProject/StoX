@@ -40,10 +40,10 @@ let serverStarted = false;
 var versionRstoxFramework = "";
 var officialRstoxPackages: String[] = [];
 var versionR = "";
-var rspawn: any;
+//var rspawn: any;
 var backendProcess: any; // Backend process
-var stoxVersion = "2.9.17";
-var officialRstoxFrameworkVersion = "1.2.27" // used to show red when official (ending with 0) but not the right official
+var stoxVersion = "2.9.18";
+//var officialRstoxFrameworkVersion = "1.2.27" // used to show red when official (ending with 0) but not the right official
 //var supportedRstoxFrameworkVersions : string[] = ""; 
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu } = require('electron')
@@ -168,7 +168,7 @@ function createWindow() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
-    rspawn = null;
+   // rspawn = null;
     child_process = null;
   })
 
