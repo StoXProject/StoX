@@ -46,7 +46,7 @@ export class ProjectService {
   runningProcessId: string = null; // current running process
   m_isResetting: boolean = false; // current reset flag.
   rstoxPackages: PackageVersion[];
-  rAvailable: boolean = false;
+  rstoxFrameworkAvailable: boolean = false;
 
   userlog: string[] = [];
 
@@ -273,20 +273,20 @@ export class ProjectService {
   }
 
   async initData() {
-    await this.checkRAvailability();
+    await this.checkRstoxFrameworkAvailability();
     let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
 
     console.log("Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);
     // Read models and set selected to the first model
-    if (projectPath.length > 0 && this.rAvailable) {
+    if (projectPath.length > 0 && this.rstoxFrameworkAvailable) {
       //this.selectedModel = this.models[0]; 
       this.openProject(projectPath, false, true, false);
     }
   }
 
-  async checkRAvailability() {
-    this.rAvailable = (await this.dataService.rAvailable().toPromise()) == "true";
-    if (this.rAvailable) {
+  async checkRstoxFrameworkAvailability() {
+    this.rstoxFrameworkAvailable = (await this.dataService.rstoxFrameworkAvailable().toPromise()) == "true";
+    if (this.rstoxFrameworkAvailable) {
       this.rstoxPackages = await this.dataService.getRstoxPackageVersions().toPromise();
       this.setModels(await this.dataService.getModelInfo().toPromise());
     } else {
@@ -294,7 +294,6 @@ export class ProjectService {
       this.setModels(null);
       this.activateProject(null, false);
     }
-    return "";
   }
 
   async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave: boolean) {

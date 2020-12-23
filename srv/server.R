@@ -39,7 +39,7 @@ write.socket.all <- function(s, r){
 
 handle <- function(cmd){
     # Service command/response handler
-    try(RstoxFramework::runFunction.JSON(cmd))
+    eval(parse(text=cmd))
 }
 
 # runFunction service - loop and wait on socket
@@ -54,6 +54,12 @@ while(TRUE) {
         break
     }
     # Service command/response handler
-    r <- handle(cmd)
+  
+    tryCatch({
+        r <- cmd
+        r <- as.character(handle(cmd))
+    },error=function(e){
+       
+    })
     write.socket.all(s, r)
 }

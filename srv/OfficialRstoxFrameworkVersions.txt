@@ -1,0 +1,3 @@
+StoX    RstoxFramework  Dependencies
+2.9.17  1.2.27   RstoxBase_1.2.35,RstoxData_1.0.18,RstoxFDA_1.2.3
+3.0.0   1.3.0   RstoxBase_1.2.36,RstoxData_1.0.19

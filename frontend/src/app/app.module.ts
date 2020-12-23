@@ -128,6 +128,7 @@ import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 import { EdsutableComponent } from './processdata/edsutable/edsutable.component';
 import { DirectiveAccessor } from './autocomplete/directive-accessor';
+import { UpdateRstoxFrameworkComponent } from './dlg/update-rstox-framework/update-rstox-framework.component';
 
 @NgModule({
   exports: [
@@ -180,7 +181,8 @@ import { DirectiveAccessor } from './autocomplete/directive-accessor';
     MatStepperModule,*/
 //    MatTooltipModule,
 //    MatTreeModule,
-  ]
+  ],
+  declarations: [UpdateRstoxFrameworkComponent]
 })
 export class MaterialModule { }
 

@@ -498,6 +498,7 @@ export class DataService {
     return this.postLocalNode('callR', j);
   }
 
+
   browse(defaultpath: string): Observable<any> {
     return this.postLocalNode('browse', defaultpath);
   }
@@ -532,6 +533,10 @@ export class DataService {
     return this.postLocalNode('exit', {});
   }
 
+  installRstoxFramework(): Observable<any> {
+    return this.postLocalNode('installRstoxFramework', {});
+  }
+
   public getRPath(): Observable<any> {
     return this.getLocalNode('rpath');
   }
@@ -548,6 +553,10 @@ export class DataService {
     return this.getLocalNode('rAvailable');
   }
 
+  public rstoxFrameworkAvailable(): Observable<any> {
+    return this.getLocalNode('rstoxFrameworkAvailable');
+  }
+  
   public updateActiveProject(projectPath: string): Observable<any> {
     return this.postLocalNode('updateactiveproject', projectPath);
   }

@@ -107,6 +107,11 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     await this.ds.exit().toPromise();
   }
 
+  async installRstoxFramework() {
+    await this.ds.installRstoxFramework().toPromise(); 
+    await this.ps.checkRstoxFrameworkAvailability();
+  }
+
   getMainPackage(): PackageVersion {
     return this.ps.rstoxPackages == null || this.ps.rstoxPackages.length == 0 ? null : this.ps.rstoxPackages[0];
   }

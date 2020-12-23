@@ -1,6 +1,6 @@
 import { start } from "repl";
 import { platform } from "os";
-
+import { Utils, UtilsConstants } from "./utils/util";
 //handle setupevents as quickly as possible
 const setupEvents = require('./../installers/setupEvents')
 var mainWindow: any;
@@ -35,8 +35,15 @@ var activeProjectSaved: boolean = true;
 var log: any = null;
 var server: any = null;
 var rAvailable: boolean = false;
+let serverStarted = false;
+var versionRstoxFramework = "";
+var officialRstoxPackages: String[] = [];
+var versionR = "";
 var rspawn: any;
 var backendProcess: any; // Backend process
+var stoxGuiVersion = "2.9.17";
+var officialRstoxFrameworkVersion = "1.2.27" // used to show red when official (ending with 0) but not the right official
+//var supportedRstoxFrameworkVersions : string[] = ""; 
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu } = require('electron')
 
@@ -113,7 +120,7 @@ async function startNodeServer() {
   await new Promise(r => {
     server.listen(port, () => {
       logInfo('Node Server started at http://localhost:' + port);
-      r()
+      r(null)
     });
   });
 
@@ -320,17 +327,10 @@ async function startBackendServer(): Promise<string> {
     return "";
   }
   var rscriptBin = rScriptBin();
-  const path = require('path');
-  const resPath = __dirname + '/../srv';
-  logInfo('Resource file ' + resPath);
-  let resFile = path.join(resPath, 'server.R');
-  logInfo('Resource file ' + resFile);
-  let serverScript = fs.readFileSync(resFile, { encoding: 'utf-8', flag: 'r' })
-  let fileName = require('temp-dir') + "/stox.server.R";
-  logInfo("Writing server.R into " + fileName);
-  await fs.writeFile(fileName, serverScript, () => { });
-  let serverCmd = rscriptBin + " " + fileName;
+
+  Utils.extractResourceFile(UtilsConstants.RES_SERVER_FILENAME);
   // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
+  let fileName = Utils.getTempResFileName(UtilsConstants.RES_SERVER_FILENAME)
   logInfo("Spawning " + rscriptBin + " " + fileName);
   backendProcess = child_process.spawn(rscriptBin, [fileName]);
   backendProcess.on('error', (er: any) => {
@@ -341,6 +341,40 @@ async function startBackendServer(): Promise<string> {
   //console.log(backendProcess.pid);
   //rserve_client = await connectRserve(rserve);
   await createConnection();
+  if (serverStarted) {
+
+    Utils.extractResourceFile(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+    let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+    Utils.extractResourceFile(UtilsConstants.RES_SERVER_VERSIONS);
+    let versionsTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_VERSIONS);
+    let cmd = "paste(R.Version()$major, gsub(\"(.+?)([.].*)\", \"\\\\1\", R.Version()$minor), sep = \".\")"
+    versionR = (await callR(cmd) as any).result;
+    logInfo("R version " + versionR);
+    /*cmd = "paste(.libPaths(), collapse=\",\")";
+    versionR = (await callR(cmd) as any).result;
+    logInfo("Lib paths " + versionR);*/
+    cmd = "source(\"" + versionsTmpFile + "\")";
+    logInfo(cmd);
+    let res = (await callR(cmd) as any).result;
+    cmd = "getOfficialRstoxPackageVersion(\"" + stoxGuiVersion + "\", \"" + officialsRFTmpFile + "\", toJSON = T)";
+    logInfo(cmd);
+
+    officialRstoxPackages = JSON.parse((await callR(cmd) as any).result);
+    logInfo(JSON.stringify(officialRstoxPackages));
+
+    cmd = "tryCatch(paste0(\"RStoxFramework_\", as.character(packageVersion(\"RstoxFramework\"))),error = function(e) {\"\"})"
+    versionRstoxFramework = (await callR(cmd) as any).result;
+    logInfo(versionRstoxFramework);
+
+  }
+  if (serverStarted) {
+    let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+    let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxGuiVersion + "\", \"" +
+      officialsRFTmpFile + "\", quiet = T, skip.identical=T, toJSON=T)";
+    logInfo(cmd);
+    let res = (await callR(cmd) as any).result;
+    logInfo("Installed packages: " + res);
+  }
   return "ok";
 }
 
@@ -349,21 +383,21 @@ async function startBackendServer(): Promise<string> {
  */
 async function createConnection() {
   for (let i = 1; i <= 10000; i++) {
-    await new Promise(r => setTimeout(() => { r(); }, 400/*ms*/)); // createConnection synchr. takes however 1 sec.
+    await new Promise(r => setTimeout(() => { r(null); }, 400/*ms*/)); // createConnection synchr. takes however 1 sec.
     logInfo("Connecting to " + "localhost" + ":" + 6312 + " try " + i);
-    let connected = false;
+    serverStarted = false;
     await new Promise(resolve => {
       client = new net.createConnection(6312, "localhost")
         .on('connect', function () {
-          connected = true;
+          serverStarted = true;
           logInfo("Connected in try " + i);
-          resolve();
+          resolve(null);
         }).on('error', function (err: any) {
           logInfo(err);
-          resolve();
+          resolve(null);
         });
     });
-    if (connected) {
+    if (serverStarted) {
       break;
     }
   }
@@ -378,6 +412,22 @@ async function createConnection() {
   };
 }
 
+function getRstoxFrameworkInstallCmd(): string {
+  let major = versionR.startsWith("4.")
+  let platformCode: string = process.platform == "win32" ? "windows" : process.platform == "darwin" ?
+    versionR.startsWith("4.") ? "macosx" : versionR.startsWith("3.6") ? "macosx/el-capitan" : "" : "";
+  if (platformCode == "") {
+    return "";
+  }
+  return "packagesToInstall <-  c(\\\"RstoxFramework\\\", \\\"RstoxBase\\\", \\\"RstoxData\\\")\\n" +
+    "tryCatch(remove.packages(packagesToInstall), error = function(e) {NULL})\\n" +
+    "install.packages( \\\"https://stoxproject.github.io/repo/bin/" + platformCode + "/contrib/" + versionR +
+    "/RstoxFramework_1.2.27.zip\\\" , repos = NULL)\\n" +
+    "install.packages( \\\"https://stoxproject.github.io/repo/bin/" + platformCode + "/contrib/" + versionR +
+    "/RstoxBase_1.2.35.zip\\\" , repos = NULL)\\n" +
+    "install.packages( \\\"https://stoxproject.github.io/repo/bin/" + platformCode + "/contrib/" + versionR +
+    "/RstoxData_1.0.18.zip\\\" , repos = NULL)"
+}
 
 /*function isRunning(win: string, mac: string, linux: string) {
   return new Promise(function (resolve, reject) {
@@ -447,12 +497,12 @@ function callR(arg: string) {
   return new Promise(async (resolve) => {
     while (callr_evaluate.length > 0) {
       // pause when client is busy. 
-      await new Promise(r => setTimeout(() => { r(); }, 50/*ms*/));
+      await new Promise(r => setTimeout(() => { r(null); }, 50/*ms*/));
     }
     callr_evaluate.push(true); // make my self ready. lock the other calls out if they appear at same time.
     while (callr_evaluate.length > 1) {
       // pause if 2 calls are released asynchronously from the first pause. (it could maybe happen) only one at the time.
-      await new Promise(r => setTimeout(() => { r(); }, 50/*ms*/));
+      await new Promise(r => setTimeout(() => { r(null); }, 50/*ms*/));
     }
     let ans: any = await evaluate(client, arg);
 
@@ -487,14 +537,15 @@ function callR(arg: string) {
 }*/
 
 async function evaluate(client: any, cmd: string) {
-  //console.log("cmd: " + cmd);
+
+  console.log("evaluate: " + cmd);
   let s = Buffer.from(cmd, 'utf8').toString('hex'); // Encode command as hex
   let lens = "" + s.length;
   await new Promise(async resolve => {
     client.handle = (data: any) => {
       if (data == lens) {
         // The length is send forth and back, we an proceed
-        resolve();
+        resolve(null);
         //console.log("length received: " + data);
       } /*else {
         console.log("length error: " + data);
@@ -510,7 +561,7 @@ async function evaluate(client: any, cmd: string) {
       nResp = Number(data);
       if (nResp != null) {
         // recevied response length 
-        resolve();
+        resolve(null);
         //console.log("write data nChar = " + nResp);
       } /*else {
         console.log("write data error nChar = null");
@@ -533,7 +584,7 @@ async function evaluate(client: any, cmd: string) {
       if (bufLen == nResp) { // test on length
         // The response is received - finish
         //console.log("throttling bufLen == nResp " + bufLen);
-        resolve();
+        resolve(null);
       } /*else if(bufLen < nResp) {
         console.log("throttling bufLen, nResp " + bufLen + "," + nResp);
       } else {
@@ -612,15 +663,39 @@ function setupServer() {
       res.send({ value: null, message: [], warning: [], error: ['R is not available. Set path to R bin in Tools->R connection.'] });
       return;
     }
+    if (versionRstoxFramework == "") {
+      res.send({ value: null, message: [], warning: [], error: ['RstoxFramework is not installed. Install from Tools->Install R packages.'] });
+      return;
+    }
     // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
     //logInfo(req.body);
     // this is a timout for a specific route for node express server.
     // This will make long r calls like bootstrapping work.
     req.setTimeout(2073600000); // use 24days proxy timeout.
-    let s: any = await callR(req.body);
-    //logInfo('call R result' + require('util').inspect(s));
+
+    let cmd: string = "RstoxFramework::runFunction.JSON(" + JSON.stringify(req.body) + ")";
+    //cmd = cmd.replace(/\"/g, "\\\"");
+    logInfo("cmd:" + cmd)
+    // The server is parsing the expression, a need for stringify to have 2^n-1 escapes where n is 
+    // starting at 1 and going to 2 (because of parse). stringify and parse operates oppocite ways.
+    // The args in the body is already stringified (because of need to do do.call)
+    //cmd = JSON.stringify(cmd);
+    let s: any = await callR(cmd);
+    logInfo('call R result ' + JSON.stringify(s));
     // res.type('text/plain');
     res.send(s.result);
+  });
+
+  server.post('/installRstoxFramework', async (req: any, res: any) => {
+    let cmd: string = getRstoxFrameworkInstallCmd();
+    if (cmd == "") {
+      res.send("false");
+    } else {
+      logInfo(cmd);
+      await callR(cmd);
+      logInfo("Finished installing");
+    }
+    res.send("true");
   });
 
   function resolveDefaultPath(defPath: string): string {
@@ -686,16 +761,21 @@ function setupServer() {
       try {
         require('electron').shell.openExternal(url);
         res.send("url opened: " + url);
-      } catch(error) {
+      } catch (error) {
         res.send(error);
       }
     }
   });
 
   server.get('/rAvailable', async (req: any, res: any) => {
-    logInfo("check if r is available");
+    // logInfo("check if r is available");
     res.send(rAvailable);
   });
+  server.get('/rstoxFrameworkAvailable', async (req: any, res: any) => {
+    //logInfo("check if rstoxframework is available");
+    res.send(rAvailable && versionRstoxFramework != "");
+  });
+
 
 
   server.post('/makeDirectory', function (req: any, res: any) {
