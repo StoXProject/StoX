@@ -417,7 +417,7 @@ getPackageNameAndVersionString <- function(x) {
 
 
 # Function to read the description file of an RstoxPackage
-getDependencies <- function(packageName, repos = "https://cloud.r-project.org", dependencies = NA, excludeStartingWith = NULL, recursive = TRUE, append = FALSE, sort = TRUE) {
+getDependencies <- function(packageName, repos = "https://cloud.r-project.org", dependencies = NA, excludeStartingWith = NULL, recursive = TRUE, append = FALSE, sort = FALSE) {
     
     # Get the dependencies of the Rstox packages:
     if(identical(NA, dependencies)) {
@@ -434,6 +434,10 @@ getDependencies <- function(packageName, repos = "https://cloud.r-project.org", 
         dependencies = dependencies, 
         recursive = recursive
     )
+    
+    if(!length(dependentPackages)) {
+        return(NULL)
+    }
     # Remove the intitial packageName:
     if(!append) {
         dependentPackages <- setdiff(dependentPackages, packageName)
@@ -454,6 +458,7 @@ getDependencies <- function(packageName, repos = "https://cloud.r-project.org", 
 
 
 extractDependencies <- function(packageName, allAvail, dependencies, recursive = TRUE) {
+    
     # Extract the dependencies of the packageName:
     onlyDependencies <- subset(allAvail, Package %in% packageName)[dependencies]
     if(!nrow(onlyDependencies)) {

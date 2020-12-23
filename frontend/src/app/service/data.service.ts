@@ -97,10 +97,7 @@ export class DataService {
     }, true);
   }
 
-  getRstoxPackageVersions(): Observable<PackageVersion[]> {
-    return this.runFunctionThrowFramework('getRstoxPackageVersions', {}, false);
-  }
-
+ 
   saveProject(projectPath: string): Observable<Project> {
 
     return this.runFunctionThrowFramework('saveProject', {
@@ -541,6 +538,14 @@ export class DataService {
     return this.getLocalNode('rpath');
   }
 
+  public getStoxVersion(): Observable<any> {
+    return this.getLocalNode('stoxversion');
+  }
+
+  public getRstoxPackageVersions(): Observable<any> {
+    return this.getLocalNode('getRstoxPackageVersions');
+  }
+
   public getProjectRootPath(): Observable<any> {
     return this.getLocalNode('projectrootpath');
   }
@@ -553,10 +558,10 @@ export class DataService {
     return this.getLocalNode('rAvailable');
   }
 
-  public rstoxFrameworkAvailable(): Observable<any> {
+  /*public rstoxFrameworkAvailable(): Observable<any> {
     return this.getLocalNode('rstoxFrameworkAvailable');
-  }
-  
+  }*/
+
   public updateActiveProject(projectPath: string): Observable<any> {
     return this.postLocalNode('updateactiveproject', projectPath);
   }

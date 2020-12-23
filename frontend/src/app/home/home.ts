@@ -52,7 +52,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
 
   async ngOnInit() {
     console.log("Home init")
-    this.stoxVersion = '2.9.17';
+    this.stoxVersion = await this.ds.getStoxVersion().toPromise()/*'2.9.17'*/;
     this.items = [/*{
       label: 'R connection...', command: e => this.rConnectionDlgService.showDialog()
     }*/];
@@ -108,30 +108,19 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   }
 
   async installRstoxFramework() {
-    await this.ds.installRstoxFramework().toPromise(); 
+    await this.ds.installRstoxFramework().toPromise();
     await this.ps.checkRstoxFrameworkAvailability();
   }
 
-  getMainPackage(): PackageVersion {
-    return this.ps.rstoxPackages == null || this.ps.rstoxPackages.length == 0 ? null : this.ps.rstoxPackages[0];
+  getPackageColor(pkg: PackageVersion) {
+    return pkg == null || pkg.status > 1 ? 'grey' : pkg.status == 1 ? 'rgb(255,30,78)' : 'black';
   }
-
-  getMainPackageDescr(): string {
-    if (this.getMainPackage() != null) {
-      return " / " + this.getMainPackage().packageName + " " + this.getMainPackage().version;
-    }
-    return "";
+  getMainPackageDescr() {
+    return " / " + this.getPackageDescr(this.ps.rstoxPackages != null ? this.ps.rstoxPackages[0] : null);
   }
-
-  isPackageOfficial(pkg: PackageVersion) {
-    if (pkg != null) {
-      return pkg.official == pkg.version;
-    }
-    return false;
-  }
-
-  isMainPackageOfficial(): boolean {
-    return this.isPackageOfficial(this.getMainPackage());
+  getPackageDescr(pkg: PackageVersion) {
+    //console.log("getPackageDescr:" + pkg)
+    return pkg == null ? "Loading..." : pkg.packageName + " " + pkg.version; 
   }
 
   myFunction() {

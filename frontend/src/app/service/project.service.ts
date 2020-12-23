@@ -285,12 +285,12 @@ export class ProjectService {
   }
 
   async checkRstoxFrameworkAvailability() {
-    this.rstoxFrameworkAvailable = (await this.dataService.rstoxFrameworkAvailable().toPromise()) == "true";
+    this.rstoxPackages = JSON.parse(await this.dataService.getRstoxPackageVersions().toPromise());
+    console.log("Rstoxpackages: " + this.rstoxPackages)
+    this.rstoxFrameworkAvailable = this.rstoxPackages[0].status < 3;// (await this.dataService.rstoxFrameworkAvailable().toPromise()) == "true";
     if (this.rstoxFrameworkAvailable) {
-      this.rstoxPackages = await this.dataService.getRstoxPackageVersions().toPromise();
       this.setModels(await this.dataService.getModelInfo().toPromise());
     } else {
-      this.rstoxPackages = null;
       this.setModels(null);
       this.activateProject(null, false);
     }

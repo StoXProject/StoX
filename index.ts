@@ -1,6 +1,7 @@
 import { start } from "repl";
 import { platform } from "os";
 import { Utils, UtilsConstants } from "./utils/util";
+import { resolve } from "path";
 //handle setupevents as quickly as possible
 const setupEvents = require('./../installers/setupEvents')
 var mainWindow: any;
@@ -41,7 +42,7 @@ var officialRstoxPackages: String[] = [];
 var versionR = "";
 var rspawn: any;
 var backendProcess: any; // Backend process
-var stoxGuiVersion = "2.9.17";
+var stoxVersion = "2.9.17";
 var officialRstoxFrameworkVersion = "1.2.27" // used to show red when official (ending with 0) but not the right official
 //var supportedRstoxFrameworkVersions : string[] = ""; 
 // Modules to control application life and create native browser window
@@ -356,7 +357,7 @@ async function startBackendServer(): Promise<string> {
     cmd = "source(\"" + versionsTmpFile + "\")";
     logInfo(cmd);
     let res = (await callR(cmd) as any).result;
-    cmd = "getOfficialRstoxPackageVersion(\"" + stoxGuiVersion + "\", \"" + officialsRFTmpFile + "\", toJSON = T)";
+    cmd = "getOfficialRstoxPackageVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", toJSON = T)";
     logInfo(cmd);
 
     officialRstoxPackages = JSON.parse((await callR(cmd) as any).result);
@@ -367,17 +368,22 @@ async function startBackendServer(): Promise<string> {
     logInfo(versionRstoxFramework);
 
   }
-  if (serverStarted) {
+  /*if (serverStarted) {
     let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
-    let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxGuiVersion + "\", \"" +
+    let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
       officialsRFTmpFile + "\", quiet = T, skip.identical=T, toJSON=T)";
     logInfo(cmd);
     let res = (await callR(cmd) as any).result;
     logInfo("Installed packages: " + res);
-  }
+  }*/
   return "ok";
 }
 
+async function getPackageVersion(packageName: string) {
+  let cmd = "tryCatch(paste0(\"" + packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))),error = function(e) {\"NA\"})"
+  logInfo(cmd);
+  return (await callR(cmd) as any).result;
+}
 /**
  * Create a safe connection to socket with timeout loop. Either success or failure in each try.
  */
@@ -538,7 +544,7 @@ function callR(arg: string) {
 
 async function evaluate(client: any, cmd: string) {
 
-  console.log("evaluate: " + cmd);
+  //console.log("evaluate: " + cmd);
   let s = Buffer.from(cmd, 'utf8').toString('hex'); // Encode command as hex
   let lens = "" + s.length;
   await new Promise(async resolve => {
@@ -656,6 +662,9 @@ function setupServer() {
     logInfo('get rpath ' + properties.rPath);
     res.send(properties.rPath);
   });
+  server.get('/stoxversion', function (req: any, res: any) {
+    res.send(stoxVersion);
+  });
 
   // observe rpath in backend
   server.post('/callR', async (req: any, res: any) => {
@@ -681,22 +690,57 @@ function setupServer() {
     // The args in the body is already stringified (because of need to do do.call)
     //cmd = JSON.stringify(cmd);
     let s: any = await callR(cmd);
-    logInfo('call R result ' + JSON.stringify(s));
+    //logInfo('call R result ' + JSON.stringify(s));
     // res.type('text/plain');
     res.send(s.result);
   });
 
   server.post('/installRstoxFramework', async (req: any, res: any) => {
-    let cmd: string = getRstoxFrameworkInstallCmd();
-    if (cmd == "") {
-      res.send("false");
-    } else {
+    if (serverStarted) {
+      let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+      let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
+        officialsRFTmpFile + "\", quiet = T, skip.identical=T, toJSON=T)";
       logInfo(cmd);
-      await callR(cmd);
-      logInfo("Finished installing");
+      let res = (await callR(cmd) as any).result;
+      logInfo("Installed packages: " + res);
     }
     res.send("true");
   });
+
+  server.get('/getRstoxPackageVersions', async (req: any, res: any) => {
+    let packages: {
+      packageName: string;
+      version: string;
+      status: number;
+    }[] = [];
+    logInfo("/getRstoxPackageVersions");
+    if (serverStarted) {
+      logInfo("iterating through officialRstoxPackages " + officialRstoxPackages);
+
+      let packages2 = officialRstoxPackages.map(async s => {
+        let elms: string[] = s.split("_");
+        // Determine status of each official package
+        logInfo("getpackageversion for " + elms[0]);
+        let v = await getPackageVersion(elms[0]);
+        logInfo("version found: " + v);
+        return { packageName: elms[0], version: elms[1], status: v == "NA" ? 2 : v == elms[1] ? 1 : 0 };
+      });
+      packages = await Promise.all(packages2);
+      logInfo("finished iterating through officialRstoxPackages" + packages);
+
+      logInfo("updating status on first package based on the other packages" + packages);
+      // step 2 - if some of the packages no 2... is unofficial, mark the first one as unofficial if official.
+      if (packages[0].status == 0 && packages.slice(1).filter(p => p.status > 0).length > 0) {
+        packages[0].status = 1;
+      }
+      logInfo("after updating status on first package based on the other packages" + packages);
+    } else {
+      packages.push({ packageName: "R disconnected", version: "", status: 3 });
+    }
+    logInfo(JSON.stringify(packages));
+    res.send(packages);
+
+  })
 
   function resolveDefaultPath(defPath: string): string {
     // electron showOpenDialog defaultPath requires c:\\temp\\test on win32, otherwise c:/temp/test on mac/linux
@@ -771,10 +815,10 @@ function setupServer() {
     // logInfo("check if r is available");
     res.send(rAvailable);
   });
-  server.get('/rstoxFrameworkAvailable', async (req: any, res: any) => {
+  /*server.get('/rstoxFrameworkAvailable', async (req: any, res: any) => {
     //logInfo("check if rstoxframework is available");
     res.send(rAvailable && versionRstoxFramework != "");
-  });
+  });*/
 
 
 
