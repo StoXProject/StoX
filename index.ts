@@ -724,8 +724,9 @@ function setupServer() {
         // Determine status of each official package
         logInfo("getpackageversion for " + elms[0]);
         let v = (await getPackageVersion(elms[0])).result;
+        let elms2: string[] = v.split("_");
         logInfo("version found: " + v);
-        return { packageName: elms[0], version: elms[1], status: v == "NA" ? 2 : v == elms[1] ? 1 : 0 };
+        return { packageName: elms[0], version: elms2[1], status: v == "NA" ? 2 : elms2[1] == elms[1] ? 0 : 1};
       });
       packages = await Promise.all(packages2);
       logInfo("finished iterating through officialRstoxPackages" + packages);
