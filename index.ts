@@ -380,9 +380,11 @@ async function startBackendServer(): Promise<string> {
 }
 
 async function getPackageVersion(packageName: string) {
-  let cmd = "tryCatch(paste0(\"" + packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))),error = function(e) {\"NA\"})"
+  let cmd = "if(\"" + packageName + "\" %in% rownames(installed.packages()))  paste0(\"" +
+   packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))) else \"NA\"";
+  //let cmd = "tryCatch(paste0(\"" + packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))),error = function(e) {\"NA\"})"
   logInfo(cmd);
-  return (await callR(cmd) as any).result;
+  return (callR(cmd) as any);
 }
 /**
  * Create a safe connection to socket with timeout loop. Either success or failure in each try.
@@ -721,7 +723,7 @@ function setupServer() {
         let elms: string[] = s.split("_");
         // Determine status of each official package
         logInfo("getpackageversion for " + elms[0]);
-        let v = await getPackageVersion(elms[0]);
+        let v = (await getPackageVersion(elms[0])).result;
         logInfo("version found: " + v);
         return { packageName: elms[0], version: elms[1], status: v == "NA" ? 2 : v == elms[1] ? 1 : 0 };
       });
