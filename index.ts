@@ -60,6 +60,11 @@ app.on('ready', async () => {
   setupServer();
   await startNodeServer();
   readPropertiesFromFile();
+  // Extract resurces
+  Utils.extractResourceFile(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+  Utils.extractResourceFile(UtilsConstants.RES_SERVER_VERSIONS);
+  Utils.extractResourceFile(UtilsConstants.RES_SERVER_FILENAME);
+
   await startBackendServer();
   createWindow()
 })
@@ -168,7 +173,7 @@ function createWindow() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
-   // rspawn = null;
+    // rspawn = null;
     child_process = null;
   })
 
@@ -314,14 +319,8 @@ async function checkRAvailable(): Promise<boolean> {
 }
 
 async function startBackendServer(): Promise<string> {
-  logInfo('Start backend');
-  if (client != null) {
-    logInfo('Close existing client');
-    client.destroy();
-    logInfo('Client closed');
-  }
-  logInfo('Create client socket');
-  client = null;//new net.Socket();
+  logInfo('Starting backend');
+  
   rAvailable = await checkRAvailable();
   if (!rAvailable) {
     logInfo('R is not available- quitting startBackendServer');
@@ -329,11 +328,10 @@ async function startBackendServer(): Promise<string> {
   }
   var rscriptBin = rScriptBin();
 
-  Utils.extractResourceFile(UtilsConstants.RES_SERVER_FILENAME);
   // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
   let fileName = Utils.getTempResFileName(UtilsConstants.RES_SERVER_FILENAME)
   logInfo("Spawning " + rscriptBin + " " + fileName);
-  backendProcess = child_process.spawn(rscriptBin, [fileName]);
+  backendProcess = await child_process.spawn(rscriptBin, [fileName]);
   backendProcess.on('error', (er: any) => {
     logInfo("Spawning error " + er);
   });
@@ -341,12 +339,11 @@ async function startBackendServer(): Promise<string> {
   logInfo("Backend started.");
   //console.log(backendProcess.pid);
   //rserve_client = await connectRserve(rserve);
-  await createConnection();
+  await createClient();
+
   if (serverStarted) {
 
-    Utils.extractResourceFile(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
     let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
-    Utils.extractResourceFile(UtilsConstants.RES_SERVER_VERSIONS);
     let versionsTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_VERSIONS);
     let cmd = "paste(R.Version()$major, gsub(\"(.+?)([.].*)\", \"\\\\1\", R.Version()$minor), sep = \".\")"
     versionR = (await callR(cmd) as any).result;
@@ -381,7 +378,7 @@ async function startBackendServer(): Promise<string> {
 
 async function getPackageVersion(packageName: string) {
   let cmd = "if(\"" + packageName + "\" %in% rownames(installed.packages()))  paste0(\"" +
-   packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))) else \"NA\"";
+    packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))) else \"NA\"";
   //let cmd = "tryCatch(paste0(\"" + packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))),error = function(e) {\"NA\"})"
   logInfo(cmd);
   return (callR(cmd) as any);
@@ -389,7 +386,14 @@ async function getPackageVersion(packageName: string) {
 /**
  * Create a safe connection to socket with timeout loop. Either success or failure in each try.
  */
-async function createConnection() {
+async function createClient() {
+  if (client != null) {
+    logInfo('Close existing client');
+    client.destroy();
+    logInfo('Client closed');
+  }
+  logInfo('Create client socket');
+  client = null;//new net.Socket();  
   for (let i = 1; i <= 10000; i++) {
     await new Promise(r => setTimeout(() => { r(null); }, 400/*ms*/)); // createConnection synchr. takes however 1 sec.
     logInfo("Connecting to " + "localhost" + ":" + 6312 + " try " + i);
@@ -401,7 +405,7 @@ async function createConnection() {
           logInfo("Connected in try " + i);
           resolve(null);
         }).on('error', function (err: any) {
-          logInfo(err);
+          logInfo("Error connecting client: " + err);
           resolve(null);
         });
     });
@@ -545,6 +549,10 @@ function callR(arg: string) {
 }*/
 
 async function evaluate(client: any, cmd: string) {
+  if (client == null) {
+    logInfo("client=NULL: " + cmd)
+    return null;
+  }
 
   //console.log("evaluate: " + cmd);
   let s = Buffer.from(cmd, 'utf8').toString('hex'); // Encode command as hex
@@ -698,6 +706,9 @@ function setupServer() {
   });
 
   server.post('/installRstoxFramework', async (req: any, res: any) => {
+    logInfo('/installRstoxFramework');
+    await startBackendServer()
+    logInfo('server started: ' + serverStarted + ", client: " + client);
     if (serverStarted) {
       let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
       let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
@@ -717,30 +728,30 @@ function setupServer() {
     }[] = [];
     logInfo("/getRstoxPackageVersions");
     if (serverStarted) {
-      logInfo("iterating through officialRstoxPackages " + officialRstoxPackages);
+      // logInfo("iterating through officialRstoxPackages " + officialRstoxPackages);
 
       let packages2 = officialRstoxPackages.map(async s => {
         let elms: string[] = s.split("_");
         // Determine status of each official package
-        logInfo("getpackageversion for " + elms[0]);
+        //  logInfo("getpackageversion for " + elms[0]);
         let v = (await getPackageVersion(elms[0])).result;
         let elms2: string[] = v.split("_");
-        logInfo("version found: " + v);
-        return { packageName: elms[0], version: elms2[1], status: v == "NA" ? 2 : elms2[1] == elms[1] ? 0 : 1};
+        // logInfo("version found: " + v);
+        return { packageName: elms[0], version: elms2[1], status: v == "NA" ? 2 : elms2[1] == elms[1] ? 0 : 1 };
       });
       packages = await Promise.all(packages2);
-      logInfo("finished iterating through officialRstoxPackages" + packages);
+      // logInfo("finished iterating through officialRstoxPackages" + packages);
 
-      logInfo("updating status on first package based on the other packages" + packages);
+      // logInfo("updating status on first package based on the other packages" + packages);
       // step 2 - if some of the packages no 2... is unofficial, mark the first one as unofficial if official.
-      if (packages[0].status == 0 && packages.slice(1).filter(p => p.status > 0).length > 0) {
+      if (packages.length > 0 && packages[0].status == 0 && packages.slice(1).filter(p => p.status > 0).length > 0) {
         packages[0].status = 1;
       }
-      logInfo("after updating status on first package based on the other packages" + packages);
+      //   logInfo("after updating status on first package based on the other packages" + packages);
     } else {
       packages.push({ packageName: "R disconnected", version: "", status: 3 });
     }
-    logInfo(JSON.stringify(packages));
+    // logInfo(JSON.stringify(packages));
     res.send(packages);
 
   })

@@ -40,7 +40,7 @@
 	<button mat-button [matMenuTriggerFor]="toolsmenu">Tools
 		<mat-menu #toolsmenu="matMenu">
 			<button mat-menu-item (click)="rConnection()">R connection</button>
-			<button mat-menu-item (click)="installRstoxFramework()">Install R packages</button>
+			<button mat-menu-item (click)="installRstoxFramework()">Install Rstox packages</button>
 			<button *ngIf="isDesktop()" mat-menu-item (click)="toggleDevTools()">Toggle Developer Tools</button>
 		</mat-menu>
 	</button>

@@ -42,7 +42,7 @@ handle <- function(cmd){
     eval(parse(text=cmd))
 }
 
-# runFunction service - loop and wait on socket
+# runFunction service - loop and wait on socket 
 #Sys.sleep(5) #socket creation delay to test the connection timeout
 s <- make.socket(host='localhost',port=6312,server=TRUE)
 while(TRUE) {
