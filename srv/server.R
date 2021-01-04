@@ -61,5 +61,8 @@ while(TRUE) {
     },error=function(e){
        
     })
+    if(!nchar(r)) {
+        r <- " " # avoid empty string which leads to hang of application. 
+    }
     write.socket.all(s, r)
 }
