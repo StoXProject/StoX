@@ -381,7 +381,7 @@ async function getPackageVersion(packageName: string) {
     packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))) else \"NA\"";
   //let cmd = "tryCatch(paste0(\"" + packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))),error = function(e) {\"NA\"})"
   logInfo(cmd);
-  return (callR(cmd) as any);
+  return await (callR(cmd) as any);
 }
 /**
  * Create a safe connection to socket with timeout loop. Either success or failure in each try.
@@ -694,7 +694,7 @@ function setupServer() {
 
     let cmd: string = "RstoxFramework::runFunction.JSON(" + JSON.stringify(req.body) + ")";
     //cmd = cmd.replace(/\"/g, "\\\"");
-    logInfo("cmd:" + cmd)
+    //logInfo("cmd:" + cmd)
     // The server is parsing the expression, a need for stringify to have 2^n-1 escapes where n is 
     // starting at 1 and going to 2 (because of parse). stringify and parse operates oppocite ways.
     // The args in the body is already stringified (because of need to do do.call)
@@ -737,6 +737,7 @@ function setupServer() {
         let v = (await getPackageVersion(elms[0])).result;
         let elms2: string[] = v.split("_");
         // logInfo("version found: " + v);
+        let v2 = elms2.length == 2 ?  elms2[1] : "Not installed"
         return { packageName: elms[0], version: elms2[1], status: v == "NA" ? 2 : elms2[1] == elms[1] ? 0 : 1 };
       });
       packages = await Promise.all(packages2);

@@ -215,8 +215,8 @@ installBinaryRemove00LOCK <- function(binaryPath, lib = NULL, repos = NULL, quie
     lockedDirs <- subset(dirs, startsWith(basename(dirs), "00LOCK"))
     unlink(lockedDirs, recursive = TRUE, force = TRUE)
     
-    # Then install into lib:
-    install.packages(binaryPath, type = "binary", repos = repos, quiet = quiet)
+    # Then install into first of .libPaths():
+    install.packages(binaryPath, type = "binary", repos = repos, quiet = quiet, lib = lib)
     
     return(binaryPath)
 }
@@ -266,7 +266,7 @@ removeExistingPackages <- function(pkgs, lib = NULL) {
         lib <- .libPaths()[1]
     }
     # Remove only installed packages to avoid error in remove.packages():
-    installed <- installed.packages()[, "Package"]
+    installed <- installed.packages(lib.loc = lib)[, "Package"]
     packagesToRemove <- intersect(pkgs, installed)
     lapply(packagesToRemove, remove.packages, lib = lib)
 }
@@ -294,7 +294,11 @@ installOfficialRstoxPackagesWithDependencies <- function(
     toJSON = FALSE, 
     quiet = FALSE
 ) {
+    
     res <- tryCatch({
+        #  Create a local library if not present as the first of .libPaths():
+        createLocalLibrary()
+        
     originalTimeout <- options("timeout")
     options(timeout = 24*60*60)
     # First install the officical Rstox pakcage versions with no dependencies:
@@ -732,5 +736,32 @@ replace4backslashWithOneForward <- function(x) {
     x <- gsub("\\", "/", x, fixed = TRUE)
     return(x)
 }
+
+
+
+createLocalLibrary <- function() {
+    # Check that we are on Windows:
+    if (.Platform$OS.type == "windows") {
+        # If no non-programfiles libraries, create the same that Rstudio creates:
+        lib <- .libPaths()
+        
+        writable <- file.access(lib, mode = 2) == 0
+        if(!any(writable) || !writable[1]) {
+            homeFolder <- utils::readRegistry(key="Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", hive="HCU")$Personal
+            twoDigitRVersion <- paste(R.Version()$major, gsub("(.+?)([.].*)", "\\1", R.Version()$minor), sep = ".")
+            #newLib <- paste(path.expand('~'), 'R', 'win-library', paste(R.Version()$major, gsub("(.+?)([.].*)", "\\1", R.Version()$minor), sep = "."), sep="/")
+            newLib <- paste(homeFolder, 'R', 'win-library', twoDigitRVersion, sep="/")
+            
+            # Add the local library as the first:
+            dir.create(newLib, recursive = TRUE)
+            .libPaths(newLib)
+        }
+    }
+}
+
+
+
+
+
 
 

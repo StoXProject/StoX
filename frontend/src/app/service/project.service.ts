@@ -287,7 +287,7 @@ export class ProjectService {
   async checkRstoxFrameworkAvailability() {
     this.rstoxPackages = JSON.parse(await this.dataService.getRstoxPackageVersions().toPromise());
     console.log("Rstoxpackages: " + this.rstoxPackages)
-    this.rstoxFrameworkAvailable = this.rstoxPackages[0].status < 3;// (await this.dataService.rstoxFrameworkAvailable().toPromise()) == "true";
+    this.rstoxFrameworkAvailable = this.rstoxPackages[0].status < 2;// (await this.dataService.rstoxFrameworkAvailable().toPromise()) == "true";
     if (this.rstoxFrameworkAvailable) {
       this.setModels(await this.dataService.getModelInfo().toPromise());
     } else {
