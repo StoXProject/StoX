@@ -304,6 +304,9 @@ export class ProjectService {
   /*Activate project in gui - at the moment only one project is listed*/
   async activateProject(project: Project, askSave: boolean) {
     this.dataService.log = [];   // triggered by project activation
+    if(project != null && project.projectPath == 'NA') {
+      project = null; // openProject returns NA when project is renamed or moved.
+    }
     if (this.selectedProject != null) {
       let save: boolean = false;
       if (askSave) {
@@ -322,7 +325,7 @@ export class ProjectService {
           }
         }
       }
-      if (project.projectPath != this.selectedProject.projectPath) {
+      if (project == null || project.projectPath != this.selectedProject.projectPath) {
         await this.dataService.closeProject(this.selectedProject.projectPath, save).toPromise()
       }
     }
