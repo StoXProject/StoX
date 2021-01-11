@@ -164,8 +164,8 @@ function createWindow() {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
   // Emitted when the window is closed.
-  mainWindow.on('close', (e: any) => {
-    onClosed(e)
+  mainWindow.on('close', async (e: any) => {
+    await onClosed(e)
   })
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -188,9 +188,11 @@ function showElectronMessageBox(title: string, message: string, buttons: string[
     });
 }
 
-function onClosed(e: any) {
+async function onClosed(e: any) {
   logInfo('close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
   if (properties != null && properties.activeProject !== null) {
+    // need to stop application from quitting to let Promise work, and then re-close. with properties.activeProject = null
+    e.preventDefault(); 
     let save = false;
     if (!activeProjectSaved) {
       var choice = showElectronMessageBox('Save project', 'Save changes to project before closing?', ['Yes', 'No', 'Cancel']);
@@ -198,16 +200,17 @@ function onClosed(e: any) {
         save = true;
       }
       if (choice == 2) { // cancel
-        e.preventDefault();
         return;
       }
     }
-    let cmd = JSON.stringify({
+    let cmd = "RstoxFramework::runFunction.JSON(" + JSON.stringify(JSON.stringify({
       what: "closeProject",
-      args: JSON.stringify({ projectPath: properties.activeProject, save: save }),
+      args: JSON.stringify({ projectPath: properties.activeProject, save: save}),
       package: "RstoxFramework"
-    })
-    callR(cmd);//.then((r: any) => logInfo(r));        //callR(cmd).then((r: any)=>logInfo(r));
+    })) + ")";
+    let s = await callR(cmd);
+    properties.activeProject = null;
+    mainWindow.close(); // re-close
   }
 
 }
@@ -742,7 +745,7 @@ function setupServer() {
         let v = (await getPackageVersion(elms[0])).result;
         let elms2: string[] = v.split("_");
         logInfo(elms[0] + " version: " + v);
-        let v2 = elms2.length == 2 ?  elms2[1] : "Not installed"
+        let v2 = elms2.length == 2 ? elms2[1] : "Not installed"
         return { packageName: elms[0], version: elms2[1], status: v == "NA" ? 2 : elms2[1] == elms[1] ? 0 : 1 };
       });
       packages = await Promise.all(packages2);
