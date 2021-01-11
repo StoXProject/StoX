@@ -42,7 +42,7 @@ var officialRstoxPackages: String[] = [];
 var versionR = "";
 //var rspawn: any;
 var backendProcess: any; // Backend process
-var stoxVersion = "2.9.18";
+var stoxVersion = "2.9.19";
 //var officialRstoxFrameworkVersion = "1.2.27" // used to show red when official (ending with 0) but not the right official
 //var supportedRstoxFrameworkVersions : string[] = ""; 
 // Modules to control application life and create native browser window
@@ -354,6 +354,10 @@ async function startBackendServer(): Promise<string> {
     cmd = "source(\"" + versionsTmpFile + "\")";
     logInfo(cmd);
     let res = (await callR(cmd) as any).result;
+
+    // Initiate local library
+    //logInfo("libPaths before initiation" + (await callR(".libPaths()[1]") as any).result);
+    logInfo("> initLocalLibrary(): " + (await callR("initLocalLibrary()") as any).result);
     cmd = "getOfficialRstoxPackageVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", toJSON = T)";
     logInfo(cmd);
 
@@ -377,10 +381,11 @@ async function startBackendServer(): Promise<string> {
 }
 
 async function getPackageVersion(packageName: string) {
+  //logInfo("Installed packages:" + (await (callR("rownames(installed.packages())") as any)).result);
   let cmd = "if(\"" + packageName + "\" %in% rownames(installed.packages()))  paste0(\"" +
     packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))) else \"NA\"";
   //let cmd = "tryCatch(paste0(\"" + packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))),error = function(e) {\"NA\"})"
-  logInfo(cmd);
+  //logInfo(cmd);
   return await (callR(cmd) as any);
 }
 /**
@@ -736,7 +741,7 @@ function setupServer() {
         //  logInfo("getpackageversion for " + elms[0]);
         let v = (await getPackageVersion(elms[0])).result;
         let elms2: string[] = v.split("_");
-        // logInfo("version found: " + v);
+        logInfo(elms[0] + " version: " + v);
         let v2 = elms2.length == 2 ?  elms2[1] : "Not installed"
         return { packageName: elms[0], version: elms2[1], status: v == "NA" ? 2 : elms2[1] == elms[1] ? 0 : 1 };
       });

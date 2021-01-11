@@ -296,8 +296,6 @@ installOfficialRstoxPackagesWithDependencies <- function(
 ) {
     
     res <- tryCatch({
-        #  Create a local library if not present as the first of .libPaths():
-        createLocalLibrary()
         
     originalTimeout <- options("timeout")
     options(timeout = 24*60*60)
@@ -739,23 +737,33 @@ replace4backslashWithOneForward <- function(x) {
 
 
 
-createLocalLibrary <- function() {
+initLocalLibrary <- function() {
     # Check that we are on Windows:
     if (.Platform$OS.type == "windows") {
         # If no non-programfiles libraries, create the same that Rstudio creates:
         lib <- .libPaths()
         
         writable <- file.access(lib, mode = 2) == 0
-        if(!any(writable) || !writable[1]) {
+        #if(!any(writable) || !writable[1]) {
+        if(!writable[1]) {
             homeFolder <- utils::readRegistry(key="Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", hive="HCU")$Personal
             twoDigitRVersion <- paste(R.Version()$major, gsub("(.+?)([.].*)", "\\1", R.Version()$minor), sep = ".")
             #newLib <- paste(path.expand('~'), 'R', 'win-library', paste(R.Version()$major, gsub("(.+?)([.].*)", "\\1", R.Version()$minor), sep = "."), sep="/")
             newLib <- paste(homeFolder, 'R', 'win-library', twoDigitRVersion, sep="/")
             
             # Add the local library as the first:
-            dir.create(newLib, recursive = TRUE)
+            if(!dir.exists(newLib)) {
+                dir.create(newLib, recursive = TRUE)
+            }
+            
+            # Add the locacl library in this session:
             .libPaths(newLib)
         }
+        
+        return(newLib)
+    }
+    else {
+        return(NA)
     }
 }
 

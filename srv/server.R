@@ -54,14 +54,17 @@ while(TRUE) {
         break
     }
     # Service command/response handler
-  
+    r <- NULL
     tryCatch({
-        r <- cmd
-        r <- as.character(handle(cmd))
+       r <- handle(cmd)
     },error=function(e){
-       
+       r <- e
     })
-    if(!nchar(r)) {
+    # Transfer bytes as text over socket
+    r <- as.character(r)
+    # handle empty value - socket needs something in response, at least one byte
+    # NA, character(0) or character=""
+    if(is.na(r) || length(r) == 0 || !nchar(r)) { 
         r <- " " # avoid empty string which leads to hang of application. 
     }
     write.socket.all(s, r)
