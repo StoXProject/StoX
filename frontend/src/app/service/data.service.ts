@@ -58,13 +58,14 @@ export class DataService {
     return this.runFunction('getAvailableTemplatesDescriptions', {});
   }
 
-  createProject(projectPath: string, templateName: string): Observable<any> {
+  createProject(projectPath: string, templateName: string, application : string): Observable<any> {
     return this.runFunctionThrowFramework('createProject', {
       "projectPath": projectPath,
       "template": templateName,
       "ow": false,
       "showWarnings": false,
-      "open": true
+      "open": true,
+      "Application" : application
     }, true);
   }
 
@@ -98,28 +99,31 @@ export class DataService {
   }
 
  
-  saveProject(projectPath: string): Observable<Project> {
+  saveProject(projectPath: string, application: string): Observable<Project> {
 
     return this.runFunctionThrowFramework('saveProject', {
-      "projectPath": projectPath
+      "projectPath": projectPath,
+      "Application" : application
     }, true);
   }
 
-  saveAsProject(projectPath: string, newProjectPath: string /*, ow: Boolean */): Observable<Project> {
+  saveAsProject(projectPath: string, newProjectPath: string, application : string): Observable<Project> {
 
     return this.runFunctionThrowFramework('saveAsProject', {
       "projectPath": projectPath,
-      "newProjectPath": newProjectPath
+      "newProjectPath": newProjectPath,
+      "Application" : application
       /*, "ow": ow */
     }, true);
   }
 
 
-  closeProject(projectPath: string, save: Boolean): Observable<any> {
+  closeProject(projectPath: string, save: Boolean, application : string): Observable<any> {
 
     return this.runFunction('closeProject', {
       "projectPath": projectPath,
-      "save": save
+      "save": save,
+      "Application" : application 
     });
   }
 
@@ -526,6 +530,8 @@ export class DataService {
   isdesktop() : Observable<any> {
     return this.postLocalNode('isdesktop', {});
   }
+
+
   exit(): Observable<any> {
     return this.postLocalNode('exit', {});
   }

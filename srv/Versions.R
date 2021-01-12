@@ -358,11 +358,12 @@ getOnlyPackageVersion <- function(packageNameAndVersionString) {
 #' @export
 #'
 getOfficialRstoxPackageVersion <- function(
-    StoXGUIVersion, 
-    officialRstoxPackageVersionsFile, 
+    StoXGUIVersion = NULL, 
+    officialRstoxPackageVersionsFile = system.file("versions", "OfficialRstoxFrameworkVersions.txt", package = "RstoxFramework"), 
     packageName = c("RstoxFramework","RstoxBase", "RstoxData"), 
     include.optional = FALSE, 
-    toJSON = FALSE
+    toJSON = FALSE, 
+    list.out = FALSE
 ) {
     
     # Read the officialRstoxPackageVersionsFile:
@@ -379,19 +380,34 @@ getOfficialRstoxPackageVersion <- function(
     
     if(length(official)) {
         # Get rows of RstoxFrameworkVersions within the minimum and maximum StoXGUI version:
-        
-        official <- subset(official, StoX == StoXGUIVersion)
+        if(length(StoXGUIVersion)) {
+            official <- subset(official, StoX == StoXGUIVersion)
+        }
+        else {
+            official <- utils::tail(official, 1)
+        }
         
         # Split the Dependencies:
         dependencies <- strsplit(official$Dependencies, "[,]")[[1]]
         dependencies <- extractPackageNameAsNames(dependencies)
         packageVersionList <- c(list(RstoxFramework = official$RstoxFramework), dependencies)
         
+        # This is a bit complicated, but takes care of package names and versions either pasted to strings or as separate values in a list:
         if(!include.optional) {
             packageVersionList <- packageVersionList[intersect(packageName, names(packageVersionList))]
         }
         
-        packageVersions <- getPackageNameAndVersionString(packageVersionList)
+        if(list.out) {
+            packageVersions <- list(
+                packageName = names(packageVersionList), 
+                version = unlist(packageVersionList)
+            )
+        }
+        else {
+            packageVersions <- getPackageNameAndVersionString(packageVersionList)
+        }
+        
+        
         
         if(toJSON) {
             packageVersions <- vector2json(packageVersions)
@@ -403,6 +419,12 @@ getOfficialRstoxPackageVersion <- function(
         return(NULL)
     }
 }
+# Small function to extract package name from strings:
+extractPackageName <- function(x) {
+    x <- strsplit(x, "[_]")
+    x <- sapply(x, "[", 1)
+    return(x)
+}
 # Small function to parse the string defining officical Rstox-package versions (for each RstoxFramwork):
 extractPackageNameAsNames <- function(x) {
     x <- strsplit(x, "[_]")
@@ -410,8 +432,12 @@ extractPackageNameAsNames <- function(x) {
     return(x)
 }
 
-getPackageNameAndVersionString <- function(x) {
-    paste(names(x), x, sep = "_")
+getPackageNameAndVersionString <- function(packageName, version, sep = "_") {
+    if(is.list(packageName)) {
+        version <- packageName
+        packageName <- names(packageName)
+    }
+    paste(packageName, version, sep = sep)
 }
 
 
@@ -667,11 +693,7 @@ getPackageBinaryURL <- function(packageName, version = NULL, repos = "https://cl
             platform = platform, 
             twoDigitRVersion = twoDigitRVersion
         ), 
-        paste(
-            avail$Package, 
-            avail$Version, 
-            sep = "_"
-        ), 
+        getPackageNameAndVersionString(avail$Package, avail$Version), 
         sep = "/"
     )
     

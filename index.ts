@@ -22,6 +22,7 @@ var child_process = require('child_process');
 var fs = require('fs')
 var cors = require('cors');
 var callr_evaluate: boolean[] = [];
+var isClosing = false;
 
 const net = require("net")
 let client: any = null;
@@ -189,8 +190,8 @@ function showElectronMessageBox(title: string, message: string, buttons: string[
 }
 
 async function onClosed(e: any) {
-  logInfo('close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
-  if (properties != null && properties.activeProject !== null) {
+  if (properties != null && properties.activeProject !== null && !isClosing) {
+    logInfo('close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
     // need to stop application from quitting to let Promise work, and then re-close. with properties.activeProject = null
     e.preventDefault(); 
     let save = false;
@@ -209,10 +210,9 @@ async function onClosed(e: any) {
       package: "RstoxFramework"
     })) + ")";
     let s = await callR(cmd);
-    properties.activeProject = null;
+    isClosing = true;
     mainWindow.close(); // re-close
   }
-
 }
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
@@ -681,6 +681,7 @@ function setupServer() {
     logInfo('get rpath ' + properties.rPath);
     res.send(properties.rPath);
   });
+
   server.get('/stoxversion', function (req: any, res: any) {
     res.send(stoxVersion);
   });

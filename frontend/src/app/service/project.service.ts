@@ -24,6 +24,7 @@ import { HelpCache } from '../data/HelpCache';
   providedIn: 'root'
 })
 export class ProjectService {
+  private m_Application : string;
   private m_iaMode: string;
   private m_iaModeSubject = new Subject<string>();
 
@@ -52,8 +53,15 @@ export class ProjectService {
 
   constructor(private dataService: DataService/*, public rs: RunService*/, private dialog: MatDialog) {
     this.initData();
+
   }
 
+  get application(): string {
+    return this.m_Application;
+  }
+
+
+  
   get processes(): Process[] {
     return this.m_processes;
   }
@@ -117,7 +125,7 @@ export class ProjectService {
     return false;
   }
   async save() {
-    this.selectedProject.saved = (await this.dataService.saveProject(this.selectedProject.projectPath).toPromise()).saved;
+    this.selectedProject.saved = (await this.dataService.saveProject(this.selectedProject.projectPath, this.application).toPromise()).saved;
     await this.dataService.updateActiveProjectSavedStatus(this.selectedProject.saved).toPromise();
     // TODO: get save status on return
     //this.isSelectedProjectSaved = await this.dataService.isSaved(this.selectedProject.projectPath).toPromise();
@@ -274,6 +282,7 @@ export class ProjectService {
 
   async initData() {
     await this.checkRstoxFrameworkAvailability();
+    this.m_Application = "StoX " + await this.dataService.getStoxVersion().toPromise(); 
     let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
 
     console.log("Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);
@@ -326,7 +335,7 @@ export class ProjectService {
         }
       }
       if (project == null || project.projectPath != this.selectedProject.projectPath) {
-        await this.dataService.closeProject(this.selectedProject.projectPath, save).toPromise()
+        await this.dataService.closeProject(this.selectedProject.projectPath, save, this.application).toPromise()
       }
     }
     await this.dataService.updateActiveProject(project != null ? project.projectPath : '').toPromise();

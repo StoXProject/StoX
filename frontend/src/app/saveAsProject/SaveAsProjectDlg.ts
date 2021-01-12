@@ -78,7 +78,7 @@ export class SaveAsProjectDlg  implements OnInit {
                 return; 
             }*/
 
-            let project: Project = await this.dataService.saveAsProject(this.ps.selectedProject.projectPath, wholePath).toPromise();
+            let project: Project = await this.dataService.saveAsProject(this.ps.selectedProject.projectPath, wholePath, this.ps.application).toPromise();
             await this.ps.openProject(wholePath, true, true, false);
             // third parameter in saveAsProject
             // make a shift to this project (make it as current project??)
