@@ -1,2 +1,2 @@
 StoX    RstoxFramework  Dependencies
-2.9.19  1.2.31   RstoxBase_1.2.39,RstoxData_1.0.21
+2.9.19  1.2.32   RstoxBase_1.2.40,RstoxData_1.0.22

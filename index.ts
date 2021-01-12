@@ -638,6 +638,7 @@ function setupServer() {
 
   server.post('/updateactiveproject', function (req: any, res: any) {
     properties.activeProject = req.body;
+    properties.projectRootPath = require("path").resolve(properties.activeProject, "..")
     logInfo("update active project: " + properties.activeProject)
     res.send("ok");
   });
