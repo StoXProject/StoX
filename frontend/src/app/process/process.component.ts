@@ -99,7 +99,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
                   let fullTableName: string = this.ps.selectedProcess.processName + "(" + e + ")";
                   let idx = this.ps.outputTables.findIndex(t => t.table == fullTableName);
                   if (idx == -1) {
-                    this.ps.outputTables.push({ table: fullTableName, output: out });
+                    this.ps.outputTables.push({ processId: this.ps.selectedProcessId, tableName: e, table: fullTableName, output: out });
                     idx = this.ps.outputTables.length - 1;
                   }
                   this.ps.outputTableActivator.next(idx)

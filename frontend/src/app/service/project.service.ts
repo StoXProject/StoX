@@ -9,11 +9,12 @@ import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
 import { ProcessProperties } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
+import { OutputTable } from '../data/outputtable';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
-import { PackageVersion} from '../data/PackageVersion';
+import { PackageVersion } from '../data/PackageVersion';
 import { HelpCache } from '../data/HelpCache';
 
 //import { RunService } from '../service/run.service';
@@ -24,14 +25,15 @@ import { HelpCache } from '../data/HelpCache';
   providedIn: 'root'
 })
 export class ProjectService {
-  private m_Application : string;
+  private m_Application: string;
   private m_iaMode: string;
   private m_iaModeSubject = new Subject<string>();
+  private m_activeProcessIdSubject = new Subject<string>();
 
   private m_projects: Project[] = [];
   private m_selectedProject: Project = null;
   //private m_isSelectedProjectSaved = true;
-  outputTables: { table: string, output: ProcessOutput }[] = [];
+  outputTables: OutputTable[] = [];
   public outputTableActivator: Subject<number> = new Subject<number>();
 
   models: Model[];
@@ -61,7 +63,7 @@ export class ProjectService {
   }
 
 
-  
+
   get processes(): Process[] {
     return this.m_processes;
   }
@@ -77,6 +79,10 @@ export class ProjectService {
 
   get iaModeSubject(): Subject<string> {
     return this.m_iaModeSubject;
+  }
+
+  get activeProcessIdSubject(): Subject<string> {
+    return this.m_activeProcessIdSubject;
   }
 
   get processProperties(): ProcessProperties {
@@ -282,7 +288,7 @@ export class ProjectService {
 
   async initData() {
     await this.checkRstoxFrameworkAvailability();
-    this.m_Application = "StoX " + await this.dataService.getStoxVersion().toPromise(); 
+    this.m_Application = "StoX " + await this.dataService.getStoxVersion().toPromise();
     let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
 
     console.log("Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);
@@ -313,7 +319,7 @@ export class ProjectService {
   /*Activate project in gui - at the moment only one project is listed*/
   async activateProject(project: Project, askSave: boolean) {
     this.dataService.log = [];   // triggered by project activation
-    if(project != null && project.projectPath == 'NA') {
+    if (project != null && project.projectPath == 'NA') {
       project = null; // openProject returns NA when project is renamed or moved.
     }
     if (this.selectedProject != null) {
@@ -444,6 +450,10 @@ export class ProjectService {
 
   set activeProcess(activeProcess: ActiveProcess) {
     this.m_activeProcess = activeProcess;
+    if (activeProcess != null) {
+      console.log("ActiveProcessId: " + activeProcess.processID);
+      this.m_activeProcessIdSubject.next(activeProcess.processID); // propagate activation of process id 
+    }
   }
 
   handleAPI<T>(res: any): T {

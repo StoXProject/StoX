@@ -58,10 +58,10 @@ export class DataService {
     return this.runFunction('getAvailableTemplatesDescriptions', {});
   }
 
-  createProject(projectPath: string, templateName: string, application : string): Observable<any> {
+  createProject(projectPath: string, /*templateName: string, */application : string): Observable<any> {
     return this.runFunctionThrowFramework('createProject', {
       "projectPath": projectPath,
-      "template": templateName,
+      //"template": "UserDefined",
       "ow": false,
       "showWarnings": false,
       "open": true,

@@ -14,18 +14,19 @@ import { Project } from '../data/project';
 export class CreateProjectDialog {
     projectRootPath: string;
     projectName: string;
-    templates: Template[];
+    //templates: Template[];
     selectedTemplate: Template;
 
     constructor(public service: CreateProjectDialogService, private msgService: MessageService,
         private dataService: DataService, private ps: ProjectService) {
     }
 
-    ngOnInit() {
+    async ngOnInit() {
+        this.projectRootPath = <string>await this.dataService.getProjectRootPath().toPromise();
     }
 
     async initData() {
-        this.templates = <Template[]>await this.dataService.getAvailableTemplates().toPromise();
+        //this.templates = <Template[]>await this.dataService.getAvailableTemplates().toPromise();
     }
 
     async browse() {
@@ -52,17 +53,18 @@ export class CreateProjectDialog {
         }
         console.log("projectRootPath : " + this.projectRootPath);
 
-        if (!this.selectedTemplate) {
+        /*if (!this.selectedTemplate) {
             this.msgService.setMessage("Template is not selected!");
             this.msgService.showMessage();
             return;
         }
         console.log("selectedTemplate : " + this.selectedTemplate ? this.selectedTemplate.name + " - " + this.selectedTemplate.description : 'none');
+        */
         let absolutePath = this.projectRootPath + "/" + this.projectName;
         absolutePath = absolutePath.replace(/\\/g, "/");
         console.log("absolute path : " + absolutePath);
         try {
-            this.ps.activateProject(await this.dataService.createProject(absolutePath, this.selectedTemplate.name, this.ps.application).toPromise(), true);
+            this.ps.activateProject(await this.dataService.createProject(absolutePath, /*this.selectedTemplate.name, */this.ps.application).toPromise(), true);
         } catch (error) {
             console.log(error);
             var firstLine = error;

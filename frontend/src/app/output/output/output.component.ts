@@ -1,11 +1,11 @@
 import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 
-import { DataService } from '../../service/data.service';
 import { ProjectService } from '../../service/project.service';
+import { DataService } from '../../service/data.service';
 import { MatTabGroup } from '@angular/material/tabs';
 
-
+import { ProcessOutput } from './../../data/processoutput';
 @Component({
     selector: 'output',
     templateUrl: './output.component.html',
@@ -34,10 +34,23 @@ export class OutputComponent implements OnInit {
         this.ps.outputTables.splice(idx, 1)
     }
 
-    constructor(public ps: ProjectService) {
+    refreshData(processId : string) {
+        this.ps.outputTables.filter(t => t.processId == processId).forEach(async tbl => {
+            tbl.output = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
+                this.ps.selectedModel.modelName, tbl.processId, tbl.tableName).toPromise();
+        });
+    }
+
+    constructor(public ps: ProjectService, public ds : DataService) {
         ps.outputTableActivator.subscribe({
             next: (idx) => {
-                this.outputTableGroup.selectedIndex = idx; 
+                this.outputTableGroup.selectedIndex = idx;
+            }
+        });
+        this.ps.activeProcessIdSubject.subscribe({
+            next: async (processId) => { 
+                console.log("ActiveProcessId: " + processId);
+                this.refreshData(processId);
             }
         });
     }
@@ -46,9 +59,9 @@ export class OutputComponent implements OnInit {
     private getLines(s: string[]): string {
         return s.join("\n");
     }
-    getItemOutput(item) {
+    /*getItemOutput(item) {
         return item.output.data != null && Object.keys(item.output.data).length > 0 ? item.output.data.join('\n') : '';
-    }
+    }*/
 
 }
 
