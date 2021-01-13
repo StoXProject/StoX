@@ -6,6 +6,7 @@ import { DataService } from '../../service/data.service';
 import { MatTabGroup } from '@angular/material/tabs';
 
 import { ProcessOutput } from './../../data/processoutput';
+import { SubjectAction } from 'src/app/data/subjectaction';
 @Component({
     selector: 'output',
     templateUrl: './output.component.html',
@@ -34,23 +35,36 @@ export class OutputComponent implements OnInit {
         this.ps.outputTables.splice(idx, 1)
     }
 
-    refreshData(processId : string) {
+    refreshData(processId: string) {
         this.ps.outputTables.filter(t => t.processId == processId).forEach(async tbl => {
             tbl.output = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
                 this.ps.selectedModel.modelName, tbl.processId, tbl.tableName).toPromise();
         });
     }
 
-    constructor(public ps: ProjectService, public ds : DataService) {
+    removeData(processId: string) {
+        this.ps.outputTables = this.ps.outputTables.filter(t => t.processId !== processId);
+    }
+
+    constructor(public ps: ProjectService, public ds: DataService) {
         ps.outputTableActivator.subscribe({
             next: (idx) => {
                 this.outputTableGroup.selectedIndex = idx;
             }
         });
-        this.ps.activeProcessIdSubject.subscribe({
-            next: async (processId) => { 
-                console.log("ActiveProcessId: " + processId);
-                this.refreshData(processId);
+        this.ps.processSubject.subscribe({
+            next: (action: SubjectAction) => {
+                switch (action.action) {
+                    case "activate": {
+                        //console.log("ActiveProcessId: " + action.data);
+                        this.refreshData(action.data);
+                        break;
+                    }
+                    case "remove": {
+                        this.removeData(action.data);
+                        break;
+                    }
+                }
             }
         });
     }

@@ -16,6 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion } from '../data/PackageVersion';
 import { HelpCache } from '../data/HelpCache';
+import { SubjectAction } from '../data/subjectaction';
 
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
@@ -28,7 +29,7 @@ export class ProjectService {
   private m_Application: string;
   private m_iaMode: string;
   private m_iaModeSubject = new Subject<string>();
-  private m_activeProcessIdSubject = new Subject<string>();
+  private m_processSubject = new Subject<SubjectAction>();
 
   private m_projects: Project[] = [];
   private m_selectedProject: Project = null;
@@ -81,8 +82,8 @@ export class ProjectService {
     return this.m_iaModeSubject;
   }
 
-  get activeProcessIdSubject(): Subject<string> {
-    return this.m_activeProcessIdSubject;
+  get processSubject(): Subject<SubjectAction> {
+    return this.m_processSubject;
   }
 
   get processProperties(): ProcessProperties {
@@ -172,7 +173,8 @@ export class ProjectService {
 
   async removeSelectedProcess() {
     //this.initializeProperties();
-    if (this.selectedProject != null) {
+    if (this.selectedProject != null && this.selectedProcessId != null) {
+      this.processSubject.next(SubjectAction.of("remove", this.selectedProcessId));
       this.handleAPI(await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise());
     }
   }
@@ -452,7 +454,7 @@ export class ProjectService {
     this.m_activeProcess = activeProcess;
     if (activeProcess != null) {
       console.log("ActiveProcessId: " + activeProcess.processID);
-      this.m_activeProcessIdSubject.next(activeProcess.processID); // propagate activation of process id 
+      this.m_processSubject.next(SubjectAction.of("activate", activeProcess.processID)); // propagate activation of process id 
     }
   }
 

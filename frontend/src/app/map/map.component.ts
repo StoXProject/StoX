@@ -50,6 +50,7 @@ import { applyTransform, Extent, getCenter } from 'ol/extent';
 const proj4 = (proj4x as any).default;
 import { get as getProjection, getTransform } from 'ol/proj';
 import { Coordinate } from 'ol/coordinate';
+import { SubjectAction } from '../data/subjectaction';
 
 @Component({
   selector: 'app-map',
@@ -189,12 +190,18 @@ export class MapComponent implements OnInit, AfterViewInit {
       }
     });
     idsToRemove.forEach(id => {
+      this.removeLayersByProcessId(id);
+    });
+  }
+
+  removeLayersByProcessId(id : string) {
+    if (id != null) {
       let la = this.layerMap.get(id);
       if (la != null) {
         la.forEach(l => this.map.removeLayer(l));
       }
       this.layerMap.delete(id);
-    });
+    }
   }
 
 
@@ -317,6 +324,21 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this.proj);
 
+    this.ps.processSubject.subscribe({
+      next: (action: SubjectAction) => {
+        switch (action.action) {
+          case "remove": {
+            console.log("remove process - handle in map, id: " + action.data)
+            this.removeLayersByProcessId(action.data);
+            break;
+          }
+          case "activate": {
+            // TODO: implement interactive mode handling and remove iamodesubject
+            break;
+          }
+        }
+      }
+    })
     this.ps.iaModeSubject.subscribe(iaMode => {
       this.handleIaMode(iaMode, this.proj);
     });
