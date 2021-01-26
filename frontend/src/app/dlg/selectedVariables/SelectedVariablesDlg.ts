@@ -84,16 +84,16 @@ export class SelectedVariablesDlg implements OnInit {
     }
 
     hasDuplicates(arr: SelectedVariable[]) {
-        var counts = [];
-    
+        let uniqueSet = new Set();
         for (var i = 0; i < arr.length; i++) {
-            if (counts[arr[i].variableName] === undefined) {
-                counts[arr[i].variableName] = 1;
-            } else {
-                return true;
-            }
+            uniqueSet.add(arr[i].variableName) ;
         }
-        return false;
+
+        if(uniqueSet.size != arr.length) {
+            return true;
+        } else {
+            false;
+        }
     }    
 
     apply() {
