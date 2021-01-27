@@ -92,7 +92,7 @@ export class SelectedVariablesDlg implements OnInit {
         if(uniqueSet.size != arr.length) {
             return true;
         } else {
-            false;
+            return false;
         }
     }    
 
