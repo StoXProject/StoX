@@ -73,6 +73,12 @@ export class AutocompleteComponent {
   optionSelected(event: MatAutocompleteSelectedEvent) {
     this.updateSelectedItem(event.option.value);
   }
+  onEnter() {
+    // Allow blank values to be accepted
+    if (this.selectedItem === '') {
+      this.updateSelectedItem(this.selectedItem);
+    }
+  }
   /*onKeydown(event: KeyboardEvent) {
     console.log(event);
     if (event.key === "Enter") {

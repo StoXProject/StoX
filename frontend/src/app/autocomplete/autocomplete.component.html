@@ -1,5 +1,6 @@
 <input #txtVal matInput [matAutocomplete]="auto" required matTooltipPosition="after" [(ngModel)]="selectedItem"
-    #trigger="matAutocompleteTrigger" class="ellipsiscolumn" matAutocompleteTriggerAccessor [optionHeight]="18" spellcheck="false">
+    #trigger="matAutocompleteTrigger" class="ellipsiscolumn" matAutocompleteTriggerAccessor [optionHeight]="18" spellcheck="false"
+    (keyup.enter)="onEnter()">
 <!--arrow_drop_down>-->
 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event)">
     <mat-option *ngFor="let item of filterItems(myInput.nativeElement.value, items)" [value]="item" matTooltip="{{item}}"> 
