@@ -406,8 +406,8 @@ getOfficialRstoxPackageVersion <- function(
         else {
             packageVersions <- getPackageNameAndVersionString(packageVersionList)
         }
-        
-        
+        # Add the StoX version as an attribute:
+        attr(packageVersions, "StoX") <- official$StoX
         
         if(toJSON) {
             packageVersions <- vector2json(packageVersions)
