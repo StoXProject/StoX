@@ -243,7 +243,7 @@ subsetBinaryPathsByIdenticallyInstalled <- function(binaryPath, lib = NULL) {
     ### toInstall <- subset(toInstall, Version != newVersion | is.na(Version))
     
     # Install only the packages that are not already installed with the exact same version:
-    installed <- as.data.frame(installed.packages(lib), stringsAsFactors = FALSE)
+    installed <- as.data.frame(utils::installed.packages(lib), stringsAsFactors = FALSE)
     # Create a table of the pakcages to install:
     toInstall <- data.frame(
         Package = getOnlyPackageName(basename(binaryPath)), 
@@ -266,7 +266,7 @@ removeExistingPackages <- function(pkgs, lib = NULL) {
         lib <- .libPaths()[1]
     }
     # Remove only installed packages to avoid error in remove.packages():
-    installed <- installed.packages(lib.loc = lib)[, "Package"]
+    installed <- utils::installed.packages(lib.loc = lib)[, "Package"]
     packagesToRemove <- intersect(pkgs, installed)
     lapply(packagesToRemove, remove.packages, lib = lib)
 }
@@ -543,7 +543,7 @@ getAvailablePackages <- function(packageName = NULL, repos = "https://cloud.r-pr
     }
     # Or locally:
     else {
-        avail <- installed.packages()
+        avail <- utils::installed.packages()
     }
     
     # For convenience convert to data.frame:
@@ -564,7 +564,7 @@ getAvailablePackages <- function(packageName = NULL, repos = "https://cloud.r-pr
 }
 
 exlcudeBasePackages <- function(x) {
-    setdiff(x, rownames(installed.packages(priority="base")))
+    setdiff(x, rownames(utils::installed.packages(priority="base")))
 }
 
 # Funcction to get platform code used in the path to the package binarry:
@@ -608,8 +608,11 @@ getPlatform <- function(platform = NA) {
         else if (Sys.info()["sysname"] == "Darwin") {
             platform <- "macosx"
         } 
+        else if (Sys.info()["sysname"] == "Linux") {
+            platform <- "linux"
+        } 
         else {
-            stop("Only Windows and MacOS are currently supported.")
+            stop("Only Windows, MacOS and Linux are currently supported.")
         }
     }
     
