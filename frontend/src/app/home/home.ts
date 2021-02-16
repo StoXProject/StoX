@@ -15,6 +15,8 @@ import { DataService } from '../service/data.service';
 import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgService';
 import { MatTabGroup } from '@angular/material/tabs';
 import { PackageVersion } from './../data/PackageVersion';
+import { UserLogEntry } from '../data/userlogentry';
+import { UserLogType } from '../enum/enums';
 
 @Component({
   selector: 'homeComponent',
@@ -108,8 +110,10 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   }
 
   async installRstoxFramework() {
-    await this.ds.installRstoxFramework().toPromise();
+    let res = await this.ds.installRstoxFramework().toPromise();
+    this.ds.log.push(new UserLogEntry(UserLogType.MESSAGE, res));
     await this.ps.checkRstoxFrameworkAvailability();
+
   }
 
   getPackageColor(pkg: PackageVersion) {

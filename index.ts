@@ -22,6 +22,7 @@ var child_process = require('child_process');
 var fs = require('fs')
 var cors = require('cors');
 var callr_evaluate: boolean[] = [];
+var rPackagesIsInstalling = false;
 var isClosing = false;
 
 const net = require("net")
@@ -193,7 +194,7 @@ async function onClosed(e: any) {
   if (properties != null && properties.activeProject !== null && !isClosing) {
     logInfo('close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
     // need to stop application from quitting to let Promise work, and then re-close. with properties.activeProject = null
-    e.preventDefault(); 
+    e.preventDefault();
     let save = false;
     if (!activeProjectSaved) {
       var choice = showElectronMessageBox('Save project', 'Save changes to project before closing?', ['Yes', 'No', 'Cancel']);
@@ -206,7 +207,7 @@ async function onClosed(e: any) {
     }
     let cmd = "RstoxFramework::runFunction.JSON(" + JSON.stringify(JSON.stringify({
       what: "closeProject",
-      args: JSON.stringify({ projectPath: properties.activeProject, save: save}),
+      args: JSON.stringify({ projectPath: properties.activeProject, save: save }),
       package: "RstoxFramework"
     })) + ")";
     let s = await callR(cmd);
@@ -323,7 +324,7 @@ async function checkRAvailable(): Promise<boolean> {
 
 async function startBackendServer(): Promise<string> {
   logInfo('Starting backend');
-  
+
   rAvailable = await checkRAvailable();
   if (!rAvailable) {
     logInfo('R is not available- quitting startBackendServer');
@@ -395,6 +396,10 @@ async function getPackageVersion(packageName: string) {
  * Create a safe connection to socket with timeout loop. Either success or failure in each try.
  */
 async function createClient() {
+  while (callr_evaluate.length > 0) {
+    // pause when client is busy. 
+    await new Promise(r => setTimeout(() => { r(null); }, 50/*ms*/));
+  }
   if (client != null) {
     logInfo('Close existing client');
     client.destroy();
@@ -688,7 +693,11 @@ function setupServer() {
 
   // observe rpath in backend
   server.post('/callR', async (req: any, res: any) => {
-    if (!rAvailable) {
+    while (rPackagesIsInstalling) {
+      // pause when installing packages
+      await new Promise(r => setTimeout(() => { r(null); }, 50/*ms*/));
+    }
+    if (client == null || !rAvailable) {
       res.send({ value: null, message: [], warning: [], error: ['R is not available. Set path to R bin in Tools->R connection.'] });
       return;
     }
@@ -716,18 +725,25 @@ function setupServer() {
   });
 
   server.post('/installRstoxFramework', async (req: any, res: any) => {
-    logInfo('/installRstoxFramework');
-    await startBackendServer()
-    logInfo('server started: ' + serverStarted + ", client: " + client);
-    if (serverStarted) {
-      let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
-      let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
-        officialsRFTmpFile + "\", quiet = T, skip.identical=T, toJSON=T)";
-      logInfo(cmd);
-      let res = (await callR(cmd) as any).result;
-      logInfo("Installed packages: " + res);
+    try {
+      let s : string = "R is not available";
+      rPackagesIsInstalling = true;
+      logInfo('/installRstoxFramework');
+      await startBackendServer()
+      logInfo('server started: ' + serverStarted + ", client: " + client);
+      if (serverStarted) {
+        let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+        let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
+          officialsRFTmpFile + "\", quiet = T, skip.identical=T, toJSON=T)";
+        logInfo(cmd);
+        let res = (await callR(cmd) as any).result;
+        s = "Installed packages: " + res;
+        logInfo(s);
+      }
+      res.send(s);
+    } finally {
+      rPackagesIsInstalling = false;
     }
-    res.send("true");
   });
 
   server.get('/getRstoxPackageVersions', async (req: any, res: any) => {
