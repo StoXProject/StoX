@@ -44,7 +44,7 @@ var officialRstoxPackages: String[] = [];
 var versionR = "";
 //var rspawn: any;
 var backendProcess: any; // Backend process
-var stoxVersion = "3.0.0";
+var stoxVersion = "3.0.1";
 //var officialRstoxFrameworkVersion = "1.2.27" // used to show red when official (ending with 0) but not the right official
 //var supportedRstoxFrameworkVersions : string[] = ""; 
 // Modules to control application life and create native browser window
