@@ -1,10 +1,20 @@
+# windows doesnt have native encoding UTF-8, (R uses native encoding)
+# options ensures that project.json is written as utf-8
+options(encoding = "UTF-8")
+# Reading resource files in rstoxdata requires locale utf8 on all os.
+Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
 # convert hexa string to char
 hex2char <- function(h){
   s <- strsplit(h, "")[[1]]
-  rawToChar(as.raw(as.hexmode(paste0(s[c(TRUE, FALSE)], s[c(FALSE, TRUE)]))))
+  out <- rawToChar(as.raw(as.hexmode(paste0(s[c(TRUE, FALSE)], s[c(FALSE, TRUE)]))))
+  # encode data retrieved from socket as utf8, so that gui can i.e create projects with æøå
+  Encoding(out) <- "UTF-8"
+  return(out);
 }
 # convert char to hexa string
 char2hex <- function(c) {
+   # encode data sent to socket as utf8, so that gui can view projects (including filter and project name) with æøå
+    Encoding(c) <- "UTF-8"
     paste0(charToRaw(c), collapse='')
 }
 
