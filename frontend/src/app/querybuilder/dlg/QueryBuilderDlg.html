@@ -102,6 +102,11 @@
           <input matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()">
         </mat-form-field>
       </ng-container>
+      <ng-container *queryInput="let rule; let field=field; type: 'POSIXct'; let onChange=onChange">
+        <mat-form-field>
+          <input matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()">
+        </mat-form-field>
+      </ng-container>
       <ng-container *queryInput="let rule; let field=field; type: 'textarea'; let onChange=onChange">
         <mat-form-field>
           <textarea matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()">
