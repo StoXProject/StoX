@@ -13,7 +13,7 @@
     "package-mac": "tsc && electron-packager . --platform darwin --arch x64 --out dist/ --overwrite",
     "package-linux": "tsc && electron-packager . --platform linux --arch x64 --out dist/ --overwrite",
     "installer-win": "node installers/windows/createinstaller.js",
-    "installer-mac": "electron-installer-dmg ./dist/StoX-darwin-x64/StoX.app --out dist/ StoX-installer",
+    "installer-mac": "electron-installer-dmg ./dist/StoX-darwin-x64/StoX.app --out dist/installers/ StoX-installer",
     "installer-linux": "electron-installer-debian --src dist/StoX-linux-x64/ --dest dist/installers/ --arch amd64",
     "package-and-installer-win": "npm run package-win && npm run installer-win",
     "package-and-installer-sign-win": "npm run package-win && npm run signstox && npm run installer-win && npm run signinstaller",
@@ -24,7 +24,7 @@
     "build-mac": "npm run build-frontend && npm run package-and-installer-mac",
     "build-linux": "npm run build-frontend && npm run package-and-installer-linux",
     "signstox": "signtool.exe sign /a ./dist/StoX-win32-x64/StoX.exe",
-    "signinstaller": "signtool.exe sign /a ./dist/windows-installer/stoxInstaller.exe",
+    "signinstaller": "signtool.exe sign /a ./dist/installers/stoxInstaller.exe",
     "tsc": "tsc"
   },
   "repository": {

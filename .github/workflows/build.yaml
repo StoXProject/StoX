@@ -52,5 +52,5 @@ jobs:
         shell: bash
 
 
-      - run: find dist/
+      - run: find dist/installers
         shell: bash
