@@ -1,0 +1,46 @@
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+  push:    
+    branches:
+      - master
+      - develop
+
+jobs:
+  build:
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - {os: macOS-latest,   node_version: 10, architecture: 'x64', pltf: 'mac',   installer: 'electron-installer-dmg'}
+          - {os: windows-latest, node_version: 10, architecture: 'x64', pltf: 'win',   installer: 'electron-installer-winstaller'}
+          - {os: ubuntu-latest,  node_version: 10, architecture: 'x64', pltf: 'linux', installer: 'electron-installer-debian'}
+    env:
+      PLTF: ${{ matrix.config.pltf }}
+      INSTALL_PKG: ${{ matrix.config.installer }}
+
+    name: Node ${{ matrix.config.node_version }} - ${{ matrix.config.architecture }} on ${{ matrix.config.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.config.node_version }}
+          architecture: ${{ matrix.config.architecture }}
+      - run: npm install -g npm@latest
+      - run: npm install -g @angular/cli
+      - run: npm install --include=dev
+      - run: npm install @types/node@latest
+      - run: cd frontend
+      - run: npm install --include=dev
+      - run: npm install @types/node@latest
+      - run: cd ..
+      - run: npm install ${INSTALL_PKG}
+
+      - name: Build
+        run: npm run build-${PLTF}
+        shell: bash
+
+      - run: ls dist/installer
