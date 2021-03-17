@@ -45,12 +45,41 @@ jobs:
         if: runner.os != 'Windows'
         run: npm run build-${PLTF}
         shell: bash
-      
-      - name: Build Windows
+
+      - name: Create Certificate for Windows
         if: runner.os == 'Windows'
-        run: npm run build-frontend && npm run package-win && npm run installer-win
+        run: |
+          $cert = New-SelfSignedCertificate -DnsName www.yourwebsite.com -Type CodeSigning -CertStoreLocation Cert:\CurrentUser\My
+          $CertPassword = ConvertTo-SecureString -String "my_passowrd" -Force -AsPlainText
+          Export-PfxCertificate -Cert "cert:\CurrentUser\My\$($cert.Thumbprint)" -FilePath "c:\selfsigncert.pfx" -Password $CertPassword
+        shell: powershell
+      
+      - name: Build for Windows
+        if: runner.os == 'Windows'
+        run: npm run build-frontend && npm run package-win
         shell: bash
 
+      - name: Certificate signing for Windows (exe)
+        if: runner.os == 'Windows'
+        run: |
+          Set-AuthenticodeSignature ".\dist\StoX-win32-x64\StoX.exe" @(Get-ChildItem cert:\CurrentUser\My -codesigning)[0] -TimestampServer "http://time.certum.pl"
+        shell: powershell
+
+      - name: Create installer Windows
+        if: runner.os == 'Windows'
+        run: npm run installer-win
+        shell: bash
+
+      - name: Certificate signing for Windows (installer)
+        if: runner.os == 'Windows'
+        run: |
+          Set-AuthenticodeSignature ".\dist\installers\stoxInstaller.exe" @(Get-ChildItem cert:\CurrentUser\My -codesigning)[0] -TimestampServer "http://time.certum.pl"
+        shell: powershell
 
       - run: find dist/installers
         shell: bash
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: installer-${{ matrix.config.os }}
+          path: dist/installers
