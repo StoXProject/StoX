@@ -12,11 +12,12 @@ jobs:
   build:
     runs-on: ${{ matrix.config.os }}
     strategy:
+      fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   node_version: 10, architecture: 'x64', pltf: 'mac',   installer: 'electron-installer-dmg'}
-          - {os: windows-latest, node_version: 10, architecture: 'x64', pltf: 'win',   installer: 'electron-installer-winstaller'}
-          - {os: ubuntu-latest,  node_version: 10, architecture: 'x64', pltf: 'linux', installer: 'electron-installer-debian'}
+          - {os: macOS-latest,   node_version: 10, architecture: 'x64', pltf: 'mac',   installer: 'electron-installer-dmg@latest'}
+          - {os: windows-latest, node_version: 10, architecture: 'x64', pltf: 'win',   installer: 'electron-installer-winstaller@latest'}
+          - {os: ubuntu-latest,  node_version: 10, architecture: 'x64', pltf: 'linux', installer: 'electron-installer-debian@latest'}
     env:
       PLTF: ${{ matrix.config.pltf }}
       INSTALL_PKG: ${{ matrix.config.installer }}
@@ -29,18 +30,27 @@ jobs:
         with:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
-      - run: npm install -g npm@latest
-      - run: npm install -g @angular/cli
+      #- run: npm install -g npm@latest
+      - run: npm install @angular/cli
       - run: npm install --include=dev
       - run: npm install @types/node@latest
       - run: cd frontend
       - run: npm install --include=dev
       - run: npm install @types/node@latest
       - run: cd ..
+      - run: npm install electron@latest
       - run: npm install ${INSTALL_PKG}
 
       - name: Build
+        if: runner.os != 'Windows'
         run: npm run build-${PLTF}
         shell: bash
+      
+      - name: Build Windows
+        if: runner.os == 'Windows'
+        run: npm run build-frontend && npm run package-win && npm run installer-win
+        shell: bash
 
-      - run: ls dist/installer
+
+      - run: find dist/
+        shell: bash
