@@ -15,9 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   node_version: 10, architecture: 'x64', pltf: 'mac',   installer: 'electron-installer-dmg@latest'}
-          - {os: windows-latest, node_version: 10, architecture: 'x64', pltf: 'win',   installer: 'electron-wix-msi@latest'}
-          - {os: ubuntu-latest,  node_version: 10, architecture: 'x64', pltf: 'linux', installer: 'electron-installer-debian@latest'}
+          - {os: macOS-latest,   node_version: 10, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg@latest'}
+          - {os: windows-latest, node_version: 10, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi@latest'}
+          - {os: ubuntu-latest,  node_version: 10, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian@latest'}
     env:
       PLTF: ${{ matrix.config.pltf }}
       INSTALL_PKG: ${{ matrix.config.installer }}
@@ -77,7 +77,7 @@ jobs:
         run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $GITHUB_PATH
         shell: bash
 
-      - name: Create installer Windows
+      - name: Create installer for Windows
         if: runner.os == 'Windows'
         run: |
           npm run installer-win
@@ -91,7 +91,29 @@ jobs:
       - run: find dist/installers
         shell: bash
 
+      - name: Renaming files for upload
+        env:
+          EXT: ${{ matrix.config.in_ext }}
+        run: |
+          export SUFFIX=$(if [ "$GITHUB_REF" = "refs/heads/develop" ]; then echo "-dev"; else echo ""; fi) 
+          export FINAL_TAG=$(node -pe "require('./package.json')['name']")-$(node -pe "require('./package.json')['version']")${SUFFIX}
+          mv $(ls dist/installers/*${EXT}) /dist/installers/${FINAL_TAG}.${EXT}
+        shell: bash
+
+      - run: find dist/installers
+        shell: bash
+
       - uses: actions/upload-artifact@v2
         with:
-          name: installer-${{ matrix.config.os }}
-          path: dist/installers
+          name: installer-${{ matrix.config.os }}-${{ env.VER  }}
+          path: dist/installers/*${{ matrix.config.in_ext }}
+          
+      - name: Create release and upload files
+        if: github.event_name == 'push' && ( github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' )
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          tag: ${{ env.FINAL_TAG }}
+          name: ${{ env.FINAL_TAG }}
+          artifacts: dist/installers/*${{ matrix.config.in_ext }}
+          token: ${{ secrets.GITHUB_TOKEN }}
