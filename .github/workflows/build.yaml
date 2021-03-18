@@ -49,9 +49,17 @@ jobs:
       - name: Create Certificate for Windows
         if: runner.os == 'Windows'
         run: |
-          $cert = New-SelfSignedCertificate -DnsName www.yourwebsite.com -Type CodeSigning -CertStoreLocation Cert:\CurrentUser\My
-          $CertPassword = ConvertTo-SecureString -String "my_passowrd" -Force -AsPlainText
-          Export-PfxCertificate -Cert "cert:\CurrentUser\My\$($cert.Thumbprint)" -FilePath "c:\selfsigncert.pfx" -Password $CertPassword
+          $Params = @{
+            Subject           = "CN=Test Code Signing"
+            Type              = "CodeSigningCert"    
+            KeySpec           = "Signature"     
+            KeyUsage          = "DigitalSignature"    
+            FriendlyName      = "Test code signing"    
+            NotAfter          = [datetime]::now.AddYears(5)    
+            CertStoreLocation = 'Cert:\CurrentUser\My' }
+            $TestCodeSigningCert = New-SelfSignedCertificate @Params
+            Export-Certificate -FilePath exported_cert.cer -Cert $TestCodeSigningCert
+            Import-Certificate -FilePath exported_cert.cer -CertStoreLocation Cert:\CurrentUser\Root -Confirm:$false
         shell: powershell
       
       - name: Build for Windows
