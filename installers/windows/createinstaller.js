@@ -17,7 +17,7 @@ function getInstallerConfig () {
     appDirectory: path.join(outPath, 'stox-win32-x64/'),
     authors: 'HI institute',
     noMsi: true,
-    outputDirectory: path.join(outPath, 'windows-installer'),
+    outputDirectory: path.join(outPath, 'installers'),
     exe: 'stox.exe',
     setupExe: 'stoxInstaller.exe'//,
  //   setupIcon: path.join(rootPath, 'assets', 'icons', 'win', 'icon.ico')
