@@ -95,9 +95,11 @@ jobs:
         env:
           EXT: ${{ matrix.config.in_ext }}
         run: |
-          export SUFFIX=$(if [ "$GITHUB_REF" = "refs/heads/develop" ]; then echo "-dev"; else echo ""; fi) 
-          export FINAL_TAG=$(node -pe "require('./package.json')['name']")-$(node -pe "require('./package.json')['version']")${SUFFIX}
-          mv $(ls dist/installers/*${EXT}) /dist/installers/${FINAL_TAG}.${EXT}
+          export FINAL_TAG=$(node -pe "require('./package.json')['version']")$(if [ "$GITHUB_REF" = "refs/heads/develop" ]; then echo "+dev.${GITHUB_SHA::7}"; else echo ""; fi)
+          export FULL_TAG=$(node -pe "require('./package.json')['name']")-${FINAL_TAG}
+          mv $(ls dist/installers/*${EXT}) dist/installers/${FULL_TAG}.${EXT}
+          echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
+          echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
         shell: bash
 
       - run: find dist/installers
@@ -105,15 +107,15 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: installer-${{ matrix.config.os }}-${{ env.VER  }}
+          name: installer-${{ matrix.config.os }}-${{ env.FINAL_TAG  }}
           path: dist/installers/*${{ matrix.config.in_ext }}
-          
+
       - name: Create release and upload files
         if: github.event_name == 'push' && ( github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' )
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          tag: ${{ env.FINAL_TAG }}
-          name: ${{ env.FINAL_TAG }}
+          tag: v${{ env.FINAL_TAG }}
+          name: ${{ env.FULL_TAG }}
           artifacts: dist/installers/*${{ matrix.config.in_ext }}
           token: ${{ secrets.GITHUB_TOKEN }}
