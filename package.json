@@ -41,6 +41,7 @@
     "@types/node": "^13.9.8",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "pkginfo": "^0.4.1",
     "simple-node-logger": "^18.12.24",
     "temp-dir": "^2.0.0"
   },
