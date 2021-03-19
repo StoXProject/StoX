@@ -44,3 +44,6 @@ cross-env example
 
 
 9YMj1zM70BAmuJ
+
+
+To skip installing devDependencies, use npm install --production
