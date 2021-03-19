@@ -7,6 +7,7 @@ import { ProjectService } from '../service/project.service';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
 import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
+import { InstallRPackagesDlgService } from '../dlg/InstallRPackages/InstallRPackagesDlgService';
 // import { ExpressionBuilderDlgService } from '../expressionBuilder/ExpressionBuilderDlgService';
 // import { DefinedColumnsService } from '../dlg/definedColumns/DefinedColumnsService';
 // import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
@@ -34,6 +35,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     public ps: ProjectService,
     private saveProjectAsService: SaveAsProjectDlgService,
     private resetProjectService: ResetProjectDlgService,
+    private installRPackagesDlgService: InstallRPackagesDlgService,
     private ds: DataService
   ) {
     ps.outputTableActivator.subscribe({ next: (idx) => { this.bottomTabGroup.selectedIndex = 1; } })
@@ -59,9 +61,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
       label: 'R connection...', command: e => this.rConnectionDlgService.showDialog()
     }*/];
     //if (this.ps.rAvailable) {
-    this.items.push(...[
-
-    ]);
+    //this.items.push(...[]);
     this.m_isDesktop = "true" == await this.ds.isdesktop().toPromise();
     console.log("isdesktop=" + typeof (this.m_isDesktop))
     //   }
@@ -110,10 +110,10 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   }
 
   async installRstoxFramework() {
-    let res = await this.ds.installRstoxFramework().toPromise();
-    this.ds.log.push(new UserLogEntry(UserLogType.MESSAGE, res));
-    await this.ps.checkRstoxFrameworkAvailability();
-
+    this.installRPackagesDlgService.showDialog();
+  }
+  getStoXVersionColor() {
+      return !this.stoxVersion?.endsWith(".0") ? "rgb(255,30,78)" : "rgb(0,0,0)"; 
   }
 
   getPackageColor(pkg: PackageVersion) {
@@ -124,7 +124,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   }
   getPackageDescr(pkg: PackageVersion) {
     //console.log("getPackageDescr:" + pkg)
-    return pkg == null ? "Loading..." : pkg.packageName + " " + pkg.version; 
+    return pkg == null ? "Loading..." : pkg.packageName + " " + pkg.version;
   }
 
   myFunction() {

@@ -115,19 +115,6 @@ export class ParameterComponent implements OnInit {
     //   tableNames = [];
     // }
 
-    let allOptions = await this.dataService.getFilterOptionsAll(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, false).toPromise();
-    console.log("allOptions : " + JSON.stringify(allOptions));
-
-    if (this.ps.isEmpty(allOptions)) {
-      this.msgService.setMessage("Can not get filter options. See user log.");
-      this.msgService.showMessage();
-      return;
-    }
-
-    this.exprBuilderService.allOptions = allOptions;
-    this.exprBuilderService.tableNames = allOptions.tableNames;
-    console.log("tableNames : " + JSON.stringify(this.exprBuilderService.tableNames));
-
     // run ExpressionBuilderService.showDialog() to show Expression builder dialog
     this.exprBuilderService.showDialog();
   }

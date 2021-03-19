@@ -14,6 +14,7 @@ export class DefinedColumnsService {
     constructor(private ps: ProjectService, private dataService: DataService) {}
 
     public display: boolean = false;
+    public isOpening: boolean = false;
 
     public oldNames: string[] = [];
 
@@ -69,6 +70,8 @@ export class DefinedColumnsService {
     async showDialog() {
       this.init();
 
+      this.display = true;
+      this.isOpening = true;
       // parse currentPropertyItem.value and populate definedColumnsData and send it to dialog
       if(this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != "") {
         let o: any[] = JSON.parse(this.currentPropertyItem.value);
@@ -126,7 +129,6 @@ export class DefinedColumnsService {
         
         console.log("returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
       }
-
-      this.display = true;
+      this.isOpening = false;
     }
 }

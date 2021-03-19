@@ -27,6 +27,7 @@ export class ExpressionBuilderDlgService {
     currentQuery = this.querySource.asObservable();
 
     public display: boolean = false;
+    public isOpening: boolean = false;
 
     public currentTableExpression: TableExpression = null;
     private currentTableExpressionSource = new BehaviorSubject(this.currentTableExpression);
@@ -99,6 +100,23 @@ export class ExpressionBuilderDlgService {
     }
 
     async showDialog() {
+        this.display = true; // make the dialog modal and showing progress before loading dialog data from backend
+        this.isOpening = true;
+
+        let allOptions = await this.dataService.getFilterOptionsAll(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, false).toPromise();
+        console.log("allOptions : " + JSON.stringify(allOptions));
+    
+        if (this.ps.isEmpty(allOptions)) {
+          this.msgService.setMessage("Can not get filter options. See user log.");
+          this.msgService.showMessage();
+          this.display = false;
+          return;
+        }
+    
+        this.allOptions = allOptions;
+        this.tableNames = allOptions.tableNames;
+        console.log("tableNames : " + JSON.stringify(this.tableNames));
+    
         // build array of tableExpressions from rExpression
         console.log("this.currentPropertyItem.value : " + this.currentPropertyItem.value);
 
@@ -116,6 +134,6 @@ export class ExpressionBuilderDlgService {
             console.log("this.tableExpressions.length : " + this.tableExpressions.length);
         }
 
-        this.display = true;
+        this.isOpening = false;
     }
 }

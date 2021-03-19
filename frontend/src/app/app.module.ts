@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HomeComponent } from './home/home';
 import { RConnectionDlg } from './dlg/RConnectionDlg';
+import { InstallRPackagesDlg } from './dlg/InstallRPackages/InstallRPackagesDlg';
 import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
 import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
 import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
@@ -85,6 +86,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule} from '@angular/material/tooltip';  
 import {MatListModule} from '@angular/material/list';
 
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
 import {DragDropModule as MatDragDropModule} from '@angular/cdk/drag-drop';
 
 /*import {
@@ -122,7 +125,7 @@ import {DragDropModule as MatDragDropModule} from '@angular/cdk/drag-drop';
 } from '@angular/material';*/
 import { StratumpsuComponent } from './processdata/stratumpsu/stratumpsu.component';
 
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+//import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module';
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
@@ -161,7 +164,8 @@ import { DirectiveAccessor } from './autocomplete/directive-accessor';
     MatToolbarModule,
     MatTooltipModule,
     MatListModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatProgressSpinnerModule
    /* MatDatepickerModule,*/
    /* MatDividerModule,
     MatExpansionModule,*/
@@ -224,7 +228,7 @@ export class MaterialModule { }
     MatInputModule,*/ MatDialogModule, MatSelectModule,
 
     ReactiveFormsModule,
-    NoopAnimationsModule,
+    //NoopAnimationsModule, // disabling all animations
     MatButtonModule,
     MatCheckboxModule,
     MatSelectModule,
@@ -240,6 +244,7 @@ export class MaterialModule { }
   declarations: [
     HomeComponent,
     RConnectionDlg,
+    InstallRPackagesDlg,
     CreateProjectDialog,
     OpenProjectDlg,
     ExpressionBuilderDlg,
