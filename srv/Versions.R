@@ -3,8 +3,8 @@
 #' Function to get the non Rstox dependencies of a package
 #' 
 #' @param packageName The packages to get dependencies from.
-#' @param dependencies A character vector listing the dependencies to get, with possible values "Depends", "Imports", "LinkingTo", "Suggests", "Enhances". Default is NA, implying c("Depends", "Imports", "LinkingTo").
-#' @param Rstox.repos,nonRstox.repos Either NULL to search for packages locally, or a repository passed to \code{\link[utils]{available.packages}}, where \code{Rstox.repos} is used to locate direct dependencies of the Rstox packages, and \code{nonRstox.reposs} is used to get the dependencies of the direct dependencies recursievly, defaulted to the CRAN repository.
+#' @param dependencyTypes A character vector listing the dependencies to get, with possible values "Depends", "Imports", "LinkingTo", "Suggests", "Enhances". Default is NA, implying c("Depends", "Imports", "LinkingTo").
+#' @param Rstox.repos,nonRstox.repos Either NULL to search for packages locally, or a repository passed to \code{\link[utils]{available.packages}}, where \code{Rstox.repos} is used to locate direct dependencies of the Rstox packages, and \code{nonRstox.reposs} is used to get the dependencies of the direct dependencies recursively, defaulted to the CRAN repository.
 #' @param sort Logical: If TRUE sort the dependent packages, defaulted to FALSE to enable installing the most basic dependencies first.
 #' @param destdir The directory to download binaries to, defaulted to NA which implies tempdir().
 #' 
@@ -12,19 +12,18 @@
 #' 
 getNonRstoxDependencies <- function(
     packageName = c("RstoxFramework","RstoxBase", "RstoxData"), 
-    dependencies = NA, 
+    dependencyTypes = NA, 
     Rstox.repos = NULL, 
     nonRstox.repos = "https://cloud.r-project.org", 
     sort = FALSE
 ) {
-#getNonRstoxDependencies <- function(packageName = getRstoxFrameworkDefinitions("officialStoxLibraryPackagesAll"), dependencies = NA, repos = NULL, sort = FALSE) {
-    
+
     # Get non-Rstox dependencies:
     nonRstoxDependencies <- lapply(
         packageName, 
         getDependencies, 
         repos = Rstox.repos, 
-        dependencies = dependencies, 
+        dependencyTypes = dependencyTypes, 
         excludeStartingWith = "Rstox", 
         recursive = FALSE, 
         sort = sort
@@ -36,7 +35,7 @@ getNonRstoxDependencies <- function(
     allNonRstoxDependencies <- getDependencies(
         packageName = nonRstoxDependencies, 
         repos = nonRstox.repos, 
-        dependencies = dependencies, 
+        dependencyTypes = dependencyTypes, 
         append = TRUE, 
         sort = sort
     )
@@ -50,7 +49,7 @@ getNonRstoxDependencies <- function(
 downloadNonRstoxDependencies <- function(
     packageName = c("RstoxFramework","RstoxBase", "RstoxData"), 
     destdir = NA, 
-    dependencies = NA, 
+    dependencyTypes = NA, 
     Rstox.repos = NULL, 
     download.repos = "https://cloud.r-project.org", 
     sort = FALSE, 
@@ -62,7 +61,7 @@ downloadNonRstoxDependencies <- function(
     # Get the dependencies:
     nonRstoxDependencies <- getNonRstoxDependencies(
         packageName = packageName, 
-        dependencies = dependencies, 
+        dependencyTypes = dependencyTypes, 
         Rstox.repos = Rstox.repos, 
         nonRstox.repos = download.repos, 
         sort = sort
@@ -100,7 +99,7 @@ downloadNonRstoxDependencies <- function(
 
 installNonRstoxDependencies <- function(
     destdir = NA, 
-    dependencies = NA, 
+    dependencyTypes = NA, 
     Rstox.repos = NULL, 
     download.repos = "https://cloud.r-project.org", 
     sort = FALSE, 
@@ -113,7 +112,7 @@ installNonRstoxDependencies <- function(
     # Get the dependencies:
     binaryLocalFiles <- downloadNonRstoxDependencies(
         destdir = destdir, 
-        dependencies = dependencies, 
+        dependencyTypes = dependencyTypes, 
         Rstox.repos = Rstox.repos, 
         download.repos = download.repos, 
         sort = sort, 
@@ -147,7 +146,7 @@ installOfficialRstoxPackages <- function(
     officialRstoxPackageVersionsFile, 
     destdir = NA, 
     include.optional = FALSE, 
-    dependencies = NA, 
+    dependencyTypes = NA, 
     Rstox.repos = "https://stoxproject.github.io/repo", 
     platform = NA, 
     twoDigitRVersion = NA, 
@@ -286,7 +285,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     destdir = NA, 
     Rstox.repos = "https://stoxproject.github.io/repo", 
     download.repos = "https://cloud.r-project.org", 
-    dependencies = NA, 
+    dependencyTypes = NA, 
     sort = FALSE, 
     platform = NA, 
     skip.identical = FALSE, 
@@ -304,7 +303,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
         StoXGUIVersion = StoXGUIVersion, 
         officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile, 
         include.optional = FALSE, 
-        dependencies = FALSE, 
+        dependencyTypes = FALSE, 
         Rstox.repos = Rstox.repos, 
         platform = platform, 
         twoDigitRVersion = twoDigitRVersion, 
@@ -314,7 +313,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     # Then install non-Rstox dependencies using no repo to list the dependencies (Rstox.repos = NULL):
     nonRstoxPackageBinaryFiles <- installNonRstoxDependencies(
         destdir = destdir, 
-        dependencies = dependencies, 
+        dependencyTypes = dependencyTypes, 
         Rstox.repos = NULL, 
         download.repos = download.repos, 
         sort = FALSE, 
@@ -445,11 +444,11 @@ getPackageNameAndVersionString <- function(packageName, version, sep = "_") {
 
 
 # Function to read the description file of an RstoxPackage
-getDependencies <- function(packageName, repos = "https://cloud.r-project.org", dependencies = NA, excludeStartingWith = NULL, recursive = TRUE, append = FALSE, sort = FALSE) {
+getDependencies <- function(packageName, repos = "https://cloud.r-project.org", dependencyTypes = NA, excludeStartingWith = NULL, recursive = TRUE, append = FALSE, sort = FALSE) {
     
     # Get the dependencies of the Rstox packages:
-    if(identical(NA, dependencies)) {
-        dependencies <- c("Depends", "Imports", "LinkingTo")
+    if(identical(NA, dependencyTypes)) {
+        dependencyTypes <- c("Depends", "Imports", "LinkingTo")
     }
     
     # Read the available packages:
@@ -459,7 +458,7 @@ getDependencies <- function(packageName, repos = "https://cloud.r-project.org", 
     dependentPackages <- extractDependencies(
         packageName = packageName, 
         allAvail = allAvail, 
-        dependencies = dependencies, 
+        dependencyTypes = dependencyTypes, 
         recursive = recursive
     )
     
@@ -485,10 +484,10 @@ getDependencies <- function(packageName, repos = "https://cloud.r-project.org", 
 }
 
 
-extractDependencies <- function(packageName, allAvail, dependencies, recursive = TRUE) {
+extractDependencies <- function(packageName, allAvail, dependencyTypes, recursive = TRUE) {
     
     # Extract the dependencies of the packageName:
-    onlyDependencies <- subset(allAvail, Package %in% packageName)[dependencies]
+    onlyDependencies <- subset(allAvail, Package %in% packageName)[dependencyTypes]
     if(!nrow(onlyDependencies)) {
         warning("Package ", paste(packageName, collapse = ", "), " not present in the repos.")
     }
@@ -516,7 +515,7 @@ extractDependencies <- function(packageName, allAvail, dependencies, recursive =
                 extractDependencies(
                     onlyDependencies, 
                     allAvail = allAvail, 
-                    dependencies = dependencies
+                    dependencyTypes = dependencyTypes
                 )
             ))
         }
