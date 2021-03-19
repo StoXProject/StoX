@@ -40,6 +40,7 @@ var server: any = null;
 var rAvailable: boolean = false;
 let serverStarted = false;
 var versionRstoxFramework = "";
+var loadStatusRstoxFramework = "";
 var officialRstoxPackages: String[] = [];
 var versionR = "";
 //var rspawn: any;
@@ -368,6 +369,9 @@ async function startBackendServer(): Promise<string> {
     officialRstoxPackages = JSON.parse((await callR(cmd) as any).result);
     logInfo(JSON.stringify(officialRstoxPackages));
 
+    cmd = "tryCatch({library(\"RstoxFramework\"); \"\"} ,error = function(e) {e})"
+    loadStatusRstoxFramework = (await callR(cmd) as any).result.trim();
+    logInfo("Load status RstoxFramework: " + loadStatusRstoxFramework);
     cmd = "tryCatch(paste0(\"RStoxFramework_\", as.character(packageVersion(\"RstoxFramework\"))),error = function(e) {\"\"})"
     versionRstoxFramework = (await callR(cmd) as any).result;
     logInfo(versionRstoxFramework);
@@ -705,6 +709,10 @@ function setupServer() {
       res.send({ value: null, message: [], warning: [], error: ['RstoxFramework is not installed. Install from Tools->Install R packages.'] });
       return;
     }
+    if (loadStatusRstoxFramework != "") {
+      res.send({ value: null, message: [], warning: [], error: ['RstoxFramework is not loaded properly due to message: \"' + loadStatusRstoxFramework + '\". Try to reinstall from Tools->Install R packages. (Remember also to close other R applications first)'] });
+      return;
+    }
     // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
     //logInfo(req.body);
     // this is a timout for a specific route for node express server.
@@ -738,6 +746,7 @@ function setupServer() {
         logInfo(cmd);
         let res = (await callR(cmd) as any).result;
         s = "Installed packages: " + res;
+        loadStatusRstoxFramework = "";
         logInfo(s);
       }
       res.send(s);
