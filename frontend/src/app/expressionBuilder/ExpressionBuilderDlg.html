@@ -70,6 +70,7 @@
     </div>
 
     <p-footer>
+        <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening"></mat-spinner> <!--class="spinner"--> 
         <button type="button" pButton icon="pi pi-close" (click)="cancel()" label="Cancel"
             class="ui-button-secondary"></button>
         <button type="button" pButton  (click)="apply()" label="Save"></button>
