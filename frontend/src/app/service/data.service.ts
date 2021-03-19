@@ -58,14 +58,14 @@ export class DataService {
     return this.runFunction('getAvailableTemplatesDescriptions', {});
   }
 
-  createProject(projectPath: string, /*templateName: string, */application : string): Observable<any> {
+  createProject(projectPath: string, /*templateName: string, */application: string): Observable<any> {
     return this.runFunctionThrowFramework('createProject', {
       "projectPath": projectPath,
       //"template": "UserDefined",
       "ow": false,
       "showWarnings": false,
       "open": true,
-      "Application" : application
+      "Application": application
     }, true);
   }
 
@@ -98,32 +98,32 @@ export class DataService {
     }, true);
   }
 
- 
+
   saveProject(projectPath: string, application: string): Observable<Project> {
 
     return this.runFunctionThrowFramework('saveProject', {
       "projectPath": projectPath,
-      "Application" : application
+      "Application": application
     }, true);
   }
 
-  saveAsProject(projectPath: string, newProjectPath: string, application : string): Observable<Project> {
+  saveAsProject(projectPath: string, newProjectPath: string, application: string): Observable<Project> {
 
     return this.runFunctionThrowFramework('saveAsProject', {
       "projectPath": projectPath,
       "newProjectPath": newProjectPath,
-      "Application" : application
+      "Application": application
       /*, "ow": ow */
     }, true);
   }
 
 
-  closeProject(projectPath: string, save: Boolean, application : string): Observable<any> {
+  closeProject(projectPath: string, save: Boolean, application: string): Observable<any> {
 
     return this.runFunction('closeProject', {
       "projectPath": projectPath,
       "save": save,
-      "Application" : application 
+      "Application": application
     });
   }
 
@@ -315,20 +315,27 @@ export class DataService {
     // console.log("RstoxFramework::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
     return <any>this.callR({ what: what, args: args, package: pkg })
       .pipe(map(res => {
-        let r2: RunResult = JSON.parse(res.body !== undefined ? res.body : res);
+        let r2: RunResult = null;
+        try {
+          r2 = JSON.parse(res.body !== undefined ? res.body : res);
+        } catch (e) {
+          // If result is not exception, it is an error with its message in the body
+          r2 = new RunResult();
+          r2.error = [res];
+        }
         if (dothrow) {
           if (r2.error.length > 0) {
             throw (r2.error[0]);
           }
         } else {
           r2.warning
-            .filter(elm => elm.startsWith("StoX: "))
+            ?.filter(elm => elm.startsWith("StoX: "))
             .map(elm => elm.slice("StoX: ".length))
             .forEach(elm => {
               this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
               this.m_logSubject.next('log-warning');
             });
-          r2.error.forEach(elm => {
+          r2.error?.forEach(elm => {
             this.log.push(new UserLogEntry(UserLogType.ERROR, elm));
             this.m_logSubject.next('log-error');
           });
@@ -471,7 +478,8 @@ export class DataService {
   }
 
   removeEDSU(edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
-    return this.runFunction('removeEDSU', {"EDSU": edsu,
+    return this.runFunction('removeEDSU', {
+      "EDSU": edsu,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
@@ -527,7 +535,7 @@ export class DataService {
   toggleDevTools(): Observable<any> {
     return this.postLocalNode('toggledevtools', {});
   }
-  isdesktop() : Observable<any> {
+  isdesktop(): Observable<any> {
     return this.postLocalNode('isdesktop', {});
   }
 
@@ -572,7 +580,7 @@ export class DataService {
     return this.postLocalNode('updateactiveproject', projectPath);
   }
 
-  public updateActiveProjectSavedStatus(saved : boolean): Observable<any> {
+  public updateActiveProjectSavedStatus(saved: boolean): Observable<any> {
     return this.postLocalNode('updateactiveprojectsavedstatus', saved);
   }
 

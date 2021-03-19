@@ -66,9 +66,9 @@ while(TRUE) {
     # Service command/response handler
     r <- NULL
     tryCatch({
-       r <- handle(cmd)
+       r <<- handle(cmd)
     },error=function(e){
-       r <- e
+       r <<- e
     })
     # Transfer bytes as text over socket
     r <- as.character(r)
