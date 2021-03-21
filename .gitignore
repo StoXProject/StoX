@@ -3,3 +3,7 @@ node_modules
 /build
 /log
 frontend/debug.log
+
+installers/StoXInstaller/res/StoX.msi
+
+installers/StoXInstaller/x64/Debug/
