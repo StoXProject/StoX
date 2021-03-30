@@ -13,5 +13,6 @@ export class Process {
   canShowInMap?: boolean; // have overlay globe icon
   hasProcessData?: boolean; // process with color in middle.
   hasBeenRun?: boolean; // not used in gui.
-  modified?: boolean;
+  //modified?: boolean; // not needed - remove this, replaced by processDirty at ActiveProcess
 }
+

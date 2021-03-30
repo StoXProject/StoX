@@ -1,5 +1,9 @@
 node_modules
 /dist 
-package-lock.json
 /build
 /log
+frontend/debug.log
+
+installers/StoXInstaller/res/StoX.msi
+installers/StoXInstaller/.vs/
+installers/StoXInstaller/x64/Debug/

@@ -41,8 +41,17 @@ export class HelpContentHandler {
     if (elm.tagName.toUpperCase() == "A") { // handle element <a>
       let hRefAttr : Attr = elm.attributes["href"]; 
       if (hRefAttr != null) {
-        this.updateHelpContentByHref(hRefAttr.value);
-        return false; // prevent default and stop propagation in a synchr. manner
+          var stringToMatch = hRefAttr.value;     
+          var matches = stringToMatch.match(/\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html/ig);
+          if (matches != null && matches.length == 1) {
+            this.updateHelpContentByHref(matches[0]);
+            return false; // prevent default and stop propagation in a synchr. manner
+          } 
+          else {  // else if(!stringToMatch.startsWith(".."))
+            // open url using node
+            this.dataService.openUrl(stringToMatch).toPromise().then(st => console.log(st)); 
+            return false;
+          }
       }
     }
     return true; // allow default handler and up-propagation
@@ -54,24 +63,37 @@ export class HelpContentHandler {
    * async update of helpcontent via then operator
    * @param hRef on the form ../../packageName/html/objectName.html
    */
-  private updateHelpContentByHref(hRef: string) {
-    var matches = hRef.match(/\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html/ig);
-    if (matches != null && matches.length == 1) {
-      var splitElms = matches[0].split("/");
-      var packageName = splitElms[2];
-      var fileName = splitElms[4];
-      var fileNameElms = fileName.split(".");
-      var objectName = fileNameElms[0];
-      this.dataService.getObjectHelpAsHtml(packageName, objectName).toPromise().then(s =>this.ps.helpContent = s) 
-    }
+  private updateHelpContentByHref(oneMatch: string) {
+    var splitElms = oneMatch.split("/");
+    var packageName = splitElms[2];
+    var fileName = splitElms[4];
+    var fileNameElms = fileName.split(".");
+    var objectName = fileNameElms[0];
+    this.dataService.getObjectHelpAsHtml(packageName, objectName).toPromise().then(s =>this.ps.helpContent = s);
   }
 }
 
 @Component({
   selector: 'app-help',
   templateUrl: './HelpComponent.html',
-  styleUrls: [],
+  styleUrls: ['./HelpComponent.scss'],
 })
 export class HelpComponent {
   constructor(private ps: ProjectService, ) { }
+
+  hasNext(): boolean {
+    return this.ps.helpCache.hasNext();
+  }
+
+  hasPrevious(): boolean {
+    return this.ps.helpCache.hasPrevious();
+  } 
+
+  previous() {
+    this.ps.helpCache.previous();
+  }
+
+  next() {
+    this.ps.helpCache.next();
+  }
 }

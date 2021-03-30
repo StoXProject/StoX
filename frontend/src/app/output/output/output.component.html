@@ -1,11 +1,15 @@
-<mat-tab-group [@.disabled]="true">
+<mat-tab-group [@.disabled]="true" #outputTableGroup>
     <mat-tab *ngFor="let item of ps.outputTables" label="{{item.table}}">
         <ng-template mat-tab-label>
             <div (contextmenu)="onContextMenu($event, item)">{{item.table}}</div>
         </ng-template>
-        <div style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
+        <!--<div style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
         white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">
-            {{getItemOutput(item)}}</div>
+            {{getItemOutput(item)}}</div>-->
+        <cdk-virtual-scroll-viewport itemSize="10" minBufferPx="600" maxBufferPx="600" style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
+        white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">
+            <div *cdkVirtualFor="let item of item.output.data">{{item}}</div>
+        </cdk-virtual-scroll-viewport>
     </mat-tab>
 
 </mat-tab-group>
@@ -14,7 +18,7 @@
 </div>
 <mat-menu #contextMenu="matMenu">
     <ng-template matMenuContent let-name="item">
-        <button mat-menu-item (click)="onContextMenuAction1(item)">Close</button>
+        <button mat-menu-item (click)="onContextMenuAction1()">Close</button>
     </ng-template>
 </mat-menu>
 <!--<p-tabView>

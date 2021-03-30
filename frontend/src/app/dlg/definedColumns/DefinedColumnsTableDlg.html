@@ -1,7 +1,6 @@
 <p-dialog header="{{title}}" [(visible)]="service.display" [modal]="true" [responsive]="true" (onHide)="onHide()"
 [style]="{width: '800px', minWidth: '400px', maxHeight: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
     <MessageDlg></MessageDlg>
-
     <button mat-raised-button (click)="addRow()">Add</button> &nbsp;
     <button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;
 
@@ -27,365 +26,41 @@
             </mat-cell>
             </ng-container>
 
-            <ng-container matColumnDef="SpeciesCategory">
-                <mat-header-cell *matHeaderCellDef> SpeciesCategory </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="possibleValues('SpeciesCategory') != null">
-                        <mat-form-field floatLabel="never">
-                            <mat-select placeholder = ""  [(ngModel)] = "element.SpeciesCategory" name = "element.SpeciesCategory">
-                                <mat-option *ngFor = "let oldName of possibleValues('SpeciesCategory')" [value] = "oldName">
-                                {{oldName}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="possibleValues('SpeciesCategory') == null">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" [value]="element.SpeciesCategory" [(ngModel)]="element.SpeciesCategory">
-                        </mat-form-field>
-                    </ng-container> 
-                </mat-cell>
+            <ng-container *ngFor="let column of displayedColumns">
+                <ng-container *ngIf="column != 'select'">
+                    <ng-container [matColumnDef]="column">
+                        <mat-header-cell *matHeaderCellDef> {{column}} </mat-header-cell>
+                        <mat-cell *matCellDef="let element">
+                            <ng-container *ngIf="possibleValues(column) != null">
+                                <mat-form-field floatLabel="never">
+                                    <mat-select placeholder = ""  [(ngModel)] = "element.getColumn(column).value" name = "element.getColumn(column).value">
+                                        <mat-option *ngFor = "let oldName of possibleValues(column)" [value] = "oldName">
+                                        {{oldName}}
+                                        </mat-option> 
+                                    </mat-select>
+                                </mat-form-field>
+                            </ng-container>
+                            <ng-container *ngIf="possibleValues(column) == null">
+                                <ng-container *ngIf="getType(column) == 'double' || getType(column) == 'numeric'">
+                                    <mat-form-field floatLabel="never">
+                                        <input matInput placeholder="" type="number" step="0.01" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value">
+                                    </mat-form-field>
+                                </ng-container>
+                                <ng-container *ngIf="getType(column) == 'integer'">
+                                    <mat-form-field floatLabel="never">
+                                        <input matInput placeholder="" type="number" step="1" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value">
+                                    </mat-form-field>
+                                </ng-container>
+                                <ng-container *ngIf="getType(column) == 'character'">
+                                    <mat-form-field floatLabel="never">
+                                        <input matInput placeholder="" type="text" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value">
+                                    </mat-form-field>
+                                </ng-container>                                    
+                            </ng-container> 
+                        </mat-cell>
+                    </ng-container>                        
+                </ng-container>                
             </ng-container>
-
-            <!--<ng-container matColumnDef="NewSpeciesCategory">
-                <mat-header-cell *matHeaderCellDef> NewSpeciesCategory </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.NewSpeciesCategory" [(ngModel)]="element.NewSpeciesCategory">
-                    </mat-form-field>
-                </mat-cell>
-            </ng-container>-->  
-            
-            <ng-container matColumnDef="NewValue">
-                <mat-header-cell *matHeaderCellDef> NewValue </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                <ng-container *ngIf="possibleValues('NewValue') != null">
-                    <mat-form-field floatLabel="never">
-                        <mat-select placeholder = ""  [(ngModel)] = "element.NewValue" name = "element.NewValue">
-                            <mat-option *ngFor = "let oldName of possibleValues('NewValue')" [value] = "oldName">
-                               {{oldName}}
-                            </mat-option>
-                         </mat-select>
-                    </mat-form-field>                
-                </ng-container>
-                <ng-container *ngIf="possibleValues('NewValue') == null">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.NewValue" [(ngModel)]="element.NewValue">
-                    </mat-form-field>                 
-                </ng-container>
-                </mat-cell>
-            </ng-container>  
-
-            <ng-container matColumnDef="TableName">
-                <mat-header-cell *matHeaderCellDef> TableName </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                <ng-container *ngIf="possibleValues('TableName') != null">
-                    <mat-form-field floatLabel="never">
-                        <mat-select placeholder = ""  [(ngModel)] = "element.TableName" name = "element.TableName">
-                            <mat-option *ngFor = "let oldName of possibleValues('TableName')" [value] = "oldName">
-                               {{oldName}}
-                            </mat-option>
-                         </mat-select>
-                    </mat-form-field>                
-                </ng-container>
-                <ng-container *ngIf="possibleValues('TableName') == null">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.TableName" [(ngModel)]="element.TableName">
-                    </mat-form-field>                 
-                </ng-container>
-                </mat-cell>
-            </ng-container>
-            
-            <ng-container matColumnDef="VariableName">
-                <mat-header-cell *matHeaderCellDef> VariableName </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                <ng-container *ngIf="possibleValues('VariableName') != null">
-                    <mat-form-field floatLabel="never">
-                        <mat-select placeholder = ""  [(ngModel)] = "element.VariableName" name = "element.VariableName">
-                            <mat-option *ngFor = "let oldName of possibleValues('VariableName')" [value] = "oldName">
-                               {{oldName}}
-                            </mat-option>
-                         </mat-select>
-                    </mat-form-field>                
-                </ng-container>
-                <ng-container *ngIf="possibleValues('VariableName') == null">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.VariableName" [(ngModel)]="element.VariableName">
-                    </mat-form-field>                 
-                </ng-container>
-                </mat-cell>
-            </ng-container>
-            
-            
-            <ng-container matColumnDef="Value">
-                <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                <ng-container *ngIf="possibleValues('Value') != null">
-                    <mat-form-field floatLabel="never">
-                        <mat-select placeholder = ""  [(ngModel)] = "element.Value" name = "element.Value">
-                            <mat-option *ngFor = "let oldName of possibleValues('Value')" [value] = "oldName">
-                               {{oldName}}
-                            </mat-option>
-                         </mat-select>
-                    </mat-form-field>                
-                </ng-container>
-                <ng-container *ngIf="possibleValues('Value') == null">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.Value" [(ngModel)]="element.Value">
-                    </mat-form-field>                 
-                </ng-container>
-                </mat-cell>
-            </ng-container>
-
-            
-            <!--<ng-container matColumnDef="NewAcousticCategory">
-                <mat-header-cell *matHeaderCellDef> NewAcousticCategory </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <mat-form-field floatLabel="never">
-                        <input matInput placeholder="" [value]="element.NewAcousticCategory" [(ngModel)]="element.NewAcousticCategory">
-                    </mat-form-field>
-                </mat-cell>
-            </ng-container>-->
-
-            <ng-container matColumnDef="Alpha">
-                <mat-header-cell *matHeaderCellDef> Alpha </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('Alpha') == 'double' || getType('Alpha') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.Alpha" [(ngModel)]="element.Alpha">
-                        </mat-form-field>                
-                    </ng-container>
-                    <ng-container *ngIf="getType('Alpha') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.Alpha" [(ngModel)]="element.Alpha">
-                        </mat-form-field>            
-                    </ng-container>
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="Beta">
-                <mat-header-cell *matHeaderCellDef> Beta </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('Beta') == 'double' || getType('Beta') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.Beta" [(ngModel)]="element.Beta">
-                        </mat-form-field>                
-                    </ng-container>
-                    <ng-container *ngIf="getType('Beta') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.Beta" [(ngModel)]="element.Beta">
-                        </mat-form-field>            
-                    </ng-container>
-                </mat-cell>
-            </ng-container>     
-            
-            <ng-container matColumnDef="LMin">
-                <mat-header-cell *matHeaderCellDef> LMin </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('LMin') == 'double' || getType('LMin') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.LMin" [(ngModel)]="element.LMin">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('LMin') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.LMin" [(ngModel)]="element.LMin">
-                        </mat-form-field>            
-                    </ng-container>                    
-                </mat-cell>
-            </ng-container>  
-            
-            <ng-container matColumnDef="LMax">
-                <mat-header-cell *matHeaderCellDef> LMax </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('LMax') == 'double' || getType('LMax') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.LMax" [(ngModel)]="element.LMax">
-                        </mat-form-field>                
-                    </ng-container>
-                    <ng-container *ngIf="getType('LMax') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.LMax" [(ngModel)]="element.LMax">
-                        </mat-form-field>            
-                    </ng-container>                    
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="m">
-                <mat-header-cell *matHeaderCellDef> m </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('m') == 'double' || getType('m') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.m" [(ngModel)]="element.m">
-                        </mat-form-field>                
-                    </ng-container>
-                    <ng-container *ngIf="getType('m') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.m" [(ngModel)]="element.m">
-                        </mat-form-field>            
-                    </ng-container>                    
-                </mat-cell>
-            </ng-container>     
-            
-            <ng-container matColumnDef="a">
-                <mat-header-cell *matHeaderCellDef> a </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('a') == 'double' || getType('a') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.a" [(ngModel)]="element.a">
-                        </mat-form-field>                
-                    </ng-container>
-                    <ng-container *ngIf="getType('a') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.a" [(ngModel)]="element.a">
-                        </mat-form-field>            
-                    </ng-container>                    
-                </mat-cell>
-            </ng-container>  
-                        
-            <ng-container matColumnDef="d">
-                <mat-header-cell *matHeaderCellDef> d </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('d') == 'double' || getType('d') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.d" [(ngModel)]="element.d">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('d') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.d" [(ngModel)]="element.d">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="MinimumNumberOfStations">
-                <mat-header-cell *matHeaderCellDef> MinimumNumberOfStations </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('MinimumNumberOfStations') == 'double' || getType('MinimumNumberOfStations') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.MinimumNumberOfStations" [(ngModel)]="element.MinimumNumberOfStations">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('MinimumNumberOfStations') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.MinimumNumberOfStations" [(ngModel)]="element.MinimumNumberOfStations">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="DistanceNauticalMiles">
-                <mat-header-cell *matHeaderCellDef> DistanceNauticalMiles </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('DistanceNauticalMiles') == 'double' || getType('DistanceNauticalMiles') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.DistanceNauticalMiles" [(ngModel)]="element.DistanceNauticalMiles">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('DistanceNauticalMiles') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.DistanceNauticalMiles" [(ngModel)]="element.DistanceNauticalMiles">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="TimeHours">
-                <mat-header-cell *matHeaderCellDef> - </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('TimeHours') == 'double' || getType('TimeHours') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.TimeHours" [(ngModel)]="element.TimeHours">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('TimeHours') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.TimeHours" [(ngModel)]="element.TimeHours">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="BottomDepthMeters">
-                <mat-header-cell *matHeaderCellDef> BottomDepthMeters </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('BottomDepthMeters') == 'double' || getType('BottomDepthMeters') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.BottomDepthMeters" [(ngModel)]="element.BottomDepthMeters">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('BottomDepthMeters') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.BottomDepthMeters" [(ngModel)]="element.BottomDepthMeters">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="LatitudeDecimalDegrees">
-                <mat-header-cell *matHeaderCellDef> LatitudeDecimalDegrees </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('LatitudeDecimalDegrees') == 'double' || getType('LatitudeDecimalDegrees') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.LatitudeDecimalDegrees" [(ngModel)]="element.LatitudeDecimalDegrees">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('LatitudeDecimalDegrees') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.LatitudeDecimalDegrees" [(ngModel)]="element.LatitudeDecimalDegrees">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="LongitudeDecimalDegrees">
-                <mat-header-cell *matHeaderCellDef> LongitudeDecimalDegrees </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('LongitudeDecimalDegrees') == 'double' || getType('LongitudeDecimalDegrees') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.LongitudeDecimalDegrees" [(ngModel)]="element.LongitudeDecimalDegrees">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('LongitudeDecimalDegrees') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.LongitudeDecimalDegrees" [(ngModel)]="element.LongitudeDecimalDegrees">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>
-            
-            <ng-container matColumnDef="AcousticCategory">
-                <mat-header-cell *matHeaderCellDef> AcousticCategory </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('AcousticCategory') == 'double' || getType('AcousticCategory') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.AcousticCategory" [(ngModel)]="element.AcousticCategory">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('AcousticCategory') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.AcousticCategory" [(ngModel)]="element.AcousticCategory">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>
-            
-            <ng-container matColumnDef="Frequency">
-                <mat-header-cell *matHeaderCellDef> Frequency </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ng-container *ngIf="getType('Frequency') == 'double' || getType('Frequency') == 'numeric'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="any" [value]="element.Frequency" [(ngModel)]="element.Frequency">
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="getType('Frequency') == 'integer'">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="number" step="1" [value]="element.Frequency" [(ngModel)]="element.Frequency">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>            
 
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
@@ -393,6 +68,7 @@
     </div>
 
     <p-footer>
+        <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening"></mat-spinner> <!--class="spinner"--> 
         <button type="button" pButton icon="pi pi-close" (click)="cancel()" label="Cancel"
             class="ui-button-secondary"></button>
         <button type="button" pButton  (click)="apply()" label="Save"></button>

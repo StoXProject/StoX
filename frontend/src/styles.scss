@@ -76,7 +76,9 @@ $nodata: #acacac;
   white-space: nowrap;
 }
 
-.ui-listbox-item:focus, .ui-menuitem-link, .ui-treenode-content:focus {  
+.ui-listbox-item:focus,
+.ui-menuitem-link,
+.ui-treenode-content:focus {
   outline: none !important; // prevent webkit :focus outline.
   box-shadow: none !important; // add by primeng
 }
@@ -121,6 +123,7 @@ $nodata: #acacac;
           color: black !important;
           font-weight: 600;
           font-size: 0.75rem;
+          white-space: nowrap;
         }
       }
     }
@@ -150,6 +153,15 @@ $nodata: #acacac;
     font-size: 0.75rem;
   }
 }
+.ui-menu {
+  width: unset;
+  .ui-menuitem-link {
+    padding: 2px 2px 2px 2px !important;
+  }
+  .ui-menuitem-text {
+    white-space: nowrap;
+  }
+}
 //.ui-menuitem-link {
 //white-space: nowrap !important;
 //display: inline-block !important;
@@ -175,12 +187,17 @@ $nodata: #acacac;
   white-space: nowrap;
   overflow: hidden;
   button {
+    border: 1px solid darken(#f0f0f0, 20%);
     vertical-align: middle !important;
     display: inline !important;
     float: none;
     margin-right: 2px;
     padding: 1px 1px;
   }
+}
+button:focus,
+input:focus {
+  outline: none !important;
 }
 .ui-tabview {
   padding: 0 !important;
@@ -357,6 +374,11 @@ $nodata: #acacac;
   top: 20%;
   left: 20%;
 }
+.globeicon:after {
+  @include icon_content("\f0ac", 0.9rem, rgb(21, 40, 216));
+  top: 10%;
+  left: 50%;
+}
 
 .runicon:before {
   @include icon_content("\f111", 1rem, rgb(33, 122, 196));
@@ -394,25 +416,21 @@ $nodata: #acacac;
 .emptyicon:before {
   @include icon_content("\f0c8", 1rem, rgb(33, 122, 196, 0));
 }
-.processmodelerroricon:after {
-  @include icon_content("\f071", 0.4rem, rgba(209, 53, 53));
-  top: 25%;
-}
 .runstatusokicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(107, 195, 195), true);
-  top: 68%;
+  @include icon_content("\f0c8", 0.4rem, rgb(63, 72, 204), true);
+  top: 72%;
 }
 .runstatusfailedicon:after {
   @include icon_content("\f0c8", 0.4rem, rgb(247, 128, 59), true);
-  top: 68%;
+  top: 72%;
 }
 .runstatusmodifiedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(180, 177, 175), true);
-  top: 68%;
+  @include icon_content("\f0c8", 0.4rem, rgb(208, 208, 211), true);
+  top: 72%;
 }
 .functioninputerroricon:after {
   @include icon_content("\f0c8", 0.4rem, rgba(209, 53, 53), true);
-  top: 8%;
+  top: 28%;
 }
 .editicon:before {
   @include icon_content("\f040", 0.7rem, rgb(19, 40, 58));
@@ -490,7 +508,9 @@ $nodata: #acacac;
 .mat-tab-header-pagination {
   background-color: lighten(#f0f0f0, 4%) !important;
 }
-
+.mat-input-element {
+  border: none !important;
+}
 .mat-tab-links {
   width: 100%;
 }
@@ -534,6 +554,11 @@ $nodata: #acacac;
   overflow: hidden !important;
 }
 
+.mat-button {
+  font-size: 12px !important;
+  padding: 0px 6px !important;
+}
+
 .mat-button-base {
   line-height: 1.3rem !important;
   min-width: 0px !important;
@@ -557,8 +582,15 @@ $nodata: #acacac;
   z-index: 20000 !important;
 }
 .mat-option {
-  line-height: 1.2rem !important;
-  height: 1.3rem !important;
+  line-height: 18px !important;
+  height: 18px !important;
+}
+
+mat-option.mat-option {
+  position: relative;
+  height: 18px !important;
+  line-height: 18px !important;
+  max-height: 18px !important;
 }
 
 .ellipsiscolumn {
@@ -567,11 +599,22 @@ $nodata: #acacac;
   width: 100%;
 }
 
-.mat-menu-item {
+.mat-menu-item,
+.mat-list-item {
   line-height: 1.2rem !important;
   height: 1.2rem !important;
-  padding:0 !important;
+  padding: 0 !important;
+  font-size: 14px !important; 
 }
+
+.mat-list-item-content, .mat-list-base {
+  padding: 1px !important; 
+}
+.mat-list-base {
+  padding: 2px !important;
+}
+
+
 .mat-menu-item:focus {
   outline: none;
 }
@@ -582,4 +625,19 @@ $nodata: #acacac;
 
 .mat-menu-content {
   padding: 0.2rem !important;
+}
+
+.helpcontent h2 {
+  font-size: 1.5rem !important;
+}
+.helpcontent h3 {
+  font-size: 1.25rem !important;
+}
+
+input.mat-input-element {
+  margin-top: auto !important;
+}
+
+.mat-tab-label-active {
+  background-color: #ebf4fc !important;
 }

@@ -1,10 +1,10 @@
 import { MatTableDataSource } from '@angular/material/table';
-import { DefinedColumns, ColumnPossibleValues, ColumnType } from '../../data/DefinedColumns';
+import { DefinedColumns, ColumnPossibleValues, ColumnType, ColumnValue } from '../../data/DefinedColumns';
 import { SelectionModel } from '@angular/cdk/collections';
 import { DefinedColumnsService } from './DefinedColumnsService';
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from '../../message/MessageService';
-import { ProjectService } from '../../service/project.service';
+import { ProjectService } from '../../service/project.service'; 
 import { DataService } from '../../service/data.service';
 import { ProcessProperties } from '../../data/ProcessProperties';
 
@@ -15,7 +15,6 @@ import { ProcessProperties } from '../../data/ProcessProperties';
 })
 export class DefinedColumnsTableDlg implements OnInit {
 
-    // displayedColumns = ['select', 'NewSpeciesCategory', 'NewAcousticCategory', 'SpeciesCategory', 'Alpha', 'Beta', 'LMin', 'LMax', 'AcousticCategory', 'm', 'a', 'd'];
     title: string = "";
     displayedColumns = ['select'];
     columnPossibleValues: ColumnPossibleValues[] = [];
@@ -52,11 +51,25 @@ export class DefinedColumnsTableDlg implements OnInit {
     async ngOnInit() {
     }
 
+    init() {
+        this.title = "";
+        this.displayedColumns = ['select'];
+        this.columnPossibleValues = [];
+        this.columnTypes = [];  
+        this.service.definedColumnsData  = [];
+        this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);              
+    }
+
     addRow() {
-        let obj = <DefinedColumns>{};
+        // let obj = <DefinedColumns>{};
+        let obj = new DefinedColumns();
         this.displayedColumns.forEach(key => {
             if (key != 'select') {
-                obj[key] = null;
+                // obj[key] = null;
+                let cv = new ColumnValue();
+                cv.columnName = key;
+                cv.value = null;
+                obj.columnValues.push(cv);
             }
         });
         this.service.definedColumnsData.push(obj);
@@ -68,7 +81,7 @@ export class DefinedColumnsTableDlg implements OnInit {
     removeSelectedRows() {
         this.selection.selected.forEach(item => {
             let index: number = this.service.definedColumnsData.findIndex(d => d === item);
-            console.log(this.service.definedColumnsData.findIndex(d => d === item));
+            // console.log(this.service.definedColumnsData.findIndex(d => d === item));
             this.service.definedColumnsData.splice(index, 1);
             this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
         });
@@ -159,17 +172,15 @@ export class DefinedColumnsTableDlg implements OnInit {
         // check if there is empty field in dialog
         for (let i = 0; i < this.service.definedColumnsData.length; i++) {
             let blankFound = false;
-            this.displayedColumns.forEach(key => {
-                if (key != 'select') {
-                    if (this.service.definedColumnsData[i][key] == null) {
-                        console.log("Field " + key + " is null in row index : " + i);
-                        // show the message that one or more fields are empty
-                        this.msgService.setMessage("One or more fields are empty!");
-                        this.msgService.showMessage();
-                        blankFound = true;
-                    }
+        
+            for(let j=0; j<this.service.definedColumnsData[i].columnValues.length; j++) {
+                if(this.service.definedColumnsData[i].columnValues[j].value == null) {
+                    console.log("Field " + this.service.definedColumnsData[i].columnValues[j].columnName + " is null in row index : " + i);
+                    this.msgService.setMessage("One or more fields are empty!");
+                    this.msgService.showMessage();
+                    blankFound = true;
                 }
-            });
+            }
 
             if (blankFound) {
                 return;
@@ -194,15 +205,7 @@ export class DefinedColumnsTableDlg implements OnInit {
                         this.service.currentPropertyItem.name, this.service.currentPropertyItem.value,
                         this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
                         .toPromise().then((s: ProcessProperties) => {
-                            this.ps.propertyCategories = s.propertySheet;
-                            // TODO: introduce property service with onChanged
-                            this.ps.processes = s.processTable
-                            this.ps.activeProcessId = s.activeProcess.processID;
-                            this.ps.selectedProject.saved = s.saved;
-                            if (s.updateHelp) {
-                                this.ps.updateHelp();
-                            }
-
+                            this.ps.handleAPI(s);
                         });
                 } catch (error) {
                     console.log(error.error);
@@ -224,5 +227,6 @@ export class DefinedColumnsTableDlg implements OnInit {
     onHide() {
         this.selection.clear();
         this.service.display = false;
+        this.init();
     }
 }

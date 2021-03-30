@@ -5,17 +5,19 @@ import OlXYZ from 'ol/source/XYZ';
 import Source from 'ol/source/Vector';
 import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
+//import Extent from 'ol/extent';
 import Overlay from 'ol/Overlay';
 import OverlayPositioning from 'ol/OverlayPositioning';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
+import { Geometry } from 'ol/geom';
 //import Projection from 'ol/proj';
 import TopoJSON from 'ol/format/TopoJSON';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Vector, Layer } from 'ol/layer';
 import { DoCheck } from '@angular/core';
 
-import { fromLonLat, transform } from 'ol/proj';
+import { fromLonLat, transform, transformExtent } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import * as proj4x from 'proj4';
 
@@ -42,8 +44,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
 import { EDSU_PSU, BioticAssignment } from '../data/processdata';
-import { ProcessResult } from '../data/runresult';
+import { ActiveProcessResult } from '../data/runresult';
 import { NamedStringTable, NamedStringIndex } from '../data/types';
+import { applyTransform, Extent, getCenter } from 'ol/extent';
+const proj4 = (proj4x as any).default;
+import { get as getProjection, getTransform } from 'ol/proj';
+import { Coordinate } from 'ol/coordinate';
+import { SubjectAction } from '../data/subjectaction';
 
 @Component({
   selector: 'app-map',
@@ -57,7 +64,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   // source: OlXYZ;
   // toposource: VectorSource;
   // layer: OlTileLayer;
-  vector: Vector;
+  coastLine: Vector;
+  grid: Vector;
   view: OlView;
   /*stationLayer: Layer = null;
   edsuPointLayer: Layer = null;
@@ -69,6 +77,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   stratumDraw: Draw;
   overlay: Overlay;
   private m_Tool: string = "freemove";
+  proj = 'STOX:001';//'ESRI:54003'//'EPSG:3857';//'ESRI:54003';//'EPSG:3857';//'EPSG:4326';//'ESRI:54003';//'EPSG:9820';
+
   constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
   /*@HostListener('window:keyup', ['$event'])
@@ -86,11 +96,25 @@ export class MapComponent implements OnInit, AfterViewInit {
   tools = [
     { tool: "freemove", iclass: "freemoveicon" },
     { tool: "stratum-edit", iclass: "editicon" },
-    { tool: "stratum-add", iclass: "addicon" },
-    { tool: "stratum-delete", iclass: "deleteicon" }/*,
-    { tool: "stratum-delete", iclass: "editicon" }*/
+    { tool: "stratum-add", iclass: "addicon" }/*,
+    { tool: "stratum-delete", iclass: "deleteicon" }*/
 
   ];
+  projectionsMenu = [
+    {
+      label: 'STOX:001: Lambert Azimuthal Equal Area - North Sea', command: e => {
+
+        this.setProjectionProj4('STOX:001', 3);
+      }
+    },
+    {
+      label: 'ESRI:102020: Lambert Azimuthal Equal Area - South pole', command: e => {
+
+        this.setProjectionProj4('ESRI:102020', 2);
+      }
+    }
+  ];
+
   public getToolEnabled(tool: string): boolean {
     switch (tool) {
       case "freemove": return true;
@@ -140,6 +164,12 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
+  getNumLayersWithLayerType(lt): number {
+    return []
+      .concat(...Array.from(this.layerMap.values())) // flatting by concatinated spread elements
+      .filter(l => l.get("layerType") == lt).length; // filter and count up
+  }
+
   addLayerToProcess(pid: string, l: Layer) {
     let la = this.layerMap.get(pid);
     if (la == null) {
@@ -160,21 +190,69 @@ export class MapComponent implements OnInit, AfterViewInit {
       }
     });
     idsToRemove.forEach(id => {
+      this.removeLayersByProcessId(id);
+    });
+  }
+
+  removeLayersByProcessId(id : string) {
+    if (id != null) {
       let la = this.layerMap.get(id);
       if (la != null) {
         la.forEach(l => this.map.removeLayer(l));
       }
-      this.layerMap.set(id, null);
-    });
+      this.layerMap.delete(id);
+    }
   }
+
+
+  setProjectionProj4(newProjCode, zoom) {
+    var newProj = getProjection(newProjCode);
+    var newProjExtent = newProj.getExtent();
+    //  console.log(newProjExtent.toString());
+    var newView = new OlView({
+      projection: newProj,
+      center: getCenter(newProjExtent),//fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
+      zoom: zoom//,
+      //extent: newProjExtent || undefined
+    });
+    this.map.setView(newView);
+    //this.map.getLayers().forEach(l=>l.)
+    //this.map.getLayers().forEach(l=>this.map.removeLayer(l));
+    this.map.removeLayer(this.grid);
+    // this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
+    this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
+      .forEach(f => f.getGeometry().transform(this.proj, newProjCode)));
+
+    this.proj = newProjCode;
+    this.grid = MapSetup.getGridLayer(this.proj);
+    this.map.addLayer(this.grid);
+
+    //this.grid.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
+    //this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
+    //this.grid = MapSetup.getGridLayer(this.proj);
+    //this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
+    //  .forEach(f => f.getGeometry().transform(this.proj, newProjCode)));
+
+    // Example how to prevent double occurrence of map by limiting layer extent
+    if (newProj == getProjection('EPSG:3857')) {
+      // this.map.getLayers().forEach(l=> l.setExtent([-1057216, 6405988, 404315, 8759696]));
+    } else {
+      //this.map.getLayers().forEach(l=> l.setExtent(undefined));
+    }
+  }
+
 
   async ngOnInit() {
 
-    const proj4 = (proj4x as any).default;
+
     // Two example-projections (2nd is included anyway)
 
     // Lambert Azimuthal Equal Area
-    proj4.defs('EPSG:9820', '+proj=laea +lat_0=60 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+    proj4.defs('STOX:001', '+proj=laea +lat_0=60 +lon_0=10 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+    proj4.defs('ESRI:102020', '+proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ');
+
+
+    proj4.defs('STOX:003', '+proj=laea +lat_0=75 +lon_0=30 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
     // World Miller Cylindrical
     proj4.defs('ESRI:54003', '+proj=mill +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R_A +datum=WGS84 +units=m +no_defs');
     // Sea Ice Polar Stereographic
@@ -196,11 +274,15 @@ export class MapComponent implements OnInit, AfterViewInit {
     */
     //    +proj=mill +lon_0=90w
     register(proj4);
+    var stox001 = getProjection('STOX:001');
+    stox001.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'STOX:001'));//[-1040784.5135, -2577524.9210, 9668901.4484, 4785105.1096]); 
+    //stox001.setExtent([1267000, 1826000, 5261000, 6575000]);  
+    var stox002 = getProjection('ESRI:102020');
+    stox002.setExtent(transformExtent([-100, -90, 100, 40], 'EPSG:4326', 'ESRI:102020'));//[-1040784.5135, -2577524.9210, 9668901.4484, 4785105.1096]); 
     // var test_coordinate = transform([-79.4460, 37.7890], 'EPSG:4326', 'EPSG:2284');
     //console.log(test_coordinate);
-    var proj = 'EPSG:9820';//'ESRI:54003'//'EPSG:3857';//'ESRI:54003';//'EPSG:3857';//'EPSG:4326';//'ESRI:54003';//'EPSG:9820';
 
-    this.vector = new Vector({
+    this.coastLine = new Vector({
       source: new Source({
         //url: 'assets/landflate_verden.json',
         url: 'assets/landflate_verden.json',
@@ -212,7 +294,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         }),
         overlaps: false,
       }),
-      style: MapSetup.getMapStyle()
+      style: MapSetup.getMapStyle(),
+      zIndex: 11
     });
 
 
@@ -220,72 +303,93 @@ export class MapComponent implements OnInit, AfterViewInit {
       source: this.source
     });*/
 
-    this.view = new OlView({
-      //center: fromLonLat([170, 10], proj),
-      center: fromLonLat([1, 68], proj),
-      projection: proj,
-      zoom: 4.9,
-    });
+    /* this.view = new OlView({
+       //center: fromLonLat([170, 10], proj),
+       center: fromLonLat([1, 68], this.proj),
+       projection: this.proj,
+       zoom: 2,
+     });*/
 
     this.map = new OlMap({
       target: 'map',
-      layers: [MapSetup.getGridLayer(proj), this.vector],
-      view: this.view,
+      //layers: [this.grid, this.coastLine],
+      //  view: this.view,
       controls: [MapSetup.getMousePositionControl()]
     });
-    this.stratumSelect = MapSetup.createStratumSelectInteraction();
-    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, proj);
+    this.grid = MapSetup.getGridLayer(this.proj);
+    this.map.addLayer(this.grid);
+    this.map.addLayer(this.coastLine);
 
+    this.setProjectionProj4("STOX:001", 2);
+    this.stratumSelect = MapSetup.createStratumSelectInteraction();
+    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this.proj);
+
+    this.ps.processSubject.subscribe({
+      next: (action: SubjectAction) => {
+        switch (action.action) {
+          case "remove": {
+            console.log("remove process - handle in map, id: " + action.data)
+            this.removeLayersByProcessId(action.data);
+            break;
+          }
+          case "activate": {
+            // TODO: implement interactive mode handling and remove iamodesubject
+            break;
+          }
+        }
+      }
+    })
     this.ps.iaModeSubject.subscribe(iaMode => {
-      this.handleIaMode(iaMode, proj);
+      this.handleIaMode(iaMode, this.proj);
     });
 
-    this.pds.acousticPSUSubject.subscribe(async evt => {
+    this.pds.processDataSubject.subscribe(async evt => {
       switch (evt) {
-        case "data": {
+        case "acousticPSU": {
           this.map.getLayers().getArray()
             .filter(l => l.get("layerType") == "EDSU")
             .map(l => <VectorSource>(<Layer>l).getSource())
             .forEach(s => s.getFeatures()
               .forEach(f => {
                 let edsu: string = f.get("EDSU");
-                let edsupsu: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu);
+                let edsupsu: EDSU_PSU = this.pds.acousticPSU != null && this.pds.acousticPSU.EDSU_PSU != null ? this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu) : null;
                 // Connect EDSU_PSU to feature
-                if (edsupsu == null) {
+                if (this.pds.acousticPSU != null && this.pds.acousticPSU.EDSU_PSU != null && edsupsu == null) {
                   console.log("edsu " + edsu + " not mapped");
                 }
                 f.set("edsupsu", edsupsu);
+                // Get default any selection (not focused by user):
                 MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
               })
             )
           break;
         }
-        case "selectedpsu": {
-          this.map.getLayers().getArray()
-            .filter(l => l.get("layerType") == "EDSU")
-            .map(l => <VectorSource>(<Layer>l).getSource())
-            .forEach(s => s.getFeatures()
-              .forEach(f => {
-                // selected PSU.
-                MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-              }))
+        case "bioticAssignmentData": {
+          this.updateStationSelection();
+          break;
+        }
+        case "selectedPSU": {
+          switch (this.ps.iaMode) {
+            case "bioticAssignment": {
+              this.updateStationSelection();
+              // drop to EDSU selection to get EDSU focus change
+            }
+            case "acousticPSU": {
+              this.map.getLayers().getArray()
+                .filter(l => l.get("layerType") == "EDSU")
+                .map(l => <VectorSource>(<Layer>l).getSource())
+                .forEach(s => s.getFeatures()
+                  .forEach(f => {
+                    // selected PSU.
+                    MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+                  }))
+              break;
+            }
+          }
           break;
         }
       }
     });
-    /*this.pds.selectedPSUSubject.subscribe(async psu => {
-      if (this.pds.selectedPSU != null) {
-        let psuAssignments : BioticAssignment[] = this.pds.bioticAssignmentData.BioticAssignment.filter(ba=>ba.PSU == this.pds.selectedPSU);
-        this.map.getLayers().getArray()
-        .filter(l => l.get("layerType") == "station")
-        .map(l => <VectorSource>(<Layer>l).getSource())
-        .forEach(s => s.getFeatures()
-          .forEach(f => {
-            // selected PSU.
-            MapSetup.updateStationSelection(f, psuAssignments);
-          }))
-      }
-    });*/
 
     //var selected = [];
 
@@ -295,10 +399,10 @@ export class MapComponent implements OnInit, AfterViewInit {
         if (l == null || f == null) {
           return;
         }
-        switch (l.get("layerType")) {
-          case "EDSU": {
-            farr.push(<Feature>f);
-          }
+        let layerType: string = l.get("layerType");
+        if (this.ps.iaMode == "acousticPSU" && layerType == "EDSU" ||
+          this.ps.iaMode == "bioticAssignment" && layerType == "station") {
+          farr.push(<Feature>f);
         }
       });
       // handle the top feature only.
@@ -308,52 +412,60 @@ export class MapComponent implements OnInit, AfterViewInit {
           let l: Layer = <Layer>f.get("layer");
           console.log("Z index: " + l.getZIndex());
           let fe: Feature = (<Feature>f);
-          if (this.ps.iaMode == "acousticPSU" && this.pds.selectedPSU != null) {
-            // Controlling focus.
-            //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
-            let prevClickIndex = l.get("lastClickedIndex");
-            let clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
-            l.set("lastClickedIndex", clickedIndex);
-            if (!shiftKeyOnly(e) || prevClickIndex == null) {
-              prevClickIndex = clickedIndex;
-            }
-            let fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
-            let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
-            if (edsuPsu1 == null) {
-              console.log(fi1.get("EDSU") + " is missing edsu  for " + fi1.get("EDSU") + " layer " + l.get("name"));
-            }
-            let psuToUse: string = edsuPsu1.PSU;
-            if (prevClickIndex == clickedIndex) {
-              psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
-            }
-            let iFirst = Math.min(prevClickIndex, clickedIndex);
-            let iLast = Math.max(prevClickIndex, clickedIndex);
-            let changedEDSUs: string[] = [];
-            for (let idx: number = iFirst; idx <= iLast; idx++) {
-              let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
-              let edsuPsu: EDSU_PSU = fi.get("edsupsu");
-              if (edsuPsu != null) {
-                if (edsuPsu.PSU != psuToUse) {
-                  changedEDSUs.push(edsuPsu.EDSU);
-                  edsuPsu.PSU = psuToUse;
-                  MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
-                }
-                //fi.changed();
-              }
-            }
-            if (changedEDSUs.length > 0) {
-              let res: ProcessResult = psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
-                this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
-                await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
-                  this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise();
-              this.ps.selectedProject.saved = res.saved;
-              /*if (res != null && res.activeProcessID != null) {
-                this.ps.activeProcessId = res.activeProcessID; // reset active process id
-              }*/
-            }
-            //l.changed();
-            //(<VectorSource>l.getSource()).changed();
+          if (this.pds.selectedPSU == null) {
+            return;
           }
+          switch (this.ps.iaMode) {
+            case "acousticPSU": {
+              // Controlling focus.
+              //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
+              let prevClickIndex = l.get("lastClickedIndex"); // handle range selection with respect to last clicked index
+              let clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
+              l.set("lastClickedIndex", clickedIndex);
+              if (!shiftKeyOnly(e) || prevClickIndex == null) {
+                prevClickIndex = clickedIndex;
+              }
+              let fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
+              let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
+              if (edsuPsu1 == null) {
+                console.log(fi1.get("EDSU") + " is missing edsu  for " + fi1.get("EDSU") + " layer " + l.get("name"));
+              }
+              let psuToUse: string = edsuPsu1.PSU;
+              if (prevClickIndex == clickedIndex) {
+                psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+              }
+              let iFirst = Math.min(prevClickIndex, clickedIndex);
+              let iLast = Math.max(prevClickIndex, clickedIndex);
+              let changedEDSUs: string[] = [];
+              for (let idx: number = iFirst; idx <= iLast; idx++) {
+                let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
+                let edsuPsu: EDSU_PSU = fi.get("edsupsu");
+                if (edsuPsu != null) {
+                  if (edsuPsu.PSU != psuToUse) {
+                    changedEDSUs.push(edsuPsu.EDSU);
+                    edsuPsu.PSU = psuToUse;
+                    MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+                  }
+                  //fi.changed();
+                }
+              }
+              if (changedEDSUs.length > 0) {
+                let res: ActiveProcessResult = this.ps.handleAPI(psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
+                  this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
+                  await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
+                    this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+              }
+              //l.changed();
+              //(<VectorSource>l.getSource()).changed();
+              break;
+            }
+            case "bioticAssignment": {
+              let selected: boolean = MapSetup.isStationSelected(fe, this.pds);
+              MapSetup.selectStation(fe, this.ps, this.pds, this.dataService, !selected);
+              MapSetup.updateStationSelection(fe, this.pds);
+              break;
+            }
+          };
         });
     });
 
@@ -407,6 +519,10 @@ export class MapComponent implements OnInit, AfterViewInit {
   async handleIaMode(iaMode: string, proj) {
     let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
     switch (iaMode) {
+      case "none": {
+        this.resetLayersToProcess(this.ps.activeProcessId);
+        break;
+      }
       case "reset": {
         this.layerMap.forEach((value, key, map) => {
           value.forEach(l => this.map.removeLayer(l));
@@ -417,14 +533,16 @@ export class MapComponent implements OnInit, AfterViewInit {
       case "station": {
         this.resetLayersToProcess(this.ps.activeProcessId);
         let data: { stationPoints: string; stationInfo: NamedStringTable; haulInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();
-        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, MapSetup.getStationPointStyleCache(), false, 4, [data.stationInfo, data.haulInfo]));
-        break; 
+        let layerIdx = this.getNumLayersWithLayerType(iaMode);
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, MapSetup.getStationPointStyleCache(layerIdx), false, 4, [data.stationInfo, data.haulInfo]));
+        break;
       }
       case "EDSU": {
         this.resetLayersToProcess(this.ps.activeProcessId);
         let data: { EDSUPoints: string; EDSULines: string; EDSUInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle()], false, 2, []));
-        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(), false, 3, [data.EDSUInfo]));
+        let layerIdx = this.getNumLayersWithLayerType(iaMode);
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle(layerIdx)], false, 2, []));
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(layerIdx), false, 3, [data.EDSUInfo]));
         break;
       }
       case "stratum": {
@@ -509,6 +627,25 @@ export class MapComponent implements OnInit, AfterViewInit {
       Object.assign(res, secondaryIdx[0]);
     }
     return res;
+  }
+
+  /** Update station assignment due to psu selection or psu assignment add/remove operation
+   *  Iterate features in station layer and update the selection state based on assignments
+   *  according to biotic assignment data.
+   */
+  private updateStationSelection() {
+    let bioticAssignments: BioticAssignment[] = [];
+    if (this.ps.iaMode == "bioticAssignment" && this.pds.bioticAssignmentData != null && this.pds.selectedPSU != null) {
+      bioticAssignments = this.pds.bioticAssignmentData.BioticAssignment.filter(ba => ba.PSU == this.pds.selectedPSU);
+    }
+    this.map.getLayers().getArray()
+      .filter(l => l.get("layerType") == "station")
+      .map(l => <VectorSource>(<Layer>l).getSource())
+      .forEach(s => s.getFeatures()
+        .forEach(f => {
+          // selected PSU.
+          MapSetup.updateStationSelection(f, this.pds);
+        }))
   }
 }
 /*

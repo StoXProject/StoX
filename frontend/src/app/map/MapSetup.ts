@@ -20,21 +20,24 @@ import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
+import { ProcessDataService } from '../service/processdata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { Color } from './Color';
 import { clone } from 'ol/extent';
-import { ProcessResult } from '../data/runresult';
+import { ProcessTableResult, ActiveProcessResult } from '../data/runresult';
 import { HTMLUtil } from '../utils/htmlutil'
 import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
-import { EDSU_PSU, BioticAssignment } from './../data/processdata'
+import { EDSU_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata'
 import { NamedStringTable, NamedStringIndex } from './../data/types'
+import { asString } from 'ol/color';
+declare const Buffer;
 
 export class MapSetup {
-    public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
+    //public static DISTANCE_POINT_COLOR: string = 'rgb(248, 211, 221)';
     public static DISTANCE_ABSENT_POINT_COLOR: string = 'rgb(253, 244, 247)';
     public static DISTANCE_POINT_SELECTED_COLOR: string = 'rgb(166, 200, 176)';
-    public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
+    //public static STATION_POINT_COLOR: string = 'rgb(56, 141, 226, 0.95)';
     public static STATION_POINT_SELECTED_COLOR: string = 'rgb(238, 215, 123, 0.95)';
     public static POINT_OUTLINE_COLOR: string = 'rgb(0, 0, 0, 0.3)';
     public static BG_COLOR = 'rgb(252, 255, 198)';
@@ -118,17 +121,17 @@ export class MapSetup {
         });
     }
 
-    static getAcousticPointStyle(): Style {
-        return this.getPointStyleCircle(this.DISTANCE_POINT_COLOR, this.POINT_OUTLINE_COLOR, 6);
+   /* static getAcousticPointStyle(): Style {
+        return MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleFocused(): Style {
-        return this.getPointStyleCircle(Color.darken(this.DISTANCE_POINT_SELECTED_COLOR, 0.5), this.POINT_OUTLINE_COLOR, 6);
+        return MapSetup.getPointStyleCircle(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5), MapSetup.POINT_OUTLINE_COLOR, 6);
     }
     static getAcousticPointStyleSelected(): Style {
-        return this.getPointStyleCircle(this.DISTANCE_POINT_SELECTED_COLOR, this.POINT_OUTLINE_COLOR, 6);
-    }
+        return MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, 6);
+    }*/
     /*static getStationPointStyle(): Style {
-        return this.getPointStyleRect(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, 14);
+        return MapSetup.getPointStyleRect(MapSetup.STATION_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, 14);
     }*/
     static getStyleCacheFunction(): StyleFunction {
         // This function lets the feature determine by callback the selection of style into the stylecache.
@@ -139,30 +142,34 @@ export class MapSetup {
             return styleCache[styleSelection];
         }
     }
-    static getEDSUPointStyleCache(): Style[] {
+    static getEDSUPointStyleCache(layerIdx: number): Style[] {
         let edsuRadius: number = 6; // px
-        let pointColor: string = this.DISTANCE_POINT_COLOR;
+        let pointColor: string = MapSetup.DISTANCE_POINT_COLORS[layerIdx % MapSetup.DISTANCE_POINT_COLORS.length];
         let outlineColor: string = 'rgb(0, 0, 0, 0.1)'
-        let focusColor: string = Color.darken(this.DISTANCE_POINT_SELECTED_COLOR, 0.5)
+        let focusColor: string = Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5)
         let focusLineColor: string = Color.darken(focusColor, 0.5)
         return [
-            this.getPointStyleCircle(pointColor, outlineColor, edsuRadius), // 0: present
-            this.getPointStyleCircle(this.DISTANCE_POINT_SELECTED_COLOR, outlineColor, edsuRadius), // 1: selected
-            this.getPointStyleCircle(focusColor, outlineColor, edsuRadius), // 2: focused
-            this.getPointStyleCircle(this.DISTANCE_ABSENT_POINT_COLOR, outlineColor, edsuRadius), // 3 : absent
+            MapSetup.getPointStyleCircle(pointColor, outlineColor, edsuRadius), // 0: present
+            MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_SELECTED_COLOR, outlineColor, edsuRadius), // 1: selected
+            MapSetup.getPointStyleCircle(focusColor, outlineColor, edsuRadius), // 2: focused
+            MapSetup.getPointStyleCircle(MapSetup.DISTANCE_ABSENT_POINT_COLOR, outlineColor, edsuRadius), // 3 : absent
         ];
     }
+    static STATION_POINT_COLORS: string[] = ['rgb(92,172,238)', 'rgb(46,86,188)', 'rgb(0,0,139)', 'rgb(99,10,196)', 'rgb(199,21,133)'];
+    static DISTANCE_POINT_COLORS: string[] = ['rgb(255,192,203)', 'rgb(196,96,101)', 'rgb(139,0,0)', 'rgb(188,59,0)', 'rgb(238,118,0)'];
 
-    static getStationPointStyleCache(): Style[] {
+    static getStationPointStyleCache(layerIdx: number): Style[] {
+        let ptCol = MapSetup.STATION_POINT_COLORS[layerIdx % MapSetup.STATION_POINT_COLORS.length];
         let symSize: number = 14;
         return [
-            this.getPointStyleRect(this.STATION_POINT_COLOR, this.POINT_OUTLINE_COLOR, symSize),
-            this.getPointStyleRect(this.STATION_POINT_SELECTED_COLOR, this.POINT_OUTLINE_COLOR, symSize)
+            MapSetup.getPointStyleRect(ptCol, MapSetup.POINT_OUTLINE_COLOR, symSize),
+            MapSetup.getPointStyleRect(MapSetup.STATION_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize)
         ];
     }
 
-    static getEDSULineStyle(): Style {
-        return this.getLineStyle(Color.darken(this.DISTANCE_POINT_COLOR, 0.9), 2);
+    static getEDSULineStyle(layerIdx: number): Style {
+        let ptCol = MapSetup.DISTANCE_POINT_COLORS[layerIdx % MapSetup.DISTANCE_POINT_COLORS.length];
+        return MapSetup.getLineStyle(Color.darken(ptCol, 0.9), 2);
     }
 
     static getPolygonStyle(fillColor: string, strokeColor: string, strokeWidth: number): Style {
@@ -213,10 +220,7 @@ export class MapSetup {
                 featureProjection: 'EPSG:4326',
             })*/
             //console.log(s);
-            let res: ProcessResult = await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-            this.ps.selectedProject.saved = res.saved;
-            //ps.activeProcessId = res.activeProcessID; // reset active processid
-            console.log("res :" + res);
+            ps.handleAPI(await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
         });
         return m;
     }
@@ -227,7 +231,7 @@ export class MapSetup {
             layers: function (layer) {
                 return layer.get('layerType') == 'stratum';
             },
-            style: [this.getStratumSelectStyle(), MapSetup.getStratumNodeStyle()],
+            style: [MapSetup.getStratumSelectStyle(), MapSetup.getStratumNodeStyle()],
             multi: false
         });
     }
@@ -257,7 +261,7 @@ export class MapSetup {
                             featureProjection: proj
                         })*/
             if (typeof (strataName) == 'string') {
-                console.log("converting " + strataName);
+                console.log("Strata name " + strataName + " with hex " + MapSetup.toHex(strataName));
                 // a valid stratum name has been entered
                 //f.setId(Math.max(...source.getFeatures().map(f2 => f2.getId() != null ? +f2.getId() : 0)) + 1);
                 f.setProperties({ 'polygonName': strataName });
@@ -265,15 +269,21 @@ export class MapSetup {
                 console.log(stratum);
                 //source.getFeatures().map(f => f.getId())
                 //e.setId(33); // find the max id + 1
-                let res: ProcessResult = await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-                //ps.activeProcessId = res.activeProcessID; // reset active processid
-                this.ps.selectedProject.saved = res.saved;
+                let res: ActiveProcessResult = ps.handleAPI(await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
             }            //console.log("res :" + res); 
 
         });
         return d;
     }
 
+    // hex helper in typescript
+    static toHex(str: string) {
+        var result = '';
+        for (var i = 0; i < str.length; i++) {
+            result += str.charCodeAt(i).toString(16);
+        }
+        return result;
+    }
     /**
      * getGEOJSONLayerFromURL - create a GEOJSON layer
      * @param name 
@@ -289,7 +299,7 @@ export class MapSetup {
         });
         var v: Vector = new Vector({
             source: s,
-            style: this.getStyleCacheFunction(),
+            style: MapSetup.getStyleCacheFunction(),
             zIndex: zIndex
         });
 
@@ -374,7 +384,7 @@ export class MapSetup {
         }
     }
 
-    public static getGridLayer(proj): Layer {
+    public static getGridLayer(proj): Vector {
         var gridLines = {
             'type': 'FeatureCollection',
             'features': []
@@ -387,16 +397,16 @@ export class MapSetup {
         });
         let lines = []
         // Why is -50 a limit here?
-        for (let iy = -50; iy <= 90; iy += 5) {
+        for (let iy = -80; iy <= 80; iy += 5) {
             let line = [];
-            for (let ix = -180; ix <= 180; ix += 5) {
+            for (let ix = -100; ix <= 150; ix += 5) {
                 line.push([ix, iy]);
             }
             lines.push(line);
         }
-        for (let ix = -180; ix <= 180; ix += 5) {
+        for (let ix = -100; ix <= 150; ix += 5) {
             let line = [];
-            for (let iy = -50; iy <= 90; iy += 5) {
+            for (let iy = -80; iy <= 80; iy += 5) {
                 line.push([ix, iy]);
             }
             lines.push(line);
@@ -450,24 +460,73 @@ export class MapSetup {
 
     }
     static updateEDSUSelection(f: Feature, selectedPSU) {
-        let absent: boolean = f.get("absent");
         let edsuPsu: EDSU_PSU = f.get("edsupsu");
-        let selected: boolean = edsuPsu != null && edsuPsu.PSU != null && edsuPsu.PSU.length > 0;//f.get("selected");
+        //let absent: boolean = edsuPsu == null /*error not mapped*/ || edsuPsu.PSU === "NA";  
+        let selected: boolean = edsuPsu != null && edsuPsu.PSU != null && edsuPsu.PSU.length > 0 && edsuPsu.PSU !== "NA";//f.get("selected");
         let focused: boolean = selected && selectedPSU != null && edsuPsu.PSU == selectedPSU;
         let selection =
-            absent != null && absent ? 3 :
+           // absent != null && absent ? 3 :
                 focused != null && focused ? 2 :
                     selected != null && selected ? 1 : 0;
         f.set("selection", selection); // Set the style selection.
     }
-    static updateStationSelection(f: Feature, psuAssignments: BioticAssignment[]) {
-        let absent: boolean = f.get("absent");
+
+    static isStationSelected(f: Feature, pds: ProcessDataService): boolean {
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
         let selected: boolean = false;
-        if (secInfos != null) {
-            selected = secInfos.find(secInfo => psuAssignments.find(asg => secInfo["Haul"] == asg.Haul) != null) != null;
+        if (secInfos != null && pds.bioticAssignmentData != null) {
+            selected = secInfos.find(secInfo => pds.bioticAssignmentData.BioticAssignment.find(asg => secInfo["Haul"] == asg.Haul && pds.selectedPSU == asg.PSU) != null) != null;
         }
-        let selection = selected != null && selected ? 1 : 0;
-        f.set("selection", selection); // Set the style selection.
+        return selected != null && selected;
+    }
+
+    static async selectStation(f: Feature, ps: ProjectService, pds: ProcessDataService, ds: DataService,
+        on: boolean) {
+        let psu = pds.selectedPSU;
+        if (psu == null) {
+            return; // not possible to select stratum when selected psu is null
+        }
+        let sp: Stratum_PSU = pds.acousticPSU.Stratum_PSU.find(sp => sp.PSU == psu);
+        let stratum = sp == null ? null : sp.Stratum;
+        if (stratum == null) {
+            return; // no stratum associated with the selected psu.
+        }
+        let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
+/*        let layers: string[] = pds.acousticLayerData != null ? pds.acousticLayerData.AcousticLayer.map(al => al.Layer) : null;
+        if(layers == null) {
+            console.log('Missing acoustic layer definition when changing assignment');
+            return;
+        }*/
+        let hauls: string[] = secInfos.map(secInfo => secInfo["Haul"]);
+        console.log('selectStation: ' + on ? 'on' : 'off');
+        let res: ActiveProcessResult = ps.handleAPI(await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
+            stratum, psu, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
+                stratum, psu, hauls).toPromise()));
+        // update the cache - NOTE: should we get the new assignments from backend on result?
+        //layers.forEach(layer =>
+            hauls.forEach(haul => {
+                let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Haul == haul && psu == asg.PSU);
+                console.log("haul " + haul + " idx " + idx);
+                if (on) {
+                    if (idx < 0) {
+                        console.log('push assignment');
+                        pds.bioticAssignmentData.BioticAssignment.push({
+                            PSU: pds.selectedPSU, /*Layer: layer,*/
+                            Haul: haul/*, WeightingFactor: "1"*/
+                        });
+                    }
+                } else {
+                    if (idx >= 0) {
+                        console.log('remove assignment');
+                        pds.bioticAssignmentData.BioticAssignment.splice(idx, 1);
+                    }
+                }
+            })
+       // );
+        MapSetup.updateStationSelection(f, pds);
+    }
+
+    static updateStationSelection(f: Feature, pds: ProcessDataService) {
+        f.set("selection", MapSetup.isStationSelected(f, pds) ? 1 : 0);
     }
 }

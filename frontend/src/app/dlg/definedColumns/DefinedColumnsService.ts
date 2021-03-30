@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DefinedColumns, ColumnPossibleValues, ColumnType } from '../../data/DefinedColumns';
+import { DefinedColumns, ColumnPossibleValues, ColumnType, ColumnValue } from '../../data/DefinedColumns';
 import { PropertyItem } from '../../data/propertyitem';
 import { PropertyCategory } from '../../data/propertycategory';
 import { DataService } from '../../service/data.service';
@@ -14,6 +14,7 @@ export class DefinedColumnsService {
     constructor(private ps: ProjectService, private dataService: DataService) {}
 
     public display: boolean = false;
+    public isOpening: boolean = false;
 
     public oldNames: string[] = [];
 
@@ -40,20 +41,26 @@ export class DefinedColumnsService {
     private columnTypesSource = new BehaviorSubject(this.columnTypes);
     columnTypesObservable = this.columnTypesSource.asObservable();
 
+    init() {
+      this.definedColumnsData = [];
+      this.title = "";
+      this.columnPossibleValues = [];
+      this.columnTypes = [];
+      this.displayedColumns = ['select'];    
+    }
+
     combinedExpression(): string {
 
       let combinedArray = [];
       this.definedColumnsData.forEach( 
         t => {
           let combinedObj = {};
-          this.displayedColumns.forEach(key => {
-            if(key != 'select') {
-              combinedObj[key] = t[key]; 
-            }
+          t.columnValues.forEach(cv => {
+            combinedObj[cv.columnName] = cv.value;
           });
           combinedArray.push(combinedObj);
         }
-      );
+      );      
 
       console.log("combinedArray : " + JSON.stringify(combinedArray));
 
@@ -61,21 +68,25 @@ export class DefinedColumnsService {
     }
 
     async showDialog() {
+      this.init();
 
+      this.display = true;
+      this.isOpening = true;
       // parse currentPropertyItem.value and populate definedColumnsData and send it to dialog
       if(this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != "") {
-        this.definedColumnsData = [];
         let o: any[] = JSON.parse(this.currentPropertyItem.value);
-        o.forEach(
-          o1 => {
-            let keys = Object.keys(o1);
-            let ob = new DefinedColumns();
-            keys.forEach(key => {
-              ob[key] = o1[key];
-            });
-            this.definedColumnsData.push(ob);
-          }
-        );
+
+        o.forEach(o1 => {
+          let keys = Object.keys(o1);
+          let dc = new DefinedColumns();
+          keys.forEach(key => {
+            let cv = new ColumnValue();
+            cv.columnName = key;
+            cv.value = o1[key];
+            dc.columnValues.push(cv);
+          });
+          this.definedColumnsData.push(dc);
+        });
 
         this.definedColumnsDataSource.next(this.definedColumnsData);
       }
@@ -91,7 +102,6 @@ export class DefinedColumnsService {
         console.log("returnValue['parameterTableColumnNames'] : " + returnValue['parameterTableColumnNames']);
         console.log("returnValue['parameterTableVariableTypes'] : " + returnValue['parameterTableVariableTypes']);
         
-        this.displayedColumns = ['select'];
         let columns = returnValue['parameterTableColumnNames'];
         for(let i = 0; i < columns.length; i++) {
           console.log(columns[i]);
@@ -119,7 +129,6 @@ export class DefinedColumnsService {
         
         console.log("returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
       }
-
-      this.display = true;
+      this.isOpening = false;
     }
 }

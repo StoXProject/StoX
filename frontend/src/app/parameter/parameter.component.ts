@@ -1,5 +1,6 @@
 import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBuilderDlgService';
 import { DefinedColumnsService } from './../dlg/definedColumns/DefinedColumnsService';
+import { SelectedVariablesService } from './../dlg/selectedVariables/SelectedVariablesService';
 import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
 //import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProjectService } from '../service/project.service';
@@ -28,7 +29,8 @@ export class ParameterComponent implements OnInit {
   //  booleanForm: FormGroup; private msgService: MessageService,
   constructor(private msgService: MessageService, public ps: ProjectService,
     private dataService: DataService, private exprBuilderService: ExpressionBuilderDlgService,
-    private definedColumnsService: DefinedColumnsService, private filePathDlgService: FilePathDlgService) { }
+    private definedColumnsService: DefinedColumnsService, private filePathDlgService: FilePathDlgService,
+    private selectedVariablesService: SelectedVariablesService) { }
 
   async ngOnInit() {
     /*    let a = [];
@@ -46,9 +48,19 @@ export class ParameterComponent implements OnInit {
 
   onChanged(category: PropertyCategory, pi: PropertyItem) {
     console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
+    // function name change sends first pi.value == undefined from autocomplete
+
+    /*if (pi.value == undefined) {
+      return;
+    }*/
     if (pi.value == null) {
       console.log("p.value==null")
       pi.value = ""; // send null as empty string.
+    }
+    let val = pi.value;
+    // Quote strings to let backend smoothly transform all values to its corresponding types(jsonlite::fromJSON removes the quotes)
+    if (pi.type == "character" && (pi.format == "none" || pi.value === "")) { // single value string as json compatible
+      val = JSON.stringify(val);
     }
     //if (pi.value == "" && pi.format == "filePaths") {
     //pi.value = "[]";   
@@ -57,16 +69,10 @@ export class ParameterComponent implements OnInit {
     // groupName: string, name: string, value: string, projectPath: string, modelName: string, processID: string
     if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
       try {
-        this.dataService.setProcessPropertyValue(category.groupName, pi.name, pi.value, this.ps.selectedProject.projectPath,
+        this.dataService.setProcessPropertyValue(category.groupName, pi.name, val, this.ps.selectedProject.projectPath,
           this.ps.selectedModel.modelName, this.ps.selectedProcessId)
           .toPromise().then((s: ProcessProperties) => {
-            this.ps.propertyCategories = s.propertySheet;
-            this.ps.processes = s.processTable
-            this.ps.activeProcessId = s.activeProcess.processID;
-            this.ps.selectedProject.saved = s.saved;
-            if (s.updateHelp) {
-              this.ps.updateHelp();
-            }
+            this.ps.handleAPI(s);
           });
       } catch (error) {
         console.log(error.error);
@@ -109,19 +115,6 @@ export class ParameterComponent implements OnInit {
     //   tableNames = [];
     // }
 
-    let allOptions = await this.dataService.getFilterOptionsAll(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, false).toPromise();
-    console.log("allOptions : " + JSON.stringify(allOptions));
-
-    if (this.ps.isEmpty(allOptions)) {
-      this.msgService.setMessage("You have to run the previous process before this action!");
-      this.msgService.showMessage();
-      return;
-    }
-
-    this.exprBuilderService.allOptions = allOptions;
-    this.exprBuilderService.tableNames = allOptions.tableNames;
-    console.log("tableNames : " + JSON.stringify(this.exprBuilderService.tableNames));
-
     // run ExpressionBuilderService.showDialog() to show Expression builder dialog
     this.exprBuilderService.showDialog();
   }
@@ -132,6 +125,25 @@ export class ParameterComponent implements OnInit {
 
     this.definedColumnsService.showDialog();
   }
+
+  async definedVector(category: PropertyCategory, pi: PropertyItem) {
+
+    let returnValue  = <any> await this.dataService.getParameterVectorInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, pi.format).toPromise();
+    console.log("returnValue : " + JSON.stringify(returnValue));
+
+    if(this.ps.isEmpty(returnValue)) {
+      this.msgService.setMessage("Empty object from backend. See user log.");
+      this.msgService.showMessage();
+      this.selectedVariablesService.returnValue = null;
+      return;
+    }
+
+    this.selectedVariablesService.currentPropertyCategory = category;
+    this.selectedVariablesService.currentPropertyItem = pi;    
+    this.selectedVariablesService.returnValue = returnValue;
+    
+    this.selectedVariablesService.showDialog();
+  } 
 
   async filePath(category: PropertyCategory, pi: PropertyItem) {
 
@@ -173,22 +185,6 @@ export class ParameterComponent implements OnInit {
       pi.value = JSON.stringify(paths);
       // call setProcessPropertyValue
       this.onChanged(category, pi);
-
-      /*if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
-        try {
-          this.dataService.setProcessPropertyValue(category.groupName, pi.name,
-            pi.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName,
-            this.ps.selectedProcessId)
-            .toPromise().then((s: ProcessProperties) => {
-              this.ps.propertyCategories = s.propertySheet;
-            });
-        } catch (error) {
-          console.log(error.error);
-          var firstLine = error.error.split('\n', 1)[0];
-          this.msgService.setMessage(firstLine);
-          this.msgService.showMessage();
-          return;
-        }*/
     }
   }
 }

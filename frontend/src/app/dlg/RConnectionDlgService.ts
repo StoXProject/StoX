@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
 
 
 @Injectable({
@@ -7,7 +8,7 @@ import { DataService } from '../service/data.service';
 })
 export class RConnectionDlgService {
 
-    constructor(private dataService: DataService) {
+    constructor(private dataService: DataService, private ps : ProjectService) {
     }
 
     display: boolean = false;
@@ -25,6 +26,7 @@ export class RConnectionDlgService {
         console.log("Posting rpath " + this.rpath)
         this.rpath = this.rpath.replace(/\\/g, "/"); // convert backslash to forward
         var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
+        await this.ps.checkRstoxFrameworkAvailability();
         console.log("Posting rpath, response " + res)
         this.display = false;
     }

@@ -1,13 +1,14 @@
 @charset "UTF-8";
 
-$stoxColor: #9cc6f0;
+//$stoxColor: #9cc6f0;
+$stoxColor: #e8edf1;
 
 .nav-link {
   padding: 3px 0 0 0;
 }
 
 .navbar {
-  background-image: linear-gradient(to bottom, darken($stoxColor, 15%) , lighten($stoxColor, 15%)); 
+  background-image: linear-gradient(to bottom, darken($stoxColor, 2%) , lighten($stoxColor, 2%)); 
 }
 .stox-logo {
   background-image: radial-gradient(lighten($stoxColor, 20%), lighten($stoxColor, 5%), $stoxColor);
@@ -15,6 +16,11 @@ $stoxColor: #9cc6f0;
   border-radius:5px;
   box-shadow: 0.8px 0.8px darken($stoxColor, 10%); 
   //box-shadow:20px 20px 50px 15px grey;  
+}
+
+.ui-button {
+  height:1.2rem !important;
+  width:1.2rem !important;
 }
 
 
@@ -34,7 +40,7 @@ $stoxColor: #9cc6f0;
 }*/
 
 /* Application-wide Styles */
-h1 {
+/*h1 {
   color: #369;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 250%;
@@ -47,17 +53,17 @@ h3 {
 }
 body {
   margin: 0;
-}
-body,
+}*/
+/*body,
 input[type="text"],
 button {
   color: #888;
   font-family: Cambria, Georgia;
 }
 /* everywhere else */
-* {
+/* {
   font-family: Arial, Helvetica, sans-serif;
-}
+}*/
 
 /* base selector-class for stox panes*/
 [class*="stox-pane"] {
@@ -97,3 +103,52 @@ button {
   width:16em;
   height:40em;
 }*/
+
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* The actual popup */
+.popup .popuptext {
+  position: absolute;
+  visibility: hidden;
+  width:inherit;
+  background-color: white;// rgb(240,240,240);
+  //border: 1px solid black;
+  /*color: #fff;*/
+  text-align: center;
+  border-radius: 4px;
+  padding: 2px 2px;
+
+  z-index: 1;
+  top: 120%;
+  right: 0%;
+  margin-left: -80px;
+}
+
+/* Popup arrow */
+/*.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}*/
+
+/* Toggle this class - hide and show the popup */
+.popup .show {
+  visibility: visible;
+  animation: fadeIn 0.5s; 
+}
+
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}

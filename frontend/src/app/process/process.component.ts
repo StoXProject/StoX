@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, Renderer2, HostListener, DoCheck, AfterViewInit } from '@angular/core';
 import { Process } from '../data/process';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
@@ -8,10 +8,11 @@ import { ContextMenuModule, ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
 import { ProcessOutput } from '../data/processoutput';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 //import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
-import { ProcessResult } from '../data/runresult';
+import { ProcessTableResult } from '../data/runresult';
 @Component({
   selector: 'app-process',
   templateUrl: './process.component.html',
@@ -23,13 +24,30 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
   //processes: Process[];
   //selectedProcesses: Process[];
   contextMenu: MenuItem[];
+  //@HostListener('document:keydown.control.y')
+  keydown(event: KeyboardEvent) {
+    if (this.ps.processes != null && this.ps.processes.length > 0) {
+      switch (event.key) {
+        case "ArrowDown":
+        case "ArrowUp": {
+          let idx: number = event.key == "ArrowDown" ?
+            Math.min(this.ps.processes.length - 1, this.ps.getSelectedProcessIdx() + 1)
+            : Math.max(0, this.ps.getSelectedProcessIdx() - 1);
+          this.ps.selectedProcess = this.ps.processes[idx];
+          break;
+        }
+      }
+    }
+  }
 
-  constructor(private ds: DataService, public ps: ProjectService, private rs: RunService) {
+  constructor(private ds: DataService, public ps: ProjectService, private rs: RunService,
+    private renderer: Renderer2) {
   }
 
   async ngOnInit() {
     //this.ngDoCheck();
     this.contextMenu = [{ label: "Run from here   " }];
+    //  this.renderer.listen(document, 'keydown.control.y', (event)=>{this.doSomething()})
   }
 
   @ViewChild('input', { static: false }) input: ElementRef;
@@ -64,9 +82,9 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     }
     m.push(
       { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } },
-      { label: 'Delete', icon: 'rib absa emptyicon', command:  (event) => { this.ps.removeSelectedProcess(); } }
+      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { this.ps.removeSelectedProcess(); } }
     );
-     if (this.ps.selectedProcess.hasBeenRun) {
+    if (this.ps.selectedProcess.hasBeenRun) {
       let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
       if (tables.length > 0) {
@@ -74,10 +92,17 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
           label: 'View output', icon: 'rib absa emptyicon', items:
             tables.map(e => {
               return {
-                label: e, icon: 'rib absa emptyicon', command: async (event) => {
+                label: e, icon: 'rib absa emptyicon',
+                command: async (event) => {
                   let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
                     this.ps.selectedModel.modelName, this.ps.selectedProcessId, e).toPromise();
-                  this.ps.outputTables.push({ table: this.ps.selectedProcess.processName + "(" + e + ")", output: out });
+                  let fullTableName: string = this.ps.selectedProcess.processName + "(" + e + ")";
+                  let idx = this.ps.outputTables.findIndex(t => t.table == fullTableName);
+                  if (idx == -1) {
+                    this.ps.outputTables.push({ processId: this.ps.selectedProcessId, tableName: e, table: fullTableName, output: out });
+                    idx = this.ps.outputTables.length - 1;
+                  }
+                  this.ps.outputTableActivator.next(idx)
                 }
               };
             })
@@ -91,10 +116,10 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     // );
     this.contextMenu = m;
   }
-  async openCm(event : MouseEvent, cm : ContextMenu, process: Process) {
+  async openCm(event: MouseEvent, cm: ContextMenu, process: Process) {
     // TODO: Incorpoate dynamic ng-action-outlet with material. or support scrolling primeng menus
     // https://stackblitz.com/edit/ng-action-outlet-demo?file=src/app/app.component.ts
-    this.ps.selectedProcess = process; 
+    this.ps.selectedProcess = process;
     //console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
@@ -102,18 +127,20 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     cm.show(event);
     return false;
   }
-  draggedProcessId: string = null;
-  dragStart(process: Process) {
-     this.draggedProcessId = process.processID;
-  }
 
-  async drop(process: Process) {
-    if (this.draggedProcessId != null) {
-      console.log("dragging " + this.draggedProcessId + " to " + process.processID);
-      let pr : ProcessResult = await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.draggedProcessId, process.processID).toPromise();
-      this.ps.processes = pr.processTable;
-      this.ps.selectedProject.saved = pr.saved;
-      //this.ps.updateProcessList();
+ 
+  async drop(event: CdkDragDrop<string[]>) {
+    if(event.previousIndex == event.currentIndex) {
+      return;
+    }
+    console.log(event.previousIndex, event.currentIndex);
+    let draggedProcessId : string= this.ps.processes[event.previousIndex].processID;
+    let droppedProcessAfterIndex : number = event.previousIndex < event.currentIndex ? event.currentIndex : event.currentIndex - 1;
+    let droppedProcessAfterId = droppedProcessAfterIndex >= 0 ? this.ps.processes[droppedProcessAfterIndex].processID : null; 
+    if (draggedProcessId != null) {
+      console.log("dragging " + draggedProcessId + " to after " + droppedProcessAfterId);
+      let pr: ProcessTableResult = this.ps.handleAPI(await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, 
+        this.ps.selectedModel.modelName, draggedProcessId, droppedProcessAfterId).toPromise());
     }
   }
 }

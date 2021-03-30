@@ -109,6 +109,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
     integer: ['=', '!=', '>', '>=', '<', '<='],
     time: ['=', '!=', '>', '>=', '<', '<='],
     date: ['=', '!=', '>', '>=', '<', '<='],
+    POSIXct: ['=', '!=', '>', '>=', '<', '<='],
     category: ['=', '!=', '%in%', '%notin%'],
     boolean: ['=']
   };
@@ -152,7 +153,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   @ContentChild(QueryArrowIconDirective, { static: false }) arrowIconTemplate: QueryArrowIconDirective;
 
   private defaultTemplateTypes: string[] = [
-    'character', 'numeric', 'integer', 'time', 'date', 'category', 'boolean', 'multiselect'];
+    'character', 'numeric', 'integer', 'time', 'date','POSIXct','category', 'boolean', 'multiselect'];
   private defaultPersistValueTypes: string[] = [
     'character', 'numeric', 'integer', 'time', 'date', 'boolean'];
   private defaultEmptyList: any[] = [];

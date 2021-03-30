@@ -29,10 +29,6 @@ export class SaveAsProjectDlg  implements OnInit {
         console.log("browse");
         this.projectRootPath = await this.dataService.browse(this.projectRootPath).toPromise();
         this.projectRootPath = this.projectRootPath.replace(/\\/g, "/");
-
-        // let jsonString = JSON.stringify(this.projectRootPath);
-        // let status = <string> await this.dataService.updateProjectRootPath(jsonString).toPromise();
-        // console.log(status); 
     }
 
     async apply() {
@@ -53,8 +49,7 @@ export class SaveAsProjectDlg  implements OnInit {
         console.log("projectRootPath : " + this.projectRootPath);        
 
         // check if projectRootPath exists
-        let options = {filePath: this.projectRootPath};
-        let exists = await this.dataService.fileExists(options).toPromise();
+        let exists = await this.dataService.fileExists(this.projectRootPath).toPromise();
 
         if(exists != "true") {
             this.msgService.setMessage("Project root folder does not exist!");
@@ -65,8 +60,7 @@ export class SaveAsProjectDlg  implements OnInit {
         let wholePath = this.projectRootPath + "/" + this.projectName;
 
         // check if projectRootPath + projectName exists
-        options.filePath = wholePath;
-        exists = await this.dataService.fileExists(options).toPromise();
+        exists = await this.dataService.fileExists(wholePath).toPromise();
  
         // create projectRootPath + projectName if it doesn't exist and show error otherwise
         if(exists == "true") {
@@ -76,16 +70,16 @@ export class SaveAsProjectDlg  implements OnInit {
         } 
 
         try {
-            let dirOption = {dirPath: wholePath};
-            let dirCreated = await this.dataService.makeDirectory(dirOption).toPromise();
+          /*  let dirCreated = await this.dataService.makeDirectory(wholePath).toPromise();
 
             if(dirCreated != "true") {
                 this.msgService.setMessage("Couldn't create directory : " + dirCreated);
                 this.msgService.showMessage();            
                 return; 
-            }
+            }*/
 
-            let project: Project = await this.dataService.saveAsProject(this.ps.selectedProject.projectPath, wholePath).toPromise();
+            let project: Project = await this.dataService.saveAsProject(this.ps.selectedProject.projectPath, wholePath, this.ps.application).toPromise();
+            await this.ps.openProject(wholePath, true, true, false);
             // third parameter in saveAsProject
             // make a shift to this project (make it as current project??)
             

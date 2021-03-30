@@ -134,7 +134,6 @@ export class FilePathDlg  implements OnInit {
     }    
 
     async apply() { 
-        var option = {filePath: null};
         // check that all paths are filled and files exist
         for(let i=0; i< this.service.paths.length; i++) {
             if(this.service.paths[i].path == null) {
@@ -143,12 +142,10 @@ export class FilePathDlg  implements OnInit {
                 return;
             } else {
                 // check file for existence
-                option.filePath = this.service.paths[i].path;
-                let trial1 = await this.dataService.fileExists(option).toPromise();
+                let trial1 = await this.dataService.fileExists(this.service.paths[i].path).toPromise();
 
                 if(trial1 != null && trial1 != "true") {
-                    option.filePath = this.ps.selectedProject.projectPath + "/" + this.service.paths[i].path;
-                    let trial2 = await this.dataService.fileExists(option).toPromise();
+                    let trial2 = await this.dataService.fileExists(this.ps.selectedProject.projectPath + "/" + this.service.paths[i].path).toPromise();
 
                     if(trial2 != null && trial2 != "true") {
                         this.msgService.setMessage("File " + this.service.paths[i].path + " does not exist");
@@ -179,15 +176,7 @@ export class FilePathDlg  implements OnInit {
                     this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, 
                   this.ps.selectedProcessId)
                   .toPromise().then((s: ProcessProperties) => {
-                    this.ps.propertyCategories = s.propertySheet;
-                      // TODO: introduce property service with onChanged
-                      this.ps.processes = s.processTable
-                      this.ps.activeProcessId = s.activeProcess.processID;
-                      this.ps.selectedProject.saved = s.saved;
-                      if (s.updateHelp) {
-                        this.ps.updateHelp();
-                      }
-
+                      this.ps.handleAPI(s);
                   });
               } catch (error) {
                 console.log(error.error);

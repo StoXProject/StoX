@@ -1,18 +1,19 @@
 import { Injectable, ɵCompiler_compileModuleAndAllComponentsAsync__POST_R3__ } from '@angular/core';
 
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { UserLogType } from '../enum/enums';
-import { RunResult, RunProcessesResult, ProcessResult, PSUResult } from '../data/runresult';
+import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
-import { ProcessProperties, ActiveProcess } from '../data/ProcessProperties';
+import { ProcessProperties } from '../data/ProcessProperties';
 import { Process } from '../data/process';
 import { Project } from '../data/project';
+import { PackageVersion } from '../data/PackageVersion';
 
 @Injectable({
   providedIn: 'root'
@@ -20,38 +21,16 @@ import { Project } from '../data/project';
 export class DataService {
 
   log: UserLogEntry[] = []; // user log.
+  private m_logSubject = new Subject<string>();
+  public get logSubject() { return this.m_logSubject; }
 
   // private featuresUrl = '/api/features';
   private geojsonUrl = '/api/geojson';
   private jsonfromfile = '/api/jsonfromfile';
 
-  //private activeProcess: number = 1;
-  //private activeProcessInterval: Observable<number>; // clients can subscribe to this observable and thus poll its status.
-
   constructor(private httpClient: HttpClient) {
   }
 
-
-  /*getActiveProcessInterval(): Observable<number> {
-    return this.activeProcessInterval;
-  }*/
-
-  /*getBioticData(): Observable<string> {
-    return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/readBioticDataFromXml/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  }
-
-  getOutputTable(): Observable<any> {
-    const formData = new FormData();
-    formData.set('iProcess', '1');
-    formData.set('iTable', '"mission"');
-    return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  }
-
-  getOutputTableNames(): Observable<any> {
-    const formData = new FormData();
-    formData.set('iProcess', '1');
-    return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTableNames/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  }*/
 
   isRstoxInstalled(): Observable<any> {
     const formData = new FormData();
@@ -72,57 +51,29 @@ export class DataService {
     return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/remove.packages/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
   }
 
-  /* makeItFail(): Observable<any> {
-     const formData = new FormData();
-     formData.set('iProcess', '1');
-     formData.set('iTable', 'mission');
-     return this.httpClient.post("http://localhost:5307/ocpu/library/tests/R/getOutputTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-   }*/
+
 
   getAvailableTemplates(): Observable<any> {
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPI/R/getAvailableTemplatesDescriptions/json", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
     return this.runFunction('getAvailableTemplatesDescriptions', {});
   }
 
-  createProject(projectPath: string, templateName: string): Observable<any> {
-    // const formData = new FormData();
-    // formData.set('projectPath', "'" + projectPath + "'");
-    // formData.set('template', "'" + templateName + "'");
-
-    // // formData.set('ow', 'FALSE');
-    // // formData.set('showWarnings', 'FALSE');
-    // // formData.set('open', 'TRUE');
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPI/R/createProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-
+  createProject(projectPath: string, /*templateName: string, */application: string): Observable<any> {
     return this.runFunctionThrowFramework('createProject', {
       "projectPath": projectPath,
-      "template": templateName,
+      //"template": "UserDefined",
       "ow": false,
       "showWarnings": false,
-      "open": true
+      "open": true,
+      "Application": application
     }, true);
   }
 
   getModelInfo(): Observable<any> {
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPI/R/getModelInfo/json?auto_unbox=true", {}, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-
     return this.runFunction('getModelInfo', {});
   }
 
-  // getTestProcesses(): Observable<any> {
-  //   const formData = new FormData();
-  //   formData.set('projectPath', "'C:/Users/esmaelmh/workspace/stox/project/project49'");
-  //   formData.set('modelName', "'Baseline'"); 
-  //   return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPI/R/getProcessTable/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  // }
-
   getProcessTable(projectPath: string, modelName: string): Observable<Process[]> {
-    //console.log(" projectPath : " + projectPath + ", modelName : " + modelName);
-    // const formData = new FormData();
-    // formData.set('projectPath', "'" + projectPath + "'");
-    // formData.set('modelName', "'" + modelName + "'");
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPI/R/getProcessTable/json", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
     return this.runFunction('getProcessTable', {
       "projectPath": projectPath,
@@ -130,72 +81,49 @@ export class DataService {
     });
   }
 
-  openProject(projectPath: string, dothrow : boolean, force : boolean): Observable<Project> {
-    // const formData = new FormData();
-    // formData.set('projectPath', "'" + projectPath + "'");
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  openProject(projectPath: string, dothrow: boolean, force: boolean): Observable<Project> {
 
     return this.runFunctionThrowFramework('openProject', {
-      "projectPath": projectPath, 
-      "showWarnings":false,
-      "force":force,
-      "reset":false
+      "projectPath": projectPath,
+      "showWarnings": false,
+      "force": force,
+      "reset": false
     }, dothrow);
   }
 
   isSaved(projectPath: string): Observable<boolean> {
-    // const formData = new FormData();
-    // formData.set('projectPath', "'" + projectPath + "'");
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
     return this.runFunctionThrowFramework('isSaved', {
       "projectPath": projectPath
     }, true);
   }
 
-  getRstoxAPIVersion(): Observable<string> {
-    // const formData = new FormData();
-    // formData.set('projectPath', "'" + projectPath + "'");
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
 
-    return this.runFunctionThrowAPI('getRstoxAPIVersion', {}, true);
-  }
-
-  saveProject(projectPath: string): Observable<Project> {
-    // const formData = new FormData();
-    // formData.set('projectPath', "'" + projectPath + "'");
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPIR/openProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  saveProject(projectPath: string, application: string): Observable<Project> {
 
     return this.runFunctionThrowFramework('saveProject', {
-      "projectPath": projectPath
+      "projectPath": projectPath,
+      "Application": application
     }, true);
   }
 
-  saveAsProject(projectPath: string, newProjectPath: string /*, ow: Boolean */): Observable<Project> {
+  saveAsProject(projectPath: string, newProjectPath: string, application: string): Observable<Project> {
 
     return this.runFunctionThrowFramework('saveAsProject', {
       "projectPath": projectPath,
-      "newProjectPath": newProjectPath
+      "newProjectPath": newProjectPath,
+      "Application": application
       /*, "ow": ow */
     }, true);
   }
 
-  /*resetProject(projectPath: string, save: Boolean, dothrow: boolean): Observable<Project> {
-    return this.runFunctionThrowFramework('resetProject', {
-      "projectPath": projectPath,
-      "save": save
-    }, dothrow);
-  }*/
 
-  closeProject(projectPath: string, save: Boolean): Observable<any> {
-    // const formData = new FormData();
-    // formData.set('projectPath', "'" + projectPath + "'");
-    // formData.set('save', "'" + save + "'");
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPI/R/closeProject/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
+  closeProject(projectPath: string, save: Boolean, application: string): Observable<any> {
 
     return this.runFunction('closeProject', {
       "projectPath": projectPath,
-      "save": save
+      "save": save,
+      "Application": application
     });
   }
 
@@ -227,15 +155,6 @@ export class DataService {
 
 
   setProcessPropertyValue(groupName: string, name: string, value: any, projectPath: string, modelName: string, processID: string): Observable<any> {
-    // const formData = new FormData();
-    // formData.set('groupName', "'" + groupName + "'");
-    // formData.set('name', "'" + name + "'");
-    // formData.set('value', "'" + value + "'");
-    // formData.set('projectPath', "'" + projectPath + "'");
-    // formData.set('modelName', "'" + modelName + "'");
-    // formData.set('processID', "'" + processID + "'");
-    // return this.httpClient.post("http://localhost:5307/ocpu/library/RstoxAPI/R/setProcessPropertyValue/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-
     return this.runFunction('setProcessPropertyValue', {
       "groupName": groupName,
       "name": name,
@@ -247,7 +166,6 @@ export class DataService {
   }
 
   getObjectHelpAsHtml(packageName: string, objectName: string): Observable<string> {
-
     return this.runFunction('getObjectHelpAsHtml', {
       "packageName": packageName,
       "objectName": objectName
@@ -255,7 +173,6 @@ export class DataService {
   }
 
   getFilterOptions(projectPath: string, modelName: string, processID: string, tableName: string): Observable<QueryBuilderConfig> {
-
     return this.runFunctionThrowFramework('getFilterOptions', {
       "projectPath": projectPath,
       "modelName": modelName,
@@ -265,21 +182,18 @@ export class DataService {
   }
 
   expression2list(expr: string): Observable<RuleSet> {
-
     return this.runFunction('expression2list', {
       "expr": expr
     });
   }
 
   json2expression(query: RuleSet): Observable<string> {
-
     return this.runFunction('json2expression', {
       "json": JSON.stringify(query)
     });
   }
 
   getParameterTableInfo(projectPath: string, modelName: string, processID: string, format: string): Observable<any> {
-
     return this.runFunction('getParameterTableInfo', {
       "projectPath": projectPath,
       "modelName": modelName,
@@ -288,24 +202,14 @@ export class DataService {
     });
   }
 
-  // getHelp(topic: string, help_type: string): Observable<any> {
-  //   const formData = new FormData();
-  //   formData.set('topic', "'" + topic + "'");
-  //   formData.set('help_type', "'" + help_type + "'");
-  //   // return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/help/json?auto_unbox=true", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-  //   return this.httpClient.post("http://localhost:5307/ocpu/library/utils/R/help/print", formData, { responseType: 'text' }).pipe(tap(_ => _, error => this.handleError(error)));
-
-  // }
-
-  // getFunctionHelpAsHtml(functionName: string /*, packageName: string, outfile: string */): Observable<any> {
-
-  //   return this.runFunction('getFunctionHelpAsHtml', {
-  //     "functionName": functionName
-  //     /* , 
-  //     // "packageName": packageName, 
-  //     // "outfile": outfile */
-  //   });
-  // }  
+  getParameterVectorInfo(projectPath: string, modelName: string, processID: string, format: string): Observable<any> {
+    return this.runFunction('getParameterVectorInfo', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "format": format
+    });
+  }
 
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
@@ -315,10 +219,13 @@ export class DataService {
     return "http://" + host + ":" + port + "/" + api;
   }
   public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<HttpResponse<any>> {
+    //console.log(api + " post " + JSON.stringify(body));
     return this.httpClient.post(DataService.getURL(host, port, api), body,
       {
         observe: 'response', // 'body' or 'response'
-        // headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+        headers: new HttpHeaders({
+          'Content-Type': 'text/plain'//'text/plain; charset=utf-8'
+        }),
         responseType: <any>responseType
       })
       .pipe(tap(_ => _, error => this.handleError(error)));
@@ -367,19 +274,6 @@ export class DataService {
     console.log("Error.url : " + error.url);
     console.log("Error.ok : " + error.ok);
 
-    // let errorMessage = '';
-    // if (error.error instanceof ErrorEvent) {
-    //   // client-side error
-    //   // errorMessage = `Error: ${error.error.message}`;
-    //   errorMessage = "Client-side error: "
-    // } else {
-    //   // server-side error
-    //   // errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    //   errorMessage = "Server-side error: "
-    // }
-    // // window.alert(errorMessage);    
-
-    // window.alert(errorMessage + error.error); 
   }
 
   getgeojson(): Observable<string> {
@@ -397,53 +291,53 @@ export class DataService {
     return this.runFunctionThrow(what, argsobj, dothrow, 'RstoxFramework');
   }
 
-  runFunctionThrowAPI(what: string, argsobj: any, dothrow: boolean): Observable<any> {
-    return this.runFunctionThrow(what, argsobj, dothrow, 'RstoxAPI');
-  }
+
   /** runFunction API wrapper - includes logging of user message/warning/errors from R*/
   runFunctionThrow(what: string, argsobj: any, dothrow: boolean, pkg: string): Observable<any> {
     // runFunction wraps a doCall with what/args and exception handling that returns a list.
-    const formData = new FormData();
     let args: any = JSON.stringify(argsobj);
-    formData.set('what', "'" + what + "'");
-    formData.set('args', args);
-    formData.set('package', "'" + pkg + "'");
-    console.log(what + "(" + args + ")");
-    // Run RstoxAPI::runFunction with package parameter that is default RstoxFramework
-    return <any>this.postLocalOCPU('RstoxAPI', 'runFunction', formData, 'text', true, "json")
+    /*const body = new FormData();
+    body.set('what', "'" + what + "'");
+    body.set('args', args);
+    body.set('package', "'" + pkg + "'");
+    */
+    let rVal = (o: any) => {
+      if (o != null) {
+        switch (typeof o) {
+          case 'string': return JSON.stringify(o);
+          case 'boolean': return o ? 'TRUE' : 'FALSE'
+          default: return o;
+        }
+      }
+      return o;
+    }
+    console.log(pkg + "::" + what + "(" + Object.keys(argsobj).map(k => k + "=" + rVal(argsobj[k])).join() + ")");
+    // console.log("RstoxFramework::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
+    return <any>this.callR({ what: what, args: args, package: pkg })
       .pipe(map(res => {
-        //let jsr: RunResult = JSON.parse(res.body);
-        // Get the OCPU-sinked R messages from session file (message) and put it int the result.
-        // The OCPU sink overrides the message stdout, and must be retrieved from the session message file.
-        let r2: RunResult = JSON.parse(res.body);
-        //r2.message = [];
-        /* let sessionId: string = res.headers.get("x-ocpu-session");
-         let msg: string[] = <string[]>await this.post(DataService.LOCALHOST, DataService.OCPU_PORT,
-           'ocpu/tmp/' + sessionId + '/messages/json?auto_unbox=TRUE', {}, 'text')
-           .pipe(map(_ => JSON.parse(_.body))).toPromise();
-         //console.log(msg);
- 
-         r2.message = msg;
-         // Now the runFunction result is complete with error, warning and message
-         // deliver the result into the 
-         */
-
+        let r2: RunResult = null;
+        try {
+          r2 = JSON.parse(res.body !== undefined ? res.body : res);
+        } catch (e) {
+          // If result is not exception, it is an error with its message in the body
+          r2 = new RunResult();
+          r2.error = [res];
+        }
         if (dothrow) {
           if (r2.error.length > 0) {
             throw (r2.error[0]);
           }
-          /*if (r2.warning.length > 0) {
-             throw(r2.warning[0]); 
-          }*/
         } else {
           r2.warning
-            .filter(elm => elm.startsWith("StoX: "))
+            ?.filter(elm => elm.startsWith("StoX: "))
             .map(elm => elm.slice("StoX: ".length))
             .forEach(elm => {
               this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
+              this.m_logSubject.next('log-warning');
             });
-          r2.error.forEach(elm => {
+          r2.error?.forEach(elm => {
             this.log.push(new UserLogEntry(UserLogType.ERROR, elm));
+            this.m_logSubject.next('log-error');
           });
         }
         return r2.value;
@@ -459,9 +353,11 @@ export class DataService {
     });
   }
 
-  resetModel(projectPath: string, modelName: string): Observable<ProcessResult> {
+  resetModel(projectPath: string, modelName: string): Observable<ProcessTableResult> {
     return this.runFunction('resetModel', {
-      "projectPath": projectPath, "modelName": modelName
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "returnProcessTable": true
     });
   }
 
@@ -472,13 +368,13 @@ export class DataService {
     });
   }
 
-  removeProcess(projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  removeProcess(projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('removeProcess', {
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
 
-  addProcess(projectPath: string, modelName: string, value: any): Observable<ProcessResult> {
+  addProcess(projectPath: string, modelName: string, value: any): Observable<ProcessTableResult> {
     return this.runFunction('addProcess', {
       "projectPath": projectPath, "modelName": modelName, "value": value
     });
@@ -494,7 +390,7 @@ export class DataService {
       "modelName": modelName,
       "processID": processID,
       "include.numeric": includeNumeric
-    });    
+    });
   }
 
   getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {
@@ -509,14 +405,14 @@ export class DataService {
     return this.runProcessFunc<any>('getInteractiveData', projectPath, modelName, processID);
   }
 
-  modifyStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  modifyStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('modifyStratum', {
       "stratum": stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
 
-  addStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  addStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('addStratum', {
       "stratum": stratum,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
@@ -530,6 +426,26 @@ export class DataService {
     });
   }
 
+  addHaulToAssignment(projectPath: string, modelName: string, processID: string, stratum: string,
+    psu: string, haul: string[]): Observable<ActiveProcessResult> {
+    return this.runFunction('addHaulToAssignment', {
+      "Stratum": stratum,
+      "PSU": psu,
+      "Haul": haul,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
+  removeHaulFromAssignment(projectPath: string, modelName: string, processID: string, stratum: string,
+    psu: string, haul: string[]): Observable<ActiveProcessResult> {
+    return this.runFunction('removeHaulFromAssignment', {
+      "Stratum": stratum,
+      "PSU": psu,
+      "Haul": haul,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
   getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<ProcessOutput> {
     return this.runFunction('getProcessOutput', {
       "projectPath": projectPath,
@@ -538,7 +454,7 @@ export class DataService {
       "tableName": tableName,
       "flatten": true,
       "pretty": true,
-      "linesPerPage": 2000,
+      "linesPerPage": 200000,
       "pageindex": 1,
       "columnSeparator": " ",
       "na": "-",
@@ -547,71 +463,128 @@ export class DataService {
 
   }
 
-  addEDSU(psu: string, edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  addEDSU(psu: string, edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('addEDSU', {
       "PSU": psu, "EDSU": edsu,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
 
-  rearrangeProcesses(projectPath: string, modelName: string, processID: string, afterProcessID: string): Observable<ProcessResult> {
+  rearrangeProcesses(projectPath: string, modelName: string, processID: string, afterProcessID: string): Observable<ProcessTableResult> {
     return this.runFunction('rearrangeProcesses', {
       "projectPath": projectPath, "modelName": modelName, "processID": processID,
       "afterProcessID": afterProcessID
     });
   }
 
-  removeEDSU(edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessResult> {
+  removeEDSU(edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('removeEDSU', {
-      "acousticPSU": null/* removed */, "EDSU": edsu,
+      "EDSU": edsu,
       "projectPath": projectPath, "modelName": modelName, "processID": processID
     });
   }
-  setRPath(rpath: string): Observable<any> {
-    return this.postLocalNode('rpath', { rpath: rpath });
+
+  removeStratum(stratumName: string, projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
+    return this.runFunction('removeStratum', {
+      "stratumName": stratumName,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
   }
 
+  removeAcousticPSU(PSU: string[], projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
+    return this.runFunction('removeAcousticPSU', {
+      "PSU": PSU,
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
+  setRPath(rpath: string): Observable<any> {
+    return this.postLocalNode('rpath', rpath);
+  }
+
+  callR(j: any): Observable<any> {
+    console.log("RstoxFramework::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
+    return this.postLocalNode('callR', j);
+  }
+
+
   browse(defaultpath: string): Observable<any> {
-    return this.postLocalNode('browse', { defaultpath: defaultpath });
+    return this.postLocalNode('browse', defaultpath);
   }
 
   browsePath(options: any): Observable<any> {
     return this.postLocalNode('browsePath', options);
   }
 
-  fileExists(options: any): Observable<any> {
-    return this.postLocalNode('fileExists', options);
+  fileExists(filePath: string): Observable<any> {
+    return this.postLocalNode('fileExists', filePath);
   }
 
-  makeDirectory(options: any): Observable<any> {
-    return this.postLocalNode('makeDirectory', options);
+  makeDirectory(dirPath: string): Observable<any> {
+    return this.postLocalNode('makeDirectory', dirPath);
+  }
+
+  openUrl(url: string): Observable<any> {
+    return this.postLocalNode('openUrl', url);
+  }
+
+  stoxHome(): Observable<any> {
+    return this.postLocalNode('stoxhome', {});
+  }
+
+  toggleDevTools(): Observable<any> {
+    return this.postLocalNode('toggledevtools', {});
+  }
+  isdesktop(): Observable<any> {
+    return this.postLocalNode('isdesktop', {});
+  }
+
+
+  exit(): Observable<any> {
+    return this.postLocalNode('exit', {});
+  }
+
+  installRstoxFramework(): Observable<any> {
+    return this.postLocalNode('installRstoxFramework', {});
   }
 
   public getRPath(): Observable<any> {
     return this.getLocalNode('rpath');
   }
 
+  public getStoxVersion(): Observable<any> {
+    return this.getLocalNode('stoxversion');
+  }
+
+  public getRstoxPackageVersions(): Observable<any> {
+    return this.getLocalNode('getRstoxPackageVersions');
+  }
+
   public getProjectRootPath(): Observable<any> {
     return this.getLocalNode('projectrootpath');
   }
-
-  // public readProjectList(): Observable<any> {
-  //   return this.getLocalNode('readprojectlist');
-  // }
-
-  // public updateprojectlist(jsonString: string): Observable<any> {
-  //   return this.postLocalNode('updateprojectlist', { jsonString: jsonString });
-  // }
 
   public readActiveProject(): Observable<any> {
     return this.getLocalNode('readactiveproject');
   }
 
-  public updateActiveProject(projectPath: string): Observable<any> {
-    return this.postLocalNode('updateactiveproject', { jsonString: projectPath });
+  public rAvailable(): Observable<any> {
+    return this.getLocalNode('rAvailable');
   }
 
-  public updateProjectRootPath(jsonString: string): Observable<any> {
-    return this.postLocalNode('updateprojectrootpath', { jsonString: jsonString });
+  /*public rstoxFrameworkAvailable(): Observable<any> {
+    return this.getLocalNode('rstoxFrameworkAvailable');
+  }*/
+
+  public updateActiveProject(projectPath: string): Observable<any> {
+    return this.postLocalNode('updateactiveproject', projectPath);
+  }
+
+  public updateActiveProjectSavedStatus(saved: boolean): Observable<any> {
+    return this.postLocalNode('updateactiveprojectsavedstatus', saved);
+  }
+
+  public updateProjectRootPath(projectRootPath: string): Observable<any> {
+    return this.postLocalNode('updateprojectrootpath', projectRootPath);
   }
 }

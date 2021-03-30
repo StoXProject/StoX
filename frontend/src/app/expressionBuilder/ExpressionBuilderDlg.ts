@@ -195,14 +195,7 @@ export class ExpressionBuilderDlg  implements OnInit {
                     this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, 
                     this.ps.selectedProcessId)
                     .toPromise().then((s: ProcessProperties) => {
-                      this.ps.propertyCategories = s.propertySheet;
-                      // TODO: introduce property service with onChanged
-                      this.ps.processes = s.processTable
-                      this.ps.activeProcessId = s.activeProcess.processID;
-                      this.ps.selectedProject.saved = s.saved;
-                      if (s.updateHelp) {
-                        this.ps.updateHelp();
-                      }
+                        this.ps.handleAPI(s);
                     });
                 } catch (error) {
                   console.log(error.error);
@@ -217,12 +210,18 @@ export class ExpressionBuilderDlg  implements OnInit {
         this.onHide();
     }
 
+    init() {
+        this.service.tableExpressions  = [];
+        this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);           
+    }    
+
     cancel() {
         this.onHide();
     }
 
     onHide() {
         // this.selection.clear();
-        this.service.display = false;          
+        this.service.display = false;  
+        this.init();        
     }
 }

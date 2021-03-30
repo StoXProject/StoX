@@ -3,11 +3,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HomeComponent } from './home/home';
 import { RConnectionDlg } from './dlg/RConnectionDlg';
+import { InstallRPackagesDlg } from './dlg/InstallRPackages/InstallRPackagesDlg';
 import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
 import { OpenProjectDlg } from './openProjectDlg/OpenProjectDlg';
 import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
 import { QueryBuilderDlg } from './querybuilder/dlg/QueryBuilderDlg';
 import { DefinedColumnsTableDlg } from './dlg/definedColumns/DefinedColumnsTableDlg';
+import { SelectedVariablesDlg } from './dlg/selectedVariables/SelectedVariablesDlg';
 import { FilePathDlg } from './dlg/filePath/FilePathDlg';
 import { SaveAsProjectDlg } from './saveAsProject/SaveAsProjectDlg';
 import { MessageDlg } from './message/MessageDlg';
@@ -61,6 +63,7 @@ import { TooltipDirective } from './directive/TooltipDirective'
 //import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { StratumNameDlgComponent } from './dlg/stratum-name-dlg/stratum-name-dlg.component';
+import { MessageDlgComponent } from './dlg/messageDlg/messageDlg.component';
 //import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 //import { InMemoryDataService }  from './in-memory-data.service';
 import { MatCommonModule } from '@angular/material/core';
@@ -80,8 +83,12 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-  
+import { MatTooltipModule} from '@angular/material/tooltip';  
+import {MatListModule} from '@angular/material/list';
 
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
+import {DragDropModule as MatDragDropModule} from '@angular/cdk/drag-drop';
 
 /*import {
   MatBadgeModule,
@@ -118,10 +125,12 @@ import { MatMenuModule } from '@angular/material/menu';
 } from '@angular/material';*/
 import { StratumpsuComponent } from './processdata/stratumpsu/stratumpsu.component';
 
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+//import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module';
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
+import { EdsutableComponent } from './processdata/edsutable/edsutable.component';
+import { DirectiveAccessor } from './autocomplete/directive-accessor';
 
 @NgModule({
   exports: [
@@ -153,7 +162,10 @@ import { AutocompleteComponent } from './autocomplete/autocomplete.component';
     MatTableModule,
     MatTabsModule,
     MatToolbarModule,
+    MatTooltipModule,
+    MatListModule,
     MatAutocompleteModule,
+    MatProgressSpinnerModule
    /* MatDatepickerModule,*/
    /* MatDividerModule,
     MatExpansionModule,*/
@@ -178,6 +190,7 @@ import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 export class MaterialModule { }
 
 @NgModule({
+  exports: [DirectiveAccessor],
   imports: [
     MaterialModule,
     BrowserModule,
@@ -204,6 +217,7 @@ export class MaterialModule { }
     TabMenuModule,
     ToolbarModule,
     DragDropModule,
+    MatDragDropModule,
     TreeModule,
     ContextMenuModule,
     KeyboardShortcutsModule.forRoot(),
@@ -214,7 +228,7 @@ export class MaterialModule { }
     MatInputModule,*/ MatDialogModule, MatSelectModule,
 
     ReactiveFormsModule,
-    NoopAnimationsModule,
+    //NoopAnimationsModule, // disabling all animations
     MatButtonModule,
     MatCheckboxModule,
     MatSelectModule,
@@ -226,15 +240,17 @@ export class MaterialModule { }
     MatCardModule,
     QueryBuilderModule
   ],
-  entryComponents: [StratumNameDlgComponent],
+  entryComponents: [StratumNameDlgComponent, MessageDlgComponent],
   declarations: [
     HomeComponent,
     RConnectionDlg,
+    InstallRPackagesDlg,
     CreateProjectDialog,
     OpenProjectDlg,
     ExpressionBuilderDlg,
     QueryBuilderDlg,
     DefinedColumnsTableDlg,
+    SelectedVariablesDlg,
     FilePathDlg,
     SaveAsProjectDlg,
     ResetProjectDlg,
@@ -243,14 +259,15 @@ export class MaterialModule { }
     ProjectComponent,
     MapComponent,
     StratumpsuComponent,
+    EdsutableComponent,
     ProcessComponent,
     ParameterComponent,
     ModelComponent,
     RunComponent,
     UserLogComponent,
     OutputComponent,
-    HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent,
-    AutocompleteComponent, TooltipDirective
+    HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent, MessageDlgComponent,
+    AutocompleteComponent, TooltipDirective,DirectiveAccessor
   ],
   bootstrap: [HomeComponent],
   providers: [{ provide: APP_BASE_HREF, useValue: '/' },

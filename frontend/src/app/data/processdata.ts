@@ -29,9 +29,9 @@ export class AcousticLayerData {
 
 export class BioticAssignment {
     PSU : string;
-    Layer : string;
+    //Layer : string;
     Haul : string; 
-    WeightingFactor : string; // Must be string pga R Inf
+    //WeightingFactor : string; // Must be string pga R Inf
 }
 
 export class BioticAssignmentData {
