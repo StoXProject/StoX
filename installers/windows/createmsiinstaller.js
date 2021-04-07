@@ -3,6 +3,8 @@ const path = require('path')
 
 const rootPath = path.join(process.cwd())
 const outPath = path.join(rootPath, 'dist')
+require('pkginfo')(module, 'version');
+var stoxVersion = module.exports.version;
 
 const start = async function() {
   const msiCreator = new ewm.MSICreator({
@@ -11,8 +13,8 @@ const start = async function() {
     exe: 'StoX',
     name: 'StoX',
     arch: 'x64',
-    manufacturer: 'Institut of Marine Research, Norway',
-    version: '1.0.0',
+    manufacturer: 'Institute of Marine Research, Norway',
+    version: stoxVersion,
     outputDirectory: path.join(outPath, 'installers'),
     appIconPath: path.join(rootPath, 'assets', 'stox_icon.ico')
   });

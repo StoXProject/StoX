@@ -1,7 +1,7 @@
 {
   "name": "StoX",
   "productName": "StoX",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "StoX GUI - a desktop application for building stox projects",
   "main": "build/index.js",
   "scripts": {

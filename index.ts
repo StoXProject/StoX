@@ -71,7 +71,8 @@ app.on('ready', async () => {
   Utils.extractResourceFile(UtilsConstants.RES_SERVER_VERSIONS);
   Utils.extractResourceFile(UtilsConstants.RES_SERVER_FILENAME);
 
-  await startBackendServer();
+  await startBackendServer(true);
+  await checkLoadStatusRstoxFramework();
   createWindow()
 })
 
@@ -326,7 +327,7 @@ async function checkRAvailable(): Promise<boolean> {
   return true;
 }
 
-async function startBackendServer(): Promise<string> {
+async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
   logInfo('Starting backend');
 
   rAvailable = await checkRAvailable();
@@ -371,10 +372,9 @@ async function startBackendServer(): Promise<string> {
 
     officialRstoxPackages = JSON.parse((await callR(cmd) as any).result);
     logInfo(JSON.stringify(officialRstoxPackages));
-
-    cmd = "tryCatch({library(\"RstoxFramework\"); \"\"} ,error = function(e) {e})"
-    loadStatusRstoxFramework = (await callR(cmd) as any).result.trim();
-    logInfo("Load status RstoxFramework: " + loadStatusRstoxFramework);
+    if(checkLoadStatus) {
+      await checkLoadStatusRstoxFramework();
+    }
     cmd = "tryCatch(paste0(\"RStoxFramework_\", as.character(packageVersion(\"RstoxFramework\"))),error = function(e) {\"\"})"
     versionRstoxFramework = (await callR(cmd) as any).result;
     logInfo(versionRstoxFramework);
@@ -388,6 +388,13 @@ async function startBackendServer(): Promise<string> {
     let res = (await callR(cmd) as any).result;
     logInfo("Installed packages: " + res);
   }*/
+  return "ok";
+}
+
+async function checkLoadStatusRstoxFramework() : Promise<string> {
+  let cmd = "tryCatch({library(\"RstoxFramework\"); \"\"} ,error = function(e) {e})"
+  loadStatusRstoxFramework = (await callR(cmd) as any).result.trim();
+  logInfo("Load status RstoxFramework: " + loadStatusRstoxFramework);
   return "ok";
 }
 
@@ -675,7 +682,7 @@ function setupServer() {
   server.post('/rpath', async (req: any, res: any) => {
     properties.rPath = req.body;
     logInfo('set rpath ' + properties.rPath);
-    let resultstr: string = await startBackendServer();
+    let resultstr: string = await startBackendServer(true);
     res.send('post /rpath result:' + resultstr);
   });
   // observe project root path
@@ -740,7 +747,7 @@ function setupServer() {
       let s : string = "R is not available";
       rPackagesIsInstalling = true;
       logInfo('/installRstoxFramework');
-      await startBackendServer()
+      await startBackendServer(false);
       logInfo('server started: ' + serverStarted + ", client: " + client);
       if (serverStarted) {
         let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
@@ -749,7 +756,7 @@ function setupServer() {
         logInfo(cmd);
         let res = (await callR(cmd) as any).result;
         s = "Installed packages: " + res;
-        loadStatusRstoxFramework = "";
+        await checkLoadStatusRstoxFramework();
         logInfo(s);
       }
       res.send(s);
