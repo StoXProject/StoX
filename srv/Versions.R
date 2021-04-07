@@ -783,6 +783,9 @@ initLocalLibrary <- function() {
             # Add the locacl library in this session:
             .libPaths(newLib)
         }
+        else {
+            newLib <- .libPaths()
+        }
         
         return(newLib)
     }

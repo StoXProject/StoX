@@ -1,8 +1,8 @@
 {
-  "name": "StoX",
+  "name": "stox",
   "productName": "StoX",
   "version": "3.0.2",
-  "description": "StoX GUI - a desktop application for building stox projects",
+  "description": "StoX: An open source software for marine survey analyses",
   "main": "build/index.js",
   "scripts": {
     "start": "tsc && electron ./build/index.js",
@@ -20,7 +20,7 @@
     "package-and-installer-mac": "npm run package-mac && npm run installer-mac",
     "package-and-installer-linux": "npm run package-linux && npm run installer-linux",
     "build-frontend": "npm run prepare && cd frontend && npm install --no-fund && ng build --prod --base-href --aot=true --build--optimizer=true && cd ..",
-    "build-win": "npm run build-frontend && npm run package-and-installer-sign-win",
+    "build-win": "npm run build-frontend && npm run package-win && npm run installer-win  ",
     "build-mac": "npm run build-frontend && npm run package-and-installer-mac",
     "build-linux": "npm run build-frontend && npm run package-and-installer-linux",
     "signstox": "signtool.exe sign /a ./dist/StoX-win32-x64/StoX.exe",
@@ -50,7 +50,8 @@
     "electron-installer-dmg": "^3.0.0",
     "electron-packager": "^14.2.1",
     "electron-wix-msi": "^3.1.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "uuid-by-string": "^3.0.2"
   },
   "build": {
     "public": [
