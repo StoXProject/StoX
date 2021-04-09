@@ -44,32 +44,22 @@ jobs:
         run: npm run build-${PLTF}
         shell: bash
 
-      - name: Create Certificate for Windows
-        if: runner.os == 'Windows'
-        run: |
-          $Params = @{
-            Subject           = "CN=Test Code Signing"
-            Type              = "CodeSigningCert"    
-            KeySpec           = "Signature"     
-            KeyUsage          = "DigitalSignature"    
-            FriendlyName      = "Test code signing"    
-            NotAfter          = [datetime]::now.AddYears(5)    
-            CertStoreLocation = 'Cert:\CurrentUser\My' }
-            $TestCodeSigningCert = New-SelfSignedCertificate @Params
-            #Export-Certificate -FilePath exported_cert.cer -Cert $TestCodeSigningCert
-            #Import-Certificate -FilePath exported_cert.cer -CertStoreLocation Cert:\CurrentUser\Root -Confirm:$false
-        shell: powershell
-      
       - name: Build for Windows
         if: runner.os == 'Windows'
-        run: npm run build-frontend && npm run package-win
+        run: npm run build-frontend && npm run package-win && find dist/
         shell: bash
 
-      #- name: Certificate signing for Windows (exe)
-      #  if: runner.os == 'Windows'
-      #  run: |
-      #    Set-AuthenticodeSignature ".\dist\StoX-win32-x64\StoX.exe" @(Get-ChildItem cert:\CurrentUser\My -codesigning)[0] -TimestampServer "http://time.certum.pl"
-      #  shell: powershell
+      - name: Create Code Signing Certificate
+        if: runner.os == 'Windows'
+        run: |
+          New-Item -ItemType directory -Path certificate
+          Set-Content -Path certificate\certificate.txt -Value '${{ secrets.CODE_SIGN_CERT }}'
+          certutil -decode certificate\certificate.txt certificate\certificate.pfx
+
+      - name: Code Sign (exe)
+        if: runner.os == 'Windows'
+        run: |
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 dist\StoX-win32-x64\StoX.exe
 
       - name: Set path for candle and light
         if: runner.os == 'Windows'
@@ -90,14 +80,11 @@ jobs:
           cd ../..
         shell: bash
 
-      #- name: Certificate signing for Windows (installer)
-      #  if: runner.os == 'Windows'
-      #  run: |
-      #    Set-AuthenticodeSignature ".\dist\installers\stoxInstaller.exe" @(Get-ChildItem cert:\CurrentUser\My -codesigning)[0] -TimestampServer "http://time.certum.pl"
-      #  shell: powershell
-
-      - run: find dist/installers
-        shell: bash
+      - name: Code Sign (installers)
+        if: runner.os == 'Windows'
+        run: |
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 dist\installers\StoX.msi
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
 
       - name: Renaming files for upload
         env:
