@@ -8,10 +8,10 @@ var stoxVersion = module.exports.version;
 var nameAndVersion = module.exports.productName + " " + stoxVersion;
 
 const getUuid = require('uuid-by-string')
- 
+
 const u = getUuid(nameAndVersion)
 
-const start = async function() {
+const start = async function () {
   const msiCreator = new ewm.MSICreator({
     appDirectory: path.join(outPath, 'StoX-win32-x64'),
     description: module.exports.description,
@@ -25,7 +25,8 @@ const start = async function() {
     appIconPath: path.join(rootPath, 'assets', 'stox_icon.ico'),
     shortcutName: nameAndVersion,
     shortcutFolderName: module.exports.productName,
-    programFilesFolderName: nameAndVersion
+    programFilesFolderName: nameAndVersion,
+    ui: { enabled: true, chooseDirectory: true }
   });
   const supportBinaries = await msiCreator.create();
 
