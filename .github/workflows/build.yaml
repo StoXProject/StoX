@@ -105,6 +105,14 @@ jobs:
       #    mv installers/StoXInstaller/x64/Release/StoXInstaller.exe dist/installers/${FULL_TAG}.exe
       #  shell: bash
 
+      - name: Build Redhat RPM package
+        if: runner.os == 'Linux'
+        run: |
+          npm install -g electron-installer-redhat@latest
+          electron-installer-redhat --src dist/StoX-linux-x64/ --dest dist/installers/ --arch x86_64
+          mv $(ls dist/installers/*rpm) dist/installers/${FULL_TAG}.rpm
+        shell: bash
+
       - run: find dist/installers
         shell: bash
 
