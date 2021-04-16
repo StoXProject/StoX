@@ -13,7 +13,7 @@ export class InstallRPackagesDlgService {
     }
 
     display: boolean = false;
-    isInstalling : boolean = false;
+    isInstalling: boolean = false;
     rpath: string;
 
     async showDialog() {
@@ -22,12 +22,20 @@ export class InstallRPackagesDlgService {
     }
 
     async apply() {
-        this.isInstalling = true;
-        let res = await this.dataService.installRstoxFramework().toPromise();
-        this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, res));
-        await this.ps.checkRstoxFrameworkAvailability();
-        this.isInstalling = false;
-        this.display = false;
+        let project: string = this.ps.selectedProject.projectPath;
+        try {
+            await this.ps.activateProject(null, true);
+            this.isInstalling = true;
+            let res = await this.dataService.installRstoxFramework().toPromise();
+            this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, res));
+            await this.ps.checkRstoxFrameworkAvailability();
+            this.isInstalling = false;
+            this.display = false;
+        } finally {
+            if (project != null) {
+                await this.ps.openProject(project, false, true, false);
+            }
+        }
     }
 
 }
