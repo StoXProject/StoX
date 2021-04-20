@@ -66,25 +66,25 @@ jobs:
         run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $GITHUB_PATH
         shell: bash
 
-      #- name: Add msbuild to PATH
-      #  if: runner.os == 'Windows'
-      #  uses: microsoft/setup-msbuild@v1.0.2
+      - name: Add msbuild to PATH
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Create installer for Windows
         if: runner.os == 'Windows'
         run: |
           npm run installer-win
-      #    cp dist/installers/*.msi installers/StoXInstaller/res/
-      #    cd installers/StoXInstaller
-      #    MSBuild.exe -p:Configuration=Release
-      #    cd ../..
+          cp dist/installers/*.msi installers/StoXInstaller/res/
+          cd installers/StoXInstaller
+          MSBuild.exe -p:Configuration=Release
+          cd ../..
         shell: bash
 
       - name: Code Sign (installers)
         if: runner.os == 'Windows'
         run: |
           & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 dist\installers\StoX.msi
-        #  & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
 
       - name: Renaming files for upload
         env:
@@ -97,13 +97,13 @@ jobs:
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
         shell: bash
 
-      #- name: Renaming files for upload (Windows only)
-      #  if: runner.os == 'Windows'
-      #  env:
-      #    FULL_TAG: ${{ env.FULL_TAG }}
-      #  run: |
-      #    mv installers/StoXInstaller/x64/Release/StoXInstaller.exe dist/installers/${FULL_TAG}.exe
-      #  shell: bash
+      - name: Renaming files for upload (Windows only)
+        if: runner.os == 'Windows'
+        env:
+          FULL_TAG: ${{ env.FULL_TAG }}
+        run: |
+          mv installers/StoXInstaller/x64/Release/StoXInstaller.exe dist/installers/${FULL_TAG}.exe
+        shell: bash
 
       - name: Build Redhat RPM package
         if: runner.os == 'Linux'
