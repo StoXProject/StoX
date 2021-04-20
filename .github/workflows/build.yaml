@@ -91,7 +91,7 @@ jobs:
           EXT: ${{ matrix.config.in_ext }}
         run: |
           export FINAL_TAG=$(node -pe "require('./package.json')['version']")$(if [ "$GITHUB_REF" = "refs/heads/develop" ]; then echo "+dev.${GITHUB_SHA::7}"; else echo ""; fi)
-          export FULL_TAG=$(node -pe "require('./package.json')['name']")-${FINAL_TAG}
+          export FULL_TAG=$(node -pe "require('./package.json')['name']")-installer-${PLTF}-${FINAL_TAG}
           mv $(ls dist/installers/*${EXT}) dist/installers/${FULL_TAG}.${EXT}
           echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
@@ -118,7 +118,7 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: installer-${{ matrix.config.os }}-${{ env.FINAL_TAG  }}
+          name: ${{ env.FULL_TAG  }}
           path: dist/installers/${{ env.FULL_TAG }}*
 
       - name: Create release and upload files
