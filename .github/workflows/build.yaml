@@ -74,17 +74,17 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           npm run installer-win
-          cp dist/installers/*.msi installers/StoXInstaller/res/
-          cd installers/StoXInstaller
-          MSBuild.exe -p:Configuration=Release
-          cd ../..
+          #cp dist/installers/*.msi installers/StoXInstaller/res/
+          #cd installers/StoXInstaller
+          #MSBuild.exe -p:Configuration=Release
+          #cd ../..
         shell: bash
 
       - name: Code Sign (installers)
         if: runner.os == 'Windows'
         run: |
           & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://ts.ssl.com /td sha256 dist\installers\StoX.msi
-          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://ts.ssl.com /td sha256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
+          #& 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://ts.ssl.com /td sha256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
 
       - name: Renaming files for upload
         env:
