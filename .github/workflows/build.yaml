@@ -56,10 +56,10 @@ jobs:
           Set-Content -Path certificate\certificate.txt -Value '${{ secrets.CODE_SIGN_CERT }}'
           certutil -decode certificate\certificate.txt certificate\certificate.pfx
 
-      #- name: Code Sign (exe)
-      #  if: runner.os == 'Windows'
-      #  run: |
-      #    & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 dist\StoX-win32-x64\StoX.exe
+      - name: Code Sign (exe)
+        if: runner.os == 'Windows'
+        run: |
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://ts.ssl.com /td sha256 dist\StoX-win32-x64\StoX.exe
 
       - name: Set path for candle and light
         if: runner.os == 'Windows'
@@ -80,11 +80,11 @@ jobs:
           cd ../..
         shell: bash
 
-      #- name: Code Sign (installers)
-      #  if: runner.os == 'Windows'
-      #  run: |
-      #    & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 dist\installers\StoX.msi
-      #    & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
+      - name: Code Sign (installers)
+        if: runner.os == 'Windows'
+        run: |
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://ts.ssl.com /td sha256 dist\installers\StoX.msi
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://ts.ssl.com /td sha256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
 
       - name: Renaming files for upload
         env:
@@ -97,13 +97,13 @@ jobs:
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
         shell: bash
 
-      - name: Renaming files for upload (Windows only)
-        if: runner.os == 'Windows'
-        env:
-          FULL_TAG: ${{ env.FULL_TAG }}
-        run: |
-          mv installers/StoXInstaller/x64/Release/StoXInstaller.exe dist/installers/${FULL_TAG}.exe
-        shell: bash
+      #- name: Renaming files for upload (Windows only)
+      #  if: runner.os == 'Windows'
+      #  env:
+      #    FULL_TAG: ${{ env.FULL_TAG }}
+      #  run: |
+      #    mv installers/StoXInstaller/x64/Release/StoXInstaller.exe dist/installers/${FULL_TAG}.exe
+      #  shell: bash
 
       - name: Build Redhat RPM package
         if: runner.os == 'Linux'
