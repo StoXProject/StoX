@@ -22,7 +22,7 @@ export class InstallRPackagesDlgService {
     }
 
     async apply() {
-        let project: string = this.ps.selectedProject.projectPath;
+        let project: string = this.ps.selectedProject?.projectPath;
         try {
             await this.ps.activateProject(null, true);
             this.isInstalling = true;

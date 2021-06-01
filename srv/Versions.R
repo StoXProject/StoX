@@ -1,14 +1,37 @@
-
-
-#' Function to get the non Rstox dependencies of a package
+#' Tools to download and install Rstox packages and dependen packages.
 #' 
+#' \code{getNonRstoxDependencies} gets all package dependencies ("Depends", "Imports" and "LinkingTo") of the packages given by \code{packageName}, excluding any Rstox-packages. \cr \cr
+#' \code{installOfficialRstoxPackagesWithDependencies} installs the corrrect versions of Rstox-packages, and other packages that these packages depend on. This function is used by the StoX GUI. \cr \cr
+#' \code{getOfficialRstoxPackageVersion} reads the OfficialRstoxFrameworkVersions.txt file for the given StoX GUI version \cr \cr
+#' 
+#' @inheritParams utils::install.packages
 #' @param packageName The packages to get dependencies from.
 #' @param dependencyTypes A character vector listing the dependencies to get, with possible values "Depends", "Imports", "LinkingTo", "Suggests", "Enhances". Default is NA, implying c("Depends", "Imports", "LinkingTo").
 #' @param Rstox.repos,nonRstox.repos Either NULL to search for packages locally, or a repository passed to \code{\link[utils]{available.packages}}, where \code{Rstox.repos} is used to locate direct dependencies of the Rstox packages, and \code{nonRstox.reposs} is used to get the dependencies of the direct dependencies recursively, defaulted to the CRAN repository.
+#' @param download.repos The repository to download from.
 #' @param sort Logical: If TRUE sort the dependent packages, defaulted to FALSE to enable installing the most basic dependencies first.
+#' @param StoXGUIVersion The version of the StoX GUI defining the combination of official Rstox package versions.
+#' @param officialRstoxPackageVersionsFile The path to the file holding the link between StoX GUI version and Rstox package versions.
 #' @param destdir The directory to download binaries to, defaulted to NA which implies tempdir().
+#' @param platform The platform to download binaries for, defaulted to the current platform, but with the option to download for other platforms (possible values are "windows" and "macosx").
+#' @param twoDigitRVersion The two digit R version to downoad binaries for, defaulted to the current version, but with the option to download for other versions such as 3.6.
+#' @param packageName The packages considered official Rstox pakcages, "RstoxFramework","RstoxBase" and "RstoxData".
+#' @param include.optional Logical: If TRUE inclcude optional packages. Currently not used.
+#' @param toJSON Logical: If TRUE output a JSON string.
+#' @param skip.identical Logical: If TRUE do not install packages that are already installed with the exact same version.
+#' @param list.out Logical: If TRUE wrap the output of \code{getOfficialRstoxPackageVersion} in a list with packageName and version.
+#' 
+#' @name installPackages
+#' 
+NULL
+
+
+
+
+
 #' 
 #' @export
+#' @rdname installPackages
 #' 
 getNonRstoxDependencies <- function(
     packageName = c("RstoxFramework","RstoxBase", "RstoxData"), 
@@ -42,10 +65,172 @@ getNonRstoxDependencies <- function(
     
     return(allNonRstoxDependencies)
 }
-#' 
+#'
 #' @export
-#' @rdname getNonRstoxDependencies
-#' 
+#' @rdname installPackages
+#'
+installOfficialRstoxPackagesWithDependencies <- function(
+    StoXGUIVersion, 
+    officialRstoxPackageVersionsFile, 
+    destdir = NA, 
+    Rstox.repos = "https://stoxproject.github.io/repo", 
+    download.repos = "https://cloud.r-project.org", 
+    dependencyTypes = NA, 
+    sort = FALSE, 
+    platform = NA, 
+    skip.identical = FALSE, 
+    twoDigitRVersion = NA, 
+    toJSON = FALSE, 
+    quiet = FALSE
+) {
+    
+    res <- tryCatch({
+        
+        originalTimeout <- options("timeout")
+        options(timeout = 24*60*60)
+        # First install the officical Rstox pakcage versions with no dependencies:
+        RstoxPackageBinaryFiles <- installOfficialRstoxPackages(
+            StoXGUIVersion = StoXGUIVersion, 
+            officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile, 
+            include.optional = FALSE, 
+            dependencyTypes = FALSE, 
+            Rstox.repos = Rstox.repos, 
+            platform = platform, 
+            twoDigitRVersion = twoDigitRVersion, 
+            quiet = quiet
+        )
+        
+        # Then install non-Rstox dependencies using no repo to list the dependencies (Rstox.repos = NULL):
+        nonRstoxPackageBinaryFiles <- installNonRstoxDependencies(
+            destdir = destdir, 
+            dependencyTypes = dependencyTypes, 
+            Rstox.repos = NULL, 
+            download.repos = download.repos, 
+            sort = FALSE, 
+            platform = platform, 
+            skip.identical = skip.identical, 
+            twoDigitRVersion = twoDigitRVersion, 
+            quiet = quiet
+        )
+        options(timeout = originalTimeout)
+        
+        binaryFiles <- c(RstoxPackageBinaryFiles, nonRstoxPackageBinaryFiles)
+        
+        if(toJSON) {
+            binaryFiles <- vector2json(binaryFiles)
+        }
+    },
+    error=function(e) {
+        e
+    })
+    binaryFiles <- res
+    return(binaryFiles)
+}
+#'
+#' @export
+#' @rdname installPackages
+#'
+getOfficialRstoxPackageVersion <- function(
+    StoXGUIVersion = NULL, 
+    officialRstoxPackageVersionsFile = system.file("versions", "OfficialRstoxFrameworkVersions.txt", package = "RstoxFramework"), 
+    packageName = c("RstoxFramework","RstoxBase", "RstoxData"), 
+    include.optional = FALSE, 
+    toJSON = FALSE, 
+    list.out = FALSE
+) {
+    
+    # Read the officialRstoxPackageVersionsFile:
+    official <- readOfficialRstoxPackageVersionsFile(officialRstoxPackageVersionsFile)
+    
+    if(length(official)) {
+        # Get rows of RstoxFrameworkVersions within the minimum and maximum StoXGUI version:
+        if(length(StoXGUIVersion)) {
+            official <- subset(official, StoX == StoXGUIVersion)
+        }
+        else {
+            official <- utils::tail(official, 1)
+        }
+        
+        # Split the Dependencies:
+        dependencies <- strsplit(official$Dependencies, "[,]")[[1]]
+        dependencies <- extractPackageNameAsNames(dependencies)
+        packageVersionList <- c(list(RstoxFramework = official$RstoxFramework), dependencies)
+        
+        # This is a bit complicated, but takes care of package names and versions either pasted to strings or as separate values in a list:
+        if(!include.optional) {
+            packageVersionList <- packageVersionList[intersect(packageName, names(packageVersionList))]
+        }
+        
+        if(list.out) {
+            packageVersions <- list(
+                packageName = names(packageVersionList), 
+                version = unlist(packageVersionList)
+            )
+        }
+        else {
+            packageVersions <- getPackageNameAndVersionString(packageVersionList)
+        }
+        # Add the StoX version as an attribute:
+        attr(packageVersions, "StoX") <- official$StoX
+        attr(packageVersions, "Official") <- official$Official
+        
+        if(toJSON) {
+            packageVersions <- vector2json(packageVersions)
+        }
+        
+        return(packageVersions)
+    }
+    else {
+        return(NULL)
+    }
+}
+
+
+
+
+installNonRstoxDependencies <- function(
+    destdir = NA, 
+    dependencyTypes = NA, 
+    Rstox.repos = NULL, 
+    download.repos = "https://cloud.r-project.org", 
+    sort = FALSE, 
+    platform = NA, 
+    twoDigitRVersion = NA, 
+    skip.identical = FALSE, 
+    quiet = FALSE
+) {
+    
+    # Get the dependencies:
+    binaryLocalFiles <- downloadNonRstoxDependencies(
+        destdir = destdir, 
+        dependencyTypes = dependencyTypes, 
+        Rstox.repos = Rstox.repos, 
+        download.repos = download.repos, 
+        sort = sort, 
+        platform = platform, 
+        twoDigitRVersion = twoDigitRVersion, 
+        skip.identical = skip.identical, 
+        quiet = quiet
+    )
+    if(!length(binaryLocalFiles)) {
+        return(NULL)
+    }
+    
+    # For a clean install remove the packages first:
+    packagesToRemove <- getOnlyPackageName(basename(binaryLocalFiles))
+    removeExistingPackages(packagesToRemove)
+    
+    # Then install:
+    installBinaryRemove00LOCK(
+        rev(binaryLocalFiles), 
+        repos = NULL, 
+        quiet = quiet
+    )
+    #lapply(rev(binaryLocalFiles), install.packages, repos = NULL)
+    
+    return(binaryLocalFiles)
+}
+
 downloadNonRstoxDependencies <- function(
     packageName = c("RstoxFramework","RstoxBase", "RstoxData"), 
     destdir = NA, 
@@ -95,51 +280,6 @@ downloadNonRstoxDependencies <- function(
     
     return(binaryLocalFiles)
 }
-
-
-installNonRstoxDependencies <- function(
-    destdir = NA, 
-    dependencyTypes = NA, 
-    Rstox.repos = NULL, 
-    download.repos = "https://cloud.r-project.org", 
-    sort = FALSE, 
-    platform = NA, 
-    twoDigitRVersion = NA, 
-    skip.identical = FALSE, 
-    quiet = FALSE
-) {
-    
-    # Get the dependencies:
-    binaryLocalFiles <- downloadNonRstoxDependencies(
-        destdir = destdir, 
-        dependencyTypes = dependencyTypes, 
-        Rstox.repos = Rstox.repos, 
-        download.repos = download.repos, 
-        sort = sort, 
-        platform = platform, 
-        twoDigitRVersion = twoDigitRVersion, 
-        skip.identical = skip.identical, 
-        quiet = quiet
-    )
-    if(!length(binaryLocalFiles)) {
-        return(NULL)
-    }
-    
-    # For a clean install remove the packages first:
-    packagesToRemove <- getOnlyPackageName(basename(binaryLocalFiles))
-    removeExistingPackages(packagesToRemove)
-    
-    # Then install:
-    installBinaryRemove00LOCK(
-        rev(binaryLocalFiles), 
-        repos = NULL, 
-        quiet = quiet
-    )
-    #lapply(rev(binaryLocalFiles), install.packages, repos = NULL)
-    
-    return(binaryLocalFiles)
-}
-
 
 installOfficialRstoxPackages <- function(
     StoXGUIVersion, 
@@ -269,73 +409,8 @@ removeExistingPackages <- function(pkgs, lib = NULL) {
     packagesToRemove <- intersect(pkgs, installed)
     lapply(packagesToRemove, remove.packages, lib = lib)
 }
-#' Function to download all official Rstox packages and their CRAN dependencies
-#' 
-#' @inheritParams getNonRstoxDependencies
-#' @param StoXGUIVersion The version of the StoX GUI defining the combination of official Rstox package versions.
-#' @param officialRstoxPackageVersionsFile The path to the file holding the link between StoX GUI version and Rstox package versions.
-#' @param platform The platfor to downoad binaries for, defaulted to the current platform, but with the option to download for other platforms (possible values are "windows" and "macosx").
-#' @param twoDigitRVersion The two digit R version to downoad binaries for, defaulted to the current version, but with the option to download for other versions such as 3.6.
-#' 
-#' @export
-#'
-installOfficialRstoxPackagesWithDependencies <- function(
-    StoXGUIVersion, 
-    officialRstoxPackageVersionsFile, 
-    destdir = NA, 
-    Rstox.repos = "https://stoxproject.github.io/repo", 
-    download.repos = "https://cloud.r-project.org", 
-    dependencyTypes = NA, 
-    sort = FALSE, 
-    platform = NA, 
-    skip.identical = FALSE, 
-    twoDigitRVersion = NA, 
-    toJSON = FALSE, 
-    quiet = FALSE
-) {
-    
-    res <- tryCatch({
-        
-    originalTimeout <- options("timeout")
-    options(timeout = 24*60*60)
-    # First install the officical Rstox pakcage versions with no dependencies:
-    RstoxPackageBinaryFiles <- installOfficialRstoxPackages(
-        StoXGUIVersion = StoXGUIVersion, 
-        officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile, 
-        include.optional = FALSE, 
-        dependencyTypes = FALSE, 
-        Rstox.repos = Rstox.repos, 
-        platform = platform, 
-        twoDigitRVersion = twoDigitRVersion, 
-        quiet = quiet
-    )
-    
-    # Then install non-Rstox dependencies using no repo to list the dependencies (Rstox.repos = NULL):
-    nonRstoxPackageBinaryFiles <- installNonRstoxDependencies(
-        destdir = destdir, 
-        dependencyTypes = dependencyTypes, 
-        Rstox.repos = NULL, 
-        download.repos = download.repos, 
-        sort = FALSE, 
-        platform = platform, 
-        skip.identical = skip.identical, 
-        twoDigitRVersion = twoDigitRVersion, 
-        quiet = quiet
-    )
-    options(timeout = originalTimeout)
-    
-    binaryFiles <- c(RstoxPackageBinaryFiles, nonRstoxPackageBinaryFiles)
-    
-    if(toJSON) {
-        binaryFiles <- vector2json(binaryFiles)
-    }
-    },
-    error=function(e) {
-        e
-    })
-    binaryFiles <- res
-    return(binaryFiles)
-}
+
+
 
 
 getOnlyPackageName <- function(packageNameAndVersionString) {
@@ -346,25 +421,14 @@ getOnlyPackageVersion <- function(packageNameAndVersionString) {
 }
 
 
-#' Function to read the OfficialRstoxFrameworkVersions.txt file for the given StoX GUI version
-#' 
-#' @inheritParams getNonRstoxDependencies
-#' @inheritParams installOfficialRstoxPackagesWithDependencies
-#' @param packageName The packages considered official Rstox pakcages, "RstoxFramework","RstoxBase" and "RstoxData".
-#' @param include.optional Logical: If TRUE inclcude optional packages. Currently not used.
-#' @param toJSON Logical: If TRUE output a JSON string.
-#' 
-#' @export
-#'
-getOfficialRstoxPackageVersion <- function(
-    StoXGUIVersion = NULL, 
-    officialRstoxPackageVersionsFile = system.file("versions", "OfficialRstoxFrameworkVersions.txt", package = "RstoxFramework"), 
-    packageName = c("RstoxFramework","RstoxBase", "RstoxData"), 
-    include.optional = FALSE, 
-    toJSON = FALSE, 
-    list.out = FALSE
-) {
-    
+
+
+readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFile) {
+    # Get the file name:
+    if(!length(officialRstoxPackageVersionsFile)) {
+        officialRstoxPackageVersionsFile = system.file("versions", "OfficialRstoxFrameworkVersions.txt", package = "RstoxFramework")
+    }
+       
     # Read the officialRstoxPackageVersionsFile:
     official <- tryCatch(
         read.table(
@@ -377,47 +441,9 @@ getOfficialRstoxPackageVersion <- function(
         }
     )
     
-    if(length(official)) {
-        # Get rows of RstoxFrameworkVersions within the minimum and maximum StoXGUI version:
-        if(length(StoXGUIVersion)) {
-            official <- subset(official, StoX == StoXGUIVersion)
-        }
-        else {
-            official <- utils::tail(official, 1)
-        }
-        
-        # Split the Dependencies:
-        dependencies <- strsplit(official$Dependencies, "[,]")[[1]]
-        dependencies <- extractPackageNameAsNames(dependencies)
-        packageVersionList <- c(list(RstoxFramework = official$RstoxFramework), dependencies)
-        
-        # This is a bit complicated, but takes care of package names and versions either pasted to strings or as separate values in a list:
-        if(!include.optional) {
-            packageVersionList <- packageVersionList[intersect(packageName, names(packageVersionList))]
-        }
-        
-        if(list.out) {
-            packageVersions <- list(
-                packageName = names(packageVersionList), 
-                version = unlist(packageVersionList)
-            )
-        }
-        else {
-            packageVersions <- getPackageNameAndVersionString(packageVersionList)
-        }
-        # Add the StoX version as an attribute:
-        attr(packageVersions, "StoX") <- official$StoX
-        
-        if(toJSON) {
-            packageVersions <- vector2json(packageVersions)
-        }
-        
-        return(packageVersions)
-    }
-    else {
-        return(NULL)
-    }
+    return(official)
 }
+
 # Small function to extract package name from strings:
 extractPackageName <- function(x) {
     x <- strsplit(x, "[_]")
