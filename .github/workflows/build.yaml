@@ -13,9 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   node_version: 14, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg@latest'}
-          - {os: windows-latest, node_version: 14, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi@latest'}
-          - {os: ubuntu-latest,  node_version: 14, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian@latest'}
+          - {os: macOS-latest,   node_version: 10, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg@latest'}
+          - {os: windows-latest, node_version: 10, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi@latest'}
+          - {os: ubuntu-latest,  node_version: 10, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian@latest'}
     env:
       PLTF: ${{ matrix.config.pltf }}
       INSTALL_PKG: ${{ matrix.config.installer }}
@@ -28,15 +28,12 @@ jobs:
         with:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
-      #- run: npm install -g npm@latest
-      - run: npm install @angular/cli
       - run: npm install --include=dev
-      - run: npm install @types/node@latest
       - run: cd frontend
       - run: npm install --include=dev
-      - run: npm install @types/node@latest
+      - run: npm install -g @angular/cli@9.1.15
+      - run: npm install -g typescript@3.8.3
       - run: cd ..
-      - run: npm install electron@latest
       - run: npm install ${INSTALL_PKG}
 
       - name: Build
