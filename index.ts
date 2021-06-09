@@ -392,6 +392,9 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
 }
 
 async function checkLoadStatusRstoxFramework() : Promise<string> {
+  if(!rAvailable) {
+    return ""
+  }
   let cmd = "tryCatch({library(\"RstoxFramework\"); \"\"} ,error = function(e) {e})"
   loadStatusRstoxFramework = (await callR(cmd) as any).result.trim();
   logInfo("Load status RstoxFramework: " + loadStatusRstoxFramework);

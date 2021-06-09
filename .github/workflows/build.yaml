@@ -28,15 +28,12 @@ jobs:
         with:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
-      #- run: npm install -g npm@latest
-      - run: npm install @angular/cli
       - run: npm install --include=dev
-      - run: npm install @types/node@latest
       - run: cd frontend
       - run: npm install --include=dev
-      - run: npm install @types/node@latest
+      - run: npm install -g @angular/cli@9.1.15
+      - run: npm install -g typescript@3.8.3
       - run: cd ..
-      - run: npm install electron@latest
       - run: npm install ${INSTALL_PKG}
 
       - name: Build
@@ -59,7 +56,7 @@ jobs:
       - name: Code Sign (exe)
         if: runner.os == 'Windows'
         run: |
-          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 dist\StoX-win32-x64\StoX.exe
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://ts.ssl.com /td sha256 dist\StoX-win32-x64\StoX.exe
 
       - name: Set path for candle and light
         if: runner.os == 'Windows'
@@ -74,35 +71,43 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           npm run installer-win
-          cp dist/installers/*.msi installers/StoXInstaller/res/
-          cd installers/StoXInstaller
-          MSBuild.exe -p:Configuration=Release
-          cd ../..
+          #cp dist/installers/*.msi installers/StoXInstaller/res/
+          #cd installers/StoXInstaller
+          #MSBuild.exe -p:Configuration=Release
+          #cd ../..
         shell: bash
 
       - name: Code Sign (installers)
         if: runner.os == 'Windows'
         run: |
-          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 dist\installers\StoX.msi
-          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /tr http://tsa.starfieldtech.com /td SHA256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
+          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://ts.ssl.com /td sha256 dist\installers\StoX.msi
+          #& 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://ts.ssl.com /td sha256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
 
       - name: Renaming files for upload
         env:
           EXT: ${{ matrix.config.in_ext }}
         run: |
           export FINAL_TAG=$(node -pe "require('./package.json')['version']")$(if [ "$GITHUB_REF" = "refs/heads/develop" ]; then echo "+dev.${GITHUB_SHA::7}"; else echo ""; fi)
-          export FULL_TAG=$(node -pe "require('./package.json')['name']")-${FINAL_TAG}
+          export FULL_TAG=$(node -pe "require('./package.json')['name']")-installer-${PLTF}-${FINAL_TAG}
           mv $(ls dist/installers/*${EXT}) dist/installers/${FULL_TAG}.${EXT}
           echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
         shell: bash
 
-      - name: Renaming files for upload (Windows only)
-        if: runner.os == 'Windows'
-        env:
-          FULL_TAG: ${{ env.FULL_TAG }}
+      #- name: Renaming files for upload (Windows only)
+      #  if: runner.os == 'Windows'
+      #  env:
+      #    FULL_TAG: ${{ env.FULL_TAG }}
+      #  run: |
+      #    mv installers/StoXInstaller/x64/Release/StoXInstaller.exe dist/installers/${FULL_TAG}.exe
+      #  shell: bash
+
+      - name: Build Redhat RPM package
+        if: runner.os == 'Linux'
         run: |
-          mv installers/StoXInstaller/x64/Release/StoXInstaller.exe dist/installers/${FULL_TAG}.exe
+          npm install -g electron-installer-redhat@latest
+          electron-installer-redhat --src dist/StoX-linux-x64/ --dest dist/installers/ --arch x86_64
+          mv $(ls dist/installers/*rpm) dist/installers/${FULL_TAG}.rpm
         shell: bash
 
       - run: find dist/installers
@@ -110,7 +115,7 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: installer-${{ matrix.config.os }}-${{ env.FINAL_TAG  }}
+          name: ${{ env.FULL_TAG  }}
           path: dist/installers/${{ env.FULL_TAG }}*
 
       - name: Create release and upload files
