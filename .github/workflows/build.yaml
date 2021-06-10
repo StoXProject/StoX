@@ -87,9 +87,13 @@ jobs:
         env:
           EXT: ${{ matrix.config.in_ext }}
         run: |
-          export FINAL_TAG=$(node -pe "require('./package.json')['version']")$(if [ "$GITHUB_REF" = "refs/heads/develop" ]; then echo "+dev.${GITHUB_SHA::7}"; else echo ""; fi)
+          export VERSION=$(node -pe "require('./package.json')['version']")
+          export LAST_VERSION=${VERSION##*.}
+          export FINAL_TAG=${VERSION}$(if [ "$GITHUB_REF" = "refs/heads/develop" ]; then echo "+dev.${GITHUB_SHA::7}"; else echo ""; fi)
           export FULL_TAG=$(node -pe "require('./package.json')['name']")-installer-${PLTF}-${FINAL_TAG}
           mv $(ls dist/installers/*${EXT}) dist/installers/${FULL_TAG}.${EXT}
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "LAST_VERSION=${LAST_VERSION}" >> $GITHUB_ENV
           echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
         shell: bash
@@ -118,12 +122,25 @@ jobs:
           name: ${{ env.FULL_TAG  }}
           path: dist/installers/${{ env.FULL_TAG }}*
 
+      - name: Put official release
+        if: env.LAST_VERSION == '0' && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.OFFICIAL_RELEASE_TOKEN }}
+        with:
+          source_file: dist/installers/${{ env.FULL_TAG }}*
+          destination_repo: 'StoXProject/officialReleases'
+          destination_folder: '.'
+          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
+          user_name: 'github-actions'
+          commit_message: 'New release file for StoX version ${{ env.VERSION }} : ${{ env.FULL_TAG }}'
+
       - name: Create release and upload files
         if: github.event_name == 'push' && ( github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' )
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
           tag: v${{ env.FINAL_TAG }}
-          name: ${{ env.FULL_TAG }}
+          name: StoX-v${{ env.FINAL_TAG }}
           artifacts: dist/installers/${{ env.FULL_TAG }}*
           token: ${{ secrets.GITHUB_TOKEN }}
