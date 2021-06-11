@@ -133,9 +133,9 @@ jobs:
           cp dist/installers/${FULL_TAG}* target/
           cd target
           git add .
-          git diff-index --quiet HEAD || git commit -m "New release file for StoX version ${VERSION} : ${FULL_TAG}"
           git pull
-          git push target master
+          git diff-index --quiet HEAD || git commit -m "New release file for StoX version ${VERSION} : ${FULL_TAG}"
+          git push target main
           cd ..
           rm -fR target 
         shell: bash
