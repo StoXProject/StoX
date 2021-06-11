@@ -360,6 +360,14 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     /*cmd = "paste(.libPaths(), collapse=\",\")";
     versionR = (await callR(cmd) as any).result;
     logInfo("Lib paths " + versionR);*/
+    cmd = "if(!suppressWarnings(require(remotes, quietly = TRUE))) install.packages(\"remotes\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
+    logInfo(cmd);
+    let res11 = (await callR(cmd) as any).result;
+    
+    cmd = "if(!suppressWarnings(require(RCurl, quietly = TRUE))) install.packages(\"RCurl\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
+    logInfo(cmd);
+    let res22 = (await callR(cmd) as any).result;
+    
     cmd = "source(\"" + versionsTmpFile + "\")";
     logInfo(cmd);
     let res = (await callR(cmd) as any).result;
@@ -755,7 +763,7 @@ function setupServer() {
       if (serverStarted) {
         let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
         let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
-          officialsRFTmpFile + "\", quiet = T, skip.identical=T, toJSON=T)";
+          officialsRFTmpFile + "\", quiet = T, toJSON=T)";
         logInfo(cmd);
         let res = (await callR(cmd) as any).result;
         s = "Installed packages: " + res;
