@@ -238,14 +238,14 @@ getSupportedRVersions <- function() {
     return(supportedRVersion)
 }
 
-#tryDownload <- function(URL) {
-#    tryCatch(
-#        download.file(URL, destfile = tempfile(), quiet = TRUE), 
-#        error = function(e) {
-#            e
-#        }
-#    )
-#}
+tryDownload <- function(URL) {
+    tryCatch(
+        download.file(URL, destfile = tempfile(), quiet = TRUE), 
+        error = function(e) {
+            e
+        }
+    )
+}
 
 
 subsetBinaryPathsByIdenticallyInstalled <- function(packageTable, lib = NULL) {
@@ -836,10 +836,10 @@ getOfficialRstoxPackagesInfo <- function(
     binaries$buildRVersion <- buildRVersion
     
     # The followinng was slow, as it actually downloads:
-    #suppressWarnings(URLExists <- lapply(binaries$path, tryDownload))
-    #URLExists <- URLExists %in% 0
-    # Check that the URLs exist and subset to only those that exist:
-    URLExists <- RCurl::url.exists(binaries$path)
+    suppressWarnings(URLExists <- lapply(binaries$path, tryDownload))
+    URLExists <- URLExists %in% 0
+    # Check that the URLs exist and subset to only those that exist. This did not work on VPN, so we abandon it until proven r   obust:
+    #URLExists <- RCurl::url.exists(binaries$path)
     binaries <- binaries[URLExists, ]
     
     # Get the latest possible:
