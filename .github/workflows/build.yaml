@@ -123,7 +123,7 @@ jobs:
           path: dist/installers/${{ env.FULL_TAG }}*
 
       - name: Put official release
-        if: env.LAST_VERSION == '7' && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: env.LAST_VERSION == '0' && github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           OFFICIAL_RELEASE_TOKEN: ${{ secrets.OFFICIAL_RELEASE_TOKEN }}
           FULL_TAG: ${{ env.FULL_TAG }}
@@ -133,9 +133,9 @@ jobs:
           cp dist/installers/${FULL_TAG}* target/
           cd target
           git add .
-          git diff-index --quiet HEAD || git commit -m "New release file for StoX version ${VERSION} : ${FULL_TAG}"
           git pull
-          git push target master
+          git diff-index --quiet HEAD || git commit -m "New release file for StoX version ${VERSION} : ${FULL_TAG}"
+          git push
           cd ..
           rm -fR target 
         shell: bash
