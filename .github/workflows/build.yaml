@@ -123,17 +123,22 @@ jobs:
           path: dist/installers/${{ env.FULL_TAG }}*
 
       - name: Put official release
-        if: env.LAST_VERSION == '6' && github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: dmnemec/copy_file_to_another_repo_action@main
+        if: env.LAST_VERSION == '7' && github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
-          API_TOKEN_GITHUB: ${{ secrets.OFFICIAL_RELEASE_TOKEN }}
-        with:
-          source_file: dist/installers/${{ env.FULL_TAG }}*
-          destination_repo: 'StoXProject/officialReleases'
-          destination_folder: '.'
-          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
-          user_name: 'github-actions'
-          commit_message: 'New release file for StoX version ${{ env.VERSION }} : ${{ env.FULL_TAG }}'
+          OFFICIAL_RELEASE_TOKEN: ${{ secrets.OFFICIAL_RELEASE_TOKEN }}
+          FULL_TAG: ${{ env.FULL_TAG }}
+          VERSION: ${{ env.VERSION }}
+        run: |
+          git clone https://.:${OFFICIAL_RELEASE_TOKEN}@github.com/StoXProject/officialReleases.git target
+          cp dist/installers/${FULL_TAG}* target/
+          cd target
+          git add .
+          git diff-index --quiet HEAD || git commit -m "New release file for StoX version ${VERSION} : ${FULL_TAG}"
+          git pull
+          git push target master
+          cd ..
+          rm -fR target 
+        shell: bash
 
       - name: Create release and upload files
         if: github.event_name == 'push' && ( github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' )
