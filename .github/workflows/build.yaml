@@ -135,7 +135,7 @@ jobs:
           git add .
           git pull
           git diff-index --quiet HEAD || git commit -m "New release file for StoX version ${VERSION} : ${FULL_TAG}"
-          git push target main
+          git push
           cd ..
           rm -fR target 
         shell: bash
