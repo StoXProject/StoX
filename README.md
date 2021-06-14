@@ -8,7 +8,7 @@ StoX is an open source software developed at IMR, Norway, to analyze survey data
 
 ## Installation
 
-Download StoX from (https://github.com/StoXProject/StoX/releases). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
+Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v3.0.10). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
 
 ### Windows:
 
@@ -22,7 +22,7 @@ Step 3:
 Click on "Tools" > "R connection" in the menu to define the path to R (for example C:\Program Files\R\R-4.0.3\bin\x64).
 
 Step 4: 
-Click on "Tools" > "Install Rstox packages" in the menu. This will install the required R packages. It is recommended to close Rstudio before running Install Rstox packages. 
+Click on "Tools" > "Install Rstox packages" in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages. 
 
 Step 5: 
 StoX is now ready for use.
@@ -39,10 +39,10 @@ Step 3:
 Open StoX by double clicking on the "StoX.app" in the Applications folder in the Finder app. If you get a message saying "StoX can't be opened because the identity of the developer cannot be confirmed", or similar, ctr + click and select Open. 
 
 Step 4: 
-Click on "Tools" > "R connection" in the menu to define the path to R. Normally the following path will work "/Library/Frameworks/R.framework/Resources/bin" (this path will work even if you at a later point in time upgrade R).
+Click on "Tools" > "R connection" in the menu to define the path to R. Normally the following path will work "/Library/Frameworks/R.framework/Resources" (this path will work even if you at a later point in time upgrade R). Otherwise, the path to R can be found on the command line using 'R RHOME'.
 
 Step 5: 
-Click on "Tools" > "Install Rstox packages" in the menu. This will install the required R packages. It is recommended to close Rstudio before running Install Rstox packages. 
+Click on "Tools" > "Install Rstox packages" in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages. 
 
 Step 6: 
 StoX is now ready for use. 
@@ -50,23 +50,26 @@ StoX is now ready for use.
 ### Linux:
 
 Step 1: 
-Install by double-clicking on the downloaded .rpm or .deb file, and follow the instructions. *****
+Install by double-clicking on the downloaded .rpm or .deb file, and follow the instructions.
 
 Step 2: 
 Install R 3.6.3 or newer if not already installed.
 
 Step 3: 
-*****
+Open StoX either by clicking on the StoX icon or using the command 'StoX'.
 
 Step 4: 
-Click on "Tools" > "R connection" in the menu to define the path to R. *****
+Click on "Tools" > "R connection" in the menu to define the path to R. The path to R can be found with the command 'R RHOME'.
 
 Step 5: 
-Click on "Tools" > "Install Rstox packages" in the menu. This will install the required R packages. It is recommended to close Rstudio before running Install Rstox packages. 
+Click on "Tools" > "Install Rstox packages" in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages. 
 
 Step 6: 
 StoX is now ready for use. 
 
+## Examples
+
+Example StoX projects can be downloaded from https://github.com/StoXProject/StoXExamples.
 
 ## License
 
@@ -74,5 +77,5 @@ LGPL-3 © Norwegian Institute of Marine research (IMR) ([homepage](https://www.h
 
 ---
 
-### For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md
+### For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md.
 
