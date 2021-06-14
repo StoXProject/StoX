@@ -122,7 +122,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     
     # Step 3: Install the dependencies
     toInstall <- remotes::package_deps(dependencies, dependencies = c("Depends", "Imports", "LinkingTo"), repos = dependency.repos, type = "binary")
-    # Install only packages with lower loacllu installed version:
+    # Install only packages with lower locally installed version:
     toInstall <- subset(toInstall, toInstall$diff < 0)
     
     #removeExistingPackages(toInstall$package, lib = lib)
@@ -132,7 +132,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     if(length(lockedDirs)) {
         warning("The directory ", lib, " contains locked folders (name starting with 00LOCK). If problems are expreienced during installation of the R pacckcages, you may try deleting such folders manually.")
     }
-    utils::install.packages(toInstall$package, repos = dependency.repos, type = "binary")
+    utils::install.packages(toInstall$package, repos = dependency.repos, type = "binary", quiet = quiet, lib = lib)
     
     # Step 4: Install the Rstox packages
     binaryLocalFiles <- paste(destdir, basename(officialRstoxPackagesInfo$Package), sep = "/")
