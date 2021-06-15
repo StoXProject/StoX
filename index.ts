@@ -492,9 +492,12 @@ function getRstoxFrameworkInstallCmd(): string {
     })
   })
 }*/
+const getPropertiesFileName = function getPropertiesFileName() {
+  return require('os').homedir() + "/.stox.properties." + stoxVersion + ".json";
+}
 
 const readPropertiesFromFile = function readPropertiesFromFile() {
-  let propFileName = require('os').homedir() + "/.stox.properties.json";
+  let propFileName =getPropertiesFileName();
   try {
     if (fs.existsSync(propFileName)) {
       try {
@@ -528,7 +531,7 @@ const writePropertiesToFile = function writePropertiesToFile() {
   if (properties == null) {
     return; // Prevent properties to be reset.
   }
-  let resourcefile = require('os').homedir() + "/.stox.properties.json";
+  let resourcefile = getPropertiesFileName();
   try {
     let options = { encoding: 'utf-8', flag: 'w' };
     /*if (properties.projectRootPath) {
