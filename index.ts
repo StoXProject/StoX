@@ -364,9 +364,9 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     logInfo(cmd);
     let res11 = (await callR(cmd) as any).result;
     
-    cmd = "if(!suppressWarnings(require(RCurl, quietly = TRUE))) install.packages(\"RCurl\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
-    logInfo(cmd);
-    let res22 = (await callR(cmd) as any).result;
+    //cmd = "if(!suppressWarnings(require(RCurl, quietly = TRUE))) install.packages(\"RCurl\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
+    //logInfo(cmd);
+    //let res22 = (await callR(cmd) as any).result;
     
     cmd = "source(\"" + versionsTmpFile + "\")";
     logInfo(cmd);
