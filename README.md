@@ -13,7 +13,7 @@ Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v3.0.11). F
 ### Windows:
 
 Step 1: 
-Install by double-clicking on the downloaded .msi file, and follow the instructions.
+Install by double-clicking on the downloaded .msi file, and follow the instructions. If you get a message along the lines that the installer is blocked by the systetm, you can click on "More info" and select "Run anyway"
 
 Step 2: 
 Install R 3.6.3 or newer if not already installed.
