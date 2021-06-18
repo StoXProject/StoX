@@ -122,24 +122,6 @@ jobs:
           name: ${{ env.FULL_TAG  }}
           path: dist/installers/${{ env.FULL_TAG }}*
 
-      - name: Put official release
-        if: env.LAST_VERSION == '0' && github.event_name == 'push' && github.ref == 'refs/heads/master'
-        env:
-          OFFICIAL_RELEASE_TOKEN: ${{ secrets.OFFICIAL_RELEASE_TOKEN }}
-          FULL_TAG: ${{ env.FULL_TAG }}
-          VERSION: ${{ env.VERSION }}
-        run: |
-          git clone https://.:${OFFICIAL_RELEASE_TOKEN}@github.com/StoXProject/officialReleases.git target
-          cp dist/installers/${FULL_TAG}* target/
-          cd target
-          git add .
-          git pull
-          git diff-index --quiet HEAD || git commit -m "New release file for StoX version ${VERSION} : ${FULL_TAG}"
-          git push
-          cd ..
-          rm -fR target 
-        shell: bash
-
       - name: Create release and upload files
         if: github.event_name == 'push' && ( github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' )
         uses: ncipollo/release-action@v1
