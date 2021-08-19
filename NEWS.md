@@ -1,3 +1,15 @@
+# Stox v3.1.1 (2021-08-19)
+
+## General
+* The unofficial version StoX 3.1.1 includes methods for importing AcoustiPSU, BioticAssignment and StratumPolygon from a StoX 2.7 project description file (project.xml), through the DefinitionMethod "ResourceFile" in DefineAcoustiPSU, DefineBioticAssignment and DefineStratumPolygon (and in DefineSurvey, which reads the includeintotal tag of the stratumpolygon process data). 
+* StoX 3.1.1 also corrects a bug in SuperIndividuals() where length measured individuals were counted over all beams, whereas per beam was correct. This caused under-estimation for acoustic estimates where different vessels have different Beam key, e.g. due to different transceiver number in the NMDEchosounder xml format.
+
+## Detailed changes in Rstox packages
+* Fixed bug with CompensationTable in GearDependentCatchCompensation.
+* Fixed formatting of output from WriteICESBiotic() so that precision is kept and values are not padded with blanks and zeros. Fixed bug in writeXmlFile().
+* Changed Distance in ICESBiotic() to distance * 1852.
+* Fixed bug where TranslateStoxBiotic() and similar functions changed type of the data, so that translating numeric values did not work properly.
+
 # Stox v3.1.0 (2021-06-18)
 
 ## General
