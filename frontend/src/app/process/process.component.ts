@@ -102,6 +102,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
                     this.ps.outputTables.push({ processId: this.ps.selectedProcessId, tableName: e, table: fullTableName, output: out });
                     idx = this.ps.outputTables.length - 1;
                   }
+                  this.ps.bottomViewActivator.next(1)
                   this.ps.outputTableActivator.next(idx)
                 }
               };
