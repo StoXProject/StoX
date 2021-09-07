@@ -383,7 +383,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     if(checkLoadStatus) {
       await checkLoadStatusRstoxFramework();
     }
-    cmd = "tryCatch(paste0(\"RStoxFramework_\", as.character(packageVersion(\"RstoxFramework\"))),error = function(e) {\"\"})"
+    cmd = "tryCatch(paste0(\"RstoxFramework_\", as.character(packageVersion(\"RstoxFramework\"))),error = function(e) {\"\"})"
     versionRstoxFramework = (await callR(cmd) as any).result;
     logInfo(versionRstoxFramework);
 

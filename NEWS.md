@@ -1,3 +1,13 @@
+# Stox v3.1.2 (2021-09-07)
+
+## General
+* The unofficial version StoX 3.1.2 shifts focus to the User log in the GUI when an error or a warning occurs.
+* Reports using summaryStox now returns NA for missing values, instead of an error.
+* Added warnings when RemoveMissingValues or UseOutputData is TRUE.
+
+## Rstox packages
+* Added the function convertStoX2.7To3(), which can be used to convert a StoX 2.7 project to a StoX 3.1.2 project based on a template StoX 3.1.2 project.
+
 # Stox v3.1.1 (2021-08-19)
 
 ## General

@@ -36,6 +36,7 @@ export class ProjectService {
   //private m_isSelectedProjectSaved = true;
   outputTables: OutputTable[] = [];
   public outputTableActivator: Subject<number> = new Subject<number>();
+  public bottomViewActivator: Subject<number> = new Subject<number>();
 
   models: Model[];
 

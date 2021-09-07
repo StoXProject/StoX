@@ -38,7 +38,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     private installRPackagesDlgService: InstallRPackagesDlgService,
     private ds: DataService
   ) {
-    ps.outputTableActivator.subscribe({ next: (idx) => { this.bottomTabGroup.selectedIndex = 1; } })
+    ps.bottomViewActivator.subscribe({ next: (idx) => { this.bottomTabGroup.selectedIndex = idx; } })
     // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];

@@ -701,6 +701,9 @@ getBinaryFileExt <- function(platform = NA) {
     else if (platform == "macosx") {
         fileExt <- "tgz"
     }
+    else if (platform == "linux") {
+        fileExt <- "deb"
+    }
     
     return(fileExt)
 }
