@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/style.css?t=90051322">
+    <script src="assets/script.js?t=93f1a66c"></script>
+    <title>StoX</title>
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body class="-menu-visible">
+    <div class="doc-layout">
+      <div class="toggle menu-toggle js-menu-toggle"></div>
+      <div class="menu toc-menu">
+        <ul>
+          <li class="menu-item -level-0 -parent">
+            <ul class="submenu">
+              <li class="menu-item -level-1"><a class="link title -active link-index" href="index.html">StoX</a>
+              </li>
+              <li class="menu-item -level-1"><a class="link title link-introduction" href="#introduction">Introduction</a>
+              </li>
+              <li class="menu-item -level-1 -parent"><a class="link title link-installation" href="#installation">Installation</a>
+                <ul class="submenu">
+                  <li class="menu-item -level-2"><a class="link title link-windows:" href="#windows:">Windows:</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title link-macos:" href="#macos:">MacOS:</a>
+                  </li>
+                  <li class="menu-item -level-2"><a class="link title link-linux:" href="#linux:">Linux:</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-item -level-1"><a class="link title link-examples" href="#examples">Examples</a>
+              </li>
+              <li class="menu-item -level-1 -parent"><a class="link title link-license" href="#license">License</a>
+                <ul class="submenu">
+                  <li class="menu-item -level-2"><a class="link title link-for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-." href="#for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-.">For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md .</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="body page-index">
+        <div class="header-nav">
+          <div class="right">
+          </div>
+        </div>
+        <div class="markdown-body"><h1 id="stox">StoX</h1>
+<h2 id="introduction">Introduction</h2>
+<p>StoX is an open source software developed at IMR, Norway, to analyze survey data and calculate survey estimates from acoustic and swept area surveys. The program is a stand-alone application for easy sharing and further development in cooperation with other institutes.</p>
+<p>&#x201C;StoX is designed as a tool for transparent and reproducible survey estimation across nations and survey objectives. All methods, user settings and links to input data are documented in a description file. A process is a user&#x2010;defined call to one function available in a library of functions defined by StoX. Any StoX model can be modified by changing parameters of the processes, adding or removing processes and by rearranging their order of execution. Different StoX functions require one or more input datasets, which can be data files or output from previously executed processes.&#x201D; <a href="https://doi.org/10.1111/2041-210X.13250">Johnsen, E., Totland, A., Sk&#xE5;levik, &#xC5;., Holmin, A. J., Dings&#xF8;r, G. E., Fuglebakk, E., &amp; Handegard, N. O. (2019). StoX: An open source software for marine survey analyses. Methods in Ecology and Evolution, 10(9), 1523-1528.</a></p>
+<h2 id="installation">Installation</h2>
+<p>See <a href="https://github.com/StoXProject/StoX/blob/master/NEWS.md#Stox-v310-2021-06-18">release notes for StoX 3.1.0</a>.</p>
+<p>Download StoX from (<a href="https://github.com/StoXProject/StoX/releases/tag/v3.1.0">https://github.com/StoXProject/StoX/releases/tag/v3.1.0</a>). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:</p>
+<h3 id="windows:">Windows:</h3>
+<p>Step 1:
+Install by double-clicking on the downloaded .msi file, and follow the instructions. If you get a message along the lines that the installer is blocked by the system, you can click on &quot;More info&quot; and select &quot;Run anyway&quot;.</p>
+<p>Step 2:
+Install R 3.6.3 or newer if not already installed.</p>
+<p>Step 3:
+Click on &quot;Tools&quot; &gt; &quot;R connection&quot; in the menu to define the path to R (for example C:\Program Files\R\R-4.0.3\bin\x64).</p>
+<p>Step 4:
+Click on &quot;Tools&quot; &gt; &quot;Install Rstox packages&quot; in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages.</p>
+<p>Step 5:
+StoX is now ready for use.</p>
+<h3 id="macos:">MacOS:</h3>
+<p>Step 1:
+Install by double-clicking on the downloaded .dmg file, and follow the instructions.</p>
+<p>Step 2:
+Install R 3.6.3 or newer if not already installed.</p>
+<p>Step 3:
+Open StoX by double clicking on the &quot;StoX.app&quot; in the Applications folder in the Finder app. If you get a message saying &quot;StoX can&apos;t be opened because the identity of the developer cannot be confirmed&quot;, or similar, ctr + click and select Open.</p>
+<p>Step 4:
+Click on &quot;Tools&quot; &gt; &quot;R connection&quot; in the menu to define the path to R. Normally the following path will work &quot;/Library/Frameworks/R.framework/Resources&quot; (this path will work even if you at a later point in time upgrade R). Otherwise, the path to R can be found on the command line using &apos;R RHOME&apos;.</p>
+<p>Step 5:
+Click on &quot;Tools&quot; &gt; &quot;Install Rstox packages&quot; in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages.</p>
+<p>Step 6:
+StoX is now ready for use.</p>
+<h3 id="linux:">Linux:</h3>
+<p>Step 1:
+Install by double-clicking on the downloaded .rpm or .deb file, and follow the instructions.</p>
+<p>Step 2:
+Install R 3.6.3 or newer if not already installed.</p>
+<p>Step 3:
+Open StoX either by clicking on the StoX icon or using the command &apos;StoX&apos;.</p>
+<p>Step 4:
+Click on &quot;Tools&quot; &gt; &quot;R connection&quot; in the menu to define the path to R. The path to R can be found with the command &apos;R RHOME&apos;.</p>
+<p>Step 5:
+Click on &quot;Tools&quot; &gt; &quot;Install Rstox packages&quot; in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages.</p>
+<p>Step 6:
+StoX is now ready for use.</p>
+<h2 id="examples">Examples</h2>
+<p>Example StoX projects can be downloaded from <a href="https://github.com/StoXProject/StoXExamples">https://github.com/StoXProject/StoXExamples</a>.</p>
+<h2 id="license">License</h2>
+<p>MIT &#xA9; Norwegian Institute of Marine research (IMR) (<a href="https://www.hi.no/en">homepage</a>).</p>
+<hr>
+<h3 id="for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-.">For historical release notes, see: <a href="https://github.com/StoXProject/StoX/blob/master/NEWS.md">https://github.com/StoXProject/StoX/blob/master/NEWS.md</a> .</h3>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

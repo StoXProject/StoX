@@ -1,0 +1,116 @@
+{
+  "toc": {
+    "sections": [
+      {
+        "title": "StoX",
+        "source": "README.md",
+        "expand": true,
+        "url": "index.html",
+        "slug": "index",
+        "headings": [
+          {
+            "title": "Introduction",
+            "depth": 2,
+            "id": "introduction"
+          },
+          {
+            "title": "Installation",
+            "depth": 2,
+            "id": "installation",
+            "headings": [
+              {
+                "title": "Windows:",
+                "depth": 3,
+                "id": "windows:"
+              },
+              {
+                "title": "MacOS:",
+                "depth": 3,
+                "id": "macos:"
+              },
+              {
+                "title": "Linux:",
+                "depth": 3,
+                "id": "linux:"
+              }
+            ]
+          },
+          {
+            "title": "Examples",
+            "depth": 2,
+            "id": "examples"
+          },
+          {
+            "title": "License",
+            "depth": 2,
+            "id": "license",
+            "headings": [
+              {
+                "title": "For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md .",
+                "depth": 3,
+                "id": "for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "index": {
+    "index.html": {
+      "source": "README.md",
+      "title": "StoX",
+      "pageTitle": "StoX",
+      "slug": "index",
+      "headings": [
+        {
+          "title": "Introduction",
+          "depth": 2,
+          "id": "introduction"
+        },
+        {
+          "title": "Installation",
+          "depth": 2,
+          "id": "installation",
+          "headings": [
+            {
+              "title": "Windows:",
+              "depth": 3,
+              "id": "windows:"
+            },
+            {
+              "title": "MacOS:",
+              "depth": 3,
+              "id": "macos:"
+            },
+            {
+              "title": "Linux:",
+              "depth": 3,
+              "id": "linux:"
+            }
+          ]
+        },
+        {
+          "title": "Examples",
+          "depth": 2,
+          "id": "examples"
+        },
+        {
+          "title": "License",
+          "depth": 2,
+          "id": "license",
+          "headings": [
+            {
+              "title": "For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md .",
+              "depth": 3,
+              "id": "for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sources": {
+    "README.md": "index.html"
+  }
+}
