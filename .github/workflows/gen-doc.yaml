@@ -9,12 +9,6 @@ name: docpress
 jobs:
   docpress:
     runs-on: ubuntu-20.04
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GIT_NAME: ${{ github.actor }}
-      GIT_EMAIL: ${{ github.actor }}@users.noreply.github.com
-      GITHUB_REPO: ${{ github.repository }}
-      GIT_SOURCE: _docpress
 
     steps:
       - uses: actions/checkout@v2
@@ -25,8 +19,10 @@ jobs:
       - name: Install Packages
         run: |
           npm install --save-dev --save-exact docpress
-          npm install --save-dev --save-exact git-update-ghpages
       - name: Build Docs
         run: ./node_modules/.bin/docpress build
       - name: Deploy Docs
-        run: ./node_modules/.bin/git-update-ghpages -e
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages 
+          folder: _docpress
