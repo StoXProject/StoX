@@ -10,11 +10,11 @@ jobs:
   docpress:
     runs-on: ubuntu-20.04
     env:
-      - GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - GIT_NAME: ${{ env.GITHUB_ACTOR }}
-      - GIT_EMAIL: ${{ env.GITHUB_ACTOR }}@users.noreply.github.com
-      - GITHUB_REPO: ${{ env.GITHUB_REPOSITORY }}
-      - GIT_SOURCE: _docpress
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GIT_NAME: ${{ env.GITHUB_ACTOR }}
+      GIT_EMAIL: ${{ env.GITHUB_ACTOR }}@users.noreply.github.com
+      GITHUB_REPO: ${{ env.GITHUB_REPOSITORY }}
+      GIT_SOURCE: _docpress
 
     steps:
       - uses: actions/checkout@v2
