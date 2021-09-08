@@ -1,0 +1,32 @@
+on:
+  push:
+    branches: test_build_doc
+    paths:
+      - README.md
+
+name: docpress
+
+jobs:
+  docpress:
+    runs-on: ubuntu-20.04
+    env:
+      - GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - GIT_NAME: ${{ env.GITHUB_ACTOR }}
+      - GIT_EMAIL: ${{ env.GITHUB_ACTOR }}@users.noreply.github.com
+      - GITHUB_REPO: ${{ env.GITHUB_REPOSITORY }}
+      - GIT_SOURCE: _docpress
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install Packages
+        run: |
+          npm install --save-dev --save-exact docpress
+          npm install --save-dev --save-exact git-update-ghpages
+      - name: Build Docs
+        run: ./node_modules/.bin/docpress build
+      - name: Deploy Docs
+        run: ./node_modules/.bin/git-update-ghpages -e
