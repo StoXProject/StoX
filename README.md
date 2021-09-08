@@ -79,5 +79,5 @@ MIT © Norwegian Institute of Marine research (IMR) ([homepage](https://www.hi.n
 
 ---
 
-### For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md.
+### For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md .
 
