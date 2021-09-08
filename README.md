@@ -75,7 +75,7 @@ Example StoX projects can be downloaded from https://github.com/StoXProject/StoX
 
 ## License
 
-LGPL-3 © Norwegian Institute of Marine research (IMR) ([homepage](https://www.hi.no/en)).
+MIT © Norwegian Institute of Marine research (IMR) ([homepage](https://www.hi.no/en)).
 
 ---
 
