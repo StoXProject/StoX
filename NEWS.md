@@ -1,3 +1,34 @@
+# Stox v3.2.0 (2021-09-07)
+
+## General
+* The new StoX 3.2.0 includes methods for importing AcoustiPSU, BioticAssignment and StratumPolygon from a StoX 2.7 project description file (project.xml), through the DefinitionMethod "ResourceFile" in DefineAcoustiPSU, DefineBioticAssignment and DefineStratumPolygon (and in DefineSurvey, which reads the includeintotal tag of the stratumpolygon process data).
+* StoX 3.2.0 also corrects a bug in SuperIndividuals() where length measured individuals were counted over all beams, whereas per beam was correct. This caused under-estimation for acoustic estimates where different vessels have different Beam key, e.g. due to different transceiver number in the NMDEchosounder xml format.
+* In addition the GUI shifts focus to the User log in the GUI when an error or a warning occurs. Warnings are introduced when RemoveMissingValues or UseOutputData is TRUE.
+
+## Rstox packages
+* Added the function convertStoX2.7To3(), which can be used to convert a StoX 2.7 project to a StoX 3.1.2 project based on a template StoX 3.1.2 project.
+* Reports using summaryStox now returns NA for missing values, instead of an error.
+
+## Detailed changes in Rstox packages
+* Fixed bug with CompensationTable in GearDependentCatchCompensation.
+* Fixed formatting of output from WriteICESBiotic() so that precision is kept and values are not padded with blanks and zeros. Fixed bug in writeXmlFile().
+* Changed Distance in ICESBiotic() to distance * 1852.
+* Fixed bug where TranslateStoxBiotic() and similar functions changed type of the data, so that translating numeric values did not work properly.
+
+
+# Stox v3.1.3 (2021-09-10)
+
+## General
+* The unofficial version StoX 3.1.3 includes several improvements regarding speed, specifically a significant speed up of the function DefineAcousticPSU() when DefinitionMethod is "EDSUToPSU", and the new option of simplifying stratum polygons by the new parameters SimplifyStratumPolygon and SimplificationFactor in DefineStratumPolygon(), which reduces time of opening and saving project where DefineStratumPolygon() reads complicated straum polygons. Also, the function StoxBiotic has been sped up when individuals are generated from NumberAtLength of the Catch table of ICESBiotic xml files.
+* The format of output text files with file extension "txt" has been changed to support equallity when reading the files back into R with the function readModelData() of RstoxFramework. Before, all values were un-quoted, including strings. This had the consequence that strings consisting of numbers, such as IDs 1, 2, etc, were converted to numeric by readModelData(). All strings are now quoted to avoid this problem. Also, missing values were written as empty strings, but are now changed to NA.
+* Added the function SplitNASC() intended to replace SplitMeanNASC(). SplitNASC() uses NASCData and AcousticPSU as input and generates one PSU per EDSU for splitting the NASC based on BioticAssignment, and then returns a NASCData object. Consequently one can skip the MeanNASC() function in the model. 
+* Fixed bug when using depth TargetStrengthMethod = "LengthAndDepthDependent" in DefineAcousticTargetStrength() which is used in AcousticDensity(), which caused the function to fail. Length and depth dependent target strength is now possible.
+
+## Detailed changes
+* Fixed bug when reading shapefiles or GeoJSON in DefineStratumPolygon(), by introducing the parameter StratumNameLabel in DefineStratumPolygon().
+* Changed from [0, Inf] to [min, max] of channel depth when DefinitionMethod "WaterColumn" in DefineLayer().
+
+
 # Stox v3.1.2 (2021-09-07)
 
 ## General
@@ -7,6 +38,7 @@
 
 ## Rstox packages
 * Added the function convertStoX2.7To3(), which can be used to convert a StoX 2.7 project to a StoX 3.1.2 project based on a template StoX 3.1.2 project.
+
 
 # Stox v3.1.1 (2021-08-19)
 
@@ -19,6 +51,7 @@
 * Fixed formatting of output from WriteICESBiotic() so that precision is kept and values are not padded with blanks and zeros. Fixed bug in writeXmlFile().
 * Changed Distance in ICESBiotic() to distance * 1852.
 * Fixed bug where TranslateStoxBiotic() and similar functions changed type of the data, so that translating numeric values did not work properly.
+
 
 # Stox v3.1.0 (2021-06-18)
 
@@ -67,6 +100,7 @@
 * Changed TowDistance to nautical miles.
 * Added ChannelDepthUpper-ChannelDepthLower as Channel in StoxAcousic. 
 * Fixed bug in filterData, where propagateUpwards = TRUE did not remove rows of the higher tables if these rows were not present in the filtered table.
+
 
 # Stox v3.0.0 (2021-02-12)
 * First officcial release of the new generation of StoX.
