@@ -16,6 +16,16 @@
 * Fixed bug where TranslateStoxBiotic() and similar functions changed type of the data, so that translating numeric values did not work properly.
 
 
+# Stox v3.1.4 (2021-09-20)
+
+## General
+* The unofficial version StoX 3.1.4 fixes a bug with the button "Run next" in the GUI. If the active process is modified (change in parameters or changes in procecss data made in the map) then that process is run again, so that "Run next" actually means to run the next incomplete process.
+* Also fixed a bug when "Install Rstox packages" from the GUI on Linux (was tryring to install binaries, but only source is available for Linux). 
+
+## Detailed changes
+* Fixed bug where LengthDistribution produced a line of NA in IndividualTotalLength for subsamples that were completely empty by the filter, thus resulting in a small percentage of the WeightedCount assigned to this NA length in the percent length distribution, and consequently reducinng the WeightedCount of the valid lengths.
+
+
 # Stox v3.1.3 (2021-09-10)
 
 ## General
