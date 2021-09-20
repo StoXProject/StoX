@@ -49,7 +49,7 @@ export class OpenProjectDlg {
         try {
             let isProject: boolean = await this.dataService.isProject(this.service.projectPath).toPromise();
             if (!isProject) {
-                this.msgService.setMessage(this.service.projectPath + " is not a project!");
+                this.msgService.setMessage(this.service.projectPath + " is not a project, or R connection not set!");
                 this.msgService.showMessage();
                 return;
             }
