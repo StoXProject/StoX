@@ -62,7 +62,7 @@ export class RunService {
     getRunNextIdx(): number {
         return this.ps.processes.length == 0 || this.ps.getActiveProcessIdx() === null ||
             this.ps.getActiveProcessIdx() < this.ps.processes.length - 1 ?
-            this.ps.getActiveProcessIdx() + 1 : null;
+            this.ps.getActiveProcessIdx() + (this.ps.activeProcess.processDirty ? 0 : 1) : null;
     }
     canRunNext(): boolean {
         return this.canRun() && this.getRunNextIdx() != null;
