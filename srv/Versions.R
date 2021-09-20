@@ -121,7 +121,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     )
     
     # Step 3: Install the dependencies
-    toInstall <- remotes::package_deps(dependencies, dependencies = c("Depends", "Imports", "LinkingTo"), repos = dependency.repos, type = "binary")
+    toInstall <- remotes::package_deps(dependencies, dependencies = c("Depends", "Imports", "LinkingTo"), repos = dependency.repos, type = getInstallType())
     # Install only packages with lower locally installed version:
     toInstall <- subset(toInstall, toInstall$diff < 0)
     
@@ -132,7 +132,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     if(length(lockedDirs)) {
         warning("The directory ", lib, " contains locked folders (name starting with 00LOCK). If problems are expreienced during installation of the R pacckcages, you may try deleting such folders manually.")
     }
-    utils::install.packages(toInstall$package, repos = dependency.repos, type = "binary", quiet = quiet, lib = lib)
+    utils::install.packages(toInstall$package, repos = dependency.repos, type = getInstallType(), quiet = quiet, lib = lib)
     
     # Step 4: Install the Rstox packages
     binaryLocalFiles <- paste(destdir, basename(officialRstoxPackagesInfo$Package), sep = "/")
@@ -151,7 +151,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
         warning("The directory ", lib, " contains locked folders (name starting with 00LOCK). If problems are expreienced during installation of the R pacckcages, you may try deleting such folders manually.")
     }
     # Then install into first of .libPaths():
-    installedRstoxPackages <- utils::install.packages(binaryLocalFiles, type = "binary", repos = NULL, quiet = quiet, lib = lib)
+    installedRstoxPackages <- utils::install.packages(binaryLocalFiles, type = getInstallType(), repos = NULL, quiet = quiet, lib = lib)
     
     allInstalledPackages <- c(
         toInstall$package, 
@@ -505,7 +505,7 @@ getAvailablePackages <- function(packageName = NULL, repos = "https://cloud.r-pr
     
     # Get the available packages in the repos:
     if(length(repos)) {
-        URL <- buildReposContrib(
+        URL <- getBinaryPackageListURL(
             repos = repos, 
             platform = platform, 
             twoDigitRVersion = twoDigitRVersion
@@ -544,7 +544,7 @@ exlcudeBasePackages <- function(x) {
     setdiff(x, rownames(utils::installed.packages(priority="base")))
 }
 
-# Funcction to get platform code used in the path to the package binarry:
+# Function to get platform code used in the path to the package (binary if not on Linux):
 getPlatformCode <- function(platform = NA, twoDigitRVersion = NA) {
     # Declare the output:
     platformCode <- getPlatform(platform)
@@ -559,25 +559,26 @@ getPlatformCode <- function(platform = NA, twoDigitRVersion = NA) {
     return(platformCode)
 }
 
-getBinaryType <- function(platform = NA, twoDigitRVersion = NA) {
-    # Declare the output:
-    binaryType <- paste(substr(getPlatform(platform), 1, 3), "binary", sep = ".")
-    
-    # Append "el-capitan" if R_3.6 on mac:
-    if (platform == "macosx") {
-        if(getTwoDigitRVersion(twoDigitRVersion) == "3.6") {
-            binaryType <- paste(binaryType, "el-capitan", sep = ".")
-        }
-    }
-    
-    return(binaryType)
-}
+#getBinaryType <- function(platform = NA, twoDigitRVersion = NA) {
+#    # Declare the output:
+#    binaryType <- paste(substr(getPlatform(platform), 1, 3), "binary", sep = ".")
+#    
+#    # Append "el-capitan" if R_3.6 on mac:
+#    if (platform == "macosx") {
+#        if(getTwoDigitRVersion(twoDigitRVersion) == "3.6") {
+#            binaryType <- paste(binaryType, "el-capitan", sep = ".")
+#        }
+#    }
+#    
+#    return(binaryType)
+#}
 
 
 
 
 
 getPlatform <- function(platform = NA) {
+    
     if(is.na(platform)) {
         if (.Platform$OS.type == "windows") {
             platform <- "windows"
@@ -665,25 +666,13 @@ getPackageBinaryURL <- function(packageName, version = NULL, repos = "https://cl
     # Get the R version as two digit string:
     twoDigitRVersion <- getTwoDigitRVersion(twoDigitRVersion)
     
-    # Get the file extension:
-    fileExt <- getBinaryFileExt(platform)
+    # Build the path to the URL of the package source or binary:
+    path <- getPackageURL(avail$Package, avail$Version, repos = repos, platform = platform, twoDigitRVersion = twoDigitRVersion)
     
-    # Build the path to the package binary:
-    pathSansExt <- paste(
-        buildReposContrib(
-            repos = repos, 
-            platform = platform, 
-            twoDigitRVersion = twoDigitRVersion
-        ), 
-        getPackageNameAndVersionString(avail$Package, avail$Version), 
-        sep = "/"
-    )
-    #names(pathSansExt) <- rownames(avail)
-    avail$path <- pathSansExt
     
     if(NROW(avail)) {
         # Add file extension:
-        avail$path <- paste(avail$path, fileExt, sep = ".")
+        avail$path <- path
     }
     else {
         return(NULL)
@@ -692,7 +681,9 @@ getPackageBinaryURL <- function(packageName, version = NULL, repos = "https://cl
     return(avail)
 }
 
-getBinaryFileExt <- function(platform = NA) {
+getPackageFileExt <- function(platform = NA, type = c("binary", "source")) {
+    
+    type <- match.arg(type)
     platform <- getPlatform(platform)
     
     if (platform == "windows") {
@@ -702,16 +693,61 @@ getBinaryFileExt <- function(platform = NA) {
         fileExt <- "tgz"
     }
     else if (platform == "linux") {
-        fileExt <- "deb"
+        # Only source is available for Linux (generally, https://stackoverflow.com/questions/11871394/create-r-binary-packages-for-linux-that-can-be-installed-on-different-machines):
+        if(type == "binary") {
+            warning("Binary is not available for Linux. Using source.")
+            type  <- "source"
+        }
+        if(type == "source") {
+            fileExt <- "tar.gz"
+        }
     }
     
     return(fileExt)
 }
 
-buildReposContrib <- function(repos = "https://cloud.r-project.org", platform = NA, twoDigitRVersion = NA) {
+#buildReposContrib <- function(platform, repos = "https://cloud.r-project.org", twoDigitRVersion = NA) {
+#    
+#    # Get the two digit R version, as it is used several places below:
+#    twoDigitRVersion <- getTwoDigitRVersion(twoDigitRVersion)
+#    
+#    if (platform == "linux") {
+#        reposContrib <- paste(
+#            repos, 
+#            "src", 
+#            "contrib", 
+#            twoDigitRVersion, 
+#            sep = "/"
+#        )
+#    }
+#    else {
+#        reposContrib <- paste(
+#            repos, 
+#            "bin", 
+#            getPlatformCode(
+#                platform = platform, 
+#                twoDigitRVersion = twoDigitRVersion
+#            ), 
+#            "contrib", 
+#            twoDigitRVersion, 
+#            sep = "/"
+#        )
+#    }
+#    
+#    return(reposContrib)
+#}
+
+
+getBinaryPackageListURL <- function(repos = "https://cloud.r-project.org", platform = NA, twoDigitRVersion = NA) {
     
     # Get the two digit R version, as it is used several places below:
     twoDigitRVersion <- getTwoDigitRVersion(twoDigitRVersion)
+    
+    platform <- getPlatform(platform = platform)
+    # Find package versions on macosx if Linux, as there are no binaries for Linux and macosx is closer to Linux than Windows:
+    if (platform == "linux") {
+        platform <- "macosx"
+    }
     
     reposContrib <- paste(
         repos, 
@@ -727,6 +763,65 @@ buildReposContrib <- function(repos = "https://cloud.r-project.org", platform = 
     
     return(reposContrib)
 }
+
+getPackageURL <- function(packageName, version = NULL, repos = "https://cloud.r-project.org", platform = NA, twoDigitRVersion = NA) {
+    
+    # Get the two digit R version, as it is used several places below:
+    twoDigitRVersion <- getTwoDigitRVersion(twoDigitRVersion)
+    
+    platform <- getPlatform(platform = platform)
+    if (platform == "linux") {
+        reposContrib <- paste(
+            repos, 
+            "src", 
+            "contrib", 
+            sep = "/"
+        )
+    }
+    else {
+        reposContrib <- paste(
+            repos, 
+            "bin", 
+            getPlatformCode(
+                platform = platform, 
+                twoDigitRVersion = twoDigitRVersion
+            ), 
+            "contrib", 
+            twoDigitRVersion, 
+            sep = "/"
+        )
+    }
+    
+    pathSansExt <- paste(
+        reposContrib, 
+        getPackageNameAndVersionString(packageName, version), 
+        sep = "/"
+    )
+    
+    # Get the file extension:
+    fileExt <- getPackageFileExt(platform)
+    
+    path <- paste(pathSansExt, fileExt, sep = ".")
+    
+    return(path)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 vector2json <- function(x) {
@@ -860,3 +955,16 @@ getOfficialRstoxPackagesInfo <- function(
     return(binaries)
 }
 
+
+
+
+getInstallType <- function() {
+    platform <- getPlatform()
+    if (platform == "linux") {
+        type = "source"
+    }
+    else {
+        type = "binary"
+    }
+    return(type)
+}
