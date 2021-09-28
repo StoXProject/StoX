@@ -766,7 +766,7 @@ function setupServer() {
       if (serverStarted) {
         let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
         let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
-          officialsRFTmpFile + "\", quiet = T, toJSON=T)";
+          officialsRFTmpFile + "\", quiet = TRUE, toJSON = TRUE)";
         logInfo(cmd);
         let res = (await callR(cmd) as any).result;
         s = "Installed packages: " + res;

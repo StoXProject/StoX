@@ -907,10 +907,11 @@ getOfficialRstoxPackagesInfo <- function(
 ) {
     
     # Get the official versions defined by the officialRstoxPackageVersionsFile for the particular StoXGUIVersion:
+    packageHierarchy <- c("RstoxFramework","RstoxBase", "RstoxData")
     officialRstoxPackageNameAndVersion <- getOfficialRstoxPackageVersion(
         StoXGUIVersion = StoXGUIVersion, 
         officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile,
-        packageName = c("RstoxFramework","RstoxBase", "RstoxData"), 
+        packageName = packageHierarchy, 
         toJSON = FALSE
     )
     officialRstoxPackageName <- getOnlyPackageName(officialRstoxPackageNameAndVersion)
@@ -951,6 +952,9 @@ getOfficialRstoxPackagesInfo <- function(
     if(any(notIdenticalTwoDigitRVersion)) {
         warning("The following Rstox packages were built under older (two digit) R versions than the current (R ", twoDigitRVersion, "): ", paste0(binaries$Package[notIdenticalTwoDigitRVersion], " v", binaries$Version[notIdenticalTwoDigitRVersion], " (R ", binaries$buildRVersion[notIdenticalTwoDigitRVersion],  ")", collapse = ", "))
     }
+    
+    # Order hierarchcically:
+    binaries <- binaries[match(rev(packageHierarchy), binaries$Package), ]
     
     return(binaries)
 }
