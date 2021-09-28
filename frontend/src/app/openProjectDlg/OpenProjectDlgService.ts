@@ -11,6 +11,7 @@ export class OpenProjectDlgService {
     display: boolean = false;
 
     projectPath: string = null;
+    isOpening: boolean = false;
 
     async  showDialog() {
         this.projectPath = <string>await this.dataService.getProjectRootPath().toPromise();

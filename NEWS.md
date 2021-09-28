@@ -16,6 +16,18 @@
 * Fixed bug where TranslateStoxBiotic() and similar functions changed type of the data, so that translating numeric values did not work properly.
 
 
+# Stox v3.1.5 (2021-09-28)
+
+## General
+* The unofficial version StoX 3.1.5 fixes a critical bug where PSUByTime was updated in DefineAcousticPSU() when UseProcessData = TRUE, as this destroys the information to be passed onto another process using DefineAcousticPSU() where the first process is used as input.
+* In the filter expression builder dialogue removing all values resulted in an error in syntax. This has been fixed.
+* Fixed bug where acoustic PSUs could be added even if the procecss using DefineAcousticPSU was not active.
+
+## Detailed changes
+* Fixed bugs related to stratum names (using getStratumNames() consistently).
+* Changed warning to error when processes listed in OutputProcesses in Bootstrap().
+
+
 # Stox v3.1.4 (2021-09-20)
 
 ## General

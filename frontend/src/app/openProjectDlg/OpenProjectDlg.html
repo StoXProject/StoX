@@ -7,6 +7,7 @@
 		<button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h" (click)="browse()"></button>
 		
     <p-footer>
+		<mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening"></mat-spinner> <!--class="spinner"--> 
 		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
 			class="ui-button-secondary"></button>
 		<button type="button" pButton icon="pi pi-check" (click)="apply()" label="OK"></button>

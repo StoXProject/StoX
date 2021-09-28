@@ -22,7 +22,7 @@ runFunction.JSON2 <- function(cmd) {
 }
 
 jsonlite::fromJSON("\"a\"")    
-s <- jsonlite::toJSON(jsonlite::toJSON(list(args=jsonlite::toJSON(list(value=jsonlite::toJSON("a", auto_unbox=T)), auto_unbox=T)), auto_unbox=T), auto_unbox=T)
+s <- jsonlite::toJSON(jsonlite::toJSON(list(args=jsonlite::toJSON(list(value=jsonlite::toJSON("a", auto_unbox = TRUE)), auto_unbox = TRUE)), auto_unbox = TRUE), auto_unbox = TRUE)
 s
 RstoxFramework::runFunction.JSON(s)
 jsonlite::fromJSON(jsonlite::fromJSON(jsonlite::fromJSON(s)$args)$value)
