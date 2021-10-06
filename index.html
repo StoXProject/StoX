@@ -88,17 +88,17 @@ Click on &quot;Tools&quot; &gt; &quot;R connection&quot; in the menu to define t
 <p>Step 5:
 Click on &quot;Tools&quot; &gt; &quot;Install Rstox packages&quot; in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages.</p>
 <p>Note that on Linux it may be required to install C++ libraries and other resources that are needed by the Rstox packages and their dependencies. The following commands may be sufficient to avoid errors in the &quot;Install Rstox packages&quot;:</p>
-<h1 id="used-in-the-pakcage-&quot;units&quot;:">Used in the pakcage &quot;units&quot;:</h1>
-<p>sudo apt-get install -y libudunits2-dev</p>
-<h1 id="used-in-the-pakcage-&quot;jsonvalidate&quot;-used-by-&quot;rstoxframework&quot;:">Used in the pakcage &quot;jsonvalidate&quot; used by &quot;RstoxFramework&quot;:</h1>
-<p>sudo apt-get install -y libcurl4-openssl-dev</p>
-<h1 id="used-in-the-pakcage-&quot;xml2&quot;:">Used in the pakcage &quot;xml2&quot;:</h1>
-<p>sudo apt-get install -y libxml2-dev</p>
-<h1 id="used-in-the-pakcage-&quot;xslt&quot;-used-by-&quot;rstoxdata&quot;:">Used in the pakcage &quot;xslt&quot; used by &quot;RstoxData&quot;:</h1>
-<p>sudo apt-get install -y libxslt1-dev</p>
-<h1 id="used-in-the-pakcage-&quot;rgdal&quot;:">Used in the pakcage &quot;rgdal&quot;:</h1>
-<p>sudo aptitude install libgdal-dev</p>
-<p>If problems still occur, try debugging by loacting and running the commands that (1) source the Vesions.R file and (2) call the installOfficialRstoxPackagesWithDependencies() function, found in the log file located in the folder &quot;stox&quot; in your system temp folder (/tmp/stox), but with quiet = FALSE. See the fofllowing example:</p>
+<p># Used in the pakcage &quot;units&quot;:
+sudo apt-get install -y libudunits2-dev
+# Used in the pakcage &quot;jsonvalidate&quot; used by &quot;RstoxFramework&quot;:
+sudo apt-get install -y libcurl4-openssl-dev
+# Used in the pakcage &quot;xml2&quot;:
+sudo apt-get install -y libxml2-dev
+# Used in the pakcage &quot;xslt&quot; used by &quot;RstoxData&quot;:
+sudo apt-get install -y libxslt1-dev
+# Used in the pakcage &quot;rgdal&quot;:
+sudo aptitude install libgdal-dev</p>
+<p>If problems still occur, try debugging by loacting and running in R the commands that (1) source the Vesions.R file and (2) call the installOfficialRstoxPackagesWithDependencies() function, found in the log file located in the folder &quot;stox&quot; in your system temp folder (/tmp/stox), but with quiet = FALSE. See the fofllowing example:</p>
 <p>source(&quot;/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.Versions.R&quot;)
 installOfficialRstoxPackagesWithDependencies(&quot;3.1.4&quot;, &quot;/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.OfficialRstoxFrameworkVersions.txt&quot;, quiet = FALSE, toJSON = TRUE)</p>
 <p>Step 6:
