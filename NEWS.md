@@ -37,6 +37,19 @@
 * Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
 
 
+# StoX v3.1.7 (2021-10-15)
+
+## General
+* Fixed bug in ReportBootstrap(), where all NAs were converted to 0.
+* Changed SuperIndividuals() to not add rows from EDSUs with no assigned biotic hauls. Also, hauls that are discarded by the random sampling in a bootstrap run no longer result in a row of mostly NAs in SuperIndividualsData.
+
+## Detailed changes
+* Added support for two table output processes in Bootstrap, where only the table "Data" is used.
+* Added support for mixed level function outputs, whereas only a list of tables or a list of lists of tables were preivously allowed. This fixed bug when a two table output process was included as output from Bootstrap.
+* Fixed bug in the parameter formats of ImputeSuperIndividuals() when using SuperIndividualsData from another process using ImputeSuperIndividuals().
+* Fixed error in links to documentation in RstoxData.
+
+
 # StoX v3.1.6 (2021-10-05)
 
 ## General
