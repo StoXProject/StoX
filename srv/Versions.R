@@ -134,6 +134,16 @@ installOfficialRstoxPackagesWithDependencies <- function(
     }
     utils::install.packages(toInstall$package, repos = dependency.repos, type = getInstallType(), quiet = quiet, lib = lib)
     
+    # If Linux, all packages are installed from source, but otherwise a check is made for non-installed binarry packages, and an attempt to install from source:
+    if (getPlatform(platform) !=  "linux") {
+        installed <- utils::installed.packages()[, "Package"]
+        missing <- setdiff(toInstall, installed)
+        if(length(missing)) {
+            message("Installing the following packages using default type:\n", paste0(missing, collapse = ", "))
+            utils::install.packages(missing, dependencies = TRUE)
+        }
+    }
+    
     # Step 4: Install the Rstox packages
     binaryLocalFiles <- paste(destdir, basename(officialRstoxPackagesInfo$Package), sep = "/")
     mapply(
@@ -358,7 +368,21 @@ getPackageNameAndVersionString <- function(packageName, version, sep = "_") {
 
 
 
-
+get_deps <- function(package, dependencyTypes, not = c("R", "Rstox")) {
+    dcf <- read.dcf(system.file(package = package, "DESCRIPTION"))
+    jj <- intersect(dependencyTypes, colnames(dcf))
+    val <- unlist(strsplit(dcf[, jj], ","), use.names=FALSE)
+    package <- gsub("\\s.*", "", trimws(val))
+    version <- gsub(".*\\s|\\)+$", "", val)
+    hits <- mapply(startsWith, prefix = not, MoreArgs = list(x = package))
+    keep <- rowSums(hits) == 0
+    out <- data.table::data.table(
+        package = package, 
+        version = version
+    )
+    out <- subset(out, keep)
+    out
+}
 
 # Function to read the description file of an RstoxPackage
 getDependencies <- function(packageName, packageTable = NULL, repos = "https://cloud.r-project.org", dependencyTypes = NA, excludeStartingWith = NULL, recursive = TRUE, append = FALSE, sort = FALSE) {
@@ -367,23 +391,35 @@ getDependencies <- function(packageName, packageTable = NULL, repos = "https://c
     if(identical(NA, dependencyTypes)) {
         dependencyTypes <- c("Depends", "Imports", "LinkingTo")
     }
-    
-    # Read the available packages:
-    if(!length(packageTable)) {
-        packageTable <- getAvailablePackages(repos = repos)
+    if(length(repos) && is.na(repos)) {
+        if(recursive)  {
+            stop("repos must be given if recursive is TRUE")
+        }
+        
+        dependentPackages <- exlcudeBasePackages(get_deps("RstoxFramework", dependencyTypes = dependencyTypes)$package)
+        
+    }
+    else {
+        # Read the available packages:
+        if(!length(packageTable)) {
+            packageTable <- getAvailablePackages(repos = repos)
+        }
+        
+        # Get the dependent packages
+        dependentPackages <- unique(
+            unlist(
+                extractDependencies(
+                    packageName = packageName, 
+                    packageTable = packageTable, 
+                    dependencyTypes = dependencyTypes, 
+                    recursive = recursive
+                )$child
+            )
+        )
+        
     }
     
-    # Get the dependent packages
-    dependentPackages <- unique(
-        unlist(
-            extractDependencies(
-                packageName = packageName, 
-                packageTable = packageTable, 
-                dependencyTypes = dependencyTypes, 
-                recursive = recursive
-            )$child
-        )
-    )
+    
     
     if(!length(dependentPackages)) {
         return(NULL)
@@ -441,10 +477,7 @@ extractDependencies <- function(packageName, packageTable, dependencyTypes, recu
     onlyDependencies <- lapply(onlyDependencies, function(x) gsub(" .*$", "", x))
     
     # Exlude base packages:
-    #onlyDependencies <- exlcudeBasePackages(onlyDependencies)
-    onlyDependencies <- lapply(onlyDependencies, exlcudeBasePackages)
-    onlyDependencies <- onlyDependencies[lengths(onlyDependencies) > 0]
-    onlyDependencies <- unique(unlist(onlyDependencies))
+    onlyDependencies <- exlcudeBasePackages(onlyDependencies)
     
     if(length(packageName) == 1) {
         if(length(onlyDependencies)) {
@@ -498,8 +531,16 @@ extractDependencies <- function(packageName, packageTable, dependencyTypes, recu
 }
 
 
+exlcudeBasePackages <- function(packageName)  {
+    packageName <- lapply(packageName, exlcudeBasePackagesOne)
+    packageName <- packageName[lengths(packageName) > 0]
+    packageName <- unique(unlist(packageName))
+    packageName
+}
 
-
+exlcudeBasePackagesOne <- function(packageName) {
+    setdiff(packageName, rownames(utils::installed.packages(priority="base")))
+}
 
 getAvailablePackages <- function(packageName = NULL, repos = "https://cloud.r-project.org", platform = NA, twoDigitRVersion = NA) {
     
@@ -540,9 +581,7 @@ getAvailablePackages <- function(packageName = NULL, repos = "https://cloud.r-pr
     return(avail)
 }
 
-exlcudeBasePackages <- function(x) {
-    setdiff(x, rownames(utils::installed.packages(priority="base")))
-}
+
 
 # Function to get platform code used in the path to the package (binary if not on Linux):
 getPlatformCode <- function(platform = NA, twoDigitRVersion = NA) {
