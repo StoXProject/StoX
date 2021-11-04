@@ -37,7 +37,13 @@
 * Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
 
 
-# StoX v3.1.9 (2021-11-01)
+# StoX v3.1.10 (2021-11-04)
+
+## General
+* Fixed bug in Install Rstox packages.
+
+
+# StoX v3.1.9 (2021-11-04)
 
 ## General
 * Added warning for when EffectiveTowDistance = 0 in Lengthdistribution() with LengthDistributionType = "Normalized".
