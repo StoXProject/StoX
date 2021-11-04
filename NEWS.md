@@ -37,6 +37,16 @@
 * Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
 
 
+# StoX v3.1.9 (2021-11-01)
+
+## General
+* Added warning for when EffectiveTowDistance = 0 in Lengthdistribution() with LengthDistributionType = "Normalized".
+
+## Detailed changes
+* Refactored SplitNASC to support multiple EDSUs per PSU, and EDSUs outside of any statum.
+* Updated validation of project.json (using processDataSchema).
+
+
 # StoX v3.1.8 (2021-11-01)
 
 ## General
