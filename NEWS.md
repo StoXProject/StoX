@@ -37,6 +37,18 @@
 * Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
 
 
+# StoX v3.1.11 (2021-11-15)
+
+## General
+* Added tests comparing results to StoX 2.7 for Barents sea cod 2020, sandeel 2011 and SplitNASC Angola 2015.
+* Fixed bug when reading NMDBiotic 1.4 and 1.1, where variables with common name between tables (producttype, weight and volume) were not read properly, causing values from the Sample table to bleed into the Individual table, potentially affecting biomass estimates for projects using these old versions of the NMDBiotic format.
+* Changed error cacusing trouble in DistributeNASC() in splitOneAcousticCategory() to warning.
+
+## Notes on backward compatability
+* In DefineBioticAssignment() with DefinitionMethod "EllipsoidalDistance", the parameter BottomDepthDifference cannot yet be used when the acoustic data are read from NMDEchosounder files, due to this information being stored on each frequency, and a rule on how to extract this information for each Log, irrespective of frequency has not yet been defined. Also, the parameter Distance behaves differently in StoX >= 3 versus StoX 2.7. In StoX >= 3 distances are calculated along the great circle on a WGS84 ellipsoid (R function sp::spDists), whereas a spherical model was used in StoX 2.7.
+* Using a combination of two fs.getLengthSampleCount, such as fs.getLengthSampleCount('Sardinella aurita') > 10 || fs.getLengthSampleCount('Sardinella maderensis') > 10, cannot be entirely reproduced in StoX >= 3. The option of using the following filter on the Sample table of StoxBiotic, with FilterUpwards = TRUE, removes the appropriate stations, but also removes the samples, which are left untouhced by the fs.getLengthSampleCount: SampleCount > 10 & SpeciesCategoryKey %in% "Sardinella aurita/161763/126422/NA") | (SampleCount > 10 & SpeciesCategoryKey %in% "Sardinella maderensis/161767/126423/NA". Instead the user can filter the specific stations which are left after the above filter expression.
+
+
 # StoX v3.1.10 (2021-11-04)
 
 ## General
