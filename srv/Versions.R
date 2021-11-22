@@ -139,7 +139,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     }
     
     
-    # If Linux, all packages are installed from source. Otherwise a check is made for non-installed binarry packages, and an attempt to install from source:
+    # If Linux, all packages are installed from source. Otherwise a check is made for non-installed binary packages, and an attempt to install from source:
     if (getPlatform(platform) !=  "linux") {
         installed <- utils::installed.packages()[, "Package"]
         missing <- setdiff(toInstall, installed)
