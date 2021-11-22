@@ -37,6 +37,18 @@
 * Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
 
 
+# StoX v3.1.12 (2021-11-22)
+
+## General
+* Added supprt for Biomass = 0 when Abundance = 0, regardless of IndividualRoundWeight = NA.
+* Added parameters VariableName, ConditionalVariableName and ConditionalValueColumn to DefineTranslation(), to support full flexibility of column names in the resource file. Also added the parameter PreserveClass to Translate* functions, specifying whether to allow for the translation to change class of the data, e.g. form integer to string. Specified NAs in ICESBiotic() to the class defined by ICES.
+* Added therequirement jsonvalidate >= 1.3.2, as per changes in JSON definition.
+
+## Notes on backward compatability
+* Reverted to ussing all = TRUE when merging AbnudanceData into Individuals in SuperIndividuals(), as using all.x = TRUE implies the risk of discarding a portion of the abundance.
+* Reverted to the original createOrderKey() of StoX 3.1.0, used in setorderv_numeric() and further in RstoxBase::formatOutput(), in order to produce the same seeds in RstoxBase::ImputeSuperIndividuals().
+
+
 # StoX v3.1.11 (2021-11-15)
 
 ## General
