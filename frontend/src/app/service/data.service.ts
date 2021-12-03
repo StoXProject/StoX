@@ -266,13 +266,13 @@ export class DataService {
   }
 
   private handleError(error: HttpErrorResponse) {
-    console.log("Error.message : " + error.message);
-    console.log("Error.name : " + error.name);
-    console.log("Error.error : " + error.error);
-    console.log("Error.status : " + error.status);
-    console.log("Error.statusText : " + error.statusText);
-    console.log("Error.url : " + error.url);
-    console.log("Error.ok : " + error.ok);
+    console.log("> Error.message : " + error.message);
+    console.log("> Error.name : " + error.name);
+    console.log("> Error.error : " + error.error);
+    console.log("> Error.status : " + error.status);
+    console.log("> Error.statusText : " + error.statusText);
+    console.log("> Error.url : " + error.url);
+    console.log("> Error.ok : " + error.ok);
 
   }
 
@@ -330,7 +330,7 @@ export class DataService {
         } else {
           r2.warning
             ?.filter(elm => elm.startsWith("StoX: "))
-            .map(elm => elm.slice("StoX: ".length))
+            .map(elm => elm.replace("StoX: ", "> "))
             .forEach(elm => {
               this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
               this.m_logSubject.next('log-warning');
