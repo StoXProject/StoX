@@ -37,6 +37,28 @@
 * Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
 
 
+# StoX v3.1.13 (2021-12-03)
+
+## General
+* Missing values (NA) are now preserved throughout StoX, so that e.g. an NA in LengthDistributionData (due to an error in the input data) will result in NA in the abundance estimate of the stratum containing that missing value, and further to an NA in an estimate of the whole survey. This is per the default behaivor of R, where the na.rm parameter has default value FALSE. The exception to this treatment of missing values is ReportBootstrap(), where a missing value is treated as 0 in order to take into acocunt the random fluctuations induced by the bootstrapping. The user may experience that StoX projects that produced valid results in the preivous StoX versions now result in NAs, requiring a diagnostics of the input data and settings of the StoX project. Consequently, this change may break backward reproducibility. See Detailed changes for details
+* Added "> " at the start of each element in the User log of the StoX GUI.
+
+## Detailed changes
+* Changed how StoX treats missing values (NA) so that an NA will always propagate to the next step in the calculation (na.rm = FALSE). The only exception is missing values in bootstrap runs, which are treated as 0 to reflect the instances of e.g. a length group being left out in the data due to the random sampling of hauls, in which case the abundance of that length group is to be considered as 0. Previously, in MeanNASC(), MeanLengthDistribution() and MeanDensity(), where the mean is calculated as sum of the data divided by the sum of the weights (e.g. log distance or number of stations), missing values were ignored in the sums. In the new version missing values result in missing values in the mean. A consequence of preserving missing values can be that a missing value in a normalized LengthDistribution (e.g., due to missing sample weights) will propagate through to a missing value in the stratum, and ultimately to a missing value in the survey if summing over strata in a report. The problem must then be solved by either correcting what in the input data that is causing the missing values, or filter out those values (e.g. filter out erroneous or experimental hauls). For acoustic-trawl models there is an extra complication related to bootstrapping, since missing values here are treated as 0. I there are hauls assigned to an acoustic PSU that does not contain any length measured individuals of the target species, there is a positive probability that only these hauls are sampled in a bootstrap run, resulting in missing values in abundance of the stratum of that PSU. Treating this as 0 will lead to under-estimation. Only hauls length measured individuals of the target species should be used in the biotic assignment when bootstrapping is included in the StoX project.
+* Added warning when ValueColumn, NewValueColumn or ConditionalValueColumn did not exist in the file in DefineTranslation().
+* Added support for multiple beams in SplitNASC(), where the NASC is now distributed to the different species for each beam().
+* Fixed bug in SplitNASC() so that NASC for a PSUs with all missing values in the AssignmentLengthDistributionData of a specific species are left un-splitted.
+* Added removal of empty PSUs.
+* Added the columns NumberOfAssignedHaulsWithCatch and NumberOfAssignedHauls to AsssignmentLengthDistributionData, used in AcousticDensity() to flag PSUs for which hauls with no length measured individuals of the target species are assigned.
+* Removed unwanted columns in the output from AcousticDensity(), inherirted from MeanNASCData.
+* Added support for Biomass = 0 when Abundance = 0, regardless of IndividualRoundWeight = NA.
+* Fixed bug causing empty PSUByTime from DefineAcousticPSU when DefinitionMethod = "Manual".
+* Added option of reading empty strings as NA in readModelData() to support output files from StoX <= 3.1.0. 
+* Added support for hybrid StoX 2.7 and >= 3 projects, using the same project folder. 
+* Fixed bug where only BioticAssignmentWeighting was available for selection in BootstrapMethodTable in Bootstrap() in the GUI, whereas only DefineBioticAssignment is correct. U
+* Updated test projects to match changes in RstoxBase.
+
+
 # StoX v3.1.12 (2021-11-22)
 
 ## General
