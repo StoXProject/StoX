@@ -112,7 +112,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     )
     
     # Step 2: Get the list of dependencies of the Rstox-packages.
-    # Make sure to use recursive = FALSE, as the table 'binaries' only contains the Rstox pagkaces:
+    # Make sure to use recursive = FALSE, as the table 'binaries' only contains the Rstox packages:
     dependencies <- getDependencies(
         packageName = officialRstoxPackagesInfo$Package, 
         packageTable = officialRstoxPackagesInfo, 

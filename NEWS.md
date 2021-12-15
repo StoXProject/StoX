@@ -37,6 +37,12 @@
 * Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
 
 
+# StoX v3.1.15 (2021-12-15)
+
+## General
+* Changed to sort strata by locale en_US_POSIX when bootstrapping.
+
+
 # StoX v3.1.14 (2021-12-13)
 
 ## General
