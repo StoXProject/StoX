@@ -37,6 +37,16 @@
 * Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
 
 
+# StoX v3.1.14 (2021-12-13)
+
+## General
+* Added escaping newline and tab when writing output tables to txt, in order to read back in.
+
+## Detailed changes
+* Avoided unwanted warnings when raising factor is missing for hauls with no fish.
+* Improved documentation of ImputeSuperIndividuals().
+
+
 # StoX v3.1.13 (2021-12-03)
 
 ## General
@@ -64,7 +74,7 @@
 ## General
 * Added supprt for Biomass = 0 when Abundance = 0, regardless of IndividualRoundWeight = NA.
 * Added parameters VariableName, ConditionalVariableName and ConditionalValueColumn to DefineTranslation(), to support full flexibility of column names in the resource file. Also added the parameter PreserveClass to Translate* functions, specifying whether to allow for the translation to change class of the data, e.g. form integer to string. Specified NAs in ICESBiotic() to the class defined by ICES.
-* Added therequirement jsonvalidate >= 1.3.2, as per changes in JSON definition.
+* Added the requirement jsonvalidate >= 1.3.2, as per changes in JSON definition.
 
 ## Notes on backward compatability
 * Reverted to ussing all = TRUE when merging AbnudanceData into Individuals in SuperIndividuals(), as using all.x = TRUE implies the risk of discarding a portion of the abundance.
