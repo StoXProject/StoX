@@ -99,6 +99,8 @@ sudo apt-get install -y libxml2-dev</li>
 sudo apt-get install -y libxslt1-dev</li>
 <li>Used in the pakcage &quot;rgdal&quot;:
 sudo aptitude install libgdal-dev</li>
+<li>Used in the pakcage &quot;sf&quot;:
+sudo apt-get install -y libproj-dev</li>
 </ul>
 <p>If problems still occur, try debugging by loacting and running in R the commands that (1) source the Vesions.R file and (2) call the installOfficialRstoxPackagesWithDependencies() function, found in the log file located in the folder &quot;stox&quot; in your system temp folder (/tmp/stox), but with quiet = FALSE. See the fofllowing example:</p>
 <p>source(&quot;/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.Versions.R&quot;)
