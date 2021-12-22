@@ -1,47 +1,67 @@
-# StoX v3.2.0 (2021-10-06)
+# StoX v3.2.0 (2021-12-22)
 
-## General
+## Summary
 * The new StoX 3.2.0 includes improvements to speed, user experience and adds the possibility to build a new StoX project based on process data of an old StoX project created in StoX 2.7.
 
 ## Changes affecting backward reproducibility
-* An error in StoX 3.1.0 has bee fixed, where acoustic PSUs with missing values in the variable Beam in the output from AcousticDensity() were included in the weighted average performed in MeanDensity(). Missing Beam is interpreted by StoX so that the Beam of interest was not recording. 
-* Bootstrapping has been changed to be platform independent. StoX 3.1.0 could have different effect of seed depending on the platform. Consequently, onne may experience different results from bootstrapping, particularly on Windows with scandinavian language. This can be overcome by forcing the old order of strata by renaming. The difference is that StoX 3.2.0 sorts strata in the bootstrapping by the C locale, which organizes capital letters first (India before england). This has a "seed effect", and induces no bias.
-* StoX 3.2.0 removes empty acoustic PSUs, which can result in difference in the resampling of acoustic PSUs in bootstrapping using ResampleMeanNASCData in the BootstrapMethodTable. This also has a "seed effect", and induces no bias.
+* If there are hauls with empty length distribution of the taregt species (no length sampled fish) assigned to an acoustic PSU, there is a probability that only these hauls are resampeled in the bootstrapping, in which case acoustic density will be missing (NA) for that PSU, and further the abundance will be NA for the stratum of that PSU. This can lead to underestimation in reports from bootstrap, as NAs are treated as 0 across bootsrap runs in ReportBootsstrap().
+* An error in StoX 3.1.0 has bee fixed, where acoustic PSUs with missing values in the variable Beam in the output from AcousticDensity() were included in the weighted average performed in MeanDensity(). Missing Beam is interpreted by StoX so that the Beam of interest was not recording. This is not a problem if the beam (frequency) of interest is present in all EDSUs in the acoustic input file, such as files retrieved from the ICES Acoustic trawl survey database (https://acoustic.ices.dk/submissions).
+* Bootstrapping has been changed to be platform (operating system and language settings) independent. StoX 3.1.0 could have different effect of seed depending on the platform. Consequently, one may experience different results from bootstrapping, particularly on Windows with scandinavian language. This can be overcome by forcing the old order of strata by renaming. The difference is that StoX 3.2.0 sorts strata in the bootstrapping by the locale "en_US_POSIX" in stringi::stri_sort(), which organizes capital letters first (India before england). This may have a "seed effect", but induces no bias.
+* StoX 3.2.0 removes empty acoustic PSUs (with no EDSUs), which can result in difference in the resampling of acoustic PSUs in bootstrapping using ResampleMeanNASCData in the BootstrapMethodTable. This may have has a "seed effect", but induces no bias.
 * In DefineBioticAssignment() with DefinitionMethod "EllipsoidalDistance", the parameter BottomDepthDifference cannot yet be used when the acoustic data are read from NMDEchosounder files, due to this information being stored on each frequency, and a rule on how to extract this information for each Log, irrespective of frequency has not yet been defined. Also, the parameter Distance behaves differently in StoX >= 3 versus StoX 2.7. In StoX >= 3 distances are calculated along the great circle on a WGS84 ellipsoid (R function sp::spDists), whereas a spherical model was used in StoX 2.7.
-* Using a combination of two fs.getLengthSampleCount, such as fs.getLengthSampleCount('Sardinella aurita') > 10 || fs.getLengthSampleCount('Sardinella maderensis') > 10, cannot be entirely reproduced in StoX >= 3. The option of using the following filter on the Sample table of StoxBiotic, with FilterUpwards = TRUE, removes the appropriate stations, but also removes the samples, which are left untouhced by the fs.getLengthSampleCount: SampleCount > 10 & SpeciesCategoryKey %in% "Sardinella aurita/161763/126422/NA") | (SampleCount > 10 & SpeciesCategoryKey %in% "Sardinella maderensis/161767/126423/NA". Instead the user can filter the specific stations which are left after the above filter expression.
-
-## Detailed changes
-* Methods for importing AcoustiPSU, BioticAssignment and StratumPolygon from a StoX 2.7 project description file (project.xml), through the DefinitionMethod "ResourceFile" in DefineAcoustiPSU(), DefineBioticAssignment() and DefineStratumPolygon() (and in DefineSurvey(), which reads the includeintotal tag of the stratumpolygon process data).
-* The GUI shifts focus to the User log in the GUI when an error or a warning occurs. Warnings are introduced when RemoveMissingValues or UseOutputData is TRUE.
-* Improvements regarding speed, specifically a significant speed up of the function DefineAcousticPSU() when DefinitionMethod is "EDSUToPSU", and the new option of simplifying stratum polygons by the new parameters SimplifyStratumPolygon and SimplificationFactor in DefineStratumPolygon(), which reduces time of opening and saving project where DefineStratumPolygon() reads complicated stratum polygons. Also, the function StoxBiotic has been sped up when individuals are generated from NumberAtLength of the Catch table of ICESBiotic xml files.
-* The format of output text files with file extension "txt" has been changed to support equality when reading the files back into R with the function readModelData() of RstoxFramework. Before, all values were un-quoted, including strings. This had the consequence that strings consisting of numbers, such as IDs 1, 2, etc, were converted to numeric by readModelData(). All strings are now quoted to avoid this problem. Also, missing values were written as empty strings, but are now changed to NA.
-* Added the function SplitNASC() intended to replace SplitMeanNASC(). SplitNASC() uses NASCData and AcousticPSU as input and generates one PSU per EDSU for splitting the NASC based on BioticAssignment, and then returns a NASCData object. Consequently one can skip the MeanNASC() function in the model. 
-* Reports using summaryStox now returns NA for missing values, instead of an error.
-* Added warnings when RemoveMissingValues or UseOutputData is TRUE.
-
-## Bug fixes
-* Fixed a bug in SuperIndividuals() where length measured individuals were counted over all beams, whereas per beam was correct. This caused under-estimation for acoustic estimates where different vessels have different Beam key, e.g. due to different transceiver number in the NMDEchosounder xml format.
-* Fixed bug where LengthDistribution() produced a line of NA in IndividualTotalLength for subsamples that were completely empty by the filter, thus resulting in a small percentage of the WeightedCount assigned to this NA length in the percent length distribution, and consequently reducing the WeightedCount of the valid lengths.
-* Fixed bug when using depth TargetStrengthMethod = "LengthAndDepthDependent" in DefineAcousticTargetStrength() which is used in AcousticDensity(), which caused the function to fail. Length and depth dependent target strength is now possible.
-* Fixed a bug with the button "Run next" in the GUI. If the active process is modified (change in parameters or changes in process data made in the map) then that process is run again, so that "Run next" actually means to run the next incomplete process.
-* "Install Rstox packages" from the GUI on Linux was trying to install binaries, but only source is available for Linux. 
-* Fixed a critical bug where PSUByTime was updated in DefineAcousticPSU() when UseProcessData = TRUE, as this destroys the information to be passed onto another process using DefineAcousticPSU() where the first process is used as input.
-* In the filter expression builder dialogue removing all values resulted in an error in syntax. This has been fixed.
-* Fixed bug where acoustic PSUs could be added even if the process using DefineAcousticPSU() was not active.
-* Fixed bug when reading shapefiles or GeoJSON in DefineStratumPolygon(), by introducing the parameter StratumNameLabel in DefineStratumPolygon().
-
-## Rstox packages
-* Added the function convertStoX2.7To3(), which can be used to convert a StoX 2.7 project to a StoX 3.1.2 project based on a template StoX 3.1.2 project.
-* Reports using summaryStox now returns NA for missing values, instead of an error.
+* In StoX 2.7, using a combination of two fs.getLengthSampleCount, such as fs.getLengthSampleCount('Sardinella aurita') > 10 || fs.getLengthSampleCount('Sardinella maderensis') > 10, cannot be entirely reproduced in StoX >= 3. The option of using the following filter on the Sample table of StoxBiotic, with FilterUpwards = TRUE, removes the appropriate stations, but also removes the samples, which are left untouhced by the fs.getLengthSampleCount: SampleCount > 10 & SpeciesCategoryKey %in% "Sardinella aurita/161763/126422/NA") | (SampleCount > 10 & SpeciesCategoryKey %in% "Sardinella maderensis/161767/126423/NA". Instead the user can filter the specific stations which are left after the above filter expression.
 * Changed from [0, Inf] to [min, max] of channel depth when DefinitionMethod "WaterColumn" in DefineLayer().
 
-## Detailed changes in Rstox packages
-* Fixed bug with CompensationTable in GearDependentCatchCompensation.
-* Fixed formatting of output from WriteICESBiotic() so that precision is kept and values are not padded with blanks and zeros. Fixed bug in writeXmlFile().
+## General changes
+* Treatment of missing values (NA) has been strengthened in StoX 3.2.0. Missing values are now preserved throughout a StoX project, so that e.g. an NA in LengthDistributionData (due to an error in the input data) will result in NA in the abundance estimate of the stratum linked to that NA. This is per the default behaivor in R, where the na.rm parameter has default value FALSE. The exception to this treatment of NAs is ReportBootstrap(), where a missing value is treated as 0 in order to take into acocunt the random fluctuations induced by the bootstrapping. If all values are NA, however, the result will be NA. The user may experience that StoX projects that produced valid results in the preivous StoX versions now result in NAs, requiring a diagnostics of the input data and settings of the StoX project. Consequently, this change may break backward reproducibility.
+* Handling error and warning has been improved, by shifting focus to the User log when an error or a warning occurs. Also, several warning messages have been added, particularly for flagging missing information in the input data which can affect the end result. Also warnings are added when RemoveMissingValues or UseOutputData are set to TRUE, which should be used with care.
+* Improvements has been made to speed of particularly heavy Baseline functionality, such as the DefinitionMethod "EDSUToPSU" in DefineAcousticPSU(), and DefineStratumPolygon() when reading large files. In the latter case the new parameters SimplifyStratumPolygon and SimplificationFactor can be used to reduce the resolution of the data that is saved to the project.json file, savinngg time when opening and saving the StoX project.
+* The format of output text files with file extension "txt" has been changed to support equality when reading the files back into R with the function readModelData() in RstoxFramework. Before, all values were un-quoted, including strings. This had the consequence that strings consisting of numbers, such as "1", "2", etc, were converted to numeric by readModelData(). All strings are now quoted to avoid this problem. Also, missing values are now written as "NA" instead of the preivous empty string.
+* StoX can now import AcoustiPSU, BioticAssignment and StratumPolygon from a StoX 2.7 project description file (project.xml), through the DefinitionMethod "ResourceFile" in DefineAcoustiPSU(), DefineBioticAssignment() and DefineStratumPolygon() (and in DefineSurvey(), which reads the includeintotal tag of the stratumpolygon process data). 
+* A bug was corrected in SuperIndividuals() for trawl-acoustic models, where length measured individuals were counted over all beams, whereas per beam was correct. This caused under-estimation when different vessels had different Beam key, e.g. due to different transceiver number in the NMDEchosounder xml format.
+* The parameters ValueColumn, NewValueColumn, VariableName, ConditionalVariableName and ConditionalValueColumn have been added to DefineTranslation(), to support full flexibility of column names in the resource file. Also added the parameter PreserveClass to Translate* functions, specifying whether to allow for the translation to change class of the data, e.g. form integer to string.
+* Added tests comparing results to StoX 2.7 for Barents sea cod 2020, sandeel 2011 and SplitNASC Angola 2015.
+* Added the function SplitNASC() using NASCData and AcousticPSU as input and returns a NASCData object, replacing SplitMeanNASC()
+* Added "> " at the start of each element in the User log of the StoX GUI.
+* Added support for hybrid StoX 2.7 and >= 3 projects, using the same project folder. 
+
+## Detailed changes
+* Added warning for when EffectiveTowDistance = 0 in Lengthdistribution() with LengthDistributionType = "Normalized".
+* Added supprt for Biomass = 0 when Abundance = 0, regardless of IndividualRoundWeight = NA.
+* Added CompensateEffectiveTowDistanceForFishingDepthCount() for NMDBiotic data with hauls made at several depths.
+* Updated validation of project.json (using processDataSchema).
+* Removed unwanted columns in the output from AcousticDensity(), inherirted from MeanNASCData.
+* Added support for multiple beams in SplitNASC(), where the NASC is now distributed to the different species for each beam().
+* StoX 3.2.0 removes empty PSUs.
+* Added warning when adding a variable that already exists in AddToStoxBiotic(), particularly aimed at SpeciesCategory in ICESBiotic, which has a different meaning that SpeciesCategory in StoxBioticData.* Added the columns NumberOfAssignedHaulsWithCatch and NumberOfAssignedHauls to AsssignmentLengthDistributionData, used in AcousticDensity() to flag PSUs for which hauls with no length measured individuals of the target species are assigned.
+* Added warning when ValueColumn, NewValueColumn or ConditionalValueColumn does not exist in the file in DefineTranslation().
+* Reports using summaryStox now returns NA for missing values, instead of an error.
+* Added the requirement jsonvalidate >= 1.3.2, as per changes in JSON definition.
+* Refactored SplitNASC to support multiple EDSUs per PSU, and EDSUs outside of any statum.
 * Changed Distance in ICESBiotic() to distance * 1852.
-* Fixed bug where TranslateStoxBiotic() and similar functions changed type of the data, so that translating numeric values did not work properly.
+* Added support for two table output processes in Bootstrap, where only the table "Data" is used.
+* Added support for mixed level function outputs, whereas only a list of tables or a list of lists of tables were preivously allowed. This fixed bug when a two table output process was included as output from Bootstrap.
+* Fixed formatting of output from WriteICESBiotic() so that precision is kept and values are not padded with blanks and zeros. Fixed bug in writeXmlFile().
+
+## Bug fixes
+* Fixed bug when reading NMDBiotic 1.4 and 1.1, where variables with common name between tables (producttype, weight and volume) were not read properly, causing values from the Sample table to bleed into the Individual table, potentially affecting biomass estimates for projects using these old versions of the NMDBiotic format.
+* Fixed a bug where PSUByTime was updated in DefineAcousticPSU() when UseProcessData = TRUE, as this destroys the information to be passed onto another process using DefineAcousticPSU() where the first process is used as input.
+* In the filter expression builder dialogue removing all values resulted in an error in syntax. This has been fixed.
+* Fixed bug where acoustic PSUs could be added even if the process using DefineAcousticPSU was not active.
+* Fixed a bug with the button "Run next" in the GUI. If the active process is modified (change in parameters or changes in procecss data made in the map) then that process is run again, so that "Run next" actually means to run the next incomplete process.
+* Also fixed a bug when "Install Rstox packages" from the GUI on Linux (was tryring to install binaries, but only source is available for Linux). 
+* Fixed bug when using depth TargetStrengthMethod = "LengthAndDepthDependent" in DefineAcousticTargetStrength() which is used in AcousticDensity(), which caused the function to fail. Length and depth dependent target strength is now possible.
+* Fixed bug in SplitNASC() so that NASC for a PSUs with all missing values in the AssignmentLengthDistributionData of a specific species are now left un-splitted.
+* Fixed bug causing empty PSUByTime from DefineAcousticPSU when DefinitionMethod = "Manual".
+* Fixed bug where only BioticAssignmentWeighting was available for selection in BootstrapMethodTable in Bootstrap() in the GUI, whereas only DefineBioticAssignment is correct. U
+* Fixed bug in getProcessOutputFiles() where project paths containing special characters resulted in corrupt file paths, causing View output to crash.
+* Fixed bug in the parameter formats of ImputeSuperIndividuals() when using SuperIndividualsData from another process using ImputeSuperIndividuals().
+* Fixed error in links to documentation in RstoxData.
 * Fixed bugs related to stratum names (using getStratumNames() consistently).
-* Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
+* Fixed bug where LengthDistribution() produced a line of NA in IndividualTotalLength for subsamples that were completely empty by the filter, thus resulting in a small percentage of the WeightedCount assigned to this NA length in the percent length distribution, and consequently reducing the WeightedCount of the valid lengths.
+* Fixed bug when reading shapefiles or GeoJSON in DefineStratumPolygon(), by introducing the parameter StratumNameLabel in DefineStratumPolygon().
+* Fixed bug with CompensationTable in GearDependentCatchCompensation().
+* Fixed bug where TranslateStoxBiotic() and similar functions changed type of the data, so that translating numeric values did not work properly.
 
 
 # StoX v3.1.16 (2021-12-22)
