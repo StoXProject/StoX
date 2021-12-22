@@ -3,6 +3,13 @@
 ## General
 * The new StoX 3.2.0 includes improvements to speed, user experience and adds the possibility to build a new StoX project based on process data of an old StoX project created in StoX 2.7.
 
+## Changes affecting backward reproducibility
+* An error in StoX 3.1.0 has bee fixed, where acoustic PSUs with missing values in the variable Beam in the output from AcousticDensity() were included in the weighted average performed in MeanDensity(). Missing Beam is interpreted by StoX so that the Beam of interest was not recording. 
+* Bootstrapping has been changed to be platform independent. StoX 3.1.0 could have different effect of seed depending on the platform. Consequently, onne may experience different results from bootstrapping, particularly on Windows with scandinavian language. This can be overcome by forcing the old order of strata by renaming. The difference is that StoX 3.2.0 sorts strata in the bootstrapping by the C locale, which organizes capital letters first (India before england). This has a "seed effect", and induces no bias.
+* StoX 3.2.0 removes empty acoustic PSUs, which can result in difference in the resampling of acoustic PSUs in bootstrapping using ResampleMeanNASCData in the BootstrapMethodTable. This also has a "seed effect", and induces no bias.
+* In DefineBioticAssignment() with DefinitionMethod "EllipsoidalDistance", the parameter BottomDepthDifference cannot yet be used when the acoustic data are read from NMDEchosounder files, due to this information being stored on each frequency, and a rule on how to extract this information for each Log, irrespective of frequency has not yet been defined. Also, the parameter Distance behaves differently in StoX >= 3 versus StoX 2.7. In StoX >= 3 distances are calculated along the great circle on a WGS84 ellipsoid (R function sp::spDists), whereas a spherical model was used in StoX 2.7.
+* Using a combination of two fs.getLengthSampleCount, such as fs.getLengthSampleCount('Sardinella aurita') > 10 || fs.getLengthSampleCount('Sardinella maderensis') > 10, cannot be entirely reproduced in StoX >= 3. The option of using the following filter on the Sample table of StoxBiotic, with FilterUpwards = TRUE, removes the appropriate stations, but also removes the samples, which are left untouhced by the fs.getLengthSampleCount: SampleCount > 10 & SpeciesCategoryKey %in% "Sardinella aurita/161763/126422/NA") | (SampleCount > 10 & SpeciesCategoryKey %in% "Sardinella maderensis/161767/126423/NA". Instead the user can filter the specific stations which are left after the above filter expression.
+
 ## Detailed changes
 * Methods for importing AcoustiPSU, BioticAssignment and StratumPolygon from a StoX 2.7 project description file (project.xml), through the DefinitionMethod "ResourceFile" in DefineAcoustiPSU(), DefineBioticAssignment() and DefineStratumPolygon() (and in DefineSurvey(), which reads the includeintotal tag of the stratumpolygon process data).
 * The GUI shifts focus to the User log in the GUI when an error or a warning occurs. Warnings are introduced when RemoveMissingValues or UseOutputData is TRUE.
@@ -35,6 +42,13 @@
 * Fixed bug where TranslateStoxBiotic() and similar functions changed type of the data, so that translating numeric values did not work properly.
 * Fixed bugs related to stratum names (using getStratumNames() consistently).
 * Changed warning to error when non-existing processes listed in OutputProcesses in Bootstrap().
+
+
+# StoX v3.1.16 (2021-12-22)
+
+## General
+* Added warning when Beam = NA for acoutstic-trawl models, which is an indication of incomplete acoustic sampling.
+* Added warning when biotic hauls are assigned to non-existing acoustic PSUs.
 
 
 # StoX v3.1.15 (2021-12-15)
