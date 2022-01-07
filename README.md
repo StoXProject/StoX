@@ -81,7 +81,7 @@ sudo aptitude install libgdal-dev
 * Used in the pakcage "sf": 
 sudo apt-get install -y libproj-dev
 
-If problems still occur, try debugging by loacting and running in R the commands that (1) source the Vesions.R file and (2) call the installOfficialRstoxPackagesWithDependencies() function, found in the log file located in the folder "stox" in your system temp folder (/tmp/stox), but with quiet = FALSE. See the fofllowing example:
+If problems still occur, try debugging by loacting and running in R the commands that (1) source the Vesions.R file and (2) call the installOfficialRstoxPackagesWithDependencies() function, found in the log file located in the folder "stox" in your system temp folder (/tmp/stox), but with quiet = FALSE. See the following example:
 
 source("/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.Versions.R")
 installOfficialRstoxPackagesWithDependencies("3.1.4", "/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.OfficialRstoxFrameworkVersions.txt", quiet = FALSE, toJSON = TRUE) 
