@@ -1,3 +1,18 @@
+# StoX v3.2.2 (2022-01-10)
+
+## General
+* Changed SpeciesCategoryCatch() to return a single table similar to LengthDistributionData, but with TotalCatchWeight and TotalCatchCount instead of WeightedCount. As such, moved the CatchVariable of SpeciesCategoryCatch() to the ReportVariable of ReportSpeciesCategoryCatch(). The latter is a backward compatibility breaking change.
+* Added SumSpeciesCategoryCatch() and MeanSpeciesCategoryCatch().
+* Added the parameter SweptAreaDensityType in SweptAreaDensity() supporting both "LengthDistributed" and "TotalCatch" swept-area density. 
+* Added new column DensityType in DensityData with supported values "AreaNumberDensity" (the only option for AcousticDensity() and  SweptAreaDensityType "LengthDistributed") and  "AreaMassDensity".
+* Added new column AbundanceType in AbundanceData with supported values "Number" (the only option for AcousticDensity() and  SweptAreaDensityType "LengthDistributed") and "Mass".
+
+## Detailed changes
+* Added ResampleMeanSpeciesCategoryCatchData(). 
+* Added test for functioning help-pages. Updated tests.
+* Changed type of the columns of the Translation process data to accept strings, numeric and boolean (preivously restricted to string).
+
+
 # StoX v3.2.1 (2022-01-07)
 
 ## General
