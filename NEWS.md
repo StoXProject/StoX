@@ -1,3 +1,9 @@
+# StoX v3.2.4 (2022-01-13)
+
+## General
+* Renamed Abundance(), ReportAbundance(), AbundanceData and ReportAbundanceData to Quantity*, as this data now contains both Abundance and Biomass.
+
+
 # StoX v3.2.3 (2022-01-12)
 
 ## General
