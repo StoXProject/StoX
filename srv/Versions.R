@@ -11,7 +11,7 @@
 #' @param dependency.repos The repository to download from.
 #' @param sort Logical: If TRUE sort the dependent packages, defaulted to FALSE to enable installing the most basic dependencies first.
 #' @param StoXGUIVersion The version of the StoX GUI defining the combination of official Rstox package versions.
-#' @param officialRstoxPackageVersionsFile The path to the file holding the link between StoX GUI version and Rstox package versions.
+#' @param officialRstoxPackageVersionsFile The path to the file holding the link between StoX GUI version and Rstox package versions. If missing, the file on the RstoxFramework master on GitHub is used ("https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt").
 #' @param destdir The directory to download binaries to, defaulted to NA which implies tempdir().
 #' @param platform The platform to download binaries for, defaulted to the current platform, but with the option to download for other platforms (possible values are "windows" and "macosx").
 #' @param packageName The packages considered official Rstox pakcages, "RstoxFramework","RstoxBase" and "RstoxData".
@@ -77,6 +77,10 @@ installOfficialRstoxPackagesWithDependencies <- function(
     quiet = FALSE
 ) {
     
+    # Use the GitHub master as default if missing:
+    if(missing(officialRstoxPackageVersionsFile)) {
+        officialRstoxPackageVersionsFile <- "https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt"
+    }
     # We install only binaries.
     # Step 1: Identify the Rstox-packages available for the current R version and lower supported versions:
     # Step 2: Get the list of dependencies of the Rstox-packages.
