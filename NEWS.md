@@ -1,3 +1,49 @@
+# StoX v3.3.0 (2022-01-14)
+
+## Summary
+* The new StoX 3.3.0 completes the implementation of the functionality of StoX 2.7, by introducing the SweptAreaMethod = "TotalCatch" in SweptAreaDensity(), and ImputationMethod = "Regression" in ImputeSuperIndividuals() corresponding to FillWeight = "Regression" in FillMissingData() in StoX 2.7. TotalCatch can be calculated both as number and weight, and the function Abundance() has thus been renamed to Quantity() and gained the column Biomass in addition to the existing columnn Abundance.
+
+## Changes affecting backward compatibility
+* Changed all instances of the use of the phrase "count" to "number", in accordance with the terminology of ICESBiotic and the convension "area number density" ("area count density is very rare"). This change affects the following code:
+
+    + In StoxBiotic():
+	*SampleCount -> SampleNumber*
+	*CatchFractionCount -> CatchFractionNumber*
+	**This could affect external scripts that use the StoxBioticData.**
+	
+    + In LengthDistribution(), SumLengthDistribution(), MeanLengthDistribution(), AssignmentLengthDistribution(), RegroupLengthDistribution(), GearDependentCatchCompensation(), LengthDependentCatchCompensation(), RelativeLengthDistribution():
+	*Renamed the column WeightedCount to WeightedNumber*
+    **This could affect external scripts that use one of the listed datatypes as WeightedCount is no longer found. Other than that the WeightedCount does not exist further in the estimation models in StoX.**
+
+    + In BioticAssignmentWeighting():
+	*WeightingMethod = "NormalizedTotalCount"    -> "NormalizedTotalNumber"*
+	*WeightingMethod = "SumWeightedCount"        -> "SumWeightedNumber"*
+	*WeightingMethod = "InverseSumWeightedCount" -> "InverseSumWeightedNumber"*
+	**Backward compatibility should take care of these**
+
+    + LengthDistribution():
+	*RaisingFactorPriority = "Count" -> "Number"*
+    **Backward compatibility should take care of these**
+* Changed SpeciesCategoryCatch() to return a single table similar to LengthDistributionData, but with TotalCatchWeight and TotalCatchCount instead of WeightedCount. As such, moved the CatchVariable of SpeciesCategoryCatch() to the ReportVariable of ReportSpeciesCategoryCatch(). The latter is a backward compatibility breaking change. Any existing StoX project using SpeciesCategoryCatch() and ReportSpeciesCategoryCatch() will break in ReportSpeciesCategoryCatch(), and the ReportVariable needs to be set to the appropriate value in order to continue.
+
+## General changes
+* Added DefineRegression(), EstimateBioticRegression() and the implementation in ImputeSuperIndividuals(). Refactored so that DefineRegression() and DefineAcousticTargetStrength() both use the underlying DefineModel(), with outputs <Model>Model and <Model>Table. Renamed DefinitionMethod "TargetStrengthTable", "SurveyTable" and "LayerTable" to "Table".
+* Added the function ReportAbundance().
+* Changed SpeciesCategoryCatch() to return a single table similar to LengthDistributionData, but with TotalCatchWeight and TotalCatchCount instead of WeightedCount. As such, moved the CatchVariable of SpeciesCategoryCatch() to the ReportVariable of ReportSpeciesCategoryCatch(). The latter is a backward compatibility breaking change. Any existing StoX project using SpeciesCategoryCatch() and ReportSpeciesCategoryCatch() will break in ReportSpeciesCategoryCatch(), and the ReportVariable needs to be set to the appropriate value in order to continue.
+* Added SumSpeciesCategoryCatch() and MeanSpeciesCategoryCatch().
+* Added the parameter SweptAreaDensityType in SweptAreaDensity() supporting both "LengthDistributed" and "TotalCatch" swept-area density. 
+* Added new column DensityType in DensityData with supported values "AreaNumberDensity" (the only option for AcousticDensity() and  SweptAreaDensityType "LengthDistributed") and  "AreaMassDensity".
+
+## Detailed changes
+* Added the parameter InformationVariables to reports.
+* Hiding the parameters VariableName and ConditionalVariableName when DefinitionMethod = "Table" in Translation()
+* Added ResampleMeanSpeciesCategoryCatchData(). 
+* Added test for functioning help-pages. Updated tests.
+* Changed type of the columns of the Translation process data to accept strings, numeric and boolean (preivously restricted to string).
+* Changed TranslationTable to Table in DefineTranslation(). Fixed bug where NA in Tanslation was not converted properly to the type of the existing data. Added change of class in ICESBiotic() as per the XSD. Fixed bug in AddToStoxBiotic(), where variables from agedetermination in NMDBiotic >= 3 were not added. Code changed to use the xsd to determine the variables that can be added.
+* Added renameColumInProcessDataTable as backward compatibility action. Changed to using AJV. Dropped the option of saving and reading project.RData. Added a second json validation after backward compatibility action, in case the first did not pass.
+
+
 # StoX v3.2.4 (2022-01-13)
 
 ## General
@@ -37,7 +83,7 @@
 # StoX v3.2.2 (2022-01-10)
 
 ## General
-* Changed SpeciesCategoryCatch() to return a single table similar to LengthDistributionData, but with TotalCatchWeight and TotalCatchCount instead of WeightedCount. As such, moved the CatchVariable of SpeciesCategoryCatch() to the ReportVariable of ReportSpeciesCategoryCatch(). The latter is a backward compatibility breaking change.
+* Changed SpeciesCategoryCatch() to return a single table similar to LengthDistributionData, but with TotalCatchWeight and TotalCatchCount instead of WeightedCount. As such, moved the CatchVariable of SpeciesCategoryCatch() to the ReportVariable of ReportSpeciesCategoryCatch(). The latter is a backward compatibility breaking change. Any existing StoX project using SpeciesCategoryCatch() and ReportSpeciesCategoryCatch() will break in ReportSpeciesCategoryCatch(), and the ReportVariable needs to be set to the appropriate value in order to continue.
 * Added SumSpeciesCategoryCatch() and MeanSpeciesCategoryCatch().
 * Added the parameter SweptAreaDensityType in SweptAreaDensity() supporting both "LengthDistributed" and "TotalCatch" swept-area density. 
 * Added new column DensityType in DensityData with supported values "AreaNumberDensity" (the only option for AcousticDensity() and  SweptAreaDensityType "LengthDistributed") and  "AreaMassDensity".
