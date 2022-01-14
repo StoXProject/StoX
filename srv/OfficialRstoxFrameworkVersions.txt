@@ -45,3 +45,5 @@ StoX	RstoxFramework	Dependencies	Official
 3.2.2	3.2.2	RstoxBase_1.5.2,RstoxData_1.3.3	FALSE
 3.2.3	3.2.3	RstoxBase_1.5.3,RstoxData_1.3.5	FALSE
 3.2.4	3.2.4	RstoxBase_1.5.4,RstoxData_1.3.5	FALSE
+3.2.5	3.2.5	RstoxBase_1.7.0,RstoxData_1.5.0	FALSE
+3.3.0	3.3.0	RstoxBase_1.7.0,RstoxData_1.5.0	TRUE
