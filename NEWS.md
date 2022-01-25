@@ -1,3 +1,19 @@
+# StoX v3.3.1 (2022-01-25)
+
+## General
+* The unofficial version StoX 3.3.1 fixes a bug in the GUI occurring when selecting DensityType in SweptAreaDensity() when SweptAreaDensityMethod == "LengthDistributed", along with a few other improvements.
+
+## Bug fixes
+* Fixed bug in drop-down list for DensityType in SweptAreaDensity() when SweptAreaDensityMethod == "LengthDistributed". To avoid error the user had to type in the value manually as ["AreaNumberDensity"]. Moved from testthat to tinytest.
+* Fixed bug causing stream = TRUE to fail on MacOS Monterey in readXmlFile().
+
+## Detailed changes
+* Added warnings for when (catch)producttype != 1, (sample)producttype != 1, (individual)producttype != 1, or lengthmeasurement != 'E'. 
+* Added support for NMDBiotic files of mixed version (<= and > 1.4) in AddToStoxBiotic() (removing the prey table and other unused tables, as consistent link to the individual table is not provided by the XML schema.). 
+* Added drop-down list in parameters DependentVariable and IndependentVariable in EstimateRegression().
+* Added errors as StoX warning in getRegressionTable() to communicate the error. 
+
+
 # StoX v3.3.0 (2022-01-14)
 
 ## Summary
