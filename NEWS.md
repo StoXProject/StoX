@@ -1,3 +1,20 @@
+# StoX v3.3.2 (2022-02-10)
+
+## General
+* Added WeightingMethod = "NASC" in BioticAssignmentWeighting().
+* Added support for specifying a function as a string in Translation process data, usefull e.g. for setting fish larger than som value to mature.
+
+## Changes affecting backward compatibility
+* Changed the process data Translation from a table with columns VariableName, Value, NewValue, ConditionalVariableName, ConditionalValueColumn, to a table of the variable to translate in the first column; the column NewValue giving the values to translate to in the second column; followed by zero or more conditional variables. This supports multiple conditional variables, but restricts to translating only one variable at the time (although the old table i still supported, but cannot be generated in the GUI). 
+
+## Bug fixes
+* Fixed bug in ICESDatras() occurring when there were rows with the same aphia and species, but with missing sex.
+
+## Detailed changes
+* Renamed ConditionalVariableName to ConditionalVariableNames and ConditionalValueColumn to ConditionalValueColumns, as multiple values are now supported.
+* Added support for both NAs and other values in the same Translation process data.
+
+
 # StoX v3.3.1 (2022-01-25)
 
 ## General

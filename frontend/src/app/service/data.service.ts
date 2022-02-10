@@ -87,7 +87,8 @@ export class DataService {
       "projectPath": projectPath,
       "showWarnings": false,
       "force": force,
-      "reset": false
+      "reset": false, 
+      "verbose": true
     }, dothrow);
   }
 
