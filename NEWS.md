@@ -1,3 +1,12 @@
+# StoX v3.3.3 (2022-02-14)
+
+## General
+* Added the parameters TranslationDefinition, TranslationTable, VariableName, Conditional and ConditionalVariableNames to all Translate functions, specifically TranslateAcoustic(), TranslateBiotic(), TranslateICESAcoustic(), TranslateICESBiotic(), TranslateICESDatras(), TranslateLanding(), TranslateStoxAcoustic(), TranslateStoxBiotic() and TranslateStoxLanding(). This allows for specifying the Translation as a table in the Translate function, without the need for DefineTranslation(). DefineTranslation() can still be used, and must be used if reading the Translation from a file.
+
+## Detailed changes
+* Added InformationVariables to ReportBootstrap().
+
+
 # StoX v3.3.2 (2022-02-10)
 
 ## General
