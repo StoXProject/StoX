@@ -38,7 +38,7 @@ Step 2:
 Install R 3.6.3 or newer if not already installed.
 
 Step 3: 
-Open StoX by double clicking on the "StoX.app" in the Applications folder in the Finder app. If you get a message saying "StoX can't be opened because the identity of the developer cannot be confirmed", or similar, ctr + click and select Open. 
+Open StoX by double clicking on the "StoX.app" in the Applications folder in the Finder app. If you get a message saying "StoX can't be opened because the identity of the developer cannot be confirmed", or similar, ctr + click and select Open. Some users may need to 
 
 Step 4: 
 Click on "Tools" > "R connection" in the menu to define the path to R. Normally the following path will work "/Library/Frameworks/R.framework/Resources" (this path will work even if you at a later point in time upgrade R). Otherwise, the path to R can be found on the command line using 'R RHOME'.
@@ -61,7 +61,7 @@ Step 3:
 Open StoX either by clicking on the StoX icon or using the command 'StoX'.
 
 Step 4: 
-Click on "Tools" > "R connection" in the menu to define the path to R. The path to R can be found with the command 'R RHOME'.
+Click on "Tools" > "R connection" in the menu to define the path to R. The path to R can be found with the command 'R RHOME' in the terminal or R.home("bin") in R.
 
 Step 5: 
 Click on "Tools" > "Install Rstox packages" in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages. 
