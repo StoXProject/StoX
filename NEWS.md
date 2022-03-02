@@ -1,3 +1,28 @@
+# StoX v3.3.4 (2022-03-02)
+
+## General
+* Reduced time of ReportBootstrap() to a few percent.
+* Changed all sd and cv in reports from 0 to NA. Standard deviation = 0 is no longer accepted by StoX, as it implies either insufficient number of bootstraps or only one value to sample from in the bootstrapping.
+* Added error when the raising factor calculated from CatchFractionWeight/SampleWeight or CatchFractionNumber/SampleNumber is NA or Inf in one or more samples. This is an indication of error in the data that StoX can take no general approach to handle. The primary solution for this error is to correct the errors in the input data, or preferably in the database holding the data, so that other users may avoid the same error. There are possibilities for filtering out the hauls/samples with error in raising factor in StoX, but this requires COMPLETE KNOWLEDGE of what the different samples and hauls represent. Filtering out a sample with missing raising factor causes the length distribution to be given by the other samples, which may be special samples of e.g. only large fish, resulting in highly biased length distribution. Filtering out entire hauls is also problematic, as one may lose vital information in the data, say if the large catches have a particular problem with extra samples where the raising factor is not given. Another dangerous option in StoX is to translate e.g. CatchFractionWeight and SampleWeight to positive values at the exact knowledge of what the correct value should be. 
+
+## Detailed changes
+* Increased significant digits of small numbers from 6 to 12.
+* Moved application of setRstoxPrecisionLevel() from each StoX function to RstoxFramework::runProcess().
+* Added error when EstimateBioticRegression() when using the power model and when there are 0 in the data, which result in -Inf in the log used in the power regression.
+* Added na.action = na.exclude to the regression functions applied by EstimateBioticRegression().
+* Changed the warning when not all assigned hauls have length measured individuals to a warning when not all hauls of the stratum have length measured individuals, as we are bootstrapping within hauls and not within assignment.
+* Added a warning for when only one assigned haul has length measured individuals.
+* Added possible values for SpeciesLink in AcousticDensity().
+* Added notes on the difference between unit for Biomass in the data types QuantityData (kg) and SuperIndividualsData (g) in the documentation of the functions Quantity() and SuperIndividuals().
+* Changed to using StratumName instead of the old polygonName in stratum polygons throughout RstoxFramework and the StoX GUI
+* Added order of backward compatibility actions to package first (alphabetically), then change version (numerically), and finally action type with order as given by RstoxFramework::getRstoxFrameworkDefinitions("backwardCompatibilityActionNames"). 
+
+## Bug fixes
+* Fixed bug "names do not match previous names" when adding a new stratum in the StoX GUI.
+* Fixed bug where the blue dot marking processes as 'run' was turned on on a newly modified process when immediately modifying a later process.
+* Fixed bug when working with a DefineStratumPolygon procecss with no polygons defined (readProcessOutputFile() did nor read deal properly with the empty SpatialPolygonsDataFrame with jsonlite::prettify(geojsonsf::sf_geojson(sf::st_as_sf(data))), but ok when using replaceSpatialFileReference(buildSpatialFileReferenceString(data)) instead).
+
+
 # StoX v3.3.3 (2022-02-14)
 
 ## General
