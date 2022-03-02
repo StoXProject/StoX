@@ -264,7 +264,7 @@ export class MapSetup {
                 console.log("Strata name " + strataName + " with hex " + MapSetup.toHex(strataName));
                 // a valid stratum name has been entered
                 //f.setId(Math.max(...source.getFeatures().map(f2 => f2.getId() != null ? +f2.getId() : 0)) + 1);
-                f.setProperties({ 'polygonName': strataName });
+                f.setProperties({ 'StratumName': strataName });
                 let stratum: string = (new GeoJSON()).writeFeatures([f], { featureProjection: proj, dataProjection: 'EPSG:4326' });
                 console.log(stratum);
                 //source.getFeatures().map(f => f.getId())
@@ -356,7 +356,7 @@ export class MapSetup {
                 break;
             }
             case 'stratum': {
-                primaryKeyName = "polygonName";
+                primaryKeyName = "StratumName";
                 let stratumIndex: NamedStringIndex = {};
                 stratumIndex[primaryKeyName] = feature.get(primaryKeyName);
                 infoTables = [[stratumIndex]];
