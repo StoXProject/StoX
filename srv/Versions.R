@@ -333,9 +333,9 @@ getOnlyPackageVersion <- function(packageNameAndVersionString) {
 
 
 
-readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFile) {
+readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFile, toTable = FALSE) {
     # Get the file name:
-    if(!length(officialRstoxPackageVersionsFile)) {
+    if(missing(officialRstoxPackageVersionsFile) || !length(officialRstoxPackageVersionsFile)) {
         officialRstoxPackageVersionsFile = system.file("versions", "OfficialRstoxFrameworkVersions.txt", package = "RstoxFramework")
     }
        
@@ -350,6 +350,12 @@ readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFil
             NULL
         }
     )
+    
+    if(toTable) {
+        dependencies <- strsplit(official$Dependencies, "[,]")
+        dependencies <- lapply(dependencies, extractPackageNameAsNames)
+        official <- data.table::data.table(RstoxFramework = official$RstoxFramework, data.table::rbindlist(dependencies))
+    }
     
     return(official)
 }
