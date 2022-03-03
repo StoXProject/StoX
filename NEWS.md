@@ -1,3 +1,9 @@
+# StoX v3.3.5 (2022-03-03)
+
+## General
+* Added support for the new changes in the ICESBiotic and ICESAcoustic format.
+
+
 # StoX v3.3.4 (2022-03-02)
 
 ## General
