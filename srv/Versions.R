@@ -59,6 +59,66 @@ getNonRstoxDependencies <- function(
     
     return(allNonRstoxDependencies)
 }
+
+
+#'
+#' @export
+#' @rdname installPackages
+#'
+getStoxDependencies <- function(
+    StoXGUIVersion, 
+    officialRstoxPackageVersionsFile, 
+    Rstox.repos = "https://stoxproject.github.io/repo", 
+    dependency.repos = "https://cloud.r-project.org", 
+    dependencyTypes = NA, 
+    platform = NA, 
+    quiet = FALSE
+) {
+    # Use the GitHub master as default if missing:
+    if(missing(officialRstoxPackageVersionsFile)) {
+        officialRstoxPackageVersionsFile <- "https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt"
+    }
+    
+    # Set timeout to the maximum value of 24 hours:
+    originalTimeout <- options("timeout")
+    options(timeout = 24*60*60)
+    on.exit(options(timeout = originalTimeout))
+    
+    #### # Step 1: Identify the Rstox-packages available for the current R version and lower supported versions: ####
+    # Get the table of Rstox packages to be installed, for the current R version or lower supported R versions if the requested package version 
+    twoDigitRVersion <- getTwoDigitRVersion()
+    officialRstoxPackagesInfo <- getOfficialRstoxPackagesInfo(
+        StoXGUIVersion = StoXGUIVersion, 
+        officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile, 
+        dependencyTypes = dependencyTypes, 
+        Rstox.repos = Rstox.repos, 
+        platform = platform, 
+        twoDigitRVersion = twoDigitRVersion, 
+        quiet = quiet
+    )
+    
+    # Step 2: Get the list of dependencies of the Rstox-packages.
+    # Make sure to use recursive = FALSE, as the table 'binaries' only contains the Rstox packages:
+    direct_dependencies <- getDependencies(
+        packageName = officialRstoxPackagesInfo$Package, 
+        packageTable = officialRstoxPackagesInfo, 
+        recursive = FALSE, 
+        excludeStartingWith = "Rstox"
+    )
+    
+    # Step 3: Install the dependencies
+    dependencies <- remotes::package_deps(direct_dependencies, dependencies = c("Depends", "Imports", "LinkingTo"), repos = dependency.repos, type = getInstallType())
+    
+    return(
+        list(
+            officialRstoxPackagesInfo = officialRstoxPackagesInfo, 
+            direct_dependencies = direct_dependencies,
+            dependencies = data.table::as.data.table(dependencies)
+        )
+    )
+}
+
+
 #'
 #' @export
 #' @rdname installPackages
@@ -77,60 +137,38 @@ installOfficialRstoxPackagesWithDependencies <- function(
     quiet = FALSE
 ) {
     
-    # Use the GitHub master as default if missing:
-    if(missing(officialRstoxPackageVersionsFile)) {
-        officialRstoxPackageVersionsFile <- "https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt"
-    }
     # We install only binaries.
-    # Step 1: Identify the Rstox-packages available for the current R version and lower supported versions:
-    # Step 2: Get the list of dependencies of the Rstox-packages.
-    # Step 3: Install the dependencies
-    # Step 4: Install the downloaded Rstox packages
+    # Step 1: Identify the Rstox-packages available for the current R version and lower supported versions, and the list of dependencies of the Rstox-packages.
+    # Step 2: Install the dependencies
+    # Step 3: Install the downloaded Rstox packages
     
     # Set timeout to the maximum value of 24 hours:
     originalTimeout <- options("timeout")
     options(timeout = 24*60*60)
-    
-    # Download the files to the specified directory (or to the tempdir() if not specified):
-    if(length(destdir) && is.na(destdir)) {
-        destdir <- replace4backslashWithOneForward(tempdir())
-    }
-    
-    # Select the first library if not specified:
-    if(!length(lib)) {
-        lib <- .libPaths()[1]
-    }
-    
+    on.exit(options(timeout = originalTimeout))
     
     #### # Step 1: Identify the Rstox-packages available for the current R version and lower supported versions: ####
     # Get the table of Rstox packages to be installed, for the current R version or lower supported R versions if the requested package version 
-    twoDigitRVersion <- getTwoDigitRVersion()
-    officialRstoxPackagesInfo <- getOfficialRstoxPackagesInfo(
+    StoxDependencies <- getStoxDependencies(
         StoXGUIVersion = StoXGUIVersion, 
         officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile, 
-        dependencyTypes = dependencyTypes, 
         Rstox.repos = Rstox.repos, 
+        dependency.repos = dependency.repos, 
+        dependencyTypes = dependencyTypes, 
         platform = platform, 
-        twoDigitRVersion = twoDigitRVersion, 
         quiet = quiet
     )
-    
-    # Step 2: Get the list of dependencies of the Rstox-packages.
-    # Make sure to use recursive = FALSE, as the table 'binaries' only contains the Rstox packages:
-    dependencies <- getDependencies(
-        packageName = officialRstoxPackagesInfo$Package, 
-        packageTable = officialRstoxPackagesInfo, 
-        recursive = FALSE, 
-        excludeStartingWith = "Rstox"
-    )
-    
-    # Step 3: Install the dependencies
-    toInstall <- remotes::package_deps(dependencies, dependencies = c("Depends", "Imports", "LinkingTo"), repos = dependency.repos, type = getInstallType())
+    officialRstoxPackagesInfo <- StoxDependencies$officialRstoxPackagesInfo
+    toInstall <- StoxDependencies$dependencies
     # Install only packages with lower locally installed version:
     toInstall <- subset(toInstall, toInstall$diff < 0)
     toInstall <- toInstall$package
     
     
+    # Select the first library if not specified:
+    if(!length(lib)) {
+        lib <- .libPaths()[1]
+    }
     #removeExistingPackages(toInstall$package, lib = lib)
     # Locate lockced folders:
     dirs <- list.dirs(lib, recursive = FALSE)
@@ -153,7 +191,12 @@ installOfficialRstoxPackagesWithDependencies <- function(
         }
     }
     
-    # Step 4: Install the Rstox packages
+    # Step 3: Install the Rstox packages
+    # Download the files to the specified directory (or to the tempdir() if not specified):
+    if(length(destdir) && is.na(destdir)) {
+        destdir <- replace4backslashWithOneForward(tempdir())
+    }
+    
     binaryLocalFiles <- paste(destdir, basename(officialRstoxPackagesInfo$Package), sep = "/")
     mapply(
         utils::download.file, 
@@ -472,7 +515,7 @@ extractDependencies <- function(packageName, packageTable, dependencyTypes, recu
     }
     
     # Extract the dependencies of the packageName:
-    onlyDependencies <- subset(packageTable, Package %in% packageName)[dependencyTypes]
+    onlyDependencies <- subset(packageTable, Package %in% packageName, select = dependencyTypes)
     if(!nrow(onlyDependencies)) {
         warning("Package ", paste(packageName, collapse = ", "), " not present in the repos.")
     }
@@ -646,6 +689,9 @@ getPlatform <- function(platform = NA) {
         else {
             stop("Only Windows, MacOS and Linux are currently supported.")
         }
+    }
+    else {
+        platform <- tolower(platform)
     }
     
     return(platform)
