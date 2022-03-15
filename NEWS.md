@@ -1,3 +1,14 @@
+# StoX v3.3.6 (2022-03-15)
+
+## Bug fixes
+* Fixed bug in removeEDSU(), where EDSUs to remove were assigned empty string instead of NA as PSU.
+* Fixed bug in backward compatibility for AcousticLayer and BioticLayer.
+
+## Detailed changes
+* Added warning when at least one of bottomdepthstart and bottomdepthstop are missing, so that BottomDepth is NA.
+* Included more informative warning when e.g. product types are not the required value in StoxBiotic().
+
+
 # StoX v3.3.5 (2022-03-03)
 
 ## General
