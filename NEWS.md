@@ -1,8 +1,23 @@
+# StoX v3.3.7 (2022-03-22)
+
+## General
+* Added the parameter AddToLowestTable in AddToStoxBiotic(), which can be used for adding variables from tables in NMDBiotic or ICESBiotic that are split into two tables in StoxBiotic (fishstation and catchsample in NMDBiotic and Haul and Catch in ICESBiotic). When these tables are split into two tables StoX decides which variable should be placed in each table. E.g., geographical position is placed in the Station table of StoxBiotic, which implies that only the first position of several hauls that comprise one Station is kept. If one needs all positions, AddToLowestTable can be set to TRUE so that the positions are placed in the Haul table instead of the Station table of StoxBiotic.
+
+## Bug fixes
+* Fixed bug in possible values for speciesLinkTable in  SplitNASC().
+* Fixed bug when checking for only one PSU in a stratum.
+ Fixed bug in JSON schema for AcousticLayer and BioticLayer.
+
+## Detailed changes
+* Changed warning when there are assigned hauls with no length distribution. Now there is a warning in AcousticDensity() if there are hauls in a stratum for which not ALL target species have length distribution. In SplitNASC() the warning is when not ANY target species have length distribution, as we only need one length distribution to distribute NASC between species.
+* Changed the warning "that have assigned ONLY ONE haul with length measured individuals" to "that have assigned ONLY ONE haul", since this warning concerns bootstrapping only one Haul, regardless of whether the Haul contains length distribution or not.
+* Added the MinNumberOfEDSUs parameter to BioticAssignmentWeighting() when WeightingMethod == "NASC".
+
 # StoX v3.3.6 (2022-03-15)
 
 ## Bug fixes
 * Fixed bug in removeEDSU(), where EDSUs to remove were assigned empty string instead of NA as PSU.
-* Fixed bug in backward compatibility for AcousticLayer and BioticLayer.
+* Fixed bug in JSON schema for AcousticLayer and BioticLayer.
 
 ## Detailed changes
 * Added warning when at least one of bottomdepthstart and bottomdepthstop are missing, so that BottomDepth is NA.
