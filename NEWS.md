@@ -1,3 +1,8 @@
+# StoX v3.3.8 (2022-03-24)
+
+## Bug fixes
+* Fixed critical bug in acoustic-trawl projects for SuperIndividuals when DistributionMethod = "HaulDensity" and Hauls are assigned to PSUs in more than one stratum, which led to under-estimation, as the number of individuals to distribute the Abundance to was counted over all strata per Haul ID, whereas only inside the stratum was correct.
+
 # StoX v3.3.7 (2022-03-22)
 
 ## General
