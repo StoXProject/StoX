@@ -1,3 +1,12 @@
+# StoX v3.3.9 (2022-03-29)
+
+## Changes affecting backward compatibility
+* Fixed bug in BioticAssignmentWeighting, WeightingMethod "SumWeightedNumber" and "InverseSumWeightedNumber", where weights were overwritten instead of multiplied, with the consequence that the randomness introduced by the bootstrapping of hauls in acoustic-trawl models when the DefineBioticAssignment process is used in BootstrapMethodTable will be overwritten by the BioticAssignmentWeighting process, thus cancelling the randomness for hauls (randomness will still be present for the EDSUs).
+
+## Detailed changes
+* Translated WeightingMethod "NASC" to "AcousticDensity" to reflect that AcousticDensity is calcuclated per EDSU around each Haul. Changed the description of the BioticAssignmentWeighting() to reflect that this happens rather than averaging NASC first and then calculating AcousticDensity. Fixed errors in BioticAssignmentWeighting() when WeightingMethod = "AcousticDensity".
+* Added error when weigths do not sum to 1 in SuperIndividuals, with a not indicating that this may be due to different input LengthDistributionData compared to that used to  derive the input QuantityData.
+
 # StoX v3.3.8 (2022-03-24)
 
 ## Bug fixes
