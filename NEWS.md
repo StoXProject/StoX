@@ -1,3 +1,8 @@
+# StoX v3.3.10 (2022-03-30)
+
+## Detailed changes
+* Changed WeightingMethod "AcousticDensity" to only consider EDSUs that are tagged to an acoustic PSU.
+
 # StoX v3.3.9 (2022-03-29)
 
 ## Changes affecting backward compatibility
