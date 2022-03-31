@@ -8,9 +8,9 @@ StoX is an open source software developed at IMR, Norway, to analyze survey data
 
 ## Installation
 
-See [release notes for StoX 3.3.0](https://github.com/StoXProject/StoX/blob/master/NEWS.md#Stox-v330-2022-01-14).
+See [release notes for StoX 3.4.0](https://github.com/StoXProject/StoX/blob/master/NEWS.md#Stox-v340-2022-03-30).
 
-Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v3.3.0). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
+Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v3.4.0). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
 
 ### Windows:
 

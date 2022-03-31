@@ -1,3 +1,62 @@
+# StoX v3.4.0 (2022-03-30)
+
+## Summary
+* The new StoX 3.4.0 ccontains a number of important bug fixes, such as an error in acoustic-trawl projects in the function SuperIndividuals when DistributionMethod = "HaulDensity" and Hauls are assigned to PSUs in more than one stratum, which led to under-estimation. The new version contains several improvements with regards to warnings and errors, such as warnings when hauls with no length distribution of the target species are assigned to the acoustic PSUs of a Stratum, which can lead to biased bootstrapping. 
+* Some additional features and parameter are added, such as WeightingMethod "AcousticDensity" in function BioticAssignmentWeighting, and the possibility to define translation directly in Translate-functions. Translation can now also be defined using function strings, useful e.g. if one wants to set all non-NA values to NA.
+* The function ReportBootstrap has been sped up by a factor of at least 10
+* Finally, the new changes in ICES formats are supported.
+
+## Changes affecting backward compatibility
+* Fixed bug in BioticAssignmentWeighting, WeightingMethod "SumWeightedNumber" and "InverseSumWeightedNumber", where weights were overwritten instead of multiplied, with the consequence that the randomness introduced by the bootstrapping of hauls in acoustic-trawl models when the DefineBioticAssignment process is used in BootstrapMethodTable will be overwritten by the BioticAssignmentWeighting process, thus cancelling the randomness for hauls (randomness will still be present for the EDSUs).
+* Changed the process data Translation from a table with columns VariableName, Value, NewValue, ConditionalVariableName, ConditionalValueColumn, to a table of the variable to translate in the first column; the column NewValue giving the values to translate to in the second column; followed by zero or more conditional variables. This supports multiple conditional variables, but restricts to translating only one variable at the time (although the old table i still supported, but cannot be generated in the GUI). 
+
+## Bug fixes
+* Fixed critical bug in acoustic-trawl projects in the function SuperIndividuals when DistributionMethod = "HaulDensity" and Hauls are assigned to PSUs in more than one stratum, which led to under-estimation, as the number of individuals to distribute the Abundance to was counted over all strata per Haul ID, whereas only inside the stratum was correct.
+* Fixed bug in removeEDSU(), where EDSUs to remove were assigned empty string instead of NA as PSU.
+* Fixed bug in JSON schema for AcousticLayer and BioticLayer.
+* Fixed bug "names do not match previous names" when adding a new stratum in the StoX GUI.
+* Fixed bug where the blue dot marking processes as 'run' was turned on on a newly modified process when immediately modifying a later process.
+* Fixed bug when working with a DefineStratumPolygon procecss with no polygons defined (readProcessOutputFile() did nor read deal properly with the empty SpatialPolygonsDataFrame with jsonlite::prettify(geojsonsf::sf_geojson(sf::st_as_sf(data))), but ok when using replaceSpatialFileReference(buildSpatialFileReferenceString(data)) instead).
+* Fixed bug in ICESDatras() occurring when there were rows with the same aphia and species, but with missing sex.
+* Fixed bug in drop-down list for DensityType in SweptAreaDensity() when SweptAreaDensityMethod == "LengthDistributed". To avoid error the user had to type in the value manually as ["AreaNumberDensity"]. Moved from testthat to tinytest.
+* Fixed bug causing stream = TRUE to fail on MacOS Monterey in readXmlFile().
+
+## General changes
+* Added WeightingMethod "AcousticDensity" in function BioticAssignmentWeighting, including the parameter MinNumberOfEDSUs.
+* Added the parameter AddToLowestTable in AddToStoxBiotic(), which can be used for adding variables from tables in NMDBiotic or ICESBiotic that are split into two tables in StoxBiotic (fishstation and catchsample in NMDBiotic and Haul and Catch in ICESBiotic). When these tables are split into two tables StoX decides which variable should be placed in each table. E.g., geographical position is placed in the Station table of StoxBiotic, which implies that only the first position of several hauls that comprise one Station is kept. If one needs all positions, AddToLowestTable can be set to TRUE so that the positions are placed in the Haul table instead of the Station table of StoxBiotic.
+* Added support for the new changes in the ICESBiotic and ICESAcoustic format.
+* Reduced time of ReportBootstrap() to a few percent.
+* Changed all sd and cv in reports from 0 to NA. Standard deviation = 0 is no longer accepted by StoX, as it implies either insufficient number of bootstraps or only one value to sample from in the bootstrapping.
+* Increased significant digits of small numbers from 6 to 12.
+* Added the parameters TranslationDefinition, TranslationTable, VariableName, Conditional and ConditionalVariableNames to all Translate functions, specifically TranslateAcoustic(), TranslateBiotic(), TranslateICESAcoustic(), TranslateICESBiotic(), TranslateICESDatras(), TranslateLanding(), TranslateStoxAcoustic(), TranslateStoxBiotic() and TranslateStoxLanding(). This allows for specifying the Translation as a table in the Translate function, without the need for DefineTranslation(). DefineTranslation() can still be used, and must be used if reading the Translation from a file.
+* Added InformationVariables to ReportBootstrap().
+* Added support for specifying a function as a string in Translation process data, usefull e.g. for setting fish larger than som value to mature.
+* Added errors as StoX warning in getRegressionTable() to communicate the error. 
+
+## Warnings and errors
+* Added error when the raising factor calculated from CatchFractionWeight/SampleWeight or CatchFractionNumber/SampleNumber is NA or Inf in one or more samples. This is an indication of error in the data that StoX can take no general approach to handle. The primary solution for this error is to correct the errors in the input data, or preferably in the database holding the data, so that other users may avoid the same error. There are possibilities for filtering out the hauls/samples with error in raising factor in StoX, but this requires COMPLETE KNOWLEDGE of what the different samples and hauls represent. Filtering out a sample with missing raising factor causes the length distribution to be given by the other samples, which may be special samples of e.g. only large fish, resulting in highly biased length distribution. Filtering out entire hauls is also problematic, as one may lose vital information in the data, say if the large catches have a particular problem with extra samples where the raising factor is not given. Another dangerous option in StoX is to translate e.g. CatchFractionWeight and SampleWeight to positive values at the exact knowledge of what the correct value should be. 
+* Changed the warning when not all assigned hauls have length measured individuals to a warning when not all hauls of the stratum have length measured individuals, as we are bootstrapping within hauls and not within assignment.
+* Added a warning for when only one assigned haul has length measured individuals.
+* Added error when weigths do not sum to 1 in SuperIndividuals, with a not indicating that this may be due to different input LengthDistributionData compared to that used to derive the input QuantityData.
+* Changed warning when there are assigned hauls with no length distribution. Now there is a warning in AcousticDensity() if there are hauls in a stratum for which not ALL target species have length distribution. In SplitNASC() the warning is when not ANY target species have length distribution, as we only need one length distribution to distribute NASC between species.
+* Changed the warning "that have assigned ONLY ONE haul with length measured individuals" to "that have assigned ONLY ONE haul", since this warning concerns bootstrapping only one Haul, regardless of whether the Haul contains length distribution or not.
+* Added warning when at least one of bottomdepthstart and bottomdepthstop are missing, so that BottomDepth is NA.
+* Included more informative warning when e.g. product types are not the required value in StoxBiotic().
+* Added error when EstimateBioticRegression() when using the power model and when there are 0 in the data, which result in -Inf in the log used in the power regression.
+* Added warnings for when (catch)producttype != 1, (sample)producttype != 1, (individual)producttype != 1, or lengthmeasurement != 'E'. 
+
+## Detailed changes
+* Added na.action = na.exclude to the regression functions applied by EstimateBioticRegression().
+* Added possible values for SpeciesLink in AcousticDensity().
+* Added notes on the difference between unit for Biomass in the data types QuantityData (kg) and SuperIndividualsData (g) in the documentation of the functions Quantity() and SuperIndividuals().
+* Changed to using StratumName instead of the old polygonName in stratum polygons throughout RstoxFramework and the StoX GUI
+* Added order of backward compatibility actions to package first (alphabetically), then change version (numerically), and finally action type with order as given by RstoxFramework::getRstoxFrameworkDefinitions("backwardCompatibilityActionNames"). 
+* Renamed ConditionalVariableName to ConditionalVariableNames and ConditionalValueColumn to ConditionalValueColumns, as multiple values are now supported.
+* Added support for both NAs and other values in the same Translation process data.
+* Added support for NMDBiotic files of mixed version (<= and > 1.4) in AddToStoxBiotic() (removing the prey table and other unused tables, as consistent link to the individual table is not provided by the XML schema.). 
+* Added drop-down list in parameters DependentVariable and IndependentVariable in EstimateRegression().
+
+
 # StoX v3.3.10 (2022-03-30)
 
 ## Detailed changes
@@ -25,7 +84,7 @@
 ## Bug fixes
 * Fixed bug in possible values for speciesLinkTable in  SplitNASC().
 * Fixed bug when checking for only one PSU in a stratum.
- Fixed bug in JSON schema for AcousticLayer and BioticLayer.
+* Fixed bug in JSON schema for AcousticLayer and BioticLayer.
 
 ## Detailed changes
 * Changed warning when there are assigned hauls with no length distribution. Now there is a warning in AcousticDensity() if there are hauls in a stratum for which not ALL target species have length distribution. In SplitNASC() the warning is when not ANY target species have length distribution, as we only need one length distribution to distribute NASC between species.
