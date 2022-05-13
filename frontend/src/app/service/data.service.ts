@@ -329,13 +329,14 @@ export class DataService {
             throw (r2.error[0]);
           }
         } else {
-          r2.warning
-            ?.filter(elm => elm.startsWith("StoX: "))
-            .map(elm => elm.replace("StoX: ", "> "))
-            .forEach(elm => {
-              this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
-              this.m_logSubject.next('log-warning');
+          r2.message?.forEach(elm => {
+              this.log.push(new UserLogEntry(UserLogType.MESSAGE, elm));
+              this.m_logSubject.next('log-message');
             });
+          r2.warning?.forEach(elm => {
+            this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
+            this.m_logSubject.next('log-warning');
+          });
           r2.error?.forEach(elm => {
             this.log.push(new UserLogEntry(UserLogType.ERROR, elm));
             this.m_logSubject.next('log-error');

@@ -384,7 +384,7 @@ export class MapSetup {
         }
     }
 
-    public static getGridLayer(proj): Vector {
+    public static getGridLayer(proj, centerLongitude: number): Vector {
         var gridLines = {
             'type': 'FeatureCollection',
             'features': []
@@ -396,17 +396,17 @@ export class MapSetup {
             })
         });
         let lines = []
-        // Why is -50 a limit here?
-        for (let iy = -80; iy <= 80; iy += 5) {
+        // Define the longitude 120 degrees to each side of the centerLongitude:
+        for (let iy = -85; iy <= 85; iy += 5) {
             let line = [];
-            for (let ix = -100; ix <= 150; ix += 5) {
+            for (let ix = centerLongitude - 175; ix <= centerLongitude + 175; ix += 5) {
                 line.push([ix, iy]);
             }
             lines.push(line);
         }
-        for (let ix = -100; ix <= 150; ix += 5) {
+        for (let ix = centerLongitude - 175; ix <= centerLongitude + 175; ix += 5) {
             let line = [];
-            for (let iy = -80; iy <= 80; iy += 5) {
+            for (let iy = -85; iy <= 85; iy += 5) {
                 line.push([ix, iy]);
             }
             lines.push(line);

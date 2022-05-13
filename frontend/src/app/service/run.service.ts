@@ -138,9 +138,9 @@ export class RunService {
             let p = processes[i];
             this.ps.runningProcessId = p.processID;
             //console.log("Run process " + p.processName + " with id " + p.processID);
-            this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "> Process " + p.processName));
-            this.dataService.logSubject.next('log-message');
-            this.ps.iaMode = '';
+            // this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "> Process " + p.processName));
+            // this.dataService.logSubject.next('log-message');
+            // this.ps.iaMode = '';
             let res: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise());
 
             //console.log("run result: " + res);

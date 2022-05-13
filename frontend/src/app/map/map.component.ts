@@ -77,7 +77,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   stratumDraw: Draw;
   overlay: Overlay;
   private m_Tool: string = "freemove";
-  proj = 'STOX:001';//'ESRI:54003'//'EPSG:3857';//'ESRI:54003';//'EPSG:3857';//'EPSG:4326';//'ESRI:54003';//'EPSG:9820';
+  proj = 'StoX_001_NorthSea';
 
   constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
@@ -102,15 +102,28 @@ export class MapComponent implements OnInit, AfterViewInit {
   ];
   projectionsMenu = [
     {
-      label: 'STOX:001: Lambert Azimuthal Equal Area - North Sea', command: e => {
-
-        this.setProjectionProj4('STOX:001', 3);
+      label: 'StoX 001: Lambert Azimuthal Equal Area - North Sea', command: e => {
+        this.setProjectionProj4('StoX_001_NorthSea', 2, 10);
       }
     },
     {
-      label: 'ESRI:102020: Lambert Azimuthal Equal Area - South pole', command: e => {
-
-        this.setProjectionProj4('ESRI:102020', 2);
+      label: 'StoX 002: Lambert Azimuthal Equal Area - Barents Sea', command: e => {
+        this.setProjectionProj4('StoX_002_BarentsSea', 2, 30);
+      }
+    },
+    {
+      label: 'StoX 003: Lambert Azimuthal Equal Area - West Africa', command: e => {
+        this.setProjectionProj4('StoX_003_WestAfrica', 2, 10);
+      }
+    },
+    {
+      label: 'StoX 004: Lambert Azimuthal Equal Area - South pole', command: e => {
+        this.setProjectionProj4('StoX_004_SouthPole', 2, 0);
+      }
+    },
+    {
+      label: 'StoX 005: Lambert Azimuthal Equal Area - Sri Lanka', command: e => {
+        this.setProjectionProj4('StoX_005_SriLanka', 2, 80);
       }
     }
   ];
@@ -205,7 +218,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
 
-  setProjectionProj4(newProjCode, zoom) {
+  setProjectionProj4(newProjCode, zoom, centerLongitude: number) {
     var newProj = getProjection(newProjCode);
     var newProjExtent = newProj.getExtent();
     //  console.log(newProjExtent.toString());
@@ -224,7 +237,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       .forEach(f => f.getGeometry().transform(this.proj, newProjCode)));
 
     this.proj = newProjCode;
-    this.grid = MapSetup.getGridLayer(this.proj);
+    this.grid = MapSetup.getGridLayer(this.proj, centerLongitude);
     this.map.addLayer(this.grid);
 
     //this.grid.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
@@ -244,43 +257,32 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   async ngOnInit() {
 
-
-    // Two example-projections (2nd is included anyway)
-
     // Lambert Azimuthal Equal Area
-    proj4.defs('STOX:001', '+proj=laea +lat_0=60 +lon_0=10 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
-    proj4.defs('ESRI:102020', '+proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ');
-
-
-    proj4.defs('STOX:003', '+proj=laea +lat_0=75 +lon_0=30 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
-    // World Miller Cylindrical
-    proj4.defs('ESRI:54003', '+proj=mill +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R_A +datum=WGS84 +units=m +no_defs');
-    // Sea Ice Polar Stereographic
-    proj4.defs('EPSG:3411', '+proj=stere +lat_0=90 +lat_ts=70 +lon_0=10 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs');
-
-    /*<Projection id="EPSG:3411"   proj4="+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs"/>
-    <Projection id="EPSG:3412"   proj4="+proj=stere +lat_0=-90 +lat_ts=-70 +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs"/>
-    <Projection id="EPSG:3575"   proj4="+proj=laea +lat_0=90 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"/>
-    <Projection id="EPSG:3857"   proj4="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"/>
-    <Projection id="EPSG:4258"   proj4="+proj=longlat +ellps=GRS80 +no_defs"/>
-    <Projection id="EPSG:4326"   proj4="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"/>
-    <Projection id="EPSG:25831"  proj4="+proj=utm +zone=31 +ellps=GRS80 +units=m +no_defs"/>
-    <Projection id="EPSG:25832"  proj4="+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"/>
-    <Projection id="EPSG:28992"  proj4="+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +no_defs"/>
-    <Projection id="EPSG:32661"  proj4="+proj=stere +lat_0=90 +lat_ts=90 +lon_0=0 +k=0.994 +x_0=2000000 +y_0=2000000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"/>
-    <Projection id="EPSG:40000"  proj4="+proj=stere +ellps=WGS84 +lat_0=90 +lon_0=0 +no_defs"/>
-    <Projection id="EPSG:900913" proj4=" +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"/>
-    <Projection id="EPSG:102100" proj4="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"/>
-    */
-    //    +proj=mill +lon_0=90w
+    proj4.defs('StoX_001_NorthSea', '+proj=laea +lat_0=60 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    proj4.defs('StoX_002_BarentsSea', '+proj=laea +lat_0=80 +lon_0=30 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    proj4.defs('StoX_003_WestAfrica', '+proj=laea +lat_0=0 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    proj4.defs('StoX_004_SouthPole', '+proj=laea +lat_0=-90 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84  +units=m +no_defs');
+   	proj4.defs('StoX_005_SriLanka', '+proj=laea +lat_0=0 +lon_0=80 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    
     register(proj4);
-    var stox001 = getProjection('STOX:001');
-    stox001.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'STOX:001'));//[-1040784.5135, -2577524.9210, 9668901.4484, 4785105.1096]); 
-    //stox001.setExtent([1267000, 1826000, 5261000, 6575000]);  
-    var stox002 = getProjection('ESRI:102020');
-    stox002.setExtent(transformExtent([-100, -90, 100, 40], 'EPSG:4326', 'ESRI:102020'));//[-1040784.5135, -2577524.9210, 9668901.4484, 4785105.1096]); 
-    // var test_coordinate = transform([-79.4460, 37.7890], 'EPSG:4326', 'EPSG:2284');
-    //console.log(test_coordinate);
+    
+    var StoX_001_NorthSea = getProjection('StoX_001_NorthSea');
+    StoX_001_NorthSea.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'StoX_001_NorthSea'));
+    
+    var StoX_002_BarentsSea = getProjection('StoX_002_BarentsSea');
+    StoX_002_BarentsSea.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'StoX_002_BarentsSea'));
+    
+    var StoX_003_WestAfrica = getProjection('StoX_003_WestAfrica');
+    StoX_003_WestAfrica.setExtent(transformExtent([-100, -70, 100, 70], 'EPSG:4326', 'StoX_003_WestAfrica'));
+    
+    var StoX_005_SouthPole = getProjection('StoX_004_SouthPole');
+    StoX_005_SouthPole.setExtent(transformExtent([-100, -90, 100, 0], 'EPSG:4326', 'StoX_004_SouthPole'));
+    
+    var StoX_006_SriLanka = getProjection('StoX_005_SriLanka');
+    StoX_006_SriLanka.setExtent(transformExtent([20, -70, 180, 70], 'EPSG:4326', 'StoX_005_SriLanka'));
+    
+    
+
 
     this.coastLine = new Vector({
       source: new Source({
@@ -316,11 +318,11 @@ export class MapComponent implements OnInit, AfterViewInit {
       //  view: this.view,
       controls: [MapSetup.getMousePositionControl()]
     });
-    this.grid = MapSetup.getGridLayer(this.proj);
-    this.map.addLayer(this.grid);
+    //this.grid = MapSetup.getGridLayer(this.proj);
+    //this.map.addLayer(this.grid);
     this.map.addLayer(this.coastLine);
 
-    this.setProjectionProj4("STOX:001", 2);
+    this.setProjectionProj4("StoX_001_NorthSea", 2, 10);
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this.proj);
 

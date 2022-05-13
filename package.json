@@ -1,7 +1,7 @@
 {
   "name": "StoX",
   "productName": "StoX",
-"version": "3.4.0",
+"version": "3.4.1",
   "description": "StoX: An open source software for marine survey analyses",
   "main": "build/index.js",
   "scripts": {
@@ -20,9 +20,13 @@
     "package-and-installer-mac": "npm run package-mac && npm run installer-mac",
     "package-and-installer-linux": "npm run package-linux && npm run installer-linux",
     "build-frontend": "npm run prepare && cd frontend && npm install --no-fund && ng build --prod --base-href --aot=true --build--optimizer=true && cd ..",
+    "build-frontend_no_prepare": "cd frontend && npm install --no-fund && ng build --prod --base-href --aot=true --build--optimizer=true && cd ..",
     "build-win": "npm run build-frontend && npm run package-win && npm run installer-win  ",
     "build-mac": "npm run build-frontend && npm run package-and-installer-mac",
     "build-linux": "npm run build-frontend && npm run package-and-installer-linux",
+    "build-win_no_prepare": "npm run build-frontend_no_prepare && npm run package-win && npm run installer-win  ",
+    "build-mac_no_prepare": "npm run build-frontend_no_prepare && npm run package-and-installer-mac",
+    "build-linux_no_prepare": "npm run build-frontend_no_prepare && npm run package-and-installer-linux",
     "signstox": "signtool.exe sign /a ./dist/StoX-win32-x64/StoX.exe",
     "signinstaller": "signtool.exe sign /a ./dist/installers/stoxInstaller.exe",
     "tsc": "tsc"
