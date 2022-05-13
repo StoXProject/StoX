@@ -1,3 +1,48 @@
+# StoX v3.4.1 (2022-05-13)
+
+## Bug fixes
+* Fixed bug in AssignmentLengthDistribution(), where the sum of the WeightedNumber did not sum to 100. This did not have any implications on the estimates, as AcousticDensity() normalizes the WeightedNumber from the AssignmentLengthDistributionData.
+* Fixed bug in ReportSpeciesCategoryCatch(), where Hauls were duplicated.
+* Fixed bug in DateTime in StoxBioticData, where milliseconds were pasted twice if present in the input data. 
+* Fixed bug reported in https://jira.imr.no/browse/STOX-544, occurring when splitting catchsample into SpeciesCategory and Sample, by unique() in firstPhase(). 
+* Fixed bug in Versions.R, which is used by StoX for the tool "Install Rstox packages". The bug was that the package data.table was used but not installed. Also, added support for installing Rstox package binaries built with older R versions than the one installed, allowing for installation of Rstox packages in existing StoX versions even when a new R version is released and installed. In R 4.2. the location of the folder in which user installed packages are saved has changed from the Documents folder to the AppData > Local folder of the user, which is now included in Versions.R.
+
+## General changes
+* Added more map projections, and extended the grid on the map.
+* Removed hard coded values for the following variables on ICESDatras() (variable name -> new value): 
+	
+	+ Table HH:
+	*Country -> nation
+	*Ship -> platformname
+	*SweepLngt -> NA
+	*GearEx -> NA
+	*DayNight -> NA
+	*StatRec -> area + location (concatenation)
+	*HaulVal -> NA
+	*Distance -> distance (in meters)
+	*GroundSpeed -> vesselspeed
+
+	+ Table HL:
+	*SpecVal -> NA
+	*LenMeasType -> lengthmeasurement
+	
+	+ Table CA:
+	*Maturity -> NA
+	*MaturityScale -> NA
+	*AgeSource -> agingstructure
+	*OtGrading -> readability (only if agingstructure is 2)
+	*PlusGr -> NA
+
+* Removed hard coded values for the following variables on ICESBiotic(): 
+	*Platform -> platformname
+	*Validity -> NA
+	*StatisticalRectangle -> area + location
+
+## Detailed changes
+* Replaced the logical parameter AddToLowestTable by the string parameter SplitTableAllocation in AddToStoxBiotic(), allowing for allocating variables to either the default, highest or lowest table when splitting tables StoxBiotic.
+* Moved all User log entries and formatting to RstoxFramework.
+
+
 # StoX v3.4.0 (2022-03-30)
 
 ## Summary

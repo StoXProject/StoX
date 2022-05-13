@@ -1,3 +1,13 @@
+StoxInstallSettings <- list(
+    supportedRVersion = c(
+        #"4.2", 
+        "4.1", 
+        "4.0", 
+        "3.6"
+    )
+)
+
+
 #' Tools to download and install Rstox packages and dependen packages.
 #' 
 #' \code{getNonRstoxDependencies} gets all package dependencies ("Depends", "Imports" and "LinkingTo") of the packages given by \code{packageName}, excluding any Rstox-packages. \cr \cr
@@ -86,7 +96,8 @@ getStoxDependencies <- function(
     
     #### # Step 1: Identify the Rstox-packages available for the current R version and lower supported versions: ####
     # Get the table of Rstox packages to be installed, for the current R version or lower supported R versions if the requested package version 
-    twoDigitRVersion <- getTwoDigitRVersion()
+    
+    twoDigitRVersion <- getTwoDigitRVersionForDownload()
     officialRstoxPackagesInfo <- getOfficialRstoxPackagesInfo(
         StoXGUIVersion = StoXGUIVersion, 
         officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile, 
@@ -141,6 +152,10 @@ installOfficialRstoxPackagesWithDependencies <- function(
     # Step 1: Identify the Rstox-packages available for the current R version and lower supported versions, and the list of dependencies of the Rstox-packages.
     # Step 2: Install the dependencies
     # Step 3: Install the downloaded Rstox packages
+    
+    if(!is_online()) {
+        stop("Internet connection is needed to install Rstox-packages.")
+    }
     
     # Set timeout to the maximum value of 24 hours:
     originalTimeout <- options("timeout")
@@ -289,13 +304,8 @@ getOfficialRstoxPackageVersion <- function(
 
 
 getSupportedRVersions <- function() {
-    supportedRVersion <- c(
-        "4.1", 
-        "4.0", 
-        "3.6"
-        )
-    #supportedRVersion <- getRstoxFrameworkDefinitions("supportedRVersion")
-    twoDigitRVersion <- getTwoDigitRVersion()
+    supportedRVersion <- StoxInstallSettings$supportedRVersion
+    twoDigitRVersion <- getTwoDigitRVersionForDownload()
     supportedRVersion <- supportedRVersion[supportedRVersion <= twoDigitRVersion]
     return(supportedRVersion)
 }
@@ -648,28 +658,13 @@ getPlatformCode <- function(platform = NA, twoDigitRVersion = NA) {
     
     # Append "el-capitan" if R_3.6 on mac:
     if (platformCode == "macosx") {
-        if(getTwoDigitRVersion(twoDigitRVersion) == "3.6") {
+        if(getTwoDigitRVersionForDownload(twoDigitRVersion) == "3.6") {
             platformCode <- paste(platformCode, "el-capitan", sep = "/")
         }
     }
     
     return(platformCode)
 }
-
-#getBinaryType <- function(platform = NA, twoDigitRVersion = NA) {
-#    # Declare the output:
-#    binaryType <- paste(substr(getPlatform(platform), 1, 3), "binary", sep = ".")
-#    
-#    # Append "el-capitan" if R_3.6 on mac:
-#    if (platform == "macosx") {
-#        if(getTwoDigitRVersion(twoDigitRVersion) == "3.6") {
-#            binaryType <- paste(binaryType, "el-capitan", sep = ".")
-#        }
-#    }
-#    
-#    return(binaryType)
-#}
-
 
 
 
@@ -698,7 +693,7 @@ getPlatform <- function(platform = NA) {
 }
 
 
-getTwoDigitRVersion <- function(twoDigitRVersion = NA, coerceToCRANContrib = TRUE) {
+getTwoDigitRVersionForDownload <- function(twoDigitRVersion = NA) {
     if(is.na(twoDigitRVersion)) {
         RMajor <- R.Version()$major
         RMinor <- gsub("(.+?)([.].*)", "\\1", R.Version()$minor)
@@ -718,18 +713,21 @@ getTwoDigitRVersion <- function(twoDigitRVersion = NA, coerceToCRANContrib = TRU
     #   filenames = getURL(url, ftp.use.epsv = FALSE, dirlistonly = TRUE)
     #   strsplit(filenames, "\n", fixed = TRUE)[[1]]
     
-    if(coerceToCRANContrib) {
-        if(twoDigitRVersion < "3.6") {
-            stop("R 3.6 is the minimum required R version for StoX")
-        }
-        else if(twoDigitRVersion >= "3.6" && twoDigitRVersion < "4.0") {
-            twoDigitRVersion <- "3.6"
-        }
-        if(twoDigitRVersion > "4.1") {
-            stop("StoX does not support R > 4.1")
-        }
-    }
+    supportedRVersion <- StoxInstallSettings$supportedRVersion
     
+    if(twoDigitRVersion < min(supportedRVersion)) {
+        stop("R ", min(supportedRVersion), " is the minimum supported R version for StoX")
+    }
+    else if(twoDigitRVersion >= min(supportedRVersion) && twoDigitRVersion <= max(supportedRVersion) && ! twoDigitRVersion %in% supportedRVersion) {
+        newTwoDigitRVersion <- max(supportedRVersion[supportedRVersion <= twoDigitRVersion])
+        warning("Requested R (minor) version (", twoDigitRVersion, ") was downgraded to the closest supported version (", newTwoDigitRVersion, ") when downlooading Rstox-packages.")
+        twoDigitRVersion <- newTwoDigitRVersion
+    }
+    if(twoDigitRVersion > max(supportedRVersion)) {
+        warning("R ", max(supportedRVersion), " is the latest supported R version for StoX. This was used when downloading Rstox-packages instead of the requested (", twoDigitRVersion, ").")
+        twoDigitRVersion <- max(supportedRVersion)
+    }
+
     return(twoDigitRVersion)
 }
 
@@ -764,7 +762,7 @@ getPackageBinaryURL <- function(packageName, version = NULL, repos = "https://cl
     }
     
     # Get the R version as two digit string:
-    twoDigitRVersion <- getTwoDigitRVersion(twoDigitRVersion)
+    twoDigitRVersion <- getTwoDigitRVersionForDownload(twoDigitRVersion)
     
     # Build the path to the URL of the package source or binary:
     path <- getPackageURL(avail$Package, avail$Version, repos = repos, platform = platform, twoDigitRVersion = twoDigitRVersion)
@@ -806,42 +804,12 @@ getPackageFileExt <- function(platform = NA, type = c("binary", "source")) {
     return(fileExt)
 }
 
-#buildReposContrib <- function(platform, repos = "https://cloud.r-project.org", twoDigitRVersion = NA) {
-#    
-#    # Get the two digit R version, as it is used several places below:
-#    twoDigitRVersion <- getTwoDigitRVersion(twoDigitRVersion)
-#    
-#    if (platform == "linux") {
-#        reposContrib <- paste(
-#            repos, 
-#            "src", 
-#            "contrib", 
-#            twoDigitRVersion, 
-#            sep = "/"
-#        )
-#    }
-#    else {
-#        reposContrib <- paste(
-#            repos, 
-#            "bin", 
-#            getPlatformCode(
-#                platform = platform, 
-#                twoDigitRVersion = twoDigitRVersion
-#            ), 
-#            "contrib", 
-#            twoDigitRVersion, 
-#            sep = "/"
-#        )
-#    }
-#    
-#    return(reposContrib)
-#}
 
 
 getBinaryPackageListURL <- function(repos = "https://cloud.r-project.org", platform = NA, twoDigitRVersion = NA) {
     
     # Get the two digit R version, as it is used several places below:
-    twoDigitRVersion <- getTwoDigitRVersion(twoDigitRVersion)
+    twoDigitRVersion <- getTwoDigitRVersionForDownload(twoDigitRVersion)
     
     platform <- getPlatform(platform = platform)
     # Find package versions on macosx if Linux, as there are no binaries for Linux and macosx is closer to Linux than Windows:
@@ -867,7 +835,7 @@ getBinaryPackageListURL <- function(repos = "https://cloud.r-project.org", platf
 getPackageURL <- function(packageName, version = NULL, repos = "https://cloud.r-project.org", platform = NA, twoDigitRVersion = NA) {
     
     # Get the two digit R version, as it is used several places below:
-    twoDigitRVersion <- getTwoDigitRVersion(twoDigitRVersion)
+    twoDigitRVersion <- getTwoDigitRVersionForDownload(twoDigitRVersion)
     
     platform <- getPlatform(platform = platform)
     if (platform == "linux") {
@@ -961,7 +929,16 @@ initLocalLibrary <- function() {
             homeFolder <- utils::readRegistry(key="Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", hive="HCU")$Personal
             twoDigitRVersion <- paste(R.Version()$major, gsub("(.+?)([.].*)", "\\1", R.Version()$minor), sep = ".")
             #newLib <- paste(path.expand('~'), 'R', 'win-library', paste(R.Version()$major, gsub("(.+?)([.].*)", "\\1", R.Version()$minor), sep = "."), sep="/")
-            newLib <- paste(homeFolder, 'R', 'win-library', twoDigitRVersion, sep="/")
+            #newLib <- paste(homeFolder, 'R', 'win-library', twoDigitRVersion, sep="/")
+            # As of R 4.2.0 the folder for the packages changed:
+            # The default personal library on Windows, folder ‘R\win-library\x.y’ where ‘x.y’ stands for R release ‘x.y.z’, is now a subdirectory of Local Application Data directory (usually a hidden directory ‘C:\Users\username\AppData\Local’). Use shell.exec(.libPaths()[1]) from R to open the personal library in Explorer when it is first in the list (PR#17842).
+            # Chekc R version 4.2.0 or newer:
+            if(getRversion() >= "4.2.0") {
+                newLib <- paste(Sys.getenv("USERPROFILE"), "AppData", "Local", "R", "win-library", twoDigitRVersion, sep="/")
+            }
+            else {
+                newLib <- paste(homeFolder, 'R', 'win-library', twoDigitRVersion, sep="/")
+            }
             
             # Add the local library as the first:
             if(!dir.exists(newLib)) {
@@ -1034,7 +1011,7 @@ getOfficialRstoxPackagesInfo <- function(
     binaries <- do.call(rbind, binaries)
     binaries$buildRVersion <- buildRVersion
     
-    # The followinng was slow, as it actually downloads:
+    # The following was slow, as it actually downloads:
     suppressWarnings(URLExists <- lapply(binaries$path, tryDownload))
     URLExists <- URLExists %in% 0
     # Check that the URLs exist and subset to only those that exist. This did not work on VPN, so we abandon it until proven r   obust:
@@ -1047,11 +1024,12 @@ getOfficialRstoxPackagesInfo <- function(
         stop("The following Rstox packages could not be found: ", paste(setdiff(officialRstoxPackageName, binaries$Package), collapse = ", "))
     }
     
-    # Give a warning if the buildRVersion not identical to the requested:
-    notIdenticalTwoDigitRVersion <- binaries$buildRVersion != twoDigitRVersion
-    if(any(notIdenticalTwoDigitRVersion)) {
-        warning("The following Rstox packages were built under older (two digit) R versions than the current (R ", twoDigitRVersion, "): ", paste0(binaries$Package[notIdenticalTwoDigitRVersion], " v", binaries$Version[notIdenticalTwoDigitRVersion], " (R ", binaries$buildRVersion[notIdenticalTwoDigitRVersion],  ")", collapse = ", "))
-    }
+    # 2022-05-11: This was rather put in as a warning in getTwoDigitRVersionForDownload(), instead of an error in getTwoDigitRVersionForDownload() as before:
+    ## Give a warning if the buildRVersion not identical to the requested:
+    #notIdenticalTwoDigitRVersion <- binaries$buildRVersion != twoDigitRVersion
+    #if(any(notIdenticalTwoDigitRVersion)) {
+    #    warning("The following Rstox packages were built under older (two digit) R versions than the current (R ", twoDigitRVersion, "): ", paste0(binaries$Package[notIdenticalTwoDigitRVersion], " v", binaries$Version[notIdenticalTwoDigitRVersion], " (R ", binaries$buildRVersion[notIdenticalTwoDigitRVersion],  ")", collapse = ", "))
+    #}
     
     # Order hierarchcically:
     binaries <- binaries[match(rev(packageHierarchy), binaries$Package), ]
@@ -1072,3 +1050,15 @@ getInstallType <- function() {
     }
     return(type)
 }
+
+
+
+is_online <- function(site="http://example.com/") {
+    tryCatch({
+        readLines(site,n=1)
+        TRUE
+    },
+    warning = function(w) invokeRestart("muffleWarning"),
+    error = function(e) FALSE)
+}
+

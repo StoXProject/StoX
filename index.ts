@@ -360,9 +360,6 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     /*cmd = "paste(.libPaths(), collapse=\",\")";
     versionR = (await callR(cmd) as any).result;
     logInfo("Lib paths " + versionR);*/
-    cmd = "if(!suppressWarnings(require(remotes, quietly = TRUE))) install.packages(\"remotes\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
-    logInfo(cmd);
-    let res11 = (await callR(cmd) as any).result;
     
     //cmd = "if(!suppressWarnings(require(RCurl, quietly = TRUE))) install.packages(\"RCurl\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
     //logInfo(cmd);
@@ -761,6 +758,16 @@ function setupServer() {
       let s : string = "R is not available";
       rPackagesIsInstalling = true;
       logInfo('/installRstoxFramework');
+
+      // Install remotes and data.table.
+      let cmd = "if(!suppressWarnings(require(remotes, quietly = TRUE))) install.packages(\"remotes\", type = \"binary\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
+      logInfo(cmd);
+      let res11 = (await callR(cmd) as any).result;
+      cmd = "if(!suppressWarnings(require(data.table, quietly = TRUE))) install.packages(\"data.table\", type = \"binary\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
+      logInfo(cmd);
+      let res12 = (await callR(cmd) as any).result;
+    
+
       await startBackendServer(false);
       logInfo('server started: ' + serverStarted + ", client: " + client);
       if (serverStarted) {
