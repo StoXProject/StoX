@@ -226,9 +226,9 @@ export class MapComponent implements OnInit, AfterViewInit {
   setProjectionProj4(newProjCode, zoom, centerLongitude: number) {
     var newProj = getProjection(newProjCode);
     var newProjExtent = newProj.getExtent();
-    console.log(newProjExtent.toString());
+    console.log("Extent: " + newProjExtent.toString());
     var center2 = getCenter(newProjExtent);
-    console.log(center2.toString());
+    console.log("Origin: " + center2.toString());
     var newView = new OlView({
       projection: newProj,
       center: getCenter(newProjExtent),//fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),

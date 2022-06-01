@@ -1,3 +1,17 @@
+# StoX v3.4.2 (2022-06-02)
+
+## General changes
+* Added R 4.2. as supported version.
+* Added warning occurring when there are samples with positive SampleNumber but no individuals, resulting in positive Abundance in the SuperIndividuals function to be set to NA.
+* Replaced all use of functions from the packages rgdal and rgeos by the package sf, as per the planned retirement of these packages. See https://www.r-bloggers.com/2022/04/r-spatial-evolution-retirement-of-rgdal-rgeos-and-maptools/. 
+* Changed time stamp server to sectigo
+
+## Detailed changes
+* Refactored location of stations and EDSUs in stratum, and added warnings when locating to multiple or zero stratum.
+* Tested and saved for future reference the function StratumArea_supportingIterativeCentroidCalculation which sets the centroid more accurately when transforming to Cartesian coordinates for the area calcuclation.
+* Changed tolerance in test-versus_2.7.R as per slight differences in StratumArea due to move from rgeos to sf in RstoxBase, forced by https://www.r-bloggers.com/2022/04/r-spatial-evolution-retirement-of-rgdal-rgeos-and-maptools/.
+
+
 # StoX v3.4.1 (2022-05-13)
 
 ## Bug fixes
