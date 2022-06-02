@@ -125,6 +125,11 @@ export class MapComponent implements OnInit, AfterViewInit {
       label: 'StoX 005: Lambert Azimuthal Equal Area - Sri Lanka', command: e => {
         this.setProjectionProj4('StoX_005_SriLanka', 2, 80);
       }
+    },
+    {
+      label: 'StoX 006: Geographical projection', command: e => {
+        this.setProjectionProj4('StoX_006_Geographical', 2, 0);
+      }
     }
   ];
 
@@ -221,7 +226,9 @@ export class MapComponent implements OnInit, AfterViewInit {
   setProjectionProj4(newProjCode, zoom, centerLongitude: number) {
     var newProj = getProjection(newProjCode);
     var newProjExtent = newProj.getExtent();
-    //  console.log(newProjExtent.toString());
+    console.log("Extent: " + newProjExtent.toString());
+    var center2 = getCenter(newProjExtent);
+    console.log("Origin: " + center2.toString());
     var newView = new OlView({
       projection: newProj,
       center: getCenter(newProjExtent),//fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
@@ -262,7 +269,8 @@ export class MapComponent implements OnInit, AfterViewInit {
     proj4.defs('StoX_002_BarentsSea', '+proj=laea +lat_0=80 +lon_0=30 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
     proj4.defs('StoX_003_WestAfrica', '+proj=laea +lat_0=0 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
     proj4.defs('StoX_004_SouthPole', '+proj=laea +lat_0=-90 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84  +units=m +no_defs');
-   	proj4.defs('StoX_005_SriLanka', '+proj=laea +lat_0=0 +lon_0=80 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    proj4.defs('StoX_005_SriLanka', '+proj=laea +lat_0=0 +lon_0=80 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    proj4.defs('StoX_006_Geographical', '+proj=longlat +ellps=WGS84 +units=degrees +no_defs');
     
     register(proj4);
     
@@ -275,11 +283,14 @@ export class MapComponent implements OnInit, AfterViewInit {
     var StoX_003_WestAfrica = getProjection('StoX_003_WestAfrica');
     StoX_003_WestAfrica.setExtent(transformExtent([-100, -70, 100, 70], 'EPSG:4326', 'StoX_003_WestAfrica'));
     
-    var StoX_005_SouthPole = getProjection('StoX_004_SouthPole');
-    StoX_005_SouthPole.setExtent(transformExtent([-100, -90, 100, 0], 'EPSG:4326', 'StoX_004_SouthPole'));
+    var StoX_004_SouthPole = getProjection('StoX_004_SouthPole');
+    StoX_004_SouthPole.setExtent(transformExtent([-100, -90, 100, 0], 'EPSG:4326', 'StoX_004_SouthPole'));
     
-    var StoX_006_SriLanka = getProjection('StoX_005_SriLanka');
-    StoX_006_SriLanka.setExtent(transformExtent([20, -70, 180, 70], 'EPSG:4326', 'StoX_005_SriLanka'));
+    var StoX_005_SriLanka = getProjection('StoX_005_SriLanka');
+    StoX_005_SriLanka.setExtent(transformExtent([20, -70, 180, 70], 'EPSG:4326', 'StoX_005_SriLanka'));
+    
+    var StoX_006_Geographical = getProjection('StoX_006_Geographical');
+    StoX_006_Geographical.setExtent(transformExtent([-180, -90, 180, 90], 'EPSG:4326', 'StoX_006_Geographical'));
     
     
 
@@ -287,11 +298,14 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.coastLine = new Vector({
       source: new Source({
         //url: 'assets/landflate_verden.json',
-        url: 'assets/landflate_verden.json',
-        //url: 'assets/world-110m.json',
+        url: 'assets/landflate_verden_gap180.json',
+        //url: 'assets/World_polygons.json', 
+        //url: 'assets/World_polygons_susbset.json', 
+        
         format: new TopoJSON({
           // don't want to render the full world polygon (stored as 'land' layer),
           // which repeats all countries
+          //layers: ['World_polygon'],
           layers: ['world'],
         }),
         overlaps: false,
