@@ -198,7 +198,7 @@ export class MapSetup {
     static getStratumSelectStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(255, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 2);
     }
-    static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, proj: string) {
+    static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, projsel: ProjectionSelector) {
         let m: Modify = new Modify({
             features: select.getFeatures()/*,
                         deleteCondition: e => singleClick(e) && shiftKeyOnly(e)*/
@@ -214,7 +214,7 @@ export class MapSetup {
             });
             console.log(JSON.stringify(fcloned));
 
-            let s: string = (new GeoJSON()).writeFeatures(fcloned, { featureProjection: proj, dataProjection: 'EPSG:4326' });
+            let s: string = (new GeoJSON()).writeFeatures(fcloned, { featureProjection: projsel.getProj(), dataProjection: 'EPSG:4326' });
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
