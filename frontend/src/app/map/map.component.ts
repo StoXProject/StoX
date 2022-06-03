@@ -19,6 +19,7 @@ import { DoCheck } from '@angular/core';
 
 import { fromLonLat, transform, transformExtent } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
+import {clearAllProjections} from 'ol/proj';
 import * as proj4x from 'proj4';
 
 //import { add as addProjection } from 'ol/proj/projection';
@@ -277,6 +278,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     proj4.defs('StoX_005_SriLanka', '+proj=laea +lat_0=0 +lon_0=80 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
     proj4.defs('StoX_006_Geographical', '+proj=longlat +ellps=WGS84 +units=degrees +no_defs');
     
+    //clearAllProjections();
     register(proj4);
     
     var StoX_001_NorthSea = getProjection('StoX_001_NorthSea');
