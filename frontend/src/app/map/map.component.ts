@@ -58,7 +58,7 @@ import { SubjectAction } from '../data/subjectaction';
   styleUrls: ['./map.component.scss']
 })
 
-export class MapComponent implements OnInit, AfterViewInit {
+export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   @ViewChild('tooltip', { static: false }) tooltip: ElementRef;
   map: OlMap;
   // source: OlXYZ;
@@ -81,6 +81,11 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
+  
+    getProj(): string {
+      return this.proj;
+    }
+    
   /*@HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     console.log(event);
@@ -338,7 +343,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     this.setProjectionProj4("StoX_001_NorthSea", 2, 10);
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
-    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this.proj);
+    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this);
 
     this.ps.processSubject.subscribe({
       next: (action: SubjectAction) => {
