@@ -17,9 +17,8 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { Vector, Layer } from 'ol/layer';
 import { DoCheck } from '@angular/core';
 
-import { fromLonLat, transform, transformExtent } from 'ol/proj';
+import { clearAllProjections, fromLonLat, transform, transformExtent } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
-import {clearAllProjections} from 'ol/proj';
 import * as proj4x from 'proj4';
 
 //import { add as addProjection } from 'ol/proj/projection';
@@ -109,32 +108,32 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   projectionsMenu = [
     {
       label: 'StoX 001: Lambert Azimuthal Equal Area - North Sea', command: e => {
-        this.setProjectionProj4('StoX_001_NorthSea', 2, 10);
+        this.setProjectionProj4('StoX_001_NorthSea', 10);
       }
     },
     {
       label: 'StoX 002: Lambert Azimuthal Equal Area - Barents Sea', command: e => {
-        this.setProjectionProj4('StoX_002_BarentsSea', 2, 30);
+        this.setProjectionProj4('StoX_002_BarentsSea', 30);
       }
     },
     {
       label: 'StoX 003: Lambert Azimuthal Equal Area - West Africa', command: e => {
-        this.setProjectionProj4('StoX_003_WestAfrica', 2, 10);
+        this.setProjectionProj4('StoX_003_WestAfrica', 10);
       }
     },
     {
       label: 'StoX 004: Lambert Azimuthal Equal Area - South pole', command: e => {
-        this.setProjectionProj4('StoX_004_SouthPole', 2, 0);
+        this.setProjectionProj4('StoX_004_SouthPole', 0);
       }
     },
     {
       label: 'StoX 005: Lambert Azimuthal Equal Area - Sri Lanka', command: e => {
-        this.setProjectionProj4('StoX_005_SriLanka', 2, 80);
+        this.setProjectionProj4('StoX_005_SriLanka', 80);
       }
     },
     {
       label: 'StoX 006: Geographical projection', command: e => {
-        this.setProjectionProj4('StoX_006_Geographical', 2, 0);
+        this.setProjectionProj4('StoX_006_Geographical', 0);
       }
     }
   ];
@@ -229,15 +228,26 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   }
 
 
-  setProjectionProj4(newProjCode, zoom, centerLongitude: number) {
+  setProjectionProj4(newProjCode, centerLongitude: number) {
     var newProj = getProjection(newProjCode);
-    var newProjExtent = newProj.getExtent();
-    console.log("Extent: " + newProjExtent.toString());
-    var center2 = getCenter(newProjExtent);
-    console.log("Origin: " + center2.toString());
+    let zoom = this.map.getView()?.getZoom(); 
+    console.log("Existing Zoom: " + zoom);
+    if(zoom == null) {
+      // Set default zoom if not existing
+      zoom = 2 
+    }
+    let center : Coordinate = this.map.getView()?.getCenter();
+    if(center == null) {
+      center = getCenter(newProj.getExtent())
+      console.log("Get view center from middle of projection extent: " + center);
+    } else {
+      center = transform(center, this.proj, newProjCode)
+      console.log("Transformed view center from previous projection: " + center);
+    } 
+    
     var newView = new OlView({
       projection: newProj,
-      center: getCenter(newProjExtent),//fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
+      center: center,//fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
       zoom: zoom//,
       //extent: newProjExtent || undefined
     });
@@ -343,7 +353,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     //this.map.addLayer(this.grid);
     this.map.addLayer(this.coastLine);
 
-    this.setProjectionProj4("StoX_001_NorthSea", 2, 10);
+    this.setProjectionProj4("StoX_001_NorthSea", 10);
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this);
 
