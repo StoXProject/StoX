@@ -78,7 +78,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   overlay: Overlay;
   private m_Tool: string = "freemove";
   proj = 'StoX_001_LAEA';
-
+  currentLAEAOrigin : Coordinate // the origin for the current dynamic LAEA
   constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
   
@@ -107,12 +107,12 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   ];
   projectionsMenu = [
     {
-      label: 'Lambert Azimuthal Equal Area', command: e => {
+      label: 'Lambert Azimuthal Equal Area Projection', command: e => {
         this.setProjectionProj4('StoX_001_LAEA');
       }
     },
     {
-      label: 'Geographical projection', command: e => {
+      label: 'Equirectangular Projection', command: e => {
         this.setProjectionProj4('StoX_002_Geographical');
       }
     }
@@ -212,22 +212,28 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   }
 
 
-  setProjectionProj4(newProjCode) {
+  setProjectionProj4(newProjCode, cnt = null) {
     var newProj = getProjection(newProjCode);
+    console.log("newProjCode: " + newProjCode, ", newProj: " + newProj + ", this.proj: " + this.proj)
     let zoom = this.map.getView()?.getZoom(); 
     console.log("Existing Zoom: " + zoom);
     if(zoom == null) {
       // Set default zoom if not existing
       zoom = 2 
     }
-    let center : Coordinate = this.map.getView()?.getCenter();
-    if(center == null) {
-      center = [0,0]//getCenter(newProj.getExtent())
-      console.log("Get view center from middle of projection extent: " + center);
+    let center : Coordinate
+    if(cnt != null) {
+      center = cnt;
     } else {
-      center = transform(center, this.proj, newProjCode)
-      //console.log("Transformed view center from previous projection: " + center);
-    } 
+      center = this.map.getView()?.getCenter();
+      if(center == null) {
+        center = [66,76]//getCenter(newProj.getExtent())
+        console.log("Get view center from middle of projection extent: " + center);
+      } else {
+        center = transform(center, this.proj, newProjCode)
+        //console.log("Transformed view center from previous projection: " + center);
+      } 
+    }
     
     var newView = new OlView({
       projection: newProj,
@@ -240,42 +246,39 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     //this.map.getLayers().forEach(l=>this.map.removeLayer(l));
     this.map.removeLayer(this.grid);
     // this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
-    this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
-      .forEach(f => f.getGeometry().transform(this.proj, newProjCode)));
-
-    this.proj = newProjCode;
+    if(this.proj != newProjCode) {
+      console.log("Converting features from " + this.proj + " to " + newProjCode)
+      this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
+        .forEach(f => {
+          f.getGeometry().transform(this.proj, newProjCode)
+        }));
+    }
     let centerLongitude : number = 0
-    this.grid = MapSetup.getGridLayer(this.proj, centerLongitude);
+    this.grid = MapSetup.getGridLayer(newProjCode, centerLongitude);
     this.map.addLayer(this.grid);
 
-    //this.grid.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
-    //this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
-    //this.grid = MapSetup.getGridLayer(this.proj);
-    //this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
-    //  .forEach(f => f.getGeometry().transform(this.proj, newProjCode)));
-
-    // Example how to prevent double occurrence of map by limiting layer extent
-    if (newProj == getProjection('EPSG:3857')) {
-      // this.map.getLayers().forEach(l=> l.setExtent([-1057216, 6405988, 404315, 8759696]));
-    } else {
-      //this.map.getLayers().forEach(l=> l.setExtent(undefined));
-    }
+    this.proj = newProjCode;
   }
 
 
   initProjections(origin : Coordinate) {
     clearAllProjections();
-    console.log("origin: " + origin)
+  //  console.log("origin: " + origin)
     //origin = [0,0]
+    if(this.currentLAEAOrigin == null) {
+      this.currentLAEAOrigin = origin;
+    }
     proj4.defs('StoX_001_LAEA', '+proj=laea +lat_0=' + origin[1] + ' +lon_0=' + origin[0] + ' +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    proj4.defs('StoX_001_LAEA_PREV', '+proj=laea +lat_0=' + this.currentLAEAOrigin[1] + ' +lon_0=' + this.currentLAEAOrigin[0] + ' +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    this.currentLAEAOrigin = origin
     proj4.defs('StoX_002_Geographical', '+proj=longlat +ellps=WGS84 +units=degrees +no_defs');
     register(proj4);
     var StoX_001_LAEA = getProjection('StoX_001_LAEA'); 
-   // StoX_001_LAEA.setExtent(transformExtent([origin[0]-100, origin[1]-80, origin[0]+100, origin[1]+80], 'EPSG:4326', 'StoX_001_LAEA'));
+    //StoX_001_LAEA.setExtent(transformExtent([-80, -70, +100, +80], 'EPSG:4326', 'StoX_001_LAEA'));
   }
   async ngOnInit() {
 
-    this.initProjections([0,0]);
+    this.initProjections([66,76]);
     
     
     /*var StoX_002_BarentsSea = getProjection('StoX_002_BarentsSea');
@@ -532,12 +535,16 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     });*/
     this.map.on('pointermove', e => this.displayTooltip(e));
     this.map.getViewport().addEventListener('contextmenu', evt => {
-        evt.preventDefault();
-        var  coords = this.map.getEventCoordinate(evt);
-        coords = transform(coords, this.proj, 'EPSG:4326');
-        console.log(coords);
-        this.initProjections(coords);
-        this.setProjectionProj4(this.proj); 
+        if (this.proj=="StoX_001_LAEA") {
+          evt.preventDefault();
+          var  coords = this.map.getEventCoordinate(evt);
+          coords = transform(coords, this.proj, 'EPSG:4326');
+          console.log(coords);
+          //this.setProjectionProj4('EPSG:4326'); 
+          this.initProjections(coords);
+          this.proj = "StoX_001_LAEA_PREV"
+          this.setProjectionProj4("StoX_001_LAEA", coords); 
+        }
       })
   } // end of ngOnInit()
 
