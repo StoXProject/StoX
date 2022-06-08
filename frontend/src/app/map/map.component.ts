@@ -45,6 +45,7 @@ import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
 import { EDSU_PSU, BioticAssignment } from '../data/processdata';
 import { ActiveProcessResult } from '../data/runresult';
+import { MapInfo } from '../data/MapInfo';
 import { NamedStringTable, NamedStringIndex } from '../data/types';
 import { applyTransform, coordinateRelationship, Extent, getCenter } from 'ol/extent';
 const proj4 = (proj4x as any).default;
@@ -79,6 +80,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   private m_Tool: string = "freemove";
   proj = 'StoX_001_LAEA';
   currentLAEAOrigin : Coordinate // the origin for the current dynamic LAEA
+  mapInfo : MapInfo;
   constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
   
@@ -109,11 +111,13 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     {
       label: 'Lambert Azimuthal Equal Area Projection', command: e => {
         this.setProjectionProj4('StoX_001_LAEA');
+        this.updateMapInfoInBackend();
       }
     },
     {
       label: 'Equirectangular Projection', command: e => {
         this.setProjectionProj4('StoX_002_Geographical');
+        this.updateMapInfoInBackend();
       }
     }
   ];
@@ -219,7 +223,8 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     console.log("Existing Zoom: " + zoom);
     if(zoom == null) {
       // Set default zoom if not existing
-      zoom = 2 
+      zoom = this.mapInfo.zoom
+      console.log("Zoom: " + zoom);
     }
     let center : Coordinate
     if(cnt != null) {
@@ -227,7 +232,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     } else {
       center = this.map.getView()?.getCenter();
       if(center == null) {
-        center = [66,76]//getCenter(newProj.getExtent())
+        center = this.mapInfo.origin//getCenter(newProj.getExtent())
         console.log("Get view center from middle of projection extent: " + center);
       } else {
         center = transform(center, this.proj, newProjCode)
@@ -253,7 +258,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
           f.getGeometry().transform(this.proj, newProjCode)
         }));
     }
-    let centerLongitude : number = 0
+    let centerLongitude : number = this.mapInfo.origin[0]
     this.grid = MapSetup.getGridLayer(newProjCode, centerLongitude);
     this.map.addLayer(this.grid);
 
@@ -276,9 +281,21 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     var StoX_001_LAEA = getProjection('StoX_001_LAEA'); 
     //StoX_001_LAEA.setExtent(transformExtent([-80, -70, +100, +80], 'EPSG:4326', 'StoX_001_LAEA'));
   }
+  
+  async updateMapInfoInBackend() {
+    this.mapInfo.zoom = this.map.getView().getZoom();
+    this.mapInfo.origin = this.currentLAEAOrigin;
+    this.mapInfo.projection = this.proj; 
+    console.log("MapInfo:" + JSON.stringify(this.mapInfo))
+    await this.dataService.setMapInfo(this.mapInfo).toPromise();
+  }
+  
   async ngOnInit() {
 
-    this.initProjections([66,76]);
+    this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise());// {zoom:2.3, origin:[10,60], projection:''};
+    console.log("MapInfo:" + JSON.stringify(this.mapInfo))
+
+    this.initProjections(this.mapInfo.origin); 
     
     
     /*var StoX_002_BarentsSea = getProjection('StoX_002_BarentsSea');
@@ -340,7 +357,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     //this.map.addLayer(this.grid);
     this.map.addLayer(this.coastLine);
 
-    this.setProjectionProj4("StoX_001_LAEA");
+    this.setProjectionProj4(this.mapInfo.projection);
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this);
 
@@ -544,8 +561,13 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
           this.initProjections(coords);
           this.proj = "StoX_001_LAEA_PREV"
           this.setProjectionProj4("StoX_001_LAEA", coords); 
+          this.updateMapInfoInBackend();
         }
       })
+      this.map.getView().on('change:resolution', async evt => {
+        console.log("Resolution changed - write to backend")
+        await this.updateMapInfoInBackend();
+    });
   } // end of ngOnInit()
 
   async handleIaMode(iaMode: string, proj) {
@@ -599,7 +621,9 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
       offset: [10, 0],
       positioning: OverlayPositioning.CENTER_LEFT
     });
-    this.map.addOverlay(this.overlay);
+    if(this.map != null) {
+      this.map.addOverlay(this.overlay);
+    }
   }
 
   onClick() {
@@ -607,7 +631,9 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   }
 
   onResized(event: ResizedEvent) {
-    this.map.updateSize();
+    if(this.map != null) {
+      this.map.updateSize();
+    }
   }
 
   getTooltip(obj) {

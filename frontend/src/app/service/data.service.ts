@@ -6,6 +6,7 @@ import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
+import { MapInfo } from '../data/MapInfo';
 import { UserLogType } from '../enum/enums';
 import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
@@ -504,6 +505,10 @@ export class DataService {
     return this.postLocalNode('rpath', rpath);
   }
 
+  setMapInfo(mapInfo: MapInfo): Observable<any> {
+    return this.postLocalNode('mapInfo', JSON.stringify(mapInfo));
+  }
+
   callR(j: any): Observable<any> {
     console.log("RstoxFramework::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
     return this.postLocalNode('callR', j);
@@ -552,6 +557,10 @@ export class DataService {
 
   public getRPath(): Observable<any> {
     return this.getLocalNode('rpath');
+  }
+
+  public getMapInfo(): Observable<any> {
+    return this.getLocalNode('mapInfo');
   }
 
   public getStoxVersion(): Observable<any> {
