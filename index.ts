@@ -512,6 +512,7 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
         "projectRootPath": require('os').homedir(),
         "activeProject": "",
         "rPath": "",
+        "mapInfo": {projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]},
         "rStoxFtpPath": ""
       };
       logInfo("Properties initialized.");
@@ -696,6 +697,11 @@ function setupServer() {
     let resultstr: string = await startBackendServer(true);
     res.send('post /rpath result:' + resultstr);
   });
+  server.post('/mapInfo', async (req: any, res: any) => {
+    properties.mapInfo = JSON.parse(req.body);
+    logInfo('set mapInfo ' + properties.mapInfo);
+    res.send('mapInfo updated');
+  });
   // observe project root path
   server.get('/projectrootpath', function (req: any, res: any) {
     //logInfo('get project root path ' + properties.projectRootPath);
@@ -710,6 +716,11 @@ function setupServer() {
   server.get('/rpath', function (req: any, res: any) {
     logInfo('get rpath ' + properties.rPath);
     res.send(properties.rPath);
+  });
+
+  server.get('/mapInfo', function (req: any, res: any) {
+    logInfo('get mapInfo ' + properties.mapInfo);
+    res.send(properties.mapInfo);
   });
 
   server.get('/stoxversion', function (req: any, res: any) {

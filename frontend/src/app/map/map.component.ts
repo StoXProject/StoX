@@ -17,7 +17,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { Vector, Layer } from 'ol/layer';
 import { DoCheck } from '@angular/core';
 
-import { fromLonLat, transform, transformExtent } from 'ol/proj';
+import { clearAllProjections, fromLonLat, transform, transformExtent } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import * as proj4x from 'proj4';
 
@@ -45,8 +45,9 @@ import { MapBrowserPointerEvent } from 'ol';
 import { isDefined } from '@angular/compiler/src/util';
 import { EDSU_PSU, BioticAssignment } from '../data/processdata';
 import { ActiveProcessResult } from '../data/runresult';
+import { MapInfo } from '../data/MapInfo';
 import { NamedStringTable, NamedStringIndex } from '../data/types';
-import { applyTransform, Extent, getCenter } from 'ol/extent';
+import { applyTransform, coordinateRelationship, Extent, getCenter } from 'ol/extent';
 const proj4 = (proj4x as any).default;
 import { get as getProjection, getTransform } from 'ol/proj';
 import { Coordinate } from 'ol/coordinate';
@@ -77,8 +78,9 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   stratumDraw: Draw;
   overlay: Overlay;
   private m_Tool: string = "freemove";
-  proj = 'StoX_001_NorthSea';
-
+  proj = 'StoX_001_LAEA';
+  currentLAEAOrigin : Coordinate // the origin for the current dynamic LAEA
+  mapInfo : MapInfo;
   constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
   
@@ -107,33 +109,15 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   ];
   projectionsMenu = [
     {
-      label: 'StoX 001: Lambert Azimuthal Equal Area - North Sea', command: e => {
-        this.setProjectionProj4('StoX_001_NorthSea', 2, 10);
+      label: 'Lambert Azimuthal Equal Area Projection', command: e => {
+        this.setProjectionProj4('StoX_001_LAEA');
+        this.updateMapInfoInBackend();
       }
     },
     {
-      label: 'StoX 002: Lambert Azimuthal Equal Area - Barents Sea', command: e => {
-        this.setProjectionProj4('StoX_002_BarentsSea', 2, 30);
-      }
-    },
-    {
-      label: 'StoX 003: Lambert Azimuthal Equal Area - West Africa', command: e => {
-        this.setProjectionProj4('StoX_003_WestAfrica', 2, 10);
-      }
-    },
-    {
-      label: 'StoX 004: Lambert Azimuthal Equal Area - South pole', command: e => {
-        this.setProjectionProj4('StoX_004_SouthPole', 2, 0);
-      }
-    },
-    {
-      label: 'StoX 005: Lambert Azimuthal Equal Area - Sri Lanka', command: e => {
-        this.setProjectionProj4('StoX_005_SriLanka', 2, 80);
-      }
-    },
-    {
-      label: 'StoX 006: Geographical projection', command: e => {
-        this.setProjectionProj4('StoX_006_Geographical', 2, 0);
+      label: 'Equirectangular Projection', command: e => {
+        this.setProjectionProj4('StoX_002_Geographical');
+        this.updateMapInfoInBackend();
       }
     }
   ];
@@ -186,7 +170,11 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
       this.map.getInteractions().remove(this.stratumModify);
     }
   }
-
+  
+  projectionCenter(){
+    console.log("Projection center")
+  }
+  
   getNumLayersWithLayerType(lt): number {
     return []
       .concat(...Array.from(this.layerMap.values())) // flatting by concatinated spread elements
@@ -228,15 +216,33 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   }
 
 
-  setProjectionProj4(newProjCode, zoom, centerLongitude: number) {
+  setProjectionProj4(newProjCode, cnt = null) {
     var newProj = getProjection(newProjCode);
-    var newProjExtent = newProj.getExtent();
-    console.log("Extent: " + newProjExtent.toString());
-    var center2 = getCenter(newProjExtent);
-    console.log("Origin: " + center2.toString());
+    console.log("newProjCode: " + newProjCode, ", newProj: " + newProj + ", this.proj: " + this.proj)
+    let zoom = this.map.getView()?.getZoom(); 
+    console.log("Existing Zoom: " + zoom);
+    if(zoom == null) {
+      // Set default zoom if not existing
+      zoom = this.mapInfo.zoom
+      console.log("Zoom: " + zoom);
+    }
+    let center : Coordinate
+    if(cnt != null) {
+      center = cnt;
+    } else {
+      center = this.map.getView()?.getCenter();
+      if(center == null) {
+        center = this.mapInfo.origin//getCenter(newProj.getExtent())
+        console.log("Get view center from middle of projection extent: " + center);
+      } else {
+        center = transform(center, this.proj, newProjCode)
+        //console.log("Transformed view center from previous projection: " + center);
+      } 
+    }
+    
     var newView = new OlView({
       projection: newProj,
-      center: getCenter(newProjExtent),//fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
+      center: center,//fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
       zoom: zoom//,
       //extent: newProjExtent || undefined
     });
@@ -245,44 +251,54 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     //this.map.getLayers().forEach(l=>this.map.removeLayer(l));
     this.map.removeLayer(this.grid);
     // this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
-    this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
-      .forEach(f => f.getGeometry().transform(this.proj, newProjCode)));
-
-    this.proj = newProjCode;
-    this.grid = MapSetup.getGridLayer(this.proj, centerLongitude);
+    if(this.proj != newProjCode) {
+      console.log("Converting features from " + this.proj + " to " + newProjCode)
+      this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
+        .forEach(f => {
+          f.getGeometry().transform(this.proj, newProjCode)
+        }));
+    }
+    let centerLongitude : number = this.mapInfo.origin[0]
+    this.grid = MapSetup.getGridLayer(newProjCode, centerLongitude);
     this.map.addLayer(this.grid);
 
-    //this.grid.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
-    //this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
-    //this.grid = MapSetup.getGridLayer(this.proj);
-    //this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
-    //  .forEach(f => f.getGeometry().transform(this.proj, newProjCode)));
-
-    // Example how to prevent double occurrence of map by limiting layer extent
-    if (newProj == getProjection('EPSG:3857')) {
-      // this.map.getLayers().forEach(l=> l.setExtent([-1057216, 6405988, 404315, 8759696]));
-    } else {
-      //this.map.getLayers().forEach(l=> l.setExtent(undefined));
-    }
+    this.proj = newProjCode;
   }
 
 
+  initProjections(origin : Coordinate) {
+    clearAllProjections();
+  //  console.log("origin: " + origin)
+    //origin = [0,0]
+    if(this.currentLAEAOrigin == null) {
+      this.currentLAEAOrigin = origin;
+    }
+    proj4.defs('StoX_001_LAEA', '+proj=laea +lat_0=' + origin[1] + ' +lon_0=' + origin[0] + ' +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    proj4.defs('StoX_001_LAEA_PREV', '+proj=laea +lat_0=' + this.currentLAEAOrigin[1] + ' +lon_0=' + this.currentLAEAOrigin[0] + ' +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
+    this.currentLAEAOrigin = origin
+    proj4.defs('StoX_002_Geographical', '+proj=longlat +ellps=WGS84 +units=degrees +no_defs');
+    register(proj4);
+    var StoX_001_LAEA = getProjection('StoX_001_LAEA'); 
+    //StoX_001_LAEA.setExtent(transformExtent([-80, -70, +100, +80], 'EPSG:4326', 'StoX_001_LAEA'));
+  }
+  
+  async updateMapInfoInBackend() {
+    this.mapInfo.zoom = this.map.getView().getZoom();
+    this.mapInfo.origin = this.currentLAEAOrigin;
+    this.mapInfo.projection = this.proj; 
+    console.log("MapInfo:" + JSON.stringify(this.mapInfo))
+    await this.dataService.setMapInfo(this.mapInfo).toPromise();
+  }
+  
   async ngOnInit() {
 
-    // Lambert Azimuthal Equal Area
-    proj4.defs('StoX_001_NorthSea', '+proj=laea +lat_0=60 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
-    proj4.defs('StoX_002_BarentsSea', '+proj=laea +lat_0=80 +lon_0=30 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
-    proj4.defs('StoX_003_WestAfrica', '+proj=laea +lat_0=0 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
-    proj4.defs('StoX_004_SouthPole', '+proj=laea +lat_0=-90 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84  +units=m +no_defs');
-    proj4.defs('StoX_005_SriLanka', '+proj=laea +lat_0=0 +lon_0=80 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
-    proj4.defs('StoX_006_Geographical', '+proj=longlat +ellps=WGS84 +units=degrees +no_defs');
+    this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise());// {zoom:2.3, origin:[10,60], projection:''};
+    console.log("MapInfo:" + JSON.stringify(this.mapInfo))
+
+    this.initProjections(this.mapInfo.origin); 
     
-    register(proj4);
     
-    var StoX_001_NorthSea = getProjection('StoX_001_NorthSea');
-    StoX_001_NorthSea.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'StoX_001_NorthSea'));
-    
-    var StoX_002_BarentsSea = getProjection('StoX_002_BarentsSea');
+    /*var StoX_002_BarentsSea = getProjection('StoX_002_BarentsSea');
     StoX_002_BarentsSea.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'StoX_002_BarentsSea'));
     
     var StoX_003_WestAfrica = getProjection('StoX_003_WestAfrica');
@@ -296,7 +312,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     
     var StoX_006_Geographical = getProjection('StoX_006_Geographical');
     StoX_006_Geographical.setExtent(transformExtent([-180, -90, 180, 90], 'EPSG:4326', 'StoX_006_Geographical'));
-    
+    */
     
 
 
@@ -341,7 +357,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     //this.map.addLayer(this.grid);
     this.map.addLayer(this.coastLine);
 
-    this.setProjectionProj4("StoX_001_NorthSea", 2, 10);
+    this.setProjectionProj4(this.mapInfo.projection);
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this);
 
@@ -535,6 +551,23 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
       shiftKeyOnly(e.);
     });*/
     this.map.on('pointermove', e => this.displayTooltip(e));
+    this.map.getViewport().addEventListener('contextmenu', evt => {
+        if (this.proj=="StoX_001_LAEA") {
+          evt.preventDefault();
+          var  coords = this.map.getEventCoordinate(evt);
+          coords = transform(coords, this.proj, 'EPSG:4326');
+          console.log(coords);
+          //this.setProjectionProj4('EPSG:4326'); 
+          this.initProjections(coords);
+          this.proj = "StoX_001_LAEA_PREV"
+          this.setProjectionProj4("StoX_001_LAEA", coords); 
+          this.updateMapInfoInBackend();
+        }
+      })
+      this.map.getView().on('change:resolution', async evt => {
+        console.log("Resolution changed - write to backend")
+        await this.updateMapInfoInBackend();
+    });
   } // end of ngOnInit()
 
   async handleIaMode(iaMode: string, proj) {
@@ -588,7 +621,9 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
       offset: [10, 0],
       positioning: OverlayPositioning.CENTER_LEFT
     });
-    this.map.addOverlay(this.overlay);
+    if(this.map != null) {
+      this.map.addOverlay(this.overlay);
+    }
   }
 
   onClick() {
@@ -596,7 +631,9 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   }
 
   onResized(event: ResizedEvent) {
-    this.map.updateSize();
+    if(this.map != null) {
+      this.map.updateSize();
+    }
   }
 
   getTooltip(obj) {
