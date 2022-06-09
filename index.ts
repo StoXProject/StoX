@@ -512,13 +512,15 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
         "projectRootPath": require('os').homedir(),
         "activeProject": "",
         "rPath": "",
-        "mapInfo": {projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]},
         "rStoxFtpPath": ""
       };
       logInfo("Properties initialized.");
     }
     if (properties.projectRootPath == null || properties.projectRootPath == "") {
       properties.projectRootPath = require('os').homedir()
+    }
+    if(properties.mapInfo == null) {
+      properties.mapInfo = {projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]}
     }
   } catch (err) {
     logInfo("Error reading properties: " + err);
