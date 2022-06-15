@@ -258,7 +258,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
           f.getGeometry().transform(this.proj, newProjCode)
         }));
     }
-    let centerLongitude : number = this.mapInfo.origin[0]
+    let centerLongitude : number = 0//this.mapInfo.origin[0]
     this.grid = MapSetup.getGridLayer(newProjCode, centerLongitude);
     this.map.addLayer(this.grid);
 
