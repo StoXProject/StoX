@@ -292,9 +292,11 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   
   async ngOnInit() {
 
+    console.log("get mapinfo from backend")
     this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise());// {zoom:2.3, origin:[10,60], projection:''};
     console.log("MapInfo:" + JSON.stringify(this.mapInfo))
 
+    console.log("init projections")
     this.initProjections(this.mapInfo.origin); 
     
     
@@ -316,6 +318,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     
 
 
+    console.log("Creating coastline")
     this.coastLine = new Vector({
       source: new Source({
         //url: 'assets/landflate_verden.json',
@@ -346,13 +349,24 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
        projection: this.proj,
        zoom: 2,
      });*/
-
+     console.log("Creating map")
     this.map = new OlMap({
       target: 'map',
       //layers: [this.grid, this.coastLine],
       //  view: this.view,
       controls: [MapSetup.getMousePositionControl()]
     });
+
+    console.log("Create overlay " + this.map)
+    this.overlay = new Overlay({
+      element: this.tooltip.nativeElement,
+      offset: [10, 0],
+      positioning: OverlayPositioning.CENTER_LEFT
+    });
+    if(this.map != null) {
+      this.map.addOverlay(this.overlay);
+    }
+
     //this.grid = MapSetup.getGridLayer(this.proj);
     //this.map.addLayer(this.grid);
     this.map.addLayer(this.coastLine);
@@ -616,14 +630,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   }
 
   ngAfterViewInit() {
-    this.overlay = new Overlay({
-      element: this.tooltip.nativeElement,
-      offset: [10, 0],
-      positioning: OverlayPositioning.CENTER_LEFT
-    });
-    if(this.map != null) {
-      this.map.addOverlay(this.overlay);
-    }
+    // was used before because tooltip overlay was inited here. Dont know why?
   }
 
   onClick() {
