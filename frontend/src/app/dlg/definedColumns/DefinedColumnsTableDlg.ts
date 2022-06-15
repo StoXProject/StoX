@@ -175,16 +175,17 @@ export class DefinedColumnsTableDlg implements OnInit {
         
             for(let j=0; j<this.service.definedColumnsData[i].columnValues.length; j++) {
                 if(this.service.definedColumnsData[i].columnValues[j].value == null) {
-                    console.log("Field " + this.service.definedColumnsData[i].columnValues[j].columnName + " is null in row index : " + i);
+                    this.service.definedColumnsData[i].columnValues[j].value = null;
+                    /*console.log("Field " + this.service.definedColumnsData[i].columnValues[j].columnName + " is null in row index : " + i);
                     this.msgService.setMessage("One or more fields are empty!");
                     this.msgService.showMessage();
-                    blankFound = true;
+                    blankFound = true;*/
                 }
             }
 
-            if (blankFound) {
+            /*if (blankFound) {
                 return;
-            }
+            }*/
         }
 
         // validate input for duplicate rows 

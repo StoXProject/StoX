@@ -137,7 +137,7 @@ export class FilePathDlg  implements OnInit {
         // check that all paths are filled and files exist
         for(let i=0; i< this.service.paths.length; i++) {
             if(this.service.paths[i].path == null) {
-                this.msgService.setMessage("One or more fields are empty!");
+                this.msgService.setMessage("One or more file paths are empty!");
                 this.msgService.showMessage();
                 return;
             } else {
