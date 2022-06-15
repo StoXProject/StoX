@@ -258,7 +258,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
           f.getGeometry().transform(this.proj, newProjCode)
         }));
     }
-    let centerLongitude : number = this.mapInfo.origin[0]
+    let centerLongitude : number = 0//this.mapInfo.origin[0]
     this.grid = MapSetup.getGridLayer(newProjCode, centerLongitude);
     this.map.addLayer(this.grid);
 
@@ -292,9 +292,11 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   
   async ngOnInit() {
 
+    console.log("get mapinfo from backend")
     this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise());// {zoom:2.3, origin:[10,60], projection:''};
     console.log("MapInfo:" + JSON.stringify(this.mapInfo))
 
+    console.log("init projections")
     this.initProjections(this.mapInfo.origin); 
     
     
@@ -316,6 +318,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     
 
 
+    console.log("Creating coastline")
     this.coastLine = new Vector({
       source: new Source({
         //url: 'assets/landflate_verden.json',
@@ -346,13 +349,24 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
        projection: this.proj,
        zoom: 2,
      });*/
-
+     console.log("Creating map")
     this.map = new OlMap({
       target: 'map',
       //layers: [this.grid, this.coastLine],
       //  view: this.view,
       controls: [MapSetup.getMousePositionControl()]
     });
+
+    console.log("Create overlay " + this.map)
+    this.overlay = new Overlay({
+      element: this.tooltip.nativeElement,
+      offset: [10, 0],
+      positioning: OverlayPositioning.CENTER_LEFT
+    });
+    if(this.map != null) {
+      this.map.addOverlay(this.overlay);
+    }
+
     //this.grid = MapSetup.getGridLayer(this.proj);
     //this.map.addLayer(this.grid);
     this.map.addLayer(this.coastLine);
@@ -555,8 +569,13 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
         if (this.proj=="StoX_001_LAEA") {
           evt.preventDefault();
           var  coords = this.map.getEventCoordinate(evt);
+          console.log(coords)
           coords = transform(coords, this.proj, 'EPSG:4326');
-          console.log(coords);
+          console.log(coords)
+          if(isNaN(coords[0]) || isNaN(coords[1])){
+            return  
+          }
+          console.log("Init projection with new coords" + coords);
           //this.setProjectionProj4('EPSG:4326'); 
           this.initProjections(coords);
           this.proj = "StoX_001_LAEA_PREV"
@@ -616,14 +635,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   }
 
   ngAfterViewInit() {
-    this.overlay = new Overlay({
-      element: this.tooltip.nativeElement,
-      offset: [10, 0],
-      positioning: OverlayPositioning.CENTER_LEFT
-    });
-    if(this.map != null) {
-      this.map.addOverlay(this.overlay);
-    }
+    // was used before because tooltip overlay was inited here. Dont know why?
   }
 
   onClick() {
