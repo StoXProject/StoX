@@ -569,8 +569,13 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
         if (this.proj=="StoX_001_LAEA") {
           evt.preventDefault();
           var  coords = this.map.getEventCoordinate(evt);
+          console.log(coords)
           coords = transform(coords, this.proj, 'EPSG:4326');
-          console.log(coords);
+          console.log(coords)
+          if(isNaN(coords[0]) || isNaN(coords[1])){
+            return  
+          }
+          console.log("Init projection with new coords" + coords);
           //this.setProjectionProj4('EPSG:4326'); 
           this.initProjections(coords);
           this.proj = "StoX_001_LAEA_PREV"
