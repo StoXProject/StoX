@@ -1,3 +1,25 @@
+# StoX v3.4.3 (2022-06-22)
+
+## General changes
+* Changed projections in the map to only the "Lambert Azimuthal Equal Area Projection" and the "Equirectangular Projection". The origin can be set in the former by right-clicking in the map. StoX will remember the last used projection, origin and zoom when booting. Some challenges remain, specifically that the sea turns into the same colour as land for specific origns, and that some grid lines jump out of position.
+* The GUI now supports empty fields in parameter tables, which are treated as missing value (NA). This is now the preferred way to denote NAs!
+* Added DependentResolutionVariable and IndependentResolutionVariable in the RegressionTable of DefineRegression() and as parameters in EstimateBioticRegression(), used for adding half the resolution of e.g. length intervals.
+
+## Bug fixes
+* Fixed bug in DateTime of StoxAcousticData for data read from ICESAcoustic files where time is specified with seconds. In StoX 3.4.2 and older the seconds were set to 00. Fixed also a related bug in DateTime of StoxBioticData for data read from ICESBiotic files where time is specified as YYYY-MM-DDThh:mm. In StoX 3.4.2 and older the DateTime was truncated to only date.
+
+## Detailed changes
+* Added warning in StoxAcoustic() for data read from ICESAcoustic files where time is specified with minutes (seconds not given). In StoX 3.4.2 and older the LogKey (and subsequently the EDSU) of StoxAcoustic is given in the form YYYY-MM-DDThh:mm.000Z instead of the more reasonable YYYY-MM-DDThh:mm:ss.000Z. This is kept for backwards compatibility, as the LogKey and EDSU are used in process data. It is recommended to use ICESAcoustic files with seconds resolution.
+* Changed to using null to denote missing values (NAs) in the project.json, instead of "string" in jsonlite::toJSON().
+* Added formatting of parameter tables read from the GUI.
+* Fixed bug in DefineBioticAssignment() where DefinitionMethod "Stratum" failed due to unset attribute "pointLabel".
+* Added stop when project.xml file path is not set in a DefinitionMethod "ResourceFile"
+* Disabled the EstimationMethod "NonLinear" in the drop-down menu in the RegressionTable of function Regression() in the GUI.
+* Changed JSON schema so that all table columns of type "string" allow also type "null", supporting NAs.
+* Reverted to identify all AcousticPSUs that have any missing assignment, as the proposed solution did not work.
+* Fixed bug in the JSON schema of the Translation process data, where number, string and boolean were allowed for the NewValue field, in that order, whereas string and null is correct.
+
+
 # StoX v3.4.2 (2022-06-02)
 
 ## General changes
