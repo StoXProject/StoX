@@ -1,3 +1,8 @@
+# To install Rstox-packages like in the GUI, run something like the following:
+#source ("https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/R/Versions.R")
+#installOfficialRstoxPackagesWithDependencies("3.4.0")
+
+
 StoxInstallSettings <- list(
     supportedRVersion = c(
         "4.2", 
