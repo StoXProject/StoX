@@ -1,3 +1,20 @@
+# StoX v3.4.4 (2022-08-07)
+
+## General changes
+* This version inclcudes changes made to verify that SplitNASC() produces the same results as in StoXX 3.1.12, which was used for the HERAS. Stricter treatment of missing values had introduced some differences which were solved mainly by not splitting NASC = 0.
+
+## Bug fixes
+* Fixed bug in LengthDistribution() with SampleWeight or SampleCount = 0, where haulsWithInfRaisingFactor and samplesWithInfRaisingFactor were missing on line 208.
+
+
+## Detailed changes
+* Changed to not split NSAC = 0. 
+* Changed SplitNASC to remove rows with NA NASC originating from missing assignment length distribution. 
+* Changed to consider species to be split that are not present in the AssignmentLengthDistribution of a NASC value to be split as WeightedNumber = 0 instead of NA. This prevents NA NASC, and doubles the previous change.
+* Disabled warning in Translate-functions when a table contained some but not all of the variables of the Translation. 
+* Added warning when SampleCount is used instead of the new SampleNumber in a filter, asking the user to change the filter. 
+
+
 # StoX v3.4.3 (2022-06-22)
 
 ## General changes
@@ -82,7 +99,7 @@
 # StoX v3.4.0 (2022-03-30)
 
 ## Summary
-* The new StoX 3.4.0 ccontains a number of important bug fixes, such as an error in acoustic-trawl projects in the function SuperIndividuals when DistributionMethod = "HaulDensity" and Hauls are assigned to PSUs in more than one stratum, which led to under-estimation. The new version contains several improvements with regards to warnings and errors, such as warnings when hauls with no length distribution of the target species are assigned to the acoustic PSUs of a Stratum, which can lead to biased bootstrapping. 
+* The new StoX 3.4.0 contains a number of important bug fixes, such as an error in acoustic-trawl projects in the function SuperIndividuals when DistributionMethod = "HaulDensity" and Hauls are assigned to PSUs in more than one stratum, which led to under-estimation. The new version contains several improvements with regards to warnings and errors, such as warnings when hauls with no length distribution of the target species are assigned to the acoustic PSUs of a Stratum, which can lead to biased bootstrapping. 
 * Some additional features and parameter are added, such as WeightingMethod "AcousticDensity" in function BioticAssignmentWeighting, and the possibility to define translation directly in Translate-functions. Translation can now also be defined using function strings, useful e.g. if one wants to set all non-NA values to NA.
 * The function ReportBootstrap has been sped up by a factor of at least 10
 * Finally, the new changes in ICES formats are supported.
