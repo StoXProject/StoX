@@ -1,3 +1,9 @@
+# StoX v3.4.5 (2022-08-08)
+
+## General 
+* Test release, fixing Rstox package version numbers.
+
+
 # StoX v3.4.4 (2022-08-07)
 
 ## General changes
