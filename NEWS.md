@@ -1,3 +1,12 @@
+# StoX v3.4.6 (2022-08-10)
+
+## Detailed changes
+* Improved warning when EDSUs/Stations are tagged to a PSU but not present in the data. 
+* Turned off spherical geometry with apply_and_set_use_s2_to_FALSE() when locating EDSUs/Stations in Strata. 
+* Added warning when no assigned hauls are located in any Stratum of the PSUs. 
+* Cleaned up warnings that list up Hauls, PSUs etc, so that alle use printErrorIDs(), which was simplified.
+
+
 # StoX v3.4.5 (2022-08-08)
 
 ## General 
