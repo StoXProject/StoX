@@ -1,3 +1,81 @@
+# StoX v3.5.0 (2022-08-15)
+
+## Summary
+* The new StoX 3.5.0 adds support for R 4.2, which could not be used with StoX 3.4.0, improves warning messages and remmoves some uneccessary messages, adds the option of a simple longitude-latitude (Equirectangular) projection in the GUI as well as selecting origin of the Lambert Azimuthal Equal Area projection by right-clicking, and includes several bug fixes and changes that improve stability. A forecd change in stratum area calcuclation may change the output of the StratumArea function slightly. See below for details. 
+
+## General changes
+* Added R 4.2. as supported version.
+* Changed projections in the map to only the "Lambert Azimuthal Equal Area Projection" and the "Equirectangular Projection". The origin can be set in the former by right-clicking in the map. StoX will remember the last used projection, origin and zoom when booting. Some challenges remain, specifically that the sea turns into the same colour as land for specific origns, and that some grid lines jump out of position.
+* The GUI now supports empty fields in parameter tables, which are treated as missing value (NA). This is now the preferred way to denote NAs!
+* Added DependentResolutionVariable and IndependentResolutionVariable in the RegressionTable of DefineRegression() and as parameters in EstimateBioticRegression(), used for adding half the resolution of e.g. length intervals.
+* Added warning occurring when there are samples with positive SampleNumber but no individuals, in which case Abundance will be set to NA in the SuperIndividuals function.
+* Replaced all use of functions from the packages rgdal and rgeos by the package sf, as per the planned retirement of these packages. See https://www.r-bloggers.com/2022/04/r-spatial-evolution-retirement-of-rgdal-rgeos-and-maptools/. 
+* Changed time stamp server to sectigo
+* Removed hard coded values for the following variables on ICESDatras() (variable name -> new value): 
+	
+	+ Table HH:
+	*Country -> nation
+	*Ship -> platformname
+	*SweepLngt -> NA
+	*GearEx -> NA
+	*DayNight -> NA
+	*StatRec -> area + location (concatenation)
+	*HaulVal -> NA
+	*Distance -> distance (in meters)
+	*GroundSpeed -> vesselspeed
+
+	+ Table HL:
+	*SpecVal -> NA
+	*LenMeasType -> lengthmeasurement
+	
+	+ Table CA:
+	*Maturity -> NA
+	*MaturityScale -> NA
+	*AgeSource -> agingstructure
+	*OtGrading -> readability (only if agingstructure is 2)
+	*PlusGr -> NA
+
+* Removed hard coded values for the following variables on ICESBiotic(): 
+	*Platform -> platformname
+	*Validity -> NA
+	*StatisticalRectangle -> area + location
+
+## Bug fixes
+* Fixed bug in LengthDistribution() with SampleWeight or SampleCount = 0, where haulsWithInfRaisingFactor and samplesWithInfRaisingFactor were missing.
+* Fixed bug in DateTime of StoxAcousticData for data read from ICESAcoustic files where time is specified with seconds. In StoX 3.4.2 and older the seconds were set to 00. Fixed also a related bug in DateTime of StoxBioticData for data read from ICESBiotic files where time is specified as YYYY-MM-DDThh:mm. In StoX 3.4.2 and older the DateTime was truncated to only date.
+* Fixed bug in AssignmentLengthDistribution(), where the sum of the WeightedNumber did not sum to 100. This did not have any implications on the estimates, as AcousticDensity() normalizes the WeightedNumber from the AssignmentLengthDistributionData.
+* Fixed bug in ReportSpeciesCategoryCatch(), where Hauls were duplicated.
+* Fixed bug in DateTime in StoxBioticData, where milliseconds were pasted twice if present in the input data. 
+* Fixed bug reported in https://jira.imr.no/browse/STOX-544, occurring when splitting catchsample into SpeciesCategory and Sample, by unique() in firstPhase(). 
+* Fixed bug in Versions.R, which is used by StoX for the tool "Install Rstox packages". The bug was that the package data.table was used but not installed. Also, added support for installing Rstox package binaries built with older R versions than the one installed, allowing for installation of Rstox packages in existing StoX versions even when a new R version is released and installed. In R 4.2. the location of the folder in which user installed packages are saved has changed from the Documents folder to the AppData > Local folder of the user, which is now included in Versions.R.
+
+## Detailed changes
+* Improved warnings AcousticDataToICESAcousticOne() when values are not found in ICES reference tables.
+* Improved warning when EDSUs/Stations are tagged to a PSU but not present in the data. 
+* Turned off spherical geometry with apply_and_set_use_s2_to_FALSE() when locating EDSUs/Stations in Strata. 
+* Added warning when no assigned hauls are located in any Stratum of the PSUs. 
+* Cleaned up warnings that list up Hauls, PSUs etc, so that alle use printErrorIDs(), which was simplified.
+* Changed to not split NSAC = 0 in SplitNASC. 
+* Changed SplitNASC to remove rows with NA NASC originating from missing assignment length distribution. 
+* Changed to consider species to be split that are not present in the AssignmentLengthDistribution of a NASC value to be split as WeightedNumber = 0 instead of NA. This prevents NA NASC, and doubles the previous change.
+* Disabled warning in Translate-functions when a table contained some but not all of the variables of the Translation. 
+* Added warning when SampleCount is used instead of the new SampleNumber in a filter, asking the user to change the filter. 
+* Added warning in StoxAcoustic() for data read from ICESAcoustic files where time is specified with minutes (seconds not given). In StoX 3.4.2 and older the LogKey (and subsequently the EDSU) of StoxAcoustic is given in the form YYYY-MM-DDThh:mm.000Z instead of the more reasonable YYYY-MM-DDThh:mm:ss.000Z. This is kept for backwards compatibility, as the LogKey and EDSU are used in process data. It is recommended to use ICESAcoustic files with seconds resolution.
+* Changed to using null to denote missing values (NAs) in the project.json, instead of "string" in jsonlite::toJSON().
+* Added formatting of parameter tables read from the GUI.
+* Fixed bug in DefineBioticAssignment() where DefinitionMethod "Stratum" failed due to unset attribute "pointLabel".
+* Added stop when project.xml file path is not set in a DefinitionMethod "ResourceFile"
+* Disabled the EstimationMethod "NonLinear" in the drop-down menu in the RegressionTable of function Regression() in the GUI.
+* Changed JSON schema so that all table columns of type "string" allow also type "null", supporting NAs.
+* Reverted to identify all AcousticPSUs that have any missing assignment, as the proposed solution did not work.
+* Fixed bug in the JSON schema of the Translation process data, where number, string and boolean were allowed for the NewValue field, in that order, whereas string and null is correct.
+* Refactored location of stations and EDSUs in stratum, and added warnings when locating to multiple or zero stratum.
+* Tested and saved for future reference the function StratumArea_supportingIterativeCentroidCalculation which sets the centroid more accurately when transforming to Cartesian coordinates for the area calcuclation.
+* Changed tolerance in test-versus_2.7.R as per slight differences in StratumArea due to move from rgeos to sf in RstoxBase, forced by https://www.r-bloggers.com/2022/04/r-spatial-evolution-retirement-of-rgdal-rgeos-and-maptools/.
+* Replaced the logical parameter AddToLowestTable by the string parameter SplitTableAllocation in AddToStoxBiotic(), allowing for allocating variables to either the default, highest or lowest table when splitting tables StoxBiotic.
+* Moved all User log entries and formatting to RstoxFramework.
+
+
 # StoX v3.4.6 (2022-08-10)
 
 ## Detailed changes
