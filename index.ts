@@ -340,7 +340,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
   // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
   let fileName = Utils.getTempResFileName(UtilsConstants.RES_SERVER_FILENAME)
   logInfo("Spawning " + rscriptBin + " " + fileName);
-  backendProcess = await child_process.spawn(rscriptBin, [fileName]);
+  backendProcess = await child_process.spawn(rscriptBin, [fileName], { stdio: ['pipe', 'ignore', 'ignore'] });
   backendProcess.on('error', (er: any) => {
     logInfo("Spawning error " + er);
   });
