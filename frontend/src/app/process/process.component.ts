@@ -89,7 +89,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
       if (tables.length > 0) {
         m.push({
-          label: 'View output', icon: 'rib absa emptyicon', items:
+          label: 'Preview', icon: 'rib absa emptyicon', items:
             tables.map(e => {
               return {
                 label: e, icon: 'rib absa emptyicon',
@@ -109,6 +109,18 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
             })
         });
       }
+      let hasFileOutput: boolean = await this.ds.hasFileOutput(this.ps.selectedProject.projectPath,
+        this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+        if(hasFileOutput) {
+          m.push(
+            { label: 'Show in folder', icon: 'rib absa emptyicon', command: async (event) => {
+              let outFolder: string = await this.ds.getProcessOutputFolder(this.ps.selectedProject.projectPath,
+                this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+                await this.ds.showinfolder(outFolder).toPromise();
+    
+            } }
+          );
+        }
     }
     // m.push(
     //   { label: 'Move up', icon: 'rib absa emptyicon', command: (event) => { } },

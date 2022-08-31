@@ -881,6 +881,21 @@ function setupServer() {
     }
   });
 
+  server.post('/showinfolder', function (req: any, res: any) {
+    logInfo("show in folder");
+    let path = resolveDefaultPath(req.body); // correct slashes in default path
+    const openExplorer = require('open-file-explorer');
+    openExplorer(path, (err: any) => {
+      if(err) {
+          console.log(err);
+      }
+      else {
+          //Do Something
+      }
+    });
+  });
+
+
   server.post('/fileExists', function (req: any, res: any) {
     logInfo("check if a file exists");
 
