@@ -387,6 +387,15 @@ export class DataService {
     return this.runProcessFunc<string[]>('getProcessOutputTableNames', projectPath, modelName, processID);
   }
 
+  hasFileOutput(projectPath: string, modelName: string, processID: string): Observable<boolean> {
+    return this.runProcessFunc<boolean>('hasFileOutput', projectPath, modelName, processID);
+  }
+
+  getProcessOutputFolder(projectPath: string, modelName: string, processID: string): Observable<string> {
+    return this.runProcessFunc<string>('getProcessOutputFolder', projectPath, modelName, processID);
+  }
+  
+
   getFilterOptionsAll(projectPath: string, modelName: string, processID: string, includeNumeric: Boolean): Observable<any> {
     return this.runFunction('getFilterOptionsAll', {
       "projectPath": projectPath,
@@ -517,6 +526,10 @@ export class DataService {
 
   browse(defaultpath: string): Observable<any> {
     return this.postLocalNode('browse', defaultpath);
+  }
+  
+  showinfolder(path: string): Observable<any> {
+    return this.postLocalNode('browse', path);
   }
 
   browsePath(options: any): Observable<any> {
