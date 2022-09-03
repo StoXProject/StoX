@@ -10,7 +10,6 @@
       "prefix": "app",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "scss"
         }
       },
       "architect": {
@@ -34,7 +33,7 @@
               "node_modules/ol/ol.css"
             ],
             "scripts": [],
-            "es5BrowserSupport": true
+            "allowedCommonJsDependencies": ["xml-utils/find-tags-by-name.js", "xml-utils/get-attribute.js", "lru-cache", "web-worker", "pbf", "earcut", "rbush"]
           },
           "configurations": {
             "production": {
@@ -47,7 +46,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -139,6 +137,5 @@
         }
       }
     }
-  },
-  "defaultProject": "stox"
+  }
 }

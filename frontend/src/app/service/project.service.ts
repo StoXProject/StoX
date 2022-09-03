@@ -11,7 +11,6 @@ import { ProcessProperties } from '../data/ProcessProperties';
 import { ProcessOutput } from '../data/processoutput';
 import { OutputTable } from '../data/outputtable';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
-import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion } from '../data/PackageVersion';
