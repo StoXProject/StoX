@@ -520,7 +520,8 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       properties.projectRootPath = require('os').homedir()
     }
     if(properties.mapInfo == null) {
-      properties.mapInfo = {projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]}
+      properties.mapInfo = {projection:'StoX_001_LAEA',zoom:4.3,origin:[10.01,60.01]}
+      //{projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]}
     }
   } catch (err) {
     logInfo("Error reading properties: " + err);
