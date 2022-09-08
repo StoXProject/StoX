@@ -419,6 +419,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
           this.updateStationSelection();
           break;
         }
+        case "changedEDSU":
         case "selectedPSU": {
           switch (this.ps.iaMode) {
             case "bioticAssignment": {
