@@ -35,7 +35,8 @@ export class EdsutableComponent implements OnInit {
                   (iLast: number, x, i, arr) => (x.PSU == selPSU ? i : iLast),
                   undefined
                 );
-              this.viewPort.scrollToIndex(indexOfLastValue - 2);
+                let nItems : number = this.viewPort.getViewportSize() / 18; // use this to calculate the 
+                this.viewPort.scrollToIndex(indexOfLastValue - 18/2); 
               //console.log(this.pds.acousticPSU.EDSU_PSU[indexOfLastValue]);
             }
           }
@@ -46,7 +47,7 @@ export class EdsutableComponent implements OnInit {
 
   public getItemColor(item, shiftKey: boolean) {
     return item.PSU != null && item.PSU == this.pds.selectedPSU
-      ? "rgb(255,192,203)"
+      ? "#cce8ff"
       : "white";
   }
 
