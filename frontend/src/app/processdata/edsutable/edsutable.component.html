@@ -5,6 +5,6 @@ white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;
         <div *cdkVirtualFor="let item of pds.acousticPSU.EDSU_PSU"
            class="viewport-item"
           [ngStyle]="{'background-color': getItemColor(item)}"
-          (click) = "onItemClick(item, $event.shiftKey)">{{item.EDSU}}{{item.PSU != 'NA' && item.PSU.length > 0 ? ' (' + item.PSU + ')' : ''}}</div>
+          (click) = "onItemClick(item, $event.shiftKey)">{{item.EDSU}}{{item.PSU != 'NA' && item.PSU != undefined ? ' (' + item.PSU + ')' : ''}}</div>
     </cdk-virtual-scroll-viewport> 
 </div>
