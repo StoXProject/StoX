@@ -3,7 +3,9 @@ optionLabel="processName" (keydown)="keydown($event)">
     <ng-template let-process pTemplate="item">
         <div (contextmenu)="openCm($event, cm, process.value)"
         cdkDrag>
-            <span class="rib fa processicon" [ngClass]="{'fa-spin': process.value===ps.getRunningProcess()}">
+            <span [ngClass]="{'rib fa': true, 'processicon': process.value.enabled, 
+                'inactiveprocessicon': !process.value.enabled, 
+                'fa-spin': process.value===ps.getRunningProcess()}">
                 <span *ngIf="process.value.hasProcessData" class="absa interactiveicon"></span>
                 <span *ngIf="process.value != ps.getRunningProcess() && process.value.canShowInMap"
                     class="absa mapicon"></span>

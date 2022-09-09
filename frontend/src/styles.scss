@@ -357,6 +357,14 @@ input:focus {
   left: 80%;
 }
 
+.inactiveprocessicon:before {
+  @include icon_content("\f013", 1rem, rgb(218, 219, 217), true);
+  left: 0px;
+  top: 0px;
+  position: relative;
+}
+
+
 .stratumicon:before {
   @include icon_content("\f00a", 1rem, rgb(145, 173, 131), true);
 }
