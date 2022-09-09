@@ -35,8 +35,10 @@ export class EdsutableComponent implements OnInit {
                   (iLast: number, x, i, arr) => (x.PSU == selPSU ? i : iLast),
                   undefined
                 );
+                this.viewPort.checkViewportSize();
                 let nItems : number = this.viewPort.getViewportSize() / 18; // use this to calculate the 
-                this.viewPort.scrollToIndex(indexOfLastValue - 18/2); 
+                console.log("Viewport size: " + nItems);
+                this.viewPort.scrollToIndex(indexOfLastValue - nItems / 2); 
               //console.log(this.pds.acousticPSU.EDSU_PSU[indexOfLastValue]);
             }
           }
