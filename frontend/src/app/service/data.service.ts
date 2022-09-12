@@ -392,7 +392,12 @@ export class DataService {
   }
 
   getProcessOutputFolder(projectPath: string, modelName: string, processID: string): Observable<string> {
-    return this.runProcessFunc<string>('getProcessOutputFolder', projectPath, modelName, processID);
+    return this.runFunction('getProcessOutputFolder', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "type": "output"
+    });    
   }
   
 
@@ -529,7 +534,7 @@ export class DataService {
   }
   
   showinfolder(path: string): Observable<any> {
-    return this.postLocalNode('browse', path);
+    return this.postLocalNode('showinfolder', path);
   }
 
   browsePath(options: any): Observable<any> {
