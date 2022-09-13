@@ -198,7 +198,7 @@ export class MapSetup {
     static getStratumSelectStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(255, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 2);
     }
-    static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, projsel: ProjectionSelector) {
+    static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, mapInteraction: MapInteraction) {
         let m: Modify = new Modify({
             features: select.getFeatures()/*,
                         deleteCondition: e => singleClick(e) && shiftKeyOnly(e)*/
@@ -214,7 +214,7 @@ export class MapSetup {
             });
             console.log(JSON.stringify(fcloned));
 
-            let s: string = (new GeoJSON()).writeFeatures(fcloned, { featureProjection: projsel.getProj(), dataProjection: 'EPSG:4326' });
+            let s: string = (new GeoJSON()).writeFeatures(fcloned, { featureProjection: mapInteraction.getProj(), dataProjection: 'EPSG:4326' });
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
@@ -236,7 +236,7 @@ export class MapSetup {
         });
     }
     static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource,
-        dataService: DataService, ps: ProjectService, proj: string) {
+        dataService: DataService, ps: ProjectService, proj: string,  mapInteraction: MapInteraction) {
         let d: Draw = new Draw({
             source: source,
             type: GeometryType.POLYGON
@@ -260,8 +260,8 @@ export class MapSetup {
                             dataProjection: 'EPSG:4326',
                             featureProjection: proj
                         })*/
+            console.log("Strata name " + strataName + " with hex " + MapSetup.toHex(strataName));
             if (typeof (strataName) == 'string') {
-                console.log("Strata name " + strataName + " with hex " + MapSetup.toHex(strataName));
                 // a valid stratum name has been entered
                 //f.setId(Math.max(...source.getFeatures().map(f2 => f2.getId() != null ? +f2.getId() : 0)) + 1);
                 f.setProperties({ 'StratumName': strataName });
@@ -270,7 +270,9 @@ export class MapSetup {
                 //source.getFeatures().map(f => f.getId())
                 //e.setId(33); // find the max id + 1
                 let res: ActiveProcessResult = ps.handleAPI(await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
-            }            //console.log("res :" + res); 
+                console.log("res :" + JSON.stringify(res)); 
+            }            
+            //mapInteraction.resetInteraction();
 
         });
         return d;

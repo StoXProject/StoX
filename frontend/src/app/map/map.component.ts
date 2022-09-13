@@ -59,7 +59,7 @@ import { SubjectAction } from '../data/subjectaction';
   styleUrls: ['./map.component.scss']
 })
 
-export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
+export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   @ViewChild('tooltip', { static: false }) tooltip: ElementRef;
   map: OlMap;
   // source: OlXYZ;
@@ -86,6 +86,12 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   
     getProj(): string {
       return this.proj;
+    }
+    resetInteraction() {
+      this.tool = 'freemove';
+    }
+    stratumExists(stratum : string) : boolean {
+      return this.pds.stratum.includes(stratum);
     }
     
   /*@HostListener('window:keyup', ['$event'])
@@ -624,7 +630,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
         let data: { stratumPolygon: string } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
         let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, data.stratumPolygon, proj, [MapSetup.getStratumStyle()], false, 1, []);
         this.addLayerToProcess(this.ps.activeProcessId, layer);
-        this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj);
+        this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj, this);
         break;
       }
       default: {
