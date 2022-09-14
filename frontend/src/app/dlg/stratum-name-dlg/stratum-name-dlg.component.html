@@ -7,5 +7,5 @@
 </div>
 <div mat-dialog-actions>
   <button mat-button [mat-dialog-close]="''">Cancel</button>
-  <button mat-button [mat-dialog-close]="data.stratum">Ok</button>
+  <button mat-button (click)="onOk()">Ok</button>
 </div>

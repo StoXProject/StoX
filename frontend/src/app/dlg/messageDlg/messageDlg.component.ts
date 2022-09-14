@@ -6,6 +6,8 @@ export interface DialogData {
   message : string;
 }
 
+export enum MessageDlgType {"YESNO", "CLOSE"};
+
 @Component({
   selector: 'messageDlg',
   templateUrl: './messageDlg.component.html'
@@ -18,11 +20,12 @@ export class MessageDlgComponent implements OnInit {
 
   ngOnInit() {
   }
-  public static async showDlg(dialog: MatDialog, title : string, message : string) {
+
+  public static async showDlg(dialog: MatDialog, title : string, message : string, dlgType : MessageDlgType = MessageDlgType.YESNO) {
     const dialogRef = dialog.open(MessageDlgComponent, {
       width: '250px',
       disableClose: true,
-      data: { title: title, message: message }
+      data: { title: title, message: message, dlgType: dlgType }
     });
     return await dialogRef.afterClosed().toPromise();
   }

@@ -598,6 +598,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
 
   async handleIaMode(iaMode: string, proj) {
     let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
+    this.resetInteractions();
     switch (iaMode) {
       case "none": {
         this.resetLayersToProcess(this.ps.activeProcessId);
@@ -635,10 +636,9 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       }
       default: {
         //this.map.removeLayer(this.map.getLayers()."station");
-        //this.resetInteractions();   
-        this.tool = "freemove";
       }
     }
+    this.tool = "freemove";
   }
 
   ngAfterViewInit() {
