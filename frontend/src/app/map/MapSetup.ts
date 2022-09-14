@@ -241,7 +241,7 @@ export class MapSetup {
             source: source,
             type: GeometryType.POLYGON
         })
-        d.on('drawend', async function (e) {
+        d.on('drawend', async (e)  => {
             // Add the features back to API.
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
@@ -252,7 +252,7 @@ export class MapSetup {
             const dialogRef = dialog.open(StratumNameDlgComponent, {
                 width: '250px',
                 disableClose: true,
-                data: { stratum: '' }
+                data: { stratum: '', mapInteraction:mapInteraction }
             });
             let f: Feature = e.feature.clone(); // survive event e change after subdialog by cloning feature
             let strataName: any = await dialogRef.afterClosed().toPromise();
@@ -271,8 +271,9 @@ export class MapSetup {
                 //e.setId(33); // find the max id + 1
                 let res: ActiveProcessResult = ps.handleAPI(await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
                 console.log("res :" + JSON.stringify(res)); 
+                ps.iaMode = "stratum"; // trigger the gui
             }            
-            //mapInteraction.resetInteraction();
+            mapInteraction.resetInteraction();
 
         });
         return d;
