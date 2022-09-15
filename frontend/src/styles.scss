@@ -433,7 +433,7 @@ input:focus {
   top: 72%;
 }
 .runstatusmodifiedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(208, 208, 211), true);
+  @include icon_content("\f0c8", 0.4rem, rgb(134, 139, 209), true);
   top: 72%;
 }
 .functioninputerroricon:after {

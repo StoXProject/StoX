@@ -24,7 +24,7 @@ devtools::install_github("https://github.com/StoXProject/RstoxFramework", ref="d
 "save":false
 }'
 
-getProcessOutputTableNames
+getProcessOutputElements
 '{
 "projectPath":"C:/Users/aasmunds/workspace/stox/project/Test_Rstox copy2", 
 "modelName":"baseline", 

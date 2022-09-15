@@ -8,7 +8,7 @@ import { UserLogEntry } from '../data/userlogentry';
 import { ProcessOutput } from '../data/processoutput';
 import { MapInfo } from '../data/MapInfo';
 import { UserLogType } from '../enum/enums';
-import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess } from '../data/runresult';
+import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess, ProcessOutputElement } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
 import { ProcessProperties } from '../data/ProcessProperties';
@@ -383,8 +383,8 @@ export class DataService {
     });
   }
 
-  getProcessOutputTableNames(projectPath: string, modelName: string, processID: string): Observable<string[]> {
-    return this.runProcessFunc<string[]>('getProcessOutputTableNames', projectPath, modelName, processID);
+  getProcessOutputElements(projectPath: string, modelName: string, processID: string): Observable<ProcessOutputElement[]> {
+    return this.runProcessFunc<ProcessOutputElement[]>('getProcessOutputElements', projectPath, modelName, processID);
   }
 
   hasFileOutput(projectPath: string, modelName: string, processID: string): Observable<boolean> {

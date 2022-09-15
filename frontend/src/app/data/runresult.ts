@@ -33,3 +33,8 @@ export class RunProcessesResult extends ProcessTableResult {
 export class PSUResult extends ProcessTableResult {
     PSU: string;
 }
+
+export class ProcessOutputElement {
+    elmentName?: string;
+    elmentType?: string;
+}
