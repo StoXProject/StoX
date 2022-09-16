@@ -8,8 +8,7 @@ import { Model } from '../data/model';
 import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
 import { ProcessProperties } from '../data/ProcessProperties';
-import { ProcessOutput } from '../data/processoutput';
-import { OutputTable } from '../data/outputtable';
+import { OutputElement as OutputElement } from '../data/outputelement';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,6 +16,7 @@ import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion } from '../data/PackageVersion';
 import { HelpCache } from '../data/HelpCache';
 import { SubjectAction } from '../data/subjectaction';
+import { ProcessTableOutput } from '../data/processtableoutput';
 
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
@@ -34,7 +34,7 @@ export class ProjectService {
   private m_projects: Project[] = [];
   private m_selectedProject: Project = null;
   //private m_isSelectedProjectSaved = true;
-  outputTables: OutputTable[] = [];
+  outputElements: OutputElement[] = [];
   public outputTableActivator: Subject<number> = new Subject<number>();
   public bottomViewActivator: Subject<number> = new Subject<number>();
 
@@ -360,7 +360,7 @@ export class ProjectService {
     this.runFailedProcessId = null; // triggered by run service or active process id
     this.runningProcessId = null; // current running process
     this.m_isResetting = false; // current reset flag.    
-    this.outputTables = []; // clear output tables
+    this.outputElements = []; // clear output tables
   }
 
 
@@ -491,4 +491,23 @@ export class ProjectService {
       return p.processID == this.activeProcess.processID && this.activeProcess.processDirty;
     }
   }
+
+  async resolveElementOutput(oe: OutputElement) {
+    switch(oe.element.elementType) {
+      case "table": {
+        let tableOutput: ProcessTableOutput = await this.dataService.getProcessTableOutput(this.selectedProject.projectPath,
+          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+        oe.output = tableOutput.data;
+      break;
+      }
+      case "geojson": {
+        let output: string = await this.dataService.getProcessGeoJsonOutput(this.selectedProject.projectPath,
+          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+        oe.output = output;
+      break;
+      } 
+      case "plot":
+      break;
+    }
+}
 }

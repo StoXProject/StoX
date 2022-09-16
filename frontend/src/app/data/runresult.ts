@@ -35,6 +35,7 @@ export class PSUResult extends ProcessTableResult {
 }
 
 export class ProcessOutputElement {
-    elmentName?: string;
-    elmentType?: string;
+    elementName?: string;
+    elementFullName?: string;
+    elementType?: string;
 }

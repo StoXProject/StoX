@@ -5,7 +5,6 @@ import { ProjectService } from '../../service/project.service';
 import { DataService } from '../../service/data.service';
 import { MatTabGroup } from '@angular/material/tabs';
 
-import { ProcessOutput } from './../../data/processoutput';
 import { SubjectAction } from 'src/app/data/subjectaction';
 @Component({
     selector: 'output',
@@ -30,20 +29,19 @@ export class OutputComponent implements OnInit {
     }
     onContextMenuAction1() {
         let item: any = this.contextMenu.menuData;
-        let idx = this.ps.outputTables.findIndex(t => t.table == item.item.table);
+        let idx = this.ps.outputElements.findIndex(e => e.element.elementFullName == item.item.table);
         console.log("index" + idx)
-        this.ps.outputTables.splice(idx, 1)
+        this.ps.outputElements.splice(idx, 1)
     }
 
     refreshData(processId: string) {
-        this.ps.outputTables.filter(t => t.processId == processId).forEach(async tbl => {
-            tbl.output = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
-                this.ps.selectedModel.modelName, tbl.processId, tbl.tableName).toPromise();
+        this.ps.outputElements.filter(oe => oe.processId == processId).forEach(async oe => {
+            await this.ps.resolveElementOutput(oe);
         });
     }
 
     removeData(processId: string) {
-        this.ps.outputTables = this.ps.outputTables.filter(t => t.processId !== processId);
+        this.ps.outputElements = this.ps.outputElements.filter(t => t.processId !== processId);
     }
 
     constructor(public ps: ProjectService, public ds: DataService) {
@@ -73,9 +71,10 @@ export class OutputComponent implements OnInit {
     private getLines(s: string[]): string {
         return s.join("\n");
     }
-    /*getItemOutput(item) {
-        return item.output.data != null && Object.keys(item.output.data).length > 0 ? item.output.data.join('\n') : '';
-    }*/
+    getItemOutput(item) {
+        console.log(JSON.stringify(item)); 
+        return JSON.stringify(item);
+    }
 
 }
 

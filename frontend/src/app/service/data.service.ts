@@ -5,7 +5,6 @@ import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { UserLogEntry } from '../data/userlogentry';
-import { ProcessOutput } from '../data/processoutput';
 import { MapInfo } from '../data/MapInfo';
 import { UserLogType } from '../enum/enums';
 import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess, ProcessOutputElement } from '../data/runresult';
@@ -15,6 +14,7 @@ import { ProcessProperties } from '../data/ProcessProperties';
 import { Process } from '../data/process';
 import { Project } from '../data/project';
 import { PackageVersion } from '../data/PackageVersion';
+import { ProcessTableOutput } from '../data/processtableoutput';
 
 @Injectable({
   providedIn: 'root'
@@ -463,8 +463,8 @@ export class DataService {
     });
   }
 
-  getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<ProcessOutput> {
-    return this.runFunction('getProcessOutput', {
+  getProcessTableOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<ProcessTableOutput> {
+    return this.runFunction('getProcessTableOutput', {
       "projectPath": projectPath,
       "modelName": modelName,
       "processID": processID,
@@ -478,6 +478,26 @@ export class DataService {
       "drop": true
     });
 
+  }
+
+  getProcessGeoJsonOutput(projectPath: string, modelName: string, processID: string, geojsonName: string): Observable<string> {
+    return this.runFunction('getProcessGeoJsonOutput', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "geojsonName": geojsonName,
+      "pretty": true,
+      "splitGeoJson": false
+    });
+  }
+
+  getProcessPlotOutput(projectPath: string, modelName: string, processID: string, plotName: string): Observable<string> {
+    return this.runFunction('getProcessPlotOutput', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "plotName": plotName
+    });
   }
 
   addEDSU(psu: string, edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
