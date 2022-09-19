@@ -11,8 +11,8 @@
             white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">
                 <div *cdkVirtualFor="let line of item.output">{{line}}</div>
             </cdk-virtual-scroll-viewport>
-            <ngx-json-viewer *ngSwitchCase="'geojson'" [json]="item.output"></ngx-json-viewer>
-        </ng-container> 
+            <ngx-json-viewer *ngSwitchCase="'geojson'" [json]="getItemOutput(item)"></ngx-json-viewer>
+        </ng-container>
 
     </mat-tab>
 

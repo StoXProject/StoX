@@ -10,11 +10,10 @@ import { UserLogType } from '../enum/enums';
 import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess, ProcessOutputElement } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
-import { ProcessProperties } from '../data/ProcessProperties';
+import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
 import { Process } from '../data/process';
 import { Project } from '../data/project';
 import { PackageVersion } from '../data/PackageVersion';
-import { ProcessTableOutput } from '../data/processtableoutput';
 
 @Injectable({
   providedIn: 'root'
@@ -480,12 +479,12 @@ export class DataService {
 
   }
 
-  getProcessGeoJsonOutput(projectPath: string, modelName: string, processID: string, geojsonName: string): Observable<string> {
+  getProcessGeoJsonOutput(projectPath: string, modelName: string, processID: string, geoJsonName: string): Observable<ProcessGeoJsonOutput> {
     return this.runFunction('getProcessGeoJsonOutput', {
       "projectPath": projectPath,
       "modelName": modelName,
       "processID": processID,
-      "geojsonName": geojsonName,
+      "geoJsonName": geoJsonName,
       "pretty": true,
       "splitGeoJson": false
     });

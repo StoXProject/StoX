@@ -72,8 +72,8 @@ export class OutputComponent implements OnInit {
         return s.join("\n");
     }
     getItemOutput(item) {
-        console.log(JSON.stringify(item)); 
-        return JSON.stringify(item);
+        console.log(JSON.stringify(item.outputjson)); 
+        return item.outputjson;
     }
 
 }

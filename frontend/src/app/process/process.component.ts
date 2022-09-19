@@ -7,7 +7,6 @@ import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "
 import { ContextMenuModule, ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
-import { ProcessTableOutput } from '../data/processtableoutput';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 //import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';

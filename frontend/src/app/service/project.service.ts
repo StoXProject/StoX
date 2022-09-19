@@ -7,7 +7,7 @@ import { ActiveProcess } from '../data/runresult';
 import { Model } from '../data/model';
 import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
-import { ProcessProperties } from '../data/ProcessProperties';
+import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
 import { OutputElement as OutputElement } from '../data/outputelement';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
@@ -16,7 +16,6 @@ import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion } from '../data/PackageVersion';
 import { HelpCache } from '../data/HelpCache';
 import { SubjectAction } from '../data/subjectaction';
-import { ProcessTableOutput } from '../data/processtableoutput';
 
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
@@ -501,9 +500,10 @@ export class ProjectService {
       break;
       }
       case "geojson": {
-        let output: string = await this.dataService.getProcessGeoJsonOutput(this.selectedProject.projectPath,
+        let output: ProcessGeoJsonOutput = await this.dataService.getProcessGeoJsonOutput(this.selectedProject.projectPath,
           this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
-        oe.output = output;
+        oe.output = output.data;
+        oe.outputjson = JSON.parse(output.data);
       break;
       } 
       case "plot":

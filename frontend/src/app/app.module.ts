@@ -89,6 +89,7 @@ import {MatListModule} from '@angular/material/list';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 import {DragDropModule as MatDragDropModule} from '@angular/cdk/drag-drop';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 /*import {
   MatBadgeModule,
@@ -238,7 +239,8 @@ export class MaterialModule { }
     MatRadioModule,
     MatIconModule,*/
     MatCardModule,
-    QueryBuilderModule
+    QueryBuilderModule,
+    NgxJsonViewerModule
   ],
   entryComponents: [StratumNameDlgComponent, MessageDlgComponent],
   declarations: [

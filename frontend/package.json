@@ -33,7 +33,7 @@
     "font-awesome": "^4.7.0",
     "material-icons": "^0.3.1",
     "ng-keyboard-shortcuts": "^9.0.0",
-    "ngx-json-viewer": "^3.1.0",
+    "ngx-json-viewer": "^2.4.0",
     "ol": "^6.2.1",
     "primeflex": "^1.0.0",
     "primeicons": "^2.0.0",

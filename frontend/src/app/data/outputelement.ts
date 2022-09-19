@@ -4,5 +4,6 @@ export class OutputElement {
     processId: string; 
     element: ProcessOutputElement;
     output?: any;  
+    outputjson?: any;  
 } 
  
