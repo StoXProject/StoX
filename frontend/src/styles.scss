@@ -545,15 +545,27 @@ input:focus {
   font-size: 0.75rem !important;
   font-weight: 600 !important;
 }
-/*
-.mat-tab-body-wrapper {
-  height: calc(100% - 1.2rem) !important;
-}
 
 .mat-tab-group {
-  height: 100% !important;
+  height: 100%;
 }
 
+.mat-tab-body {
+  height: 100%;
+  overflow: hidden !important;
+}
+
+.mat-tab-body-wrapper {
+  height: 100%;
+}
+
+.mat-tab-body-content {
+  overflow: hidden !important;
+}/*
+.mat-tab-body {
+  overflow-y: hidden !important;
+}*/
+/*
 .mat-tab-body {
   height: 100% !important;
 }
