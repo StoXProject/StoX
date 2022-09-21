@@ -896,6 +896,20 @@ function setupServer() {
     });
   });
 
+  server.post('/readFileAsBase64', function (req: any, res: any) {
+    fs.readFileSync(req.body);
+    // read binary data
+    // convert binary data to base64 encoded string
+    let filePath: string = req.body;
+    if (filePath.length > 0 && fs.existsSync(filePath)) {
+      var bitmap = fs.readFileSync(req.body);
+      return Buffer.from(bitmap).toString('base64');
+    } else {
+      res.send("error - file doesnt exist");
+    }
+  });
+
+
 
   server.post('/fileExists', function (req: any, res: any) {
     logInfo("check if a file exists");

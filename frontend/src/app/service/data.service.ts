@@ -564,6 +564,10 @@ export class DataService {
     return this.postLocalNode('fileExists', filePath);
   }
 
+  readFileAsBase64(filePath: string): Observable<any> {
+    return this.postLocalNode('readFileAsBase64', filePath);
+  }
+
   makeDirectory(dirPath: string): Observable<any> {
     return this.postLocalNode('makeDirectory', dirPath);
   }
