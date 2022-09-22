@@ -12,7 +12,9 @@
                      <div *cdkVirtualFor="let line of item.output">{{line}}</div>
                 </cdk-virtual-scroll-viewport>
                 <!--<ngx-json-viewer *ngSwitchCase="'geojson'" [json]="getItemOutput(item)" style="height:100%; width:100%;"></ngx-json-viewer>-->
-                <img *ngSwitchCase="'plot'" src="item.output" style="height:inherit; width:inherit; overflow:auto;"/>
+                <div [ngStyle]="{'overflow':'auto','width':'100%'}">   
+                    <img [hidden] = "item.output?.img == null" *ngSwitchCase="'plot'" [src]="bypassURL(item.output?.img)" style="width:100%; overflow:auto;"/>
+                </div>
             </ng-container>
     </mat-tab>
 

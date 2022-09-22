@@ -4,6 +4,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { ProjectService } from '../../service/project.service';
 import { DataService } from '../../service/data.service';
 import { MatTabGroup } from '@angular/material/tabs';
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 
 import { SubjectAction } from 'src/app/data/subjectaction';
 @Component({
@@ -44,7 +45,7 @@ export class OutputComponent implements OnInit {
         this.ps.outputElements = this.ps.outputElements.filter(t => t.processId !== processId);
     }
 
-    constructor(public ps: ProjectService, public ds: DataService) {
+    constructor(public ps: ProjectService, public ds: DataService, private sanitizer: DomSanitizer) {
         ps.outputTableActivator.subscribe({
             next: (idx) => {
                 this.outputTableGroup.selectedIndex = idx;
@@ -74,6 +75,12 @@ export class OutputComponent implements OnInit {
     getItemOutput(item) {
         console.log(JSON.stringify(item.outputjson)); 
         return item.outputjson;
+    }
+
+    bypassURL(base64 : string) {
+        return base64 == null ? "" : this.sanitizer.bypassSecurityTrustResourceUrl(
+            `data:image/png;base64, ${base64}`
+          );        
     }
 
 }

@@ -516,8 +516,9 @@ export class ProjectService {
       case "plot": {
         let path: string = await this.dataService.getProcessPlotOutput(this.selectedProject.projectPath,
           this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
-        let base64 = await this.dataService.readFileAsBase64(path);
+        let base64 : any = await this.dataService.readFileAsBase64(path).toPromise();
         oe.output = base64;
+        //console.log("window.devicePixelRatio: " + window.devicePixelRatio)
       }
       break;
     }

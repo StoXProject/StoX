@@ -902,8 +902,12 @@ function setupServer() {
     // convert binary data to base64 encoded string
     let filePath: string = req.body;
     if (filePath.length > 0 && fs.existsSync(filePath)) {
+      const sizeOf = require('image-size')
+      const dimensions = sizeOf(req.body)
+      console.log(dimensions.width, dimensions.height)
       var bitmap = fs.readFileSync(req.body);
-      return Buffer.from(bitmap).toString('base64');
+      res.send({'img': Buffer.from(bitmap).toString('base64'), 
+      'width': dimensions.width, 'height': dimensions.height});
     } else {
       res.send("error - file doesnt exist");
     }
