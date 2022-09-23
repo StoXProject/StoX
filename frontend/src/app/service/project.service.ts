@@ -162,6 +162,7 @@ export class ProjectService {
     //this.initializeProperties();
     if (this.selectedProject != null && this.selectedModel != null) {
       this.processes = await this.dataService.getProcessTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+      this.activeProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
       if (this.processes == null) {
         this.processes = [];
       }
