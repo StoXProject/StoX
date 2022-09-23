@@ -6,6 +6,7 @@
     >
 </ag-grid-angular>
 -->
+<div style="height:100%;width:100%;overflow:auto!important;">
 <p-accordion multiple="true" expandIcon="pi pi-fw pi-caret-right" collapseIcon="pi pi-fw pi-caret-down">
     <MessageDlg></MessageDlg>
     <p-accordionTab *ngFor="let category of ps.processProperties.propertySheet" header="{{category.displayName}}" [selected]="true">
@@ -118,3 +119,4 @@
         </p-table>
     </p-accordionTab>
 </p-accordion>
+</div>

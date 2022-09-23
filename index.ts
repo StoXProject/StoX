@@ -896,6 +896,27 @@ function setupServer() {
     });
   });
 
+  server.post('/readFileAsBase64', async (req: any, res: any) => {
+    fs.readFileSync(req.body);
+    // read binary data
+    // convert binary data to base64 encoded string
+    let filePath: string = req.body;
+    if (filePath.length > 0 && fs.existsSync(filePath)) {
+      var bitmap = fs.readFileSync(req.body);
+      const p = require('png-dpi-reader-writer')
+      const {width, height, dpi} = p.parsePngFormat(bitmap)
+      // calculate in cm
+      let widthcm = width / dpi * 2.54;
+      let heightcm = height / dpi * 2.54;
+      console.log(width, height, dpi);
+      res.send({'img': Buffer.from(bitmap).toString('base64'), 
+      'width': widthcm, 'height': heightcm});
+    } else {
+      res.send("error - file doesnt exist");
+    }
+  });
+
+
 
   server.post('/fileExists', function (req: any, res: any) {
     logInfo("check if a file exists");

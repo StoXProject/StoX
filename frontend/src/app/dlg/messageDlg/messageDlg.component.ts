@@ -4,6 +4,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 export interface DialogData {
   title: string;
   message : string;
+  dlgType : string;
 }
 
 export enum MessageDlgType {"YESNO", "CLOSE"};

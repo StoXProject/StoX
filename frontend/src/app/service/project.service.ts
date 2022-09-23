@@ -7,9 +7,8 @@ import { ActiveProcess } from '../data/runresult';
 import { Model } from '../data/model';
 import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
-import { ProcessProperties } from '../data/ProcessProperties';
-import { ProcessOutput } from '../data/processoutput';
-import { OutputTable } from '../data/outputtable';
+import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
+import { OutputElement as OutputElement } from '../data/outputelement';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,6 +16,8 @@ import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion } from '../data/PackageVersion';
 import { HelpCache } from '../data/HelpCache';
 import { SubjectAction } from '../data/subjectaction';
+import { UserLogEntry } from '../data/userlogentry';
+import { UserLogType } from '../enum/enums';
 
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
@@ -34,7 +35,7 @@ export class ProjectService {
   private m_projects: Project[] = [];
   private m_selectedProject: Project = null;
   //private m_isSelectedProjectSaved = true;
-  outputTables: OutputTable[] = [];
+  outputElements: OutputElement[] = [];
   public outputTableActivator: Subject<number> = new Subject<number>();
   public bottomViewActivator: Subject<number> = new Subject<number>();
 
@@ -310,7 +311,7 @@ export class ProjectService {
       this.setModels(await this.dataService.getModelInfo().toPromise());
     } else {
       this.setModels(null);
-      this.activateProject(null, false);
+      await this.activateProject(null, false);
     }
   }
 
@@ -321,7 +322,6 @@ export class ProjectService {
 
   /*Activate project in gui - at the moment only one project is listed*/
   async activateProject(project: Project, askSave: boolean) {
-    this.dataService.log = [];   // triggered by project activation
     if (project != null && project.projectPath == 'NA') {
       project = null; // openProject returns NA when project is renamed or moved.
     }
@@ -351,6 +351,10 @@ export class ProjectService {
     await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();
 
     this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
+    if(project != null) {
+       this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "\n\n-------------------------------------------------------------------------\nOpen project: " + project.projectName + " (" + project.projectPath + 
+       ")\n-------------------------------------------------------------------------"));
+    }
 
     //this.processes = null;       // triggered by selected model
     //this.selectedProcessId = null; // -> triggered by selection in gui or setProcesses
@@ -360,7 +364,7 @@ export class ProjectService {
     this.runFailedProcessId = null; // triggered by run service or active process id
     this.runningProcessId = null; // current running process
     this.m_isResetting = false; // current reset flag.    
-    this.outputTables = []; // clear output tables
+    this.outputElements = []; // clear output tables
   }
 
 
@@ -491,4 +495,31 @@ export class ProjectService {
       return p.processID == this.activeProcess.processID && this.activeProcess.processDirty;
     }
   }
+
+  async resolveElementOutput(oe: OutputElement) {
+    switch(oe.element.elementType) {
+      case "geojson": 
+        case "table": {
+          let tableOutput: ProcessTableOutput = await this.dataService.getProcessTableOutput(this.selectedProject.projectPath,
+          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+        oe.output = tableOutput.data;
+      break;
+      }
+      //case "geojson": {
+        // getProcessGeoJsonOutput
+        /*let output: ProcessGeoJsonOutput = await this.dataService.getProcessGeoJsonOutput(this.selectedProject.projectPath,
+          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+        oe.output = output.data;
+        oe.outputjson = JSON.parse(output.data);*/
+      //break;
+      //} 
+      case "plot": {
+        let path: string = await this.dataService.getProcessPlotOutput(this.selectedProject.projectPath,
+          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+        let base64 : any = JSON.parse(await this.dataService.readFileAsBase64(path).toPromise());
+        oe.output = base64;
+      }
+      break;
+    }
+}
 }

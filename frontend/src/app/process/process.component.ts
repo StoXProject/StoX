@@ -7,12 +7,12 @@ import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "
 import { ContextMenuModule, ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
-import { ProcessOutput } from '../data/processoutput';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 //import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
-import { ProcessTableResult } from '../data/runresult';
+import { ProcessOutputElement, ProcessTableResult } from '../data/runresult';
+import { OutputElement } from '../data/outputelement';
 @Component({
   selector: 'app-process',
   templateUrl: './process.component.html',
@@ -85,23 +85,23 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
       { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { this.ps.removeSelectedProcess(); } }
     );
     if (this.ps.selectedProcess.hasBeenRun) {
-      let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.selectedProject.projectPath,
+      let elements: ProcessOutputElement[] = await this.ds.getProcessOutputElements(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
-      if (tables.length > 0) {
+      if (elements.length > 0) {
         m.push({
           label: 'Preview', icon: 'rib absa emptyicon', items:
-            tables.map(e => {
+            elements.map(e => {
               return {
-                label: e, icon: 'rib absa emptyicon',
+                label: e.elementName, icon: 'rib absa emptyicon',  
                 command: async (event) => {
-                  let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
-                    this.ps.selectedModel.modelName, this.ps.selectedProcessId, e).toPromise();
-                  let fullTableName: string = this.ps.selectedProcess.processName + "(" + e + ")";
-                  let idx = this.ps.outputTables.findIndex(t => t.table == fullTableName);
+                  let idx = this.ps.outputElements.findIndex(t => t.element.elementFullName == e.elementFullName);
                   if (idx == -1) {
-                    this.ps.outputTables.push({ processId: this.ps.selectedProcessId, tableName: e, table: fullTableName, output: out });
-                    idx = this.ps.outputTables.length - 1;
+                    let oe : OutputElement = { processId: this.ps.selectedProcessId, element: e};
+                    this.ps.outputElements.push(oe);
+                    console.log(JSON.stringify(oe))
+                    await this.ps.resolveElementOutput(oe);
                   }
+                  idx = this.ps.outputElements.length - 1;
                   this.ps.bottomViewActivator.next(1)
                   this.ps.outputTableActivator.next(idx)
                 }
