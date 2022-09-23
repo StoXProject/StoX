@@ -85,6 +85,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule} from '@angular/material/tooltip';  
 import {MatListModule} from '@angular/material/list';
+import { TooltipModule } from 'primeng/tooltip';
 
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
@@ -238,7 +239,8 @@ export class MaterialModule { }
     MatRadioModule,
     MatIconModule,*/
     MatCardModule,
-    QueryBuilderModule
+    QueryBuilderModule,
+    TooltipModule
   ],
   entryComponents: [StratumNameDlgComponent, MessageDlgComponent],
   declarations: [

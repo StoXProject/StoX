@@ -195,6 +195,12 @@ $nodata: #acacac;
     padding: 1px 1px;
   }
 }
+
+.ui-tooltip  {
+  left: auto!important;
+  overflow-wrap: break-word;
+}
+
 button:focus,
 input:focus {
   outline: none !important;
