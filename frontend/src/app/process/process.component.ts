@@ -81,18 +81,18 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
         { label: 'Run from here', icon: 'rib absa runfromhereicon', command: (event) => { this.rs.runFromHere(); } });
     }
     m.push(
-      { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } },
-      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { this.ps.removeSelectedProcess(); } }
+      { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa ' + (this.rs.canRunThis() ? 'runthisicon' : 'runtoicon'), command: (event) => { this.rs.runToHere(); } },
+      { label: 'Delete', icon: 'rib absa deleteicon', command: (event) => { this.ps.removeSelectedProcess(); } }
     );
     if (this.ps.selectedProcess.hasBeenRun) {
       let elements: ProcessOutputElement[] = await this.ds.getProcessOutputElements(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
       if (elements.length > 0) {
         m.push({
-          label: 'Preview', icon: 'rib absa emptyicon', items:
+          label: 'Preview', icon: 'rib absa previewicon', items:
             elements.map(e => {
               return {
-                label: e.elementName, icon: 'rib absa emptyicon',  
+                label: e.elementName, icon: 'rib absa fileicon',  
                 command: async (event) => {
                   let idx = this.ps.outputElements.findIndex(t => t.element.elementFullName == e.elementFullName);
                   if (idx == -1) {
@@ -113,7 +113,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
         if(hasFileOutput) {
           m.push(
-            { label: 'Show in folder', icon: 'rib absa emptyicon', command: async (event) => {
+            { label: 'Show in folder', icon: 'rib absa foldericon', command: async (event) => {
               let outFolder: string = await this.ds.getProcessOutputFolder(this.ps.selectedProject.projectPath,
                 this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
                 await this.ds.showinfolder(outFolder).toPromise();
