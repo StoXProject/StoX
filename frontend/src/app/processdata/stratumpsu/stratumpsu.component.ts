@@ -84,24 +84,30 @@ export class StratumpsuComponent implements OnInit {
     let m: MenuItem[] = [];
     switch (node.data.type) {
       case "stratum": {
-        m.push(
-          {
-            label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
+        if(this.ps.iaMode == "acousticPSU") {
+          m.push(
+            {
+              label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
               // psu a new psu node
               let res: PSUResult = this.ps.handleAPI(await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
               if (res.PSU != null && res.PSU.length > 0) {
                 node.children.push(StratumpsuComponent.asNode(res.PSU, "psu", []))
               }
             }
-          }, {
+          });
+        }
+        if(this.ps.iaMode == "stratum") {
+          m.push(
+          {
           label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
             // psu a new psu node
             let res: ActiveProcessResult = this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeStratum(node.data.id,
               this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
             this.ps.iaMode = "stratum"; // trigger the gui
             //this.nodes.splice(this.nodes.indexOf(node), 1);
-          }
-        });
+            }
+          });
+        }
         break;
       }
       case "psu": {
