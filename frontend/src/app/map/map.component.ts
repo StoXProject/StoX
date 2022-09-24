@@ -190,7 +190,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   addLayerToProcess(pid: string, l: Layer) {
     let la = this.layerMap.get(pid);
     if (la == null) {
-      la = [];
+      la = []; 
       this.layerMap.set(pid, la);
     }
     la.push(l);
@@ -446,6 +446,22 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           }
           break;
         }
+        case "selectedStratum": {
+          switch (this.ps.iaMode) {
+            case "acousticPSU": {
+              this.map.getLayers().getArray()
+                .filter(l => l.get("layerType") == "stratum")
+                .map(l => <VectorSource>(<Layer>l).getSource())
+                .forEach(s => s.getFeatures()
+                  .forEach(f => {
+                    // selected PSU.
+                    MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
+                  }))
+              break;
+            }
+          }
+          break; 
+        }
       }
     });
 
@@ -629,7 +645,8 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       case "stratum": {
         this.resetLayersToProcess(this.ps.activeProcessId);
         let data: { stratumPolygon: string } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-        let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, data.stratumPolygon, proj, [MapSetup.getStratumStyle()], false, 1, []);
+        let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, data.stratumPolygon, proj, 
+          [MapSetup.getStratumStyle(), MapSetup.getFocusedStratumStyle()], false, 1, []);
         this.addLayerToProcess(this.ps.activeProcessId, layer);
         this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj, this);
         break;

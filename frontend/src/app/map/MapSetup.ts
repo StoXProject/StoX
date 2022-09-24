@@ -186,6 +186,9 @@ export class MapSetup {
     static getStratumStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.05)', 'rgba(0, 0, 0, 0.2)', 1);
     }
+    static getFocusedStratumStyle(): Style {
+        return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.15)', 'rgba(0, 0, 0, 0.3)', 1);
+    }
     static getStratumNodeStyle(): Style {
         let s: Style = MapSetup.getPointStyleRect("rgba(255, 0, 0, 0.7)", MapSetup.POINT_OUTLINE_COLOR, 6);
         s.setGeometry(f => {
@@ -322,6 +325,9 @@ export class MapSetup {
             evt.feature.set("selection", 0);
             if (layerType == 'EDSU') {
                 MapSetup.updateEDSUSelection(evt.feature, null);
+            }
+            if(layerType == 'stratum') {
+                MapSetup.updateStratumSelection(evt.feature, null);
             }
             MapSetup.connectInfoProperties(evt.feature);
             //evt.feature.set("selection", 0); // selection 0 by default.
@@ -473,6 +479,13 @@ export class MapSetup {
                     selected != null && selected ? 1 : 0;
         f.set("selection", selection); // Set the style selection.
     }
+
+    static updateStratumSelection(f: Feature, selectedStratum) {
+        let stratumName = f.get("StratumName");
+        let focused : boolean = stratumName != null && stratumName.length != null && selectedStratum != null && stratumName == selectedStratum;
+        f.set("selection", focused ? 1 : 0);
+    }
+
 
     static isStationSelected(f: Feature, pds: ProcessDataService): boolean {
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
