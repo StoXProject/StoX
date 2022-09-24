@@ -64,7 +64,18 @@ export class StratumpsuComponent implements OnInit {
   // Accessors for selected node
   set selectedNode(val: TreeNode) {
     this.m_selectedNode = val;
-    this.pds.selectedPSU = val.data.type == 'psu' ? val.data.id : null;
+    switch(val.data.type) {
+      case 'stratum': {
+        this.pds.selectedPSU = null;
+        this.pds.selectedStratum = val.data.id;
+        break;
+      }
+      case 'psu': {
+        this.pds.selectedStratum = val.parent.data.id;
+        this.pds.selectedPSU = val.data.id
+        break;
+      }
+    }
     console.log("selected node" + val.data.id);
   }
 
