@@ -83,6 +83,10 @@ $nodata: #acacac;
   box-shadow: none !important; // add by primeng
 }
 
+.ui-menuitem-icon {
+  margin-left: 0.2em;
+}
+
 // tabview
 .ui-tabmenu {
   padding: 0 !important;
@@ -420,9 +424,25 @@ input:focus {
 .runfromhereicon:before {
   @include icon_content("\f08b", 1rem, rgb(33, 122, 196));
 }
+.foldericon:before {
+  @include icon_content("\f07b", 1.2rem, rgb(232, 199, 102));
+}
+.previewicon:before {
+  @include icon_content("\f06e", 1.2rem, rgb(11, 11, 68));
+}
+
+.fileicon:before {
+  @include icon_content("\f016", 1.0rem, rgb(128, 128, 133));
+}
+
 .runtoicon:before {
   @include icon_content("\f090", 1rem, rgb(33, 122, 196));
 }
+
+.runthisicon:before {
+  @include icon_content("\f061", 0.8rem, rgb(33, 122, 196));
+}
+
 .reseticon:before {
   @include icon_content("\f04d", 0.7rem, rgb(33, 122, 196));
 }
@@ -458,7 +478,7 @@ input:focus {
 }
 
 .deleteicon:before {
-  @include icon_content("\f068", 0.8rem, rgb(206, 127, 127), true);
+  @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
 }
 
 .saveicon:before {

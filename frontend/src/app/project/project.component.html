@@ -3,7 +3,8 @@
       <p-listbox [options]="ps.projects" [(ngModel)]="ps.selectedProject" 
         optionLabel="projectName"> 
         <ng-template let-project pTemplate="item">
-            <div pTooltip="{{project.value.projectPath}}"  tooltipPosition="right"><span>{{project.value.projectName}}</span></div> 
+            <div (contextmenu)="openCm($event, cm, project.value)" pTooltip="{{project.value.projectPath}}"  tooltipPosition="right">
+              <span>{{project.value.projectName}}</span></div> 
         </ng-template>
       </p-listbox>
     </mat-tab>
@@ -14,3 +15,4 @@
       (onChange)="ps.onSelectedProjectChanged($event)" optionLabel="projectName"></p-listbox> 
   </p-tabPanel>
 </p-tabView>-->
+<p-contextMenu #cm [model]="contextMenu"></p-contextMenu>
