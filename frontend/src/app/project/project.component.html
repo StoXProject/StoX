@@ -1,13 +1,11 @@
 <mat-tab-group [selectedIndex]="0">
     <mat-tab *ngFor="let tab of ['Projects']" label="{{tab}}">
       <p-listbox [options]="ps.projects" [(ngModel)]="ps.selectedProject" 
-      (onChange)="ps.onSelectedProjectChanged($event)" >
-      <ng-template let-item pTemplate="item">
-        <div pTooltip="{{item.projectPath}}" >
-          <span>{{ item.projectName }}</span>
-        </div>
+        optionLabel="projectName"> 
+        <ng-template let-project pTemplate="item">
+            <div pTooltip="{{project.value.projectPath}}"  tooltipPosition="right"><span>{{project.value.projectName}}</span></div> 
         </ng-template>
-      </p-listbox> 
+      </p-listbox>
     </mat-tab>
 </mat-tab-group>
 <!--<p-tabView>
