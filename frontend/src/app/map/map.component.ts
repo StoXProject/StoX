@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, HostListener, ElementRef, ViewChild, Input } from '@angular/core';
 import { defer, merge, Observable } from 'rxjs';
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
@@ -52,6 +52,7 @@ const proj4 = (proj4x as any).default;
 import { get as getProjection, getTransform } from 'ol/proj';
 import { Coordinate } from 'ol/coordinate';
 import { SubjectAction } from '../data/subjectaction';
+import { ContextMenu, MenuItem } from 'primeng';
 
 @Component({
   selector: 'app-map',
@@ -61,6 +62,8 @@ import { SubjectAction } from '../data/subjectaction';
 
 export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   @ViewChild('tooltip', { static: false }) tooltip: ElementRef;
+  @Input() cm: ContextMenu;
+
   map: OlMap;
   // source: OlXYZ;
   // toposource: VectorSource;
@@ -81,6 +84,8 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   proj = 'StoX_001_LAEA';
   currentLAEAOrigin : Coordinate // the origin for the current dynamic LAEA
   mapInfo : MapInfo;
+  contextMenu: MenuItem[];
+  
   constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
   
@@ -589,24 +594,9 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     });*/
     this.map.on('pointermove', e => this.displayTooltip(e));
     this.map.getViewport().addEventListener('contextmenu', evt => {
-        if (this.proj=="StoX_001_LAEA") {
-          evt.preventDefault();
-          var  coords = this.map.getEventCoordinate(evt);
-          console.log(coords)
-          coords = transform(coords, this.proj, 'EPSG:4326');
-          console.log(coords)
-          if(isNaN(coords[0]) || isNaN(coords[1])){
-            return  
-          }
-          console.log("Init projection with new coords" + coords);
-          //this.setProjectionProj4('EPSG:4326'); 
-          this.initProjections(coords);
-          this.proj = "StoX_001_LAEA_PREV"
-          this.setProjectionProj4("StoX_001_LAEA", coords); 
-          this.updateMapInfoInBackend();
-        }
-      })
-      this.map.getView().on('change:resolution', async evt => {
+        this.openCm(evt);
+    })
+    this.map.getView().on('change:resolution', async evt => {
         console.log("Resolution changed - write to backend")
         await this.updateMapInfoInBackend();
     });
@@ -741,6 +731,40 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           MapSetup.updateStationSelection(f, this.pds);
         }))
   }
+
+  async prepCm() {
+    // comment: add list of outputtablenames to runModel result. 
+    let m: MenuItem[] = [];
+    if (true) {
+      const originHandler = evt => {
+        if (this.proj=="StoX_001_LAEA") {
+          var  coords = this.map.getEventCoordinate(evt.originalEvent); 
+          console.log(coords)
+          coords = transform(coords, this.proj, 'EPSG:4326');
+          console.log(coords)
+          if(isNaN(coords[0]) || isNaN(coords[1])){
+            return  
+          }
+          console.log("Init projection with new coords" + coords);
+          //this.setProjectionProj4('EPSG:4326'); 
+          this.initProjections(coords);
+          this.proj = "StoX_001_LAEA_PREV"
+          this.setProjectionProj4("StoX_001_LAEA", coords); 
+          this.updateMapInfoInBackend();
+        }
+      };
+      m.push({ label: 'Select projection origin', icon: 'rib absa originicon', command: originHandler.bind(this)});
+    }
+    this.cm.model = m;
+  }
+  async openCm(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    await this.prepCm();
+    this.cm.show(event);
+    return false;
+  }
+
 }
 /*
 convert text delimited file with wkt geometry to arced topojson file

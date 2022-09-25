@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit, Renderer2, HostListener, DoCheck, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, Renderer2, HostListener, DoCheck, AfterViewInit, Input } from '@angular/core';
 import { Process } from '../data/process';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
@@ -18,12 +18,19 @@ import { OutputElement } from '../data/outputelement';
   templateUrl: './process.component.html',
   styleUrls: ['./process.component.scss']
 })
+
 export class ProcessComponent implements OnInit/*, DoCheck*/ {
   shortcuts: ShortcutInput[] = [];
 
+  @ViewChild('input', { static: false }) input: ElementRef;
+  @Input() cm: ContextMenu;
+
+  constructor(private ds: DataService, public ps: ProjectService, private rs: RunService,
+    private renderer: Renderer2) {
+  }
+
   //processes: Process[];
   //selectedProcesses: Process[];
-  contextMenu: MenuItem[];
   //@HostListener('document:keydown.control.y')
   keydown(event: KeyboardEvent) {
     if (this.ps.processes != null && this.ps.processes.length > 0) {
@@ -40,17 +47,13 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     }
   }
 
-  constructor(private ds: DataService, public ps: ProjectService, private rs: RunService,
-    private renderer: Renderer2) {
-  }
 
   async ngOnInit() {
     //this.ngDoCheck();
-    this.contextMenu = [{ label: "Run from here   " }];
+//    this.contextMenu = [{ label: "Run from here   " }];
     //  this.renderer.listen(document, 'keydown.control.y', (event)=>{this.doSomething()})
   }
 
-  @ViewChild('input', { static: false }) input: ElementRef;
   ngAfterViewInit(): void {
     this.shortcuts.push(
       {
@@ -127,7 +130,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     //   { label: 'Move down', icon: 'rib absa emptyicon', command: (event) => { } },
     //   { label: 'Add process', icon: 'rib absa addprocessicon', command: (event) => { this.ps.addProcess(); } }
     // );
-    this.contextMenu = m;
+    this.cm.model = m;
   }
   async openCm(event: MouseEvent, cm: ContextMenu, process: Process) {
     // TODO: Incorpoate dynamic ng-action-outlet with material. or support scrolling primeng menus
