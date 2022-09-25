@@ -89,7 +89,7 @@
 		<as-split-area size="25">
 			<as-split direction="vertical" gutterSize=6>
 				<as-split-area size=30 style="overflow:hidden">
-					<app-project></app-project>
+					<app-project [cm]="cm"></app-project>
 				</as-split-area>
 				<as-split-area size=70 style="overflow:hidden;">
 					<div style="height:1.2rem; width:100%;">
@@ -99,7 +99,7 @@
 						<app-run></app-run>
 					</div>
 					<div style="height: calc(100% - (1.2rem + 1.7rem)); width:100%;">
-						<app-process></app-process>
+						<app-process [cm]="cm"></app-process>
 					</div>
 				</as-split-area>
 			</as-split>
@@ -107,7 +107,7 @@
 		<as-split-area size="55">
 			<as-split direction="vertical" gutterSize=6>
 				<as-split-area size="75">
-					<app-map class="map"></app-map>
+					<app-map class="map" [cm] = "cm"></app-map>
 				</as-split-area>
 				<as-split-area size="25">
 					<mat-tab-group [@.disabled]="true" #bottomTabGroup>
@@ -159,3 +159,4 @@
 		</as-split-area>
 	</as-split>
 </div>
+<p-contextMenu #cm [model]="contextMenu"></p-contextMenu>

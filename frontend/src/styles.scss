@@ -81,6 +81,7 @@ $nodata: #acacac;
 .ui-treenode-content:focus {
   outline: none !important; // prevent webkit :focus outline.
   box-shadow: none !important; // add by primeng
+  white-space: nowrap;
 }
 
 .ui-menuitem-icon {
@@ -434,6 +435,11 @@ input:focus {
 .fileicon:before {
   @include icon_content("\f016", 1.0rem, rgb(128, 128, 133));
 }
+
+.originicon:before {
+  @include icon_content("\f2dd", 1.0rem, rgb(245, 141, 57));
+}
+
 
 .runtoicon:before {
   @include icon_content("\f090", 1rem, rgb(33, 122, 196));

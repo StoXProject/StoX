@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Project } from '../data/project';
 import { ProjectService } from '../service/project.service';
 import { MenuItem } from 'primeng/api';
@@ -14,7 +14,7 @@ import { ContextMenu } from 'primeng/contextmenu';
 })
 
 export class ProjectComponent implements OnInit {
-  contextMenu: MenuItem[];
+  @Input() cm: ContextMenu;
   
   constructor(private ps: ProjectService, private ds: DataService) { 
   }
@@ -32,7 +32,7 @@ export class ProjectComponent implements OnInit {
             } }
           );
       }
-    this.contextMenu = m;
+    this.cm.model = m;
   }
 
   async openCm(event: MouseEvent, cm: ContextMenu, project: Project) {
