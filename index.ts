@@ -14,7 +14,6 @@ var mainWindow: any;
 
 
 
-
 var simpleNodeLogger = require('simple-node-logger');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -517,7 +516,9 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       logInfo("Properties initialized.");
     }
     if (properties.projectRootPath == null || properties.projectRootPath == "") {
-      properties.projectRootPath = require('os').homedir()
+      console.log("Electron Home: " + app.getPath('home'));
+      console.log("Node Home: " + require('os').homedir());
+      properties.projectRootPath = app.getPath('home');//require('os').homedir()
     }
     if(properties.mapInfo == null) {
       properties.mapInfo = {projection:'StoX_001_LAEA',zoom:4.3,origin:[10.01,60.01]}
