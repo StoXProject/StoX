@@ -4,10 +4,10 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 export interface DialogData {
   title: string;
   message : string;
-  dlgType : string;
+  dlgType : number;
 }
 
-export enum MessageDlgType {"YESNO", "CLOSE"};
+export enum MessageDlgType {YESNO = 0, CLOSE = 1};
 
 @Component({
   selector: 'messageDlg',
@@ -17,7 +17,9 @@ export enum MessageDlgType {"YESNO", "CLOSE"};
 export class MessageDlgComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<MessageDlgComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData) { }
+    @Inject(MAT_DIALOG_DATA) public data: DialogData) {
+      console.log(data)
+     }
 
   ngOnInit() {
   }

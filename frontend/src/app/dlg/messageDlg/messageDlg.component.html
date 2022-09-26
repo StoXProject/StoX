@@ -3,7 +3,7 @@
   <p>{{data.message}}</p>
 </div>
 <div mat-dialog-actions>
-  <button *ngIf="data.dlgType === 'YESNO'" mat-button [mat-dialog-close]="'yes'">Yes</button>
-  <button *ngIf="data.dlgType === 'YESNO'" mat-button [mat-dialog-close]="'no'">No</button>
-  <button mat-button [mat-dialog-close]="''">{{data.dlgType === 'YESNO'? "Cancel" : "Close"}}</button>
+  <button *ngIf="data.dlgType == 0" mat-button [mat-dialog-close]="'yes'">Yes</button>
+  <button *ngIf="data.dlgType == 0" mat-button [mat-dialog-close]="'no'">No</button>
+  <button mat-button [mat-dialog-close]="''">{{data.dlgType == 0? "Cancel" : "Close"}}</button>
 </div>

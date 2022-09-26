@@ -516,9 +516,9 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       };
       logInfo("Properties initialized.");
     }
-    /*if (properties.projectRootPath == null || properties.projectRootPath == "") {
+    if (properties.projectRootPath == null || properties.projectRootPath == "") {
       properties.projectRootPath = require('os').homedir()
-    }*/
+    }
     if(properties.mapInfo == null) {
       properties.mapInfo = {projection:'StoX_001_LAEA',zoom:4.3,origin:[10.01,60.01]}
       //{projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]}
