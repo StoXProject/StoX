@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, Input } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 
 import { ProjectService } from '../../service/project.service';
@@ -7,6 +7,8 @@ import { MatTabGroup } from '@angular/material/tabs';
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 
 import { SubjectAction } from 'src/app/data/subjectaction';
+import { ContextMenu, MenuItem } from 'primeng';
+import { OutputElement } from 'src/app/data/outputelement';
 @Component({
     selector: 'output',
     templateUrl: './output.component.html',
@@ -14,23 +16,38 @@ import { SubjectAction } from 'src/app/data/subjectaction';
 })
 
 export class OutputComponent implements OnInit {
+    @Input() cm: ContextMenu;
 
     @ViewChild(MatMenuTrigger)
-    contextMenu: MatMenuTrigger;
-    contextMenuPosition = { x: '0px', y: '0px' };
     @ViewChild("outputTableGroup") outputTableGroup: MatTabGroup;
 
-    onContextMenu(event: MouseEvent, item: Object) {
+    /*onContextMenu(event: MouseEvent, item: Object) {
         event.preventDefault();
         this.contextMenuPosition.x = event.clientX + 'px';
         this.contextMenuPosition.y = event.clientY + 'px';
         this.contextMenu.menuData = { 'item': item };
         this.contextMenu.menu.focusFirstItem('mouse');
         this.contextMenu.openMenu();
-    }
-    onContextMenuAction1() {
-        let item: any = this.contextMenu.menuData;
-        let idx = this.ps.outputElements.findIndex(e => e.element.elementFullName == item.item.table);
+    }*/
+    async prepCm(oe: OutputElement) {
+        // comment: add list of outputtablenames to runModel result. 
+        let m: MenuItem[] = [];
+        m.push(
+          { label: 'Close', icon: 'rib absa closeicon', command: (event) => { this.onContextMenuAction(oe) } }
+        );
+        this.cm.model = m;
+      }
+
+      async openCm(event: MouseEvent, oe: OutputElement) {
+        event.preventDefault();
+        event.stopPropagation();
+        await this.prepCm(oe);
+        this.cm.show(event);
+        return false;
+      }
+    
+    onContextMenuAction(oe) {
+        let idx = this.ps.outputElements.findIndex(e => e.element.elementName == oe.element.elementName);
         console.log("index" + idx)
         this.ps.outputElements.splice(idx, 1)
     }

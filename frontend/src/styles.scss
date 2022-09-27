@@ -487,6 +487,10 @@ input:focus {
   @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
 }
 
+.closeicon:before {
+  @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
+}
+
 .saveicon:before {
   @include icon_content("\f0c7", 1rem, rgb(1, 1, 2), true);
 }
