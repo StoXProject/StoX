@@ -3,7 +3,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 
 import { ProjectService } from '../../service/project.service';
 import { DataService } from '../../service/data.service';
-import { MatTabGroup } from '@angular/material/tabs';
+import { MatTabGroup, MatTabHeader } from '@angular/material/tabs';
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 
 import { SubjectAction } from 'src/app/data/subjectaction';
@@ -33,9 +33,15 @@ export class OutputComponent implements OnInit {
         // comment: add list of outputtablenames to runModel result. 
         let m: MenuItem[] = [];
         m.push(
-          { label: 'Close', icon: 'rib absa closeicon', command: (event) => { this.onContextMenuAction(oe) } }
+          { label: 'Close', icon: 'rib absa closeicon', command: (event) => { this.closeElement(oe) } }
         );
-        this.cm.model = m;
+        if(this.ps.outputElements.length > 1) {
+        m.push(
+            { label: 'Close others', icon: 'rib absa emptyicon', command: (event) => { this.closeOtherElements(oe) } },
+            { label: 'Close all', icon: 'rib absa emptyicon', command: (event) => { this.closeAllElements() } }
+          );
+        }
+          this.cm.model = m;
       }
 
       async openCm(event: MouseEvent, oe: OutputElement) {
@@ -46,10 +52,31 @@ export class OutputComponent implements OnInit {
         return false;
       }
     
-    onContextMenuAction(oe) {
+    closeElement(oe) {
         let idx = this.ps.outputElements.findIndex(e => e.element.elementName == oe.element.elementName);
-        console.log("index" + idx)
-        this.ps.outputElements.splice(idx, 1)
+        this.ps.outputElements.splice(idx, 1);
+        if(this.ps.outputElements.length > 0) {
+            this.outputTableGroup.selectedIndex = Math.max(idx + 1, this.ps.outputElements.length - 1);
+        }
+    }
+
+    closeOtherElements(oe) {
+        let idx = this.ps.outputElements.findIndex(e => e.element.elementName == oe.element.elementName);
+        let l : number = this.ps.outputElements.length;
+        if(idx < l - 1) {
+            this.ps.outputElements.splice(idx + 1, l - 1 - idx)
+        }
+        if(idx > 0) {
+            this.ps.outputElements.splice(0, idx - 0)
+        }
+    }
+
+    closeAllElements() {
+        let l : number = this.ps.outputElements.length;
+        if(l > 0 ) {
+            this.ps.outputElements.splice(0, l)
+        }
+        (this.outputTableGroup?._tabHeader as MatTabHeader).updatePagination();
     }
 
     refreshData(processId: string) {
