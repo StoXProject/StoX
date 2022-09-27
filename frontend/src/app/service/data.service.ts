@@ -14,6 +14,7 @@ import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../
 import { Process } from '../data/process';
 import { Project } from '../data/project';
 import { PackageVersion } from '../data/PackageVersion';
+import { isArray } from 'util';
 
 @Injectable({
   providedIn: 'root'
@@ -307,6 +308,11 @@ export class DataService {
         switch (typeof o) {
           case 'string': return JSON.stringify(o);
           case 'boolean': return o ? 'TRUE' : 'FALSE'
+          case 'object': {
+            if(Array.isArray(o)) {
+              return "(" + o.map(k => rVal(k)).join() + ")";
+            }
+          }
           default: return o;
         }
       }
