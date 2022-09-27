@@ -18,7 +18,6 @@ import { OutputElement } from 'src/app/data/outputelement';
 export class OutputComponent implements OnInit {
     @Input() cm: ContextMenu;
 
-    @ViewChild(MatMenuTrigger)
     @ViewChild("outputTableGroup") outputTableGroup: MatTabGroup;
 
     /*onContextMenu(event: MouseEvent, item: Object) {
