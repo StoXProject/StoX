@@ -310,7 +310,7 @@ export class DataService {
           case 'boolean': return o ? 'TRUE' : 'FALSE'
           case 'object': {
             if(Array.isArray(o)) {
-              return "(" + Object.keys(o).map(k => rVal(argsobj[k])).join() + ")";
+              return "(" + o.map(k => rVal(k)).join() + ")";
             }
           }
           default: return o;
