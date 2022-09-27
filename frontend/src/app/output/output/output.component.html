@@ -1,7 +1,7 @@
 <mat-tab-group [@.disabled]="true" #outputTableGroup>
     <mat-tab *ngFor="let item of ps.outputElements" label="{{item.element.elementFullName}}">
         <ng-template mat-tab-label>
-            <div (contextmenu)="onContextMenu($event, item)">{{item.element.elementFullName}}</div>
+            <div (contextmenu)="openCm($event, item)">{{item.element.elementFullName}}</div>
         </ng-template>
         <!--<div style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
         white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">
@@ -20,14 +20,14 @@
     </mat-tab>
 
 </mat-tab-group>
-<div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x" 
+<!--<div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x" 
     [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu">
 </div>
 <mat-menu #contextMenu="matMenu">
     <ng-template matMenuContent let-name="item">
         <button mat-menu-item (click)="onContextMenuAction1()">Close</button>
     </ng-template>
-</mat-menu>
+</mat-menu>-->
 <!--<p-tabView>
     <p-tabPanel *ngFor="let tab of ['Test', 'Test2']" header="{{tab}}" [selected]="tab === 'Test'"> 
        <div style="user-select: text; height:inherit; width:inherit; overflow:scroll;">

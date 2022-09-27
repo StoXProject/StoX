@@ -122,7 +122,8 @@ export class StratumpsuComponent implements OnInit {
         break;
       }
       case "psu": {
-        m.push(
+        if(this.ps.iaMode == "acousticPSU") {
+          m.push(
           {
             label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
               // psu a new psu node
@@ -131,6 +132,7 @@ export class StratumpsuComponent implements OnInit {
               this.ps.iaMode = "acousticPSU"; // trigger the gui
             }
           });
+        }
         break;
       }
     }
