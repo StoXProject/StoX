@@ -84,7 +84,7 @@
 		</mat-list>
 	</div>
 </div>
-<div style="height: calc(100vh - 3.4rem);"> 
+<div style="height: calc(100vh - 5rem);"> 
 	<as-split direction="horizontal" gutterSize=6>
 		<as-split-area size="25">
 			<as-split direction="vertical" gutterSize=6>
@@ -139,7 +139,7 @@
 		</as-split-area>
 		<as-split-area size="20">
 			<as-split direction="vertical" gutterSize=6>
-				<as-split-area size="70">
+				<as-split-area size="50">
 					<ExpressionBuilderDlg></ExpressionBuilderDlg>
 					<QueryBuilderDlg></QueryBuilderDlg>
 					<mat-tab-group #rightTabGroup>
@@ -158,5 +158,11 @@
 			</as-split>
 		</as-split-area>
 	</as-split>
+</div>
+<div class="navbar d-flex" style="flex-wrap: nowrap; padding:0.2rem 0.2rem; line-height:1.0rem; height:1.6rem">
+	<div class="flex-grow-1" style="height:100%;">
+		<span style="font-size:1.0rem;">{{status}}
+		</span>
+	</div>
 </div>
 <p-contextMenu #cm ></p-contextMenu>

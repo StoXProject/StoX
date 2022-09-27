@@ -43,6 +43,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   }
   items?: MenuItem[];
   m_isDesktop: boolean = true;
+  status : string = '';
   /*async ngOnDestroy() {
     await this.ds.resetProject(this.ps.selectedProject.projectPath, false, false).toPromise();
   }*/
