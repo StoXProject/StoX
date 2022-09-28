@@ -132,6 +132,7 @@ import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 import { EdsutableComponent } from './processdata/edsutable/edsutable.component';
 import { DirectiveAccessor } from './autocomplete/directive-accessor';
+import { StatusbarComponent } from './statusbar/statusbar.component';
 
 @NgModule({
   exports: [
@@ -264,6 +265,7 @@ export class MaterialModule { }
     EdsutableComponent,
     ProcessComponent,
     ParameterComponent,
+    StatusbarComponent,
     ModelComponent,
     RunComponent,
     UserLogComponent,

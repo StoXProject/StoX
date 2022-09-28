@@ -53,6 +53,7 @@ export class ProjectService {
   m_isResetting: boolean = false; // current reset flag.
   rstoxPackages: PackageVersion[];
   rstoxFrameworkAvailable: boolean = false;
+  m_appStatus : string = '';
 
   userlog: string[] = [];
 
@@ -501,8 +502,14 @@ export class ProjectService {
     switch(oe.element.elementType) {
       case "geojson": 
         case "table": {
-          let tableOutput: ProcessTableOutput = await this.dataService.getProcessTableOutput(this.selectedProject.projectPath,
-          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+          this.appStatus = 'Loading...'
+          let tableOutput: ProcessTableOutput = null;
+          try {
+            tableOutput = await this.dataService.getProcessTableOutput(this.selectedProject.projectPath,
+            this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+          } finally {
+            this.appStatus = '' 
+          }
         oe.output = tableOutput.data;
       break;
       }
@@ -522,5 +529,14 @@ export class ProjectService {
       }
       break;
     }
-}
+  }
+  
+  get appStatus(): string {
+    return this.m_appStatus;
+  }
+  
+  set appStatus(status : string) {
+    this.m_appStatus = status;
+  }
+
 }

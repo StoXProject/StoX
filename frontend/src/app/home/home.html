@@ -84,8 +84,8 @@
 		</mat-list>
 	</div>
 </div>
-<div style="height: calc(100vh - 5rem);"> 
-	<as-split direction="horizontal" gutterSize=6>
+<div style="flex:auto;"> 
+	<as-split style="height:100%" direction="horizontal" gutterSize=6>
 		<as-split-area size="25">
 			<as-split direction="vertical" gutterSize=6>
 				<as-split-area size=30 style="overflow:hidden">
@@ -159,10 +159,5 @@
 		</as-split-area>
 	</as-split>
 </div>
-<div class="navbar d-flex" style="flex-wrap: nowrap; padding:0.2rem 0.2rem; line-height:1.0rem; height:1.6rem">
-	<div class="flex-grow-1" style="height:100%;">
-		<span style="font-size:1.0rem;">{{status}}
-		</span>
-	</div>
-</div>
+<app-statusbar style="height:1.2rem;"></app-statusbar>
 <p-contextMenu #cm ></p-contextMenu>
