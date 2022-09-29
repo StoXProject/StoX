@@ -319,7 +319,12 @@ export class ProjectService {
 
   async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave: boolean) {
     // the following should open the project and make it selected in the GUI
+    try {
+      this.appStatus = "Opening project " + projectPath + "..."
     this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise(), askSave);
+    } finally {
+      this.appStatus = ""
+    }
   }
 
   /*Activate project in gui - at the moment only one project is listed*/

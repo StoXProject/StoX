@@ -8,21 +8,7 @@
 <SaveAsProjectDlg></SaveAsProjectDlg>
 <ResetProjectDlg></ResetProjectDlg>
 <InstallRPackagesDlg></InstallRPackagesDlg>
-<div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0.2rem 0.2rem; line-height:0.8rem;">
-	<!--<svg height="35" width="100px">
-		<defs>
-			<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-				<stop offset="0%" style="stop-color:#5ba2e9;stop-opacity:1" />
-				<stop offset="100%" style="stop-color:#2e4861;stop-opacity:1" />
-			</linearGradient>
-		</defs>
-		<ellipse cx="60" cy="16" rx="60" ry="16" fill="url(#grad1)" />
-		<text fill="#ffffff" font-size="25" font-family="Verdana" x="30" y="25">3.0.9</text>
-	</svg>-->
-	<!--<button mat-button [matMenuTriggerFor]="filemenu">File
-		<mat-menu  #filemenu="matMenu">
-		</mat-menu>                                                                                   
-	</button>      -->
+<div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0; height:1.2rem;">
 	<button *ngIf="isDesktop()" mat-button [matMenuTriggerFor]="filemenu">File
 		<mat-menu #filemenu="matMenu">
 			<button *ngIf="isDesktop()" mat-menu-item (click)="exit()">Exit</button>
@@ -35,7 +21,6 @@
 			<button mat-menu-item (click)="closeProject()" [disabled]="!isProjectSelected()">Close project</button>
 			<button mat-menu-item (click)="save()" [disabled]="isSaved()">Save</button>
 			<button mat-menu-item (click)="saveProjectAs()" [disabled]="!isProjectSelected()">Save project as</button>
-			<!--<button mat-menu-item (click)="resetProject()" [disabled]="!isProjectSelected()">Reset project</button>-->
 		</mat-menu>
 	</button>
 	<button mat-button [matMenuTriggerFor]="toolsmenu">Tools
@@ -53,17 +38,8 @@
 
 	<div class="flex-grow-1" style="height:100%;">
 	</div>
-	<!--	<p-menu #menu popup="popup" [model]="items">
-	</p-menu>
-	<button type="button" style="margin-left:4px; padding:2px !important;" (click)="ps.save()" pButton icon="pi pi-save"
-		[disabled]="ps.selectedProject == null ||  ps.selectedProject.saved">
-
-	</button>
-	<button type="button" style="margin-left:4px;" (click)="menu.toggle($event)" pButton icon="pi pi-bars"></button>
--->
-
 </div>
-<div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0.2rem 0.2rem; line-height:1.0rem;">
+<div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0; height:1.4rem;">
 	<button type="button" style="margin-left:4px;" (click)="createNewProject()" pButton icon="pi pi-clone"></button>
 	<button type="button" style="margin-left:4px;" (click)="openProject()" pButton icon="pi pi-folder-open"></button>
 	<button type="button" style="margin-left:4px;" (click)="save()" [disabled]="isSaved()" pButton
@@ -84,7 +60,7 @@
 		</mat-list>
 	</div>
 </div>
-<div style="flex:auto;"> 
+<div style="height:calc(100vh - 3.8rem);"> 
 	<as-split style="height:100%" direction="horizontal" gutterSize=6>
 		<as-split-area size="25">
 			<as-split direction="vertical" gutterSize=6>
