@@ -83,11 +83,19 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
       m.push(
         { label: 'Run from here', icon: 'rib absa runfromhereicon', command: (event) => { this.rs.runFromHere(); } });
     }
+    if(this.rs.canRunThis()) {
     m.push(
-      { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa ' + (this.rs.canRunThis() ? 'runthisicon' : 'runtoicon'), command: (event) => { this.rs.runToHere(); } },
+      { label: 'Run this', icon: 'rib absa runthisicon', command: (event) => { this.rs.runThis(); } }
+    );
+    } else if(this.rs.canRunToHere()) {
+      m.push(
+        { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } }
+      );
+    }
+    m.push(
       { label: 'Delete', icon: 'rib absa deleteicon', command: (event) => { this.ps.removeSelectedProcess(); } }
     );
-    if (this.ps.selectedProcess.hasBeenRun) {
+    if (this.ps.selectedProcess.hasBeenRun && this.rs.isProcessIdxRunnable(this.ps.getSelectedProcessIdx())) {
       let elements: ProcessOutputElement[] = await this.ds.getProcessOutputElements(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
       if (elements.length > 0) {
