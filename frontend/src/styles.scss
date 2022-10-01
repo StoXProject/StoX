@@ -388,11 +388,22 @@ input:focus {
   @include icon_content("\f111", 0.34rem, rgb(77, 94, 69));
 }
 
+.inactiveinteractiveicon:after {
+  @include icon_content("\f111", 0.34rem, rgb(161, 161, 161));
+}
+
 .mapicon:after {
   @include icon_content("\f0ac", 0.5rem, rgb(21, 40, 216));
   top: 20%;
   left: 20%;
 }
+
+.inactivemapicon:after {
+  @include icon_content("\f0ac", 0.5rem, rgb(95, 96, 104));
+  top: 20%;
+  left: 20%;
+}
+
 .globeicon:after {
   @include icon_content("\f0ac", 0.9rem, rgb(21, 40, 216));
   top: 10%;
@@ -461,7 +472,7 @@ input:focus {
   top: 72%;
 }
 .runstatusfailedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(247, 128, 59), true);
+  @include icon_content("\f0c8", 0.4rem, rgb(252, 165, 116), true);
   top: 72%;
 }
 .runstatusmodifiedicon:after {
@@ -469,7 +480,7 @@ input:focus {
   top: 72%;
 }
 .functioninputerroricon:after {
-  @include icon_content("\f0c8", 0.4rem, rgba(209, 53, 53), true);
+  @include icon_content("\f0c8", 0.4rem, rgb(173, 8, 8), true);
   top: 28%;
 }
 .editicon:before {

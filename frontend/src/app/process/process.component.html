@@ -6,17 +6,18 @@ optionLabel="processName" (keydown)="keydown($event)">
             <span [ngClass]="{'rib fa': true, 'processicon': process.value.enabled, 
                 'inactiveprocessicon': !process.value.enabled, 
                 'fa-spin': process.value===ps.getRunningProcess()}">
-                <span *ngIf="process.value.hasProcessData" class="absa interactiveicon"></span>
+                <span *ngIf="process.value.hasProcessData" 
+                    [ngClass]="{'absa':true, 'interactiveicon': process.value.enabled, 'inactiveinteractiveicon': !process.value.enabled}"></span>
                 <span *ngIf="process.value != ps.getRunningProcess() && process.value.canShowInMap"
-                    class="absa mapicon"></span>
+                    [ngClass]="{'absa': true, 'mapicon': process.value.enabled, 'inactivemapicon': !process.value.enabled}"></span>
             </span>
             <span class="rib fa emptyicon">
                 <span *ngIf="process.value===ps.getRunFailedProcess()" class="absa runstatusfailedicon"></span>
-                <span *ngIf="process.value.hasBeenRun && !ps.isProcessDirty(process.value)"
+                <span *ngIf="process.value.enabled && !process.value.functionInputError && process.value.hasBeenRun && !ps.isProcessDirty(process.value)"
                     class="absa runstatusokicon"></span>
-                <span *ngIf="process.value.hasBeenRun && ps.isProcessDirty(process.value)"
+                <span *ngIf="process.value.enabled && !process.value.functionInputError && process.value.hasBeenRun && ps.isProcessDirty(process.value)"
                     class="absa runstatusmodifiedicon"></span>
-                <span *ngIf="process.value.functionInputError" class="absa functioninputerroricon"></span>
+                <span *ngIf="process.value.enabled && process.value.functionInputError" class="absa functioninputerroricon"></span>
             </span>
             <span style="display:inline-block; line-height:1.1;">{{process.value.processName}}</span>
         </div>
