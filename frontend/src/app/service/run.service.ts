@@ -87,9 +87,18 @@ export class RunService {
     }
 
     getRunToHereIndexFrom(): number {
-        return this.ps.processes.length == 0 || this.ps.getSelectedProcessIdx() == null ? null :
-            this.ps.getActiveProcessIdx() == null ? 0 : Math.min(this.ps.getActiveProcessIdx() +
-                (this.ps.activeProcess.processDirty ? 0 : 1), this.ps.getSelectedProcessIdx());
+        if(this.ps.processes.length == 0 || this.ps.getSelectedProcessIdx() == null) {
+            return null;
+        }
+        let idx = 0;
+        if(this.ps.getActiveProcessIdx() != null) {
+            if(this.ps.getActiveProcessIdx() < this.ps.getSelectedProcessIdx()) {
+                idx = this.ps.getActiveProcessIdx() + (this.ps.activeProcess.processDirty ? 0 : 1);
+            } else {
+                idx = this.ps.getSelectedProcessIdx();
+            }
+        }
+        return this.firstProcessIdxRunnable(idx);
     }
 
     getRunToHereIndexTo(): number {
@@ -101,7 +110,16 @@ export class RunService {
         this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()); 
     }
 
-    public isProcessIdxRunnable(idx) {
+    firstProcessIdxRunnable(idx) {
+        for(let i = idx; i < this.ps.processes.length; i++) {
+            if(this.isProcessIdxRunnable(i)) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    isProcessIdxRunnable(idx) {
         return idx != null && idx >= 0 && idx <= this.ps.processes.length - 1 && 
         this.ps.processes[idx].enabled && !this.ps.processes[idx].functionInputError
     }
@@ -148,6 +166,9 @@ export class RunService {
         let processes: Process[] = this.ps.processes;
         for (var i = iFrom; i <= iTo; i++) {
             let p = processes[i];
+            if(!p.enabled ||p.functionInputError) {
+                continue;
+            }
             this.ps.runningProcessId = p.processID;
             //console.log("Run process " + p.processName + " with id " + p.processID);
             // this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "> Process " + p.processName));
