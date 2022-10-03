@@ -76,7 +76,8 @@ export class RunService {
     canRunFromHere(): boolean {
         return this.canRun() && this.ps.getSelectedProcessIdx() != null &&
             this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && 
-            (this.ps.getSelectedProcessIdx() == 0 || this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1);
+            (this.ps.getSelectedProcessIdx() == this.firstProcessIdxRunnable(this.ps.getActiveProcessIdx() != null ? this.ps.getActiveProcessIdx() + 1: 0) || 
+            this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1);
     }
 
     runNext() {
@@ -167,8 +168,11 @@ export class RunService {
         let processes: Process[] = this.ps.processes;
         for (var i = iFrom; i <= iTo; i++) {
             let p = processes[i];
-            if(!p.enabled ||p.functionInputError) {
+            if(!p.enabled) {
                 continue;
+            }
+            if(p.functionInputError) {
+                break;
             }
             this.ps.runningProcessId = p.processID;
             //console.log("Run process " + p.processName + " with id " + p.processID);
