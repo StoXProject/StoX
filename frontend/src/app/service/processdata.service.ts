@@ -19,6 +19,7 @@ export class ProcessDataService {
     private m_processDataSubject = new Subject<string>();
 
     constructor(private ds: DataService, private ps: ProjectService) {
+        console.log("Initializing processdata service")
         this.ps.iaModeSubject.subscribe({
             next: async (newVal) => {
                 switch (newVal) {

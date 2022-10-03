@@ -30,6 +30,7 @@ export class DataService {
   private jsonfromfile = '/api/jsonfromfile';
 
   constructor(private httpClient: HttpClient) {
+    console.log("Initializing http service")
   }
 
 

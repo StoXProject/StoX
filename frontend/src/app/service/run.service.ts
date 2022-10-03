@@ -20,6 +20,7 @@ export class RunService {
 
 
     constructor(private ps: ProjectService, private dataService: DataService, private rf: RendererFactory2) {
+        console.log("Initializing run service")
         //this.iaMode = this.iaSubject.asObservable();
         this.ps.iaModeSubject.subscribe({
             next: (newVal) => {

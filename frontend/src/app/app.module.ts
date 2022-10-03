@@ -133,6 +133,7 @@ import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 import { EdsutableComponent } from './processdata/edsutable/edsutable.component';
 import { DirectiveAccessor } from './autocomplete/directive-accessor';
 import { StatusbarComponent } from './statusbar/statusbar.component';
+import { BusydlgComponent } from './busydlg/busydlg.component';
 
 @NgModule({
   exports: [
@@ -250,6 +251,7 @@ export class MaterialModule { }
     InstallRPackagesDlg,
     CreateProjectDialog,
     OpenProjectDlg,
+    BusydlgComponent,
     ExpressionBuilderDlg,
     QueryBuilderDlg,
     DefinedColumnsTableDlg,
