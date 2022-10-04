@@ -29,7 +29,7 @@ import { ContextMenu } from 'primeng';
 export class HomeComponent /*implements OnInit, OnDestroy*/ {
   @ViewChild("bottomTabGroup") bottomTabGroup: MatTabGroup;
   @ViewChild("cm") cm: ContextMenu;
-  
+
   title = 'StoX';
   stoxVersion: string;
   constructor(private rConnectionDlgService: RConnectionDlgService,
@@ -115,19 +115,22 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   async installRstoxFramework() {
     this.installRPackagesDlgService.showDialog();
   }
+  
   getStoXVersionColor() {
-      return !this.stoxVersion?.endsWith(".0") ? "rgb(255,30,78)" : "rgb(0,0,0)"; 
+      let p : PackageVersion = this.ps.rstoxPackages.find(p=>{p.status > 0});
+      return p != null ? "rgb(255,30,78)" : "rgb(0,0,0)"; 
   }
 
   getPackageColor(pkg: PackageVersion) {
     return pkg == null || pkg.status > 1 ? 'grey' : pkg.status == 1 ? 'rgb(255,30,78)' : 'black';
   }
+
   getMainPackageDescr() {
-    return " / " + this.getPackageDescr(this.ps.rstoxPackages != null ? this.ps.rstoxPackages[0] : null);
+    return " / " + this.getPackageDescr(this.ps.rstoxPackages != null ? this.ps.rstoxPackages[0] : null, false);
   }
-  getPackageDescr(pkg: PackageVersion) {
+  getPackageDescr(pkg: PackageVersion, withVersion : boolean = true) {
     //console.log("getPackageDescr:" + pkg)
-    return pkg == null ? "Loading..." : pkg.packageName + " " + pkg.version;
+    return pkg == null ? "Loading..." : pkg.packageName + (withVersion ? " " + pkg.version : "");
   }
 
   myFunction() {

@@ -817,7 +817,8 @@ function setupServer() {
         //  logInfo("getpackageversion for " + elms[0]);
         let v = (await getPackageVersion(elms[0])).result;
         let elms2: string[] = v.split("_");
-        logInfo(elms[0] + " version: " + v);
+        logInfo("official " + elms[0] + " version: " + v);
+        logInfo("installed " + elms2[0] + " version: " + v);
         let v2 = elms2.length == 2 ? elms2[1] : "Not installed"
         return { packageName: elms[0], version: elms2[1], status: v == "NA" ? 2 : elms2[1] == elms[1] ? 0 : 1 };
       });
@@ -826,9 +827,9 @@ function setupServer() {
 
       // logInfo("updating status on first package based on the other packages" + packages);
       // step 2 - if some of the packages no 2... is unofficial, mark the first one as unofficial if official.
-      if (packages.length > 0 && packages[0].status == 0 && packages.slice(1).filter(p => p.status > 0).length > 0) {
+      /*if (packages.length > 0 && packages[0].status == 0 && packages.slice(1).filter(p => p.status > 0).length > 0) {
         packages[0].status = 1;
-      }
+      }*/
       //   logInfo("after updating status on first package based on the other packages" + packages);
     } else {
       packages.push({ packageName: "R disconnected", version: "", status: 3 });
