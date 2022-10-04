@@ -523,14 +523,9 @@ export class ProjectService {
     switch(oe.element.elementType) {
       case "geojson": 
         case "table": {
-          this.appStatus = 'Loading...'
           let tableOutput: ProcessTableOutput = null;
-          try {
-            tableOutput = await this.dataService.getProcessTableOutput(this.selectedProject.projectPath,
-            this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
-          } finally {
-            this.appStatus = null
-          }
+          tableOutput = await this.dataService.getProcessTableOutput(this.selectedProject.projectPath,
+          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
         oe.output = tableOutput.data;
       break;
       }

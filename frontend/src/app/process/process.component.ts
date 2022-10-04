@@ -110,7 +110,12 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
                     let oe : OutputElement = { processId: this.ps.selectedProcessId, element: e};
                     this.ps.outputElements.push(oe);
                     console.log(JSON.stringify(oe))
+                    try {
+                      this.ps.appStatus = 'Loading...'
                     await this.ps.resolveElementOutput(oe);
+                  } finally {
+                    this.ps.appStatus = null
+                  }
                   }
                   idx = this.ps.outputElements.length - 1;
                   this.ps.bottomViewActivator.next(1)
