@@ -53,20 +53,27 @@ export class ProjectService {
   m_isResetting: boolean = false; // current reset flag.
   rstoxPackages: PackageVersion[];
   rstoxFrameworkAvailable: boolean = false;
-  m_appStatus : string = '';
+  m_appStatus : string = null;
+  m_appStatusIsUpdating : boolean = false;
 
   userlog: string[] = [];
 
   constructor(private dataService: DataService/*, public rs: RunService*/, private dialog: MatDialog) {
+    console.log("Initializing project service")
     this.initData();
-
   }
 
   get application(): string {
     return this.m_Application;
   }
 
+  /*get busy() : boolean {
+    return this.m_busy;
+  }
 
+  set busy(busy : boolean) {
+    this.m_busy =  busy;
+  }*/
 
   get processes(): Process[] {
     return this.m_processes;
@@ -293,6 +300,8 @@ export class ProjectService {
   }
 
   async initData() {
+    try {
+      this.appStatus = "Initializing StoX"
     await this.checkRstoxFrameworkAvailability();
     this.m_Application = "StoX " + await this.dataService.getStoxVersion().toPromise();
     let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
@@ -301,9 +310,12 @@ export class ProjectService {
     // Read models and set selected to the first model
     if (projectPath.length > 0 && this.rstoxFrameworkAvailable) {
       //this.selectedModel = this.models[0]; 
-      this.openProject(projectPath, false, true, false);
+      await this.openProject(projectPath, false, true, false, true);
     }
+  } finally {
+    this.appStatus = null;
   }
+}
 
   async checkRstoxFrameworkAvailability() {
     this.rstoxPackages = JSON.parse(await this.dataService.getRstoxPackageVersions().toPromise());
@@ -317,13 +329,17 @@ export class ProjectService {
     }
   }
 
-  async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave: boolean) {
+  async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave: boolean, withStatus = false) {
     // the following should open the project and make it selected in the GUI
     try {
-      this.appStatus = "Opening project " + projectPath + "..."
+      if(withStatus) {
+        this.appStatus = "Opening project " + projectPath + "..."
+      }
+//      this.busy = true;
     this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise(), askSave);
     } finally {
-      this.appStatus = ""
+      this.appStatus = null
+//      this.busy = false;
     }
   }
 
@@ -513,7 +529,7 @@ export class ProjectService {
             tableOutput = await this.dataService.getProcessTableOutput(this.selectedProject.projectPath,
             this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
           } finally {
-            this.appStatus = '' 
+            this.appStatus = null
           }
         oe.output = tableOutput.data;
       break;
@@ -540,8 +556,17 @@ export class ProjectService {
     return this.m_appStatus;
   }
   
+  get appStatusIsUpdating(): boolean {
+    return this.m_appStatusIsUpdating;
+  }
+
   set appStatus(status : string) {
     this.m_appStatus = status;
+    (async () => { 
+        this.m_appStatusIsUpdating = true;
+        await new Promise(f => setTimeout(f, 500));
+        this.m_appStatusIsUpdating = false;
+    })(); 
   }
 
 }
