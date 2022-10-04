@@ -37,7 +37,7 @@ export class RunComponent implements OnInit {
   }
   public getActionEnabled(cmd: string): boolean {
     switch (cmd) {
-      case "run": return this.runService.canRun(); // or "Continue model" if active process > -1
+      case "run": return this.runService.canRun(); /*&& !this.runService.hasFunctionalError()*/ // or "Continue model" if active process > -1
       case "runnext": return this.runService.canRunNext();
       case "runfromhere": return this.runService.canRunFromHere();
       case "runto": return this.runService.canRunToHere(); // or "Run this if selected process < active process"
