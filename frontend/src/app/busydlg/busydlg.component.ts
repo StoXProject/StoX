@@ -8,7 +8,7 @@ import { ProjectService } from '../service/project.service';
 })
 export class BusydlgComponent implements OnInit {
 
-  constructor(private ps: ProjectService) { }
+  constructor(public ps: ProjectService) { }
 
   ngOnInit(): void {
   }
