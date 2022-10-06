@@ -13,6 +13,7 @@ export class RConnectionDlgService {
 
     display: boolean = false;
     rpath: string;
+    isConnecting : boolean;
 
     async showDialog() {
         console.log("showDialog");
@@ -25,8 +26,13 @@ export class RConnectionDlgService {
         console.log("apply");
         console.log("Posting rpath " + this.rpath)
         this.rpath = this.rpath.replace(/\\/g, "/"); // convert backslash to forward
+        this.isConnecting = true;
+        try {
         var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
         await this.ps.checkRstoxFrameworkAvailability();
+        } finally {
+            this.isConnecting = false;
+        }
         console.log("Posting rpath, response " + res)
         this.display = false;
     }

@@ -14,6 +14,7 @@ import {
   MatAutocompleteSelectedEvent
 } from "@angular/material/autocomplete";
 import { FormControl } from "@angular/forms";
+import { ProjectService } from "../service/project.service";
 @Component({
   selector: "app-autocomplete",
   templateUrl: "./autocomplete.component.html",
@@ -54,7 +55,7 @@ export class AutocompleteComponent {
   }
   @Output() complete = new EventEmitter();
 
-  constructor() {
+  constructor( public ps: ProjectService) {
     //this.formCtrl = new FormControl();
   }
 

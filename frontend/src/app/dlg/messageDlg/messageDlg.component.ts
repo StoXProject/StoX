@@ -4,7 +4,10 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 export interface DialogData {
   title: string;
   message : string;
+  dlgType : number;
 }
+
+export enum MessageDlgType {YESNO = 0, CLOSE = 1};
 
 @Component({
   selector: 'messageDlg',
@@ -14,15 +17,18 @@ export interface DialogData {
 export class MessageDlgComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<MessageDlgComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData) { }
+    @Inject(MAT_DIALOG_DATA) public data: DialogData) {
+      console.log(data)
+     }
 
   ngOnInit() {
   }
-  public static async showDlg(dialog: MatDialog, title : string, message : string) {
+
+  public static async showDlg(dialog: MatDialog, title : string, message : string, dlgType : MessageDlgType = MessageDlgType.YESNO) {
     const dialogRef = dialog.open(MessageDlgComponent, {
       width: '250px',
       disableClose: true,
-      data: { title: title, message: message }
+      data: { title: title, message: message, dlgType: dlgType }
     });
     return await dialogRef.afterClosed().toPromise();
   }

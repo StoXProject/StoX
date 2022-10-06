@@ -1,4 +1,0 @@
-interface ProjectionSelector {
-    getProj() : string;
-}
-

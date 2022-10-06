@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TreeNode, MenuItem } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
 import { ProcessDataService } from './../../service/processdata.service'
@@ -12,8 +12,7 @@ import { PSUResult, ActiveProcessResult } from './../../data/runresult'
   styleUrls: ['./stratumpsu.component.scss']
 })
 export class StratumpsuComponent implements OnInit {
-  contextMenu: MenuItem[];
-  nodes: TreeNode[];
+  @Input() cm: ContextMenu;  nodes: TreeNode[];
   m_selectedNode: TreeNode;
 
   private static asNode(id: string, type: string, children: TreeNode[]): TreeNode {
@@ -64,7 +63,18 @@ export class StratumpsuComponent implements OnInit {
   // Accessors for selected node
   set selectedNode(val: TreeNode) {
     this.m_selectedNode = val;
-    this.pds.selectedPSU = val.data.type == 'psu' ? val.data.id : null;
+    switch(val.data.type) {
+      case 'stratum': {
+        this.pds.selectedPSU = null;
+        this.pds.selectedStratum = val.data.id;
+        break;
+      }
+      case 'psu': {
+        this.pds.selectedStratum = val.parent.data.id;
+        this.pds.selectedPSU = val.data.id
+        break;
+      }
+    }
     console.log("selected node" + val.data.id);
   }
 
@@ -84,28 +94,35 @@ export class StratumpsuComponent implements OnInit {
     let m: MenuItem[] = [];
     switch (node.data.type) {
       case "stratum": {
-        m.push(
-          {
-            label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
+        if(this.ps.iaMode == "acousticPSU") {
+          m.push(
+            {
+              label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
               // psu a new psu node
               let res: PSUResult = this.ps.handleAPI(await this.ds.addAcousticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
               if (res.PSU != null && res.PSU.length > 0) {
                 node.children.push(StratumpsuComponent.asNode(res.PSU, "psu", []))
               }
             }
-          }, {
+          });
+        }
+        if(this.ps.iaMode == "stratum") {
+          m.push(
+          {
           label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
             // psu a new psu node
             let res: ActiveProcessResult = this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeStratum(node.data.id,
               this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
             this.ps.iaMode = "stratum"; // trigger the gui
             //this.nodes.splice(this.nodes.indexOf(node), 1);
-          }
-        });
+            }
+          });
+        }
         break;
       }
       case "psu": {
-        m.push(
+        if(this.ps.iaMode == "acousticPSU") {
+          m.push(
           {
             label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
               // psu a new psu node
@@ -114,22 +131,23 @@ export class StratumpsuComponent implements OnInit {
               this.ps.iaMode = "acousticPSU"; // trigger the gui
             }
           });
+        }
         break;
       }
     }
-    this.contextMenu = m;
+    this.cm.model = m;
   }
 
-  async openCm(event, cm: ContextMenu, node: TreeNode) {
+  async openCm(event, node: TreeNode) {
     this.selectedNode = node;
     //console.log("selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
     await this.prepCm(node);
-    if (this.contextMenu.length > 0) {
-      cm.show(event);
+    if (this.cm.model.length > 0) {
+      this.cm.show(event);
     } else {
-      cm.hide();
+      this.cm.hide();
     }
     return false;
   }

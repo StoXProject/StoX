@@ -7,7 +7,7 @@
             </div>
         </p-toolbar>
         <ng-template pTemplate="content">
-             <div class="helpcontent" helpContent [innerHTML]="ps.helpContent | sanitizeHtml" style="overflow:scroll;height:inherit;"></div>
+             <div class="helpcontent" helpContent [innerHTML]="ps.helpContent | sanitizeHtml" style="overflow:scroll;height:calc(100% - 1.5rem);"></div>
         </ng-template>
     </p-tabPanel>
 </p-tabView>

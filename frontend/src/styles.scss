@@ -59,7 +59,7 @@ $nodata: #acacac;
     .ui-listbox-list {
       width: 100% !important;
       height: 100% !important;
-      overflow-y: scroll !important;
+      overflow-y: auto !important;
     }
   }
 }
@@ -81,6 +81,11 @@ $nodata: #acacac;
 .ui-treenode-content:focus {
   outline: none !important; // prevent webkit :focus outline.
   box-shadow: none !important; // add by primeng
+  white-space: nowrap;
+}
+
+.ui-menuitem-icon {
+  margin-left: 0.2em;
 }
 
 // tabview
@@ -195,6 +200,12 @@ $nodata: #acacac;
     padding: 1px 1px;
   }
 }
+
+.ui-tooltip  {
+  //left: auto!important;
+  overflow-wrap: break-word;
+}
+
 button:focus,
 input:focus {
   outline: none !important;
@@ -357,6 +368,14 @@ input:focus {
   left: 80%;
 }
 
+.inactiveprocessicon:before {
+  @include icon_content("\f013", 1rem, rgb(218, 219, 217), true);
+  left: 0px;
+  top: 0px;
+  position: relative;
+}
+
+
 .stratumicon:before {
   @include icon_content("\f00a", 1rem, rgb(145, 173, 131), true);
 }
@@ -369,11 +388,22 @@ input:focus {
   @include icon_content("\f111", 0.34rem, rgb(77, 94, 69));
 }
 
+.inactiveinteractiveicon:after {
+  @include icon_content("\f111", 0.34rem, rgb(161, 161, 161));
+}
+
 .mapicon:after {
   @include icon_content("\f0ac", 0.5rem, rgb(21, 40, 216));
   top: 20%;
   left: 20%;
 }
+
+.inactivemapicon:after {
+  @include icon_content("\f0ac", 0.5rem, rgb(95, 96, 104));
+  top: 20%;
+  left: 20%;
+}
+
 .globeicon:after {
   @include icon_content("\f0ac", 0.9rem, rgb(21, 40, 216));
   top: 10%;
@@ -406,11 +436,36 @@ input:focus {
 .runfromhereicon:before {
   @include icon_content("\f08b", 1rem, rgb(33, 122, 196));
 }
+.foldericon:before {
+  @include icon_content("\f07b", 1.2rem, rgb(232, 199, 102));
+}
+.previewicon:before {
+  @include icon_content("\f06e", 1.2rem, rgb(11, 11, 68));
+}
+
+.fileicon:before {
+  @include icon_content("\f016", 1.0rem, rgb(128, 128, 133));
+}
+
+.originicon:before {
+  @include icon_content("\f2dd", 1.0rem, rgb(245, 141, 57));
+}
+
+
 .runtoicon:before {
   @include icon_content("\f090", 1rem, rgb(33, 122, 196));
 }
+
+.runthisicon:before {
+  @include icon_content("\f061", 0.8rem, rgb(33, 122, 196));
+}
+
 .reseticon:before {
   @include icon_content("\f04d", 0.7rem, rgb(33, 122, 196));
+}
+
+.stopicon:before {
+  @include icon_content("\f111", 0.7rem, rgb(231, 18, 28));
 }
 
 .emptyicon:before {
@@ -421,15 +476,15 @@ input:focus {
   top: 72%;
 }
 .runstatusfailedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(247, 128, 59), true);
+  @include icon_content("\f0c8", 0.4rem, rgb(173, 8, 8), true);
   top: 72%;
 }
 .runstatusmodifiedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(208, 208, 211), true);
+  @include icon_content("\f0c8", 0.4rem, rgb(134, 139, 209), true);
   top: 72%;
 }
 .functioninputerroricon:after {
-  @include icon_content("\f0c8", 0.4rem, rgba(209, 53, 53), true);
+  @include icon_content("\f0c8", 0.4rem, rgb(252, 165, 116), true);
   top: 28%;
 }
 .editicon:before {
@@ -444,7 +499,11 @@ input:focus {
 }
 
 .deleteicon:before {
-  @include icon_content("\f068", 0.8rem, rgb(206, 127, 127), true);
+  @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
+}
+
+.closeicon:before {
+  @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
 }
 
 .saveicon:before {
@@ -537,14 +596,27 @@ input:focus {
   font-size: 0.75rem !important;
   font-weight: 600 !important;
 }
-.mat-tab-body-wrapper {
-  height: calc(100% - 1.2rem) !important;
-}
 
 .mat-tab-group {
-  height: 100% !important;
+  height: 100%;
 }
 
+.mat-tab-body {
+  height: 100%;
+  overflow: hidden !important;
+}
+
+.mat-tab-body-wrapper {
+  height: 100%;
+}
+
+.mat-tab-body-content {
+  overflow: hidden !important;
+}/*
+.mat-tab-body {
+  overflow-y: hidden !important;
+}*/
+/*
 .mat-tab-body {
   height: 100% !important;
 }
@@ -552,7 +624,7 @@ input:focus {
   height: 100% !important;
   line-height: 1.2rem !important;
   overflow: hidden !important;
-}
+}*/
 
 .mat-button {
   font-size: 12px !important;
@@ -639,5 +711,5 @@ input.mat-input-element {
 }
 
 .mat-tab-label-active {
-  background-color: #ebf4fc !important;
+  background-color: #cce8ff !important;
 }

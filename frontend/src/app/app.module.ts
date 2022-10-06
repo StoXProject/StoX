@@ -85,6 +85,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule} from '@angular/material/tooltip';  
 import {MatListModule} from '@angular/material/list';
+import { TooltipModule } from 'primeng/tooltip';
 
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
@@ -131,6 +132,8 @@ import { QueryBuilderModule } from './querybuilder/angular2-query-builder.module
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 import { EdsutableComponent } from './processdata/edsutable/edsutable.component';
 import { DirectiveAccessor } from './autocomplete/directive-accessor';
+import { StatusbarComponent } from './statusbar/statusbar.component';
+import { BusydlgComponent } from './busydlg/busydlg.component';
 
 @NgModule({
   exports: [
@@ -238,7 +241,8 @@ export class MaterialModule { }
     MatRadioModule,
     MatIconModule,*/
     MatCardModule,
-    QueryBuilderModule
+    QueryBuilderModule,
+    TooltipModule
   ],
   entryComponents: [StratumNameDlgComponent, MessageDlgComponent],
   declarations: [
@@ -247,6 +251,7 @@ export class MaterialModule { }
     InstallRPackagesDlg,
     CreateProjectDialog,
     OpenProjectDlg,
+    BusydlgComponent,
     ExpressionBuilderDlg,
     QueryBuilderDlg,
     DefinedColumnsTableDlg,
@@ -262,6 +267,7 @@ export class MaterialModule { }
     EdsutableComponent,
     ProcessComponent,
     ParameterComponent,
+    StatusbarComponent,
     ModelComponent,
     RunComponent,
     UserLogComponent,

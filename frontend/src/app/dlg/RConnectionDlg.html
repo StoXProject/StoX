@@ -7,6 +7,7 @@
 		path to trigger R commands. When pressing OK, a check will be performed to ensure the dependent packages in
 		RStoX are installed.</p>
 	<p-footer>
+		<mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isConnecting"></mat-spinner> <!--class="spinner"--> 
 		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
 			class="ui-button-secondary"></button>
 		<button type="button" pButton icon="pi pi-check" (click)="service.apply()" label="OK"></button>

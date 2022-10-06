@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit, Renderer2, HostListener, DoCheck, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, Renderer2, HostListener, DoCheck, AfterViewInit, Input } from '@angular/core';
 import { Process } from '../data/process';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
@@ -7,23 +7,30 @@ import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from "
 import { ContextMenuModule, ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { Model } from '../data/model';
-import { ProcessOutput } from '../data/processoutput';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 //import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
 import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
-import { ProcessTableResult } from '../data/runresult';
+import { ProcessOutputElement, ProcessTableResult } from '../data/runresult';
+import { OutputElement } from '../data/outputelement';
 @Component({
   selector: 'app-process',
   templateUrl: './process.component.html',
   styleUrls: ['./process.component.scss']
 })
+
 export class ProcessComponent implements OnInit/*, DoCheck*/ {
   shortcuts: ShortcutInput[] = [];
 
+  @ViewChild('input', { static: false }) input: ElementRef;
+  @Input() cm: ContextMenu;
+
+  constructor(private ds: DataService, public ps: ProjectService, private rs: RunService,
+    private renderer: Renderer2) {
+  }
+
   //processes: Process[];
   //selectedProcesses: Process[];
-  contextMenu: MenuItem[];
   //@HostListener('document:keydown.control.y')
   keydown(event: KeyboardEvent) {
     if (this.ps.processes != null && this.ps.processes.length > 0) {
@@ -40,17 +47,13 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     }
   }
 
-  constructor(private ds: DataService, public ps: ProjectService, private rs: RunService,
-    private renderer: Renderer2) {
-  }
 
   async ngOnInit() {
     //this.ngDoCheck();
-    this.contextMenu = [{ label: "Run from here   " }];
+//    this.contextMenu = [{ label: "Run from here   " }];
     //  this.renderer.listen(document, 'keydown.control.y', (event)=>{this.doSomething()})
   }
 
-  @ViewChild('input', { static: false }) input: ElementRef;
   ngAfterViewInit(): void {
     this.shortcuts.push(
       {
@@ -80,29 +83,42 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
       m.push(
         { label: 'Run from here', icon: 'rib absa runfromhereicon', command: (event) => { this.rs.runFromHere(); } });
     }
+    if(this.rs.canRunThis()) {
     m.push(
-      { label: this.rs.canRunThis() ? 'Run this' : 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } },
-      { label: 'Delete', icon: 'rib absa emptyicon', command: (event) => { this.ps.removeSelectedProcess(); } }
+      { label: 'Run this', icon: 'rib absa runthisicon', command: (event) => { this.rs.runThis(); } }
     );
-    if (this.ps.selectedProcess.hasBeenRun) {
-      let tables: string[] = await this.ds.getProcessOutputTableNames(this.ps.selectedProject.projectPath,
+    } else if(this.rs.canRunToHere()) {
+      m.push(
+        { label: 'Run to here', icon: 'rib absa runtoicon', command: (event) => { this.rs.runToHere(); } }
+      );
+    }
+    m.push(
+      { label: 'Delete', icon: 'rib absa deleteicon', command: (event) => { this.ps.removeSelectedProcess(); } }
+    );
+    if (this.ps.selectedProcess.hasBeenRun && this.rs.isProcessIdxRunnable(this.ps.getSelectedProcessIdx())) {
+      let elements: ProcessOutputElement[] = await this.ds.getProcessOutputElements(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
-      if (tables.length > 0) {
+      if (elements.length > 0) {
         m.push({
-          label: 'Preview', icon: 'rib absa emptyicon', items:
-            tables.map(e => {
+          label: 'Preview', icon: 'rib absa previewicon', items:
+            elements.map(e => {
               return {
-                label: e, icon: 'rib absa emptyicon',
+                label: e.elementName, icon: 'rib absa fileicon',  
                 command: async (event) => {
-                  let out: ProcessOutput = await this.ds.getProcessOutput(this.ps.selectedProject.projectPath,
-                    this.ps.selectedModel.modelName, this.ps.selectedProcessId, e).toPromise();
-                  let fullTableName: string = this.ps.selectedProcess.processName + "(" + e + ")";
-                  let idx = this.ps.outputTables.findIndex(t => t.table == fullTableName);
+                  let idx = this.ps.outputElements.findIndex(t => t.element.elementFullName == e.elementFullName);
                   if (idx == -1) {
-                    this.ps.outputTables.push({ processId: this.ps.selectedProcessId, tableName: e, table: fullTableName, output: out });
-                    idx = this.ps.outputTables.length - 1;
+                    let oe : OutputElement = { processId: this.ps.selectedProcessId, element: e};
+                    this.ps.outputElements.push(oe);
+                    console.log(JSON.stringify(oe))
+                    try {
+                      this.ps.appStatus = 'Loading...'
+                    await this.ps.resolveElementOutput(oe);
+                  } finally {
+                    this.ps.appStatus = null
                   }
-                  this.ps.bottomViewActivator.next(1)
+                  idx = this.ps.outputElements.length - 1;
+                }
+                this.ps.bottomViewActivator.next(1)
                   this.ps.outputTableActivator.next(idx)
                 }
               };
@@ -113,7 +129,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
         if(hasFileOutput) {
           m.push(
-            { label: 'Show in folder', icon: 'rib absa emptyicon', command: async (event) => {
+            { label: 'Show in folder', icon: 'rib absa foldericon', command: async (event) => {
               let outFolder: string = await this.ds.getProcessOutputFolder(this.ps.selectedProject.projectPath,
                 this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
                 await this.ds.showinfolder(outFolder).toPromise();
@@ -127,7 +143,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     //   { label: 'Move down', icon: 'rib absa emptyicon', command: (event) => { } },
     //   { label: 'Add process', icon: 'rib absa addprocessicon', command: (event) => { this.ps.addProcess(); } }
     // );
-    this.contextMenu = m;
+    this.cm.model = m;
   }
   async openCm(event: MouseEvent, cm: ContextMenu, process: Process) {
     // TODO: Incorpoate dynamic ng-action-outlet with material. or support scrolling primeng menus
