@@ -116,9 +116,9 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
                   } finally {
                     this.ps.appStatus = null
                   }
-                  }
                   idx = this.ps.outputElements.length - 1;
-                  this.ps.bottomViewActivator.next(1)
+                }
+                this.ps.bottomViewActivator.next(1)
                   this.ps.outputTableActivator.next(idx)
                 }
               };
