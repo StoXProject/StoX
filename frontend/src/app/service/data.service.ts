@@ -14,7 +14,6 @@ import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../
 import { Process } from '../data/process';
 import { Project } from '../data/project';
 import { PackageVersion } from '../data/PackageVersion';
-import { isArray } from 'util';
 
 @Injectable({
   providedIn: 'root'

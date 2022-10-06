@@ -4,14 +4,15 @@
   "newProjectRoot": "projects",
   "projects": {
     "stox": {
-      "root": "",
-      "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "app",
       "schematics": {
         "@schematics/angular:component": {
+          "style": "scss"
         }
       },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -33,7 +34,6 @@
               "node_modules/ol/ol.css"
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": ["xml-utils/find-tags-by-name.js", "xml-utils/get-attribute.js", "lru-cache", "web-worker", "pbf", "earcut", "rbush"]
           },
           "configurations": {
             "production": {
@@ -58,17 +58,25 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "development": { 
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "stox:build"
+            "browserTarget": "stox:build:development"
           },
           "configurations": {
-            "production": {
-              "browserTarget": "stox:build:production"
+            "development": {
+              "browserTarget": "stox:build:development"
             }
           }
         },
@@ -85,14 +93,14 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "src/styles.css"
-            ],
-            "scripts": [],
             "assets": [
               "src/favicon.ico",
               "src/assets"
-            ]
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": []
           }
         },
         "lint": {
@@ -108,34 +116,9 @@
           }
         }
       }
-    },
-    "stox-e2e": {
-      "root": "e2e/",
-      "projectType": "application",
-      "prefix": "",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "stox:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "stox:serve:production"
-            }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        }
-      }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
