@@ -88,11 +88,8 @@
 				</as-split-area>
 				<as-split-area size="25">
 					<mat-tab-group [@.disabled]="true" #bottomTabGroup>
-						<mat-tab>
-							<ng-template mat-tab-label>
-								<div (contextmenu)="openCm($event)">User log</div>
-							</ng-template>
-							<userlog style="height:inherit; width:inherit;"></userlog>
+						<mat-tab label="User log">
+							<userlog style="height:inherit; width:inherit;"  [cm]="cm"></userlog>
 						</mat-tab>
 						<mat-tab label="Preview">
 							<output [cm]="cm" style="height:100%; width:100%;"></output>

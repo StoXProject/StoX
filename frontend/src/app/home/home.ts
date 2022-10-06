@@ -145,20 +145,4 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
       event.preventDefault();
     }
   }
-  async prepCm() {
-    // comment: add list of outputtablenames to runModel result. 
-    let m: MenuItem[] = [];
-    m.push(
-      { label: 'Clear log', icon: 'rib absa deleteicon', command: (event) => { this.ds.log.splice(0, this.ds.log.length) } }
-    );
-    this.cm.model = m;
-  }
-
-  async openCm(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    await this.prepCm();
-    this.cm.show(event);
-    return false;
-  }
 }
