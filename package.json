@@ -42,22 +42,22 @@
   },
   "homepage": "https://github.com/StoXProject/StoX#readme",
   "dependencies": {
-    "@types/node": "^13.9.8",
+    "@types/node": "^18.8.3",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.18.1",
     "open-file-explorer": "^1.0.2",
     "pkginfo": "^0.4.1",
     "png-dpi-reader-writer": "^0.2.4",
-    "simple-node-logger": "^18.12.24",
+    "simple-node-logger": "^21.8.12",
     "temp-dir": "^2.0.0"
   },
   "devDependencies": {
-    "electron": "^13.1.1",
-    "electron-installer-dmg": "^3.0.0",
-    "electron-packager": "^15.2.0",
-    "electron-wix-msi": "^3.1.0",
-    "typescript": "3.8",
-    "uuid-by-string": "^3.0.2"
+    "electron": "^21.1.0",
+    "electron-installer-dmg": "^4.0.0",
+    "electron-packager": "^16.0.0",
+    "electron-wix-msi": "^4.0.0",
+    "typescript": "4.8",
+    "uuid-by-string": "^4.0.0"
   },
   "build": {
     "public": [
