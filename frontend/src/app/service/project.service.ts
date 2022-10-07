@@ -10,7 +10,6 @@ import { DataService } from './data.service';
 import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
 import { OutputElement as OutputElement } from '../data/outputelement';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
-import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion } from '../data/PackageVersion';

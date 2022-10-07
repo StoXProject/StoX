@@ -13,7 +13,6 @@ import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import GeometryType from 'ol/geom/GeometryType';
 import { fromLonLat } from 'ol/proj';
 //import { rgb } from 'color-convert/conversions';
 import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
@@ -210,7 +209,7 @@ export class MapSetup {
             // Add the features back to API.
             //console.log(JSON.stringify(e.features.getArray()));
             let fcloned: Feature[] = e.features.getArray().map(f => {
-                let f2: Feature = f.clone();
+                let f2: Feature = (f as Feature).clone();
                 f2.set("layer", null);
                 f2.set("styleCache", null);
                 return f2;
@@ -242,7 +241,7 @@ export class MapSetup {
         dataService: DataService, ps: ProjectService, proj: string,  mapInteraction: MapInteraction) {
         let d: Draw = new Draw({
             source: source,
-            type: GeometryType.POLYGON
+            type: "Polygon"
         })
         d.on('drawend', async (e)  => {
             // Add the features back to API.
@@ -303,7 +302,7 @@ export class MapSetup {
             format: new GeoJSON(),
             useSpatialIndex: false
         });
-        var v: Vector = new Vector({
+        var v: Vector<any> = new Vector<any>({
             source: s,
             style: MapSetup.getStyleCacheFunction(),
             zIndex: zIndex
@@ -393,7 +392,7 @@ export class MapSetup {
         }
     }
 
-    public static getGridLayer(proj, centerLongitude: number): Vector {
+    public static getGridLayer(proj, centerLongitude: number): Vector<any> {
         var gridLines = {
             'type': 'FeatureCollection',
             'features': []
@@ -437,7 +436,7 @@ export class MapSetup {
                 featureProjection: proj
             })
         });
-        var v: Vector = new Vector({
+        var v: Vector<any> = new Vector({
             source: s,
             style: style,
             zIndex: 10
@@ -464,7 +463,7 @@ export class MapSetup {
             // be placed within the map.
             className: 'custom-mouse-position',
             target: document.getElementById('mouse-position'),
-            undefinedHTML: '&nbsp;'
+            placeholder: '&nbsp;'
         });
 
     }
