@@ -1,6 +1,8 @@
 // imports
 import path from 'path';
 var fs = require('fs')
+import os from 'node:os';
+
 // local constants
 module Constants {
     export const RES_PATH = 'srv';
@@ -14,9 +16,12 @@ export module UtilsConstants {
 
 export class Utils {
 
+    public static getTempPath() {
+        return fs.realpathSync(os.tmpdir());  
+    }
 
     public static getTempResFileName(resName: string): string {
-        return (require('temp-dir') + "/stox." + resName).replace(/\\/g, "/");
+        return (Utils.getTempPath() + "/stox." + resName).replace(/\\/g, "/");
     }
     /**
      * extractResourceFile(UtilsConstants.RES_SERVER_FILENAME)

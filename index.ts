@@ -111,7 +111,7 @@ function logError(str: string) {
 }
 
 function setupLogger() {
-  var logDir = require('temp-dir') + "/stox";
+  var logDir = Utils.getTempPath() + "/stox";
   console.log("Logging to " + logDir);
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
@@ -786,7 +786,7 @@ function setupServer() {
       await startBackendServer(false);
       logInfo('server started: ' + serverStarted + ", client: " + client);
       if (serverStarted) {
-        let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+        let officialsRFTmpFile = await Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
         let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
           officialsRFTmpFile + "\", quiet = TRUE, toJSON = TRUE)";
         logInfo(cmd);

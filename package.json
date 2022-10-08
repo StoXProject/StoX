@@ -19,8 +19,8 @@
     "package-and-installer-sign-win": "npm run package-win && npm run signstox && npm run installer-win && npm run signinstaller",
     "package-and-installer-mac": "npm run package-mac && npm run installer-mac",
     "package-and-installer-linux": "npm run package-linux && npm run installer-linux",
-    "build-frontend": "npm run prepare && cd frontend && npm install --no-fund && ng build --prod --base-href --aot=true --build--optimizer=true && cd ..",
-    "build-frontend_no_prepare": "cd frontend && npm install --no-fund && ng build --prod --base-href --aot=true --build--optimizer=true && cd ..",
+    "build-frontend": "npm run prepare && cd frontend && npm install --no-fund && ng build --configuration=production --base-href --aot=true --build-optimizer=true && cd ..",
+    "build-frontend_no_prepare": "cd frontend && npm install --no-fund && ng build --configuration=production --base-href --aot=true --build--optimizer=true && cd ..",
     "build-win": "npm run build-frontend && npm run package-win && npm run installer-win  ",
     "build-mac": "npm run build-frontend && npm run package-and-installer-mac",
     "build-linux": "npm run build-frontend && npm run package-and-installer-linux",
@@ -48,8 +48,7 @@
     "open-file-explorer": "^1.0.2",
     "pkginfo": "^0.4.1",
     "png-dpi-reader-writer": "^0.2.4",
-    "simple-node-logger": "^21.8.12",
-    "temp-dir": "^2.0.0"
+    "simple-node-logger": "^21.8.12"
   },
   "devDependencies": {
     "electron": "^21.1.0",
