@@ -32,6 +32,11 @@
                 "title": "Linux:",
                 "depth": 3,
                 "id": "linux:"
+              },
+              {
+                "title": "Installation of Rstox packages in R for unofficial StoX versions",
+                "depth": 3,
+                "id": "installation-of-rstox-packages-in-r-for-unofficial-stox-versions"
               }
             ]
           },
@@ -46,9 +51,9 @@
             "id": "license",
             "headings": [
               {
-                "title": "For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md .",
+                "title": "For historical release notes, see [NEWS.md](https://github.com/StoXProject/StoX/blob/master/NEWS.md).",
                 "depth": 3,
-                "id": "for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-."
+                "id": "for-historical-release-notes-see-news.md(https:github.comstoxprojectstoxblobmasternews.md)."
               }
             ]
           }
@@ -87,6 +92,11 @@
               "title": "Linux:",
               "depth": 3,
               "id": "linux:"
+            },
+            {
+              "title": "Installation of Rstox packages in R for unofficial StoX versions",
+              "depth": 3,
+              "id": "installation-of-rstox-packages-in-r-for-unofficial-stox-versions"
             }
           ]
         },
@@ -101,9 +111,9 @@
           "id": "license",
           "headings": [
             {
-              "title": "For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md .",
+              "title": "For historical release notes, see [NEWS.md](https://github.com/StoXProject/StoX/blob/master/NEWS.md).",
               "depth": 3,
-              "id": "for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-."
+              "id": "for-historical-release-notes-see-news.md(https:github.comstoxprojectstoxblobmasternews.md)."
             }
           ]
         }

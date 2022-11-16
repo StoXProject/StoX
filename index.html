@@ -26,13 +26,15 @@
                   </li>
                   <li class="menu-item -level-2"><a class="link title link-linux:" href="#linux:">Linux:</a>
                   </li>
+                  <li class="menu-item -level-2"><a class="link title link-installation-of-rstox-packages-in-r-for-unofficial-stox-versions" href="#installation-of-rstox-packages-in-r-for-unofficial-stox-versions">Installation of Rstox packages in R for unofficial StoX versions</a>
+                  </li>
                 </ul>
               </li>
               <li class="menu-item -level-1"><a class="link title link-examples" href="#examples">Examples</a>
               </li>
               <li class="menu-item -level-1 -parent"><a class="link title link-license" href="#license">License</a>
                 <ul class="submenu">
-                  <li class="menu-item -level-2"><a class="link title link-for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-." href="#for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-.">For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md .</a>
+                  <li class="menu-item -level-2"><a class="link title link-for-historical-release-notes-see-news.md(https:github.comstoxprojectstoxblobmasternews.md)." href="#for-historical-release-notes-see-news.md(https:github.comstoxprojectstoxblobmasternews.md).">For historical release notes, see [NEWS.md](https://github.com/StoXProject/StoX/blob/master/NEWS.md).</a>
                   </li>
                 </ul>
               </li>
@@ -50,6 +52,7 @@
 <p>StoX is an open source software developed at IMR, Norway, to analyze survey data and calculate survey estimates from acoustic and swept area surveys. The program is a stand-alone application for easy sharing and further development in cooperation with other institutes.</p>
 <p>&#x201C;StoX is designed as a tool for transparent and reproducible survey estimation across nations and survey objectives. All methods, user settings and links to input data are documented in a description file. A process is a user&#x2010;defined call to one function available in a library of functions defined by StoX. Any StoX model can be modified by changing parameters of the processes, adding or removing processes and by rearranging their order of execution. Different StoX functions require one or more input datasets, which can be data files or output from previously executed processes.&#x201D; <a href="https://doi.org/10.1111/2041-210X.13250">Johnsen, E., Totland, A., Sk&#xE5;levik, &#xC5;., Holmin, A. J., Dings&#xF8;r, G. E., Fuglebakk, E., &amp; Handegard, N. O. (2019). StoX: An open source software for marine survey analyses. Methods in Ecology and Evolution, 10(9), 1523-1528.</a></p>
 <h2 id="installation">Installation</h2>
+<p>The following describes installation of the latest <em>official</em> StoX version (Se <a href="https://github.com/StoXProject/StoX/blob/master/Official_StoX_versions.md">all official StoX versions</a>). For unofficial versions installation of the Rstox-packages must be done in R (details given at the end of this paragraph). It is highly recommended to use official versions, as these are fully tested, whereas tetsting is limited for unofficial versions.</p>
 <p>See <a href="https://github.com/StoXProject/StoX/blob/master/NEWS.md#Stox-v350-2022-08-15">release notes for StoX 3.5.0</a>.</p>
 <p>Download StoX from (<a href="https://github.com/StoXProject/StoX/releases/tag/v3.5.0">https://github.com/StoXProject/StoX/releases/tag/v3.5.0</a>). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:</p>
 <h3 id="windows:">Windows:</h3>
@@ -107,12 +110,18 @@ sudo apt-get install -y libproj-dev</li>
 installOfficialRstoxPackagesWithDependencies(&quot;3.1.4&quot;, &quot;/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.OfficialRstoxFrameworkVersions.txt&quot;, quiet = FALSE, toJSON = TRUE)</p>
 <p>Step 6:
 StoX is now ready for use.</p>
+<h3 id="installation-of-rstox-packages-in-r-for-unofficial-stox-versions">Installation of Rstox packages in R for unofficial StoX versions</h3>
+<p>Insert the appropriate versions stored in the file <a href="https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt">OfficialRstoxFrameworkVersions.txt</a>. StoX 3.4.6 is given as example:</p>
+<pre><code>remotes::install_github(repo = &quot;stoxproject/RstoxData&quot;, ref = &quot;RstoxData-v1.6.8&quot;)
+remotes::install_github(repo = &quot;stoxproject/RstoxBase&quot;, ref = &quot;RstoxBase-v1.9.8&quot;)
+remotes::install_github(repo = &quot;stoxproject/RstoxFramework&quot;, ref = &quot;RstoxFramework-v3.4.6&quot;)
+</code></pre>
 <h2 id="examples">Examples</h2>
 <p>Example StoX projects can be downloaded from <a href="https://github.com/StoXProject/StoXExamples">https://github.com/StoXProject/StoXExamples</a>.</p>
 <h2 id="license">License</h2>
 <p>MIT &#xA9; Norwegian Institute of Marine research (IMR) (<a href="https://www.hi.no/en">homepage</a>).</p>
 <hr>
-<h3 id="for-historical-release-notes-see:-https:github.comstoxprojectstoxblobmasternews.md-.">For historical release notes, see: <a href="https://github.com/StoXProject/StoX/blob/master/NEWS.md">https://github.com/StoXProject/StoX/blob/master/NEWS.md</a> .</h3>
+<h3 id="for-historical-release-notes-see-news.md.">For historical release notes, see <a href="https://github.com/StoXProject/StoX/blob/master/NEWS.md">NEWS.md</a>.</h3>
 
         </div>
       </div>
