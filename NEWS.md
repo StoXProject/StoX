@@ -1,3 +1,63 @@
+# StoX v3.5.1 (2022-11-16)
+
+## Summary
+* StoX 3.5.1 contains several improvements to the graphical user interface (GUI):
+- The right click option "View output" on the process name has been renamed to "Preview", and correspondingly, the Output window has been renamed to "Preview".
+- The Preview window now contains the options "Close others" and "Close all" in addition to "Close" on the tab name.
+- The right click option "Show in folder" has been added on the process name, opening the folder holding the output files of the process in the file explorer (Finder on Mac). This feature is also added to the project name in the Projects window.
+- When a statum is selected in the Stratum/PSU window it is now marked with darker grey color in the map. This currently only applies to AcousticPSU processes.
+- The Distance table has been completed, and can now be used to select EDSUs for an AcousticPSU processes.
+- The User log no longer resets when opening a different project. Instead the right click option "Clear log" has been added.
+- Added scroll bar in the process parameter window.
+- Changed colors to red for processing error and orange for function input error. 
+- The GUI now disables process parameter view, open/new project, and R connection and Install Rstox packages, when running a process.
+- The full path to the project is now shown as tooltip on the project name in the Projects window.
+- Origin for the map projection can now be set by right click in the map. 
+- Added an info box when the preivously opened project opens when opening StoX. 
+- When clicking "Yes" in Install Rstox packages the "Yes" button is now disabled, blocking a second installation.
+- Light blue background has been added to all active window and tab names, as well as the active process.
+- The GUI now shows RstoxFramework without version in the upper right corner, with red if any of the packages RstoxFramework, RstoxBase or RstoxData is not the certified version of the StoX release. 
+- Processes with enabled = FALSE is now marked with grey process symbol.
+- Added progress spinner on R connection and Preview.
+- Expand buttons in the process parameter window have changed logic to the natural logic (arrow down means open the list, arrow right means close the list).
+- Add PSU now activates only on AcousticPSU procecsses.
+- The GUI now stops immediately before a process with function input error, bu jumps over processes which are not enabled.
+* Added a line "... truncated" if a table in Preview does not contain all rows (the GUI shows at most 200000 rows).
+* StoX now deletes output files when a parameter of tha procecss is changed.
+* Removed all non-official Rstox-package versions from the StoX repository (https://github.com/StoXProject/repo). This implies that non-official StoX versions can no longer use Install Rstox packages. The user must instetad install the appropriate Rstox packages in R.
+
+## Changes affecting backward compatibility
+* Changed behavior of DefinitionMethod "WaterColumn" so that even data with missing depth information will have Layer = "WaterColumn". Before, if MinHaulDepth, MaxHaulDepth, MinChannelDepth or MaxHChannelDepth was missing, Layer would also be missing. This change will result in more individuals in IndividualsData, as the line hauls tagged to PSUs with NA Layer are removed when QuantityType == "SweptArea" in Individuals(). Also, changed the MinLayerDepth and MaxLayerDepth from the range of the depths (set to 0 and Inf if min depth and max depth was misssing) to (0, NA), saying that "WaterColumn" means from surface to an unknown bottom, or at least not defined by a single value.
+
+## Bug fixes
+* A problem with large ECA projects where Reca prints large amounts of text to stdout and stderr, where the GUI froze, has been fixed.
+* Fixed a bug where the GUI got stuck in the Add stratum symbol if one ran the StratumPolygon process before changing symbol back to the navigator symbol. 
+* Fixed possible bug when using a Regression process data where GroupingVariables were set. The indices of the rows of the SuperIndividualsData to be imputed were previously identified before merging in the RegressionTable of the Regression process data. This could possibly change the order so that indices were incorrect when the actual imputation by regression was made. In the new version the indices are identified as the last step before the imputation.
+* Fixed bug where EDSUs for StoX projects with data from ICESAcoustic data with and without end position given by Longitude2 resulted in EDSUs not being shown.
+* Fixed bug where "Linear" was used instead of "SimpleLinear" as EstimationMethod in EstimateBioticRegression().
+* Also fixed bug where the EstimationMethod "SimpleLinear" did not work as expected. 
+* Fixed possible values for AcousticCategory in SpeciesLink in SplitNASC(), from the available AcousticCategory in the NASCData to the SplitAcousticCategory in the AcousticCategoryLink. Also reordered the parameters so that AcousticCategoryLink comes before SpeciesLink.
+* Fixed bug with R < 4.2, where a filter process with unspecified FilterExpression retuns error "zero-length inputs cannot be mixed with those of non-zero length". The error is returned both when opening the FilterExpression and when running the process.
+* Changed to not remove rows with missing Haul in DefineBioticAssignment(). This was introduced by a misunderstanding in StoX 3.5.0, in the case when DefinitionMethod == "Stratum". The warning when all Hauls are missing is kept.
+
+## Warning and error messages
+* Removed warning when a preview is open in the GUI and the process is changed (setting warn to FALSE in getProcessTableOutput(), getProcessGeoJsonOutput() and getProcessPlotOutput()).
+* Improved error message when readProjectDescriptionJSON() fails to read project.json.
+* Added error if variables specified in Regression in ImputeSuperIndividuals() are not present in the data (preivously this was only a warning).
+* Added error if a LayerTable specified by the user contains missing values.
+* Added a warning if the variables selected using GroupingVariables and RegressionModel have changed in DefineRegression(), making the RegressionTable not work properly in the current version of the GUI.
+* Removed error when there are Individuals with IndividualTotalLength smaller than the smallest IndividualTotalLength in the QuantityData in SuperIndividuals(). This was changed to warnings when IndividualTotalLength does not fit into any of the length intervals of the QuantityData.
+* Added warning when there are AcousticCategory present in the NASCData but not in the SpeciesLink in AcousticDensity.
+* Added warning when ch_type P is missing or represent less sa than B.
+* Improved warnings in StoxBiotic() when missing values are generated for different producttype etc.
+* Added warning for duplicated station in NMDBiotic, which leads to more than one Haul per Station. This is not supported when assigning Hauls in the map, where all Hauls of a Station are selected. Filtering out Hauls can be a solution.
+
+## Detailed changes
+* Added variable selection dialogue for GroupingVariables in DefineRegression() (typing, as there is no list of possible values).
+* Disalowed empty string stratum name from the GUI.
+* Cleaned up JSON validation test files to enhance the expected error.
+
+
 # StoX v3.5.0 (2022-08-15)
 
 ## Summary

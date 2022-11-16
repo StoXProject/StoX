@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, HostListener, ElementRef, ViewChild, Input } from '@angular/core';
 import { defer, merge, Observable } from 'rxjs';
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
@@ -7,7 +7,6 @@ import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
 //import Extent from 'ol/extent';
 import Overlay from 'ol/Overlay';
-import OverlayPositioning from 'ol/OverlayPositioning';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Geometry } from 'ol/geom';
@@ -23,7 +22,6 @@ import * as proj4x from 'proj4';
 
 //import { add as addProjection } from 'ol/proj/projection';
 import { Fill, Stroke, Style, RegularShape } from 'ol/style';
-import { mapToMapExpression } from '@angular/compiler/src/render3/util';
 
 import { click, singleClick, shiftKeyOnly, platformModifierKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
@@ -41,8 +39,7 @@ import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
 import { MatDialog } from '@angular/material/dialog';
-import { MapBrowserPointerEvent } from 'ol';
-import { isDefined } from '@angular/compiler/src/util';
+import { MapBrowserEvent } from 'ol';
 import { EDSU_PSU, BioticAssignment } from '../data/processdata';
 import { ActiveProcessResult } from '../data/runresult';
 import { MapInfo } from '../data/MapInfo';
@@ -52,6 +49,7 @@ const proj4 = (proj4x as any).default;
 import { get as getProjection, getTransform } from 'ol/proj';
 import { Coordinate } from 'ol/coordinate';
 import { SubjectAction } from '../data/subjectaction';
+import { ContextMenu, MenuItem } from 'primeng';
 
 @Component({
   selector: 'app-map',
@@ -59,14 +57,16 @@ import { SubjectAction } from '../data/subjectaction';
   styleUrls: ['./map.component.scss']
 })
 
-export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
+export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   @ViewChild('tooltip', { static: false }) tooltip: ElementRef;
+  @Input() cm: ContextMenu;
+
   map: OlMap;
   // source: OlXYZ;
   // toposource: VectorSource;
   // layer: OlTileLayer;
-  coastLine: Vector;
-  grid: Vector;
+  coastLine: Vector<any>;
+  grid: Vector<any>;
   view: OlView;
   /*stationLayer: Layer = null;
   edsuPointLayer: Layer = null;
@@ -81,11 +81,19 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   proj = 'StoX_001_LAEA';
   currentLAEAOrigin : Coordinate // the origin for the current dynamic LAEA
   mapInfo : MapInfo;
+  contextMenu: MenuItem[];
+  
   constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
   }
   
     getProj(): string {
       return this.proj;
+    }
+    resetInteraction() {
+      this.tool = 'freemove';
+    }
+    stratumExists(stratum : string) : boolean {
+      return this.pds.stratum.includes(stratum);
     }
     
   /*@HostListener('window:keyup', ['$event'])
@@ -184,7 +192,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
   addLayerToProcess(pid: string, l: Layer) {
     let la = this.layerMap.get(pid);
     if (la == null) {
-      la = [];
+      la = []; 
       this.layerMap.set(pid, la);
     }
     la.push(l);
@@ -361,7 +369,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     this.overlay = new Overlay({
       element: this.tooltip.nativeElement,
       offset: [10, 0],
-      positioning: OverlayPositioning.CENTER_LEFT
+      positioning: "center-left"
     });
     if(this.map != null) {
       this.map.addOverlay(this.overlay);
@@ -419,6 +427,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
           this.updateStationSelection();
           break;
         }
+        case "changedEDSU":
         case "selectedPSU": {
           switch (this.ps.iaMode) {
             case "bioticAssignment": {
@@ -438,6 +447,22 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
             }
           }
           break;
+        }
+        case "selectedStratum": {
+          switch (this.ps.iaMode) {
+            case "acousticPSU": {
+              this.map.getLayers().getArray()
+                .filter(l => l.get("layerType") == "stratum")
+                .map(l => <VectorSource>(<Layer>l).getSource())
+                .forEach(s => s.getFeatures()
+                  .forEach(f => {
+                    // selected PSU.
+                    MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
+                  }))
+              break;
+            }
+          }
+          break; 
         }
       }
     });
@@ -566,24 +591,9 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     });*/
     this.map.on('pointermove', e => this.displayTooltip(e));
     this.map.getViewport().addEventListener('contextmenu', evt => {
-        if (this.proj=="StoX_001_LAEA") {
-          evt.preventDefault();
-          var  coords = this.map.getEventCoordinate(evt);
-          console.log(coords)
-          coords = transform(coords, this.proj, 'EPSG:4326');
-          console.log(coords)
-          if(isNaN(coords[0]) || isNaN(coords[1])){
-            return  
-          }
-          console.log("Init projection with new coords" + coords);
-          //this.setProjectionProj4('EPSG:4326'); 
-          this.initProjections(coords);
-          this.proj = "StoX_001_LAEA_PREV"
-          this.setProjectionProj4("StoX_001_LAEA", coords); 
-          this.updateMapInfoInBackend();
-        }
-      })
-      this.map.getView().on('change:resolution', async evt => {
+        this.openCm(evt);
+    })
+    this.map.getView().on('change:resolution', async evt => {
         console.log("Resolution changed - write to backend")
         await this.updateMapInfoInBackend();
     });
@@ -591,6 +601,7 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
 
   async handleIaMode(iaMode: string, proj) {
     let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
+    this.resetInteractions();
     switch (iaMode) {
       case "none": {
         this.resetLayersToProcess(this.ps.activeProcessId);
@@ -621,17 +632,17 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
       case "stratum": {
         this.resetLayersToProcess(this.ps.activeProcessId);
         let data: { stratumPolygon: string } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-        let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, data.stratumPolygon, proj, [MapSetup.getStratumStyle()], false, 1, []);
+        let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, data.stratumPolygon, proj, 
+          [MapSetup.getStratumStyle(), MapSetup.getFocusedStratumStyle()], false, 1, []);
         this.addLayerToProcess(this.ps.activeProcessId, layer);
-        this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj);
+        this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj, this);
         break;
       }
       default: {
         //this.map.removeLayer(this.map.getLayers()."station");
-        //this.resetInteractions();   
-        this.tool = "freemove";
       }
     }
+    this.tool = "freemove";
   }
 
   ngAfterViewInit() {
@@ -660,12 +671,12 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
     }
     return res;
   }
-  displayTooltip(evt: MapBrowserPointerEvent) {
+  displayTooltip(evt: MapBrowserEvent<any>) {
     var pixel = evt.pixel;
     var features: Feature[] = [];
 
     this.map.forEachFeatureAtPixel(pixel, feature => {
-      let layer: Vector = feature.get("layer");
+      let layer: Vector<any> = feature.get("layer");
       if (layer != null && layer.get("hasTooltip")) {
         features.push(<Feature>feature)
       }
@@ -717,6 +728,40 @@ export class MapComponent implements OnInit, AfterViewInit, ProjectionSelector {
           MapSetup.updateStationSelection(f, this.pds);
         }))
   }
+
+  async prepCm() {
+    // comment: add list of outputtablenames to runModel result. 
+    let m: MenuItem[] = [];
+    if (true) {
+      const originHandler = evt => {
+        if (this.proj=="StoX_001_LAEA") {
+          var  coords = this.map.getEventCoordinate(evt.originalEvent); 
+          console.log(coords)
+          coords = transform(coords, this.proj, 'EPSG:4326');
+          console.log(coords)
+          if(isNaN(coords[0]) || isNaN(coords[1])){
+            return  
+          }
+          console.log("Init projection with new coords" + coords);
+          //this.setProjectionProj4('EPSG:4326'); 
+          this.initProjections(coords);
+          this.proj = "StoX_001_LAEA_PREV"
+          this.setProjectionProj4("StoX_001_LAEA", coords); 
+          this.updateMapInfoInBackend();
+        }
+      };
+      m.push({ label: 'Select projection origin', icon: 'rib absa originicon', command: originHandler.bind(this)});
+    }
+    this.cm.model = m;
+  }
+  async openCm(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    await this.prepCm();
+    this.cm.show(event);
+    return false;
+  }
+
 }
 /*
 convert text delimited file with wkt geometry to arced topojson file

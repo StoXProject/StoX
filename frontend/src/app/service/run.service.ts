@@ -20,6 +20,7 @@ export class RunService {
 
 
     constructor(private ps: ProjectService, private dataService: DataService, private rf: RendererFactory2) {
+        console.log("Initializing run service")
         //this.iaMode = this.iaSubject.asObservable();
         this.ps.iaModeSubject.subscribe({
             next: (newVal) => {
@@ -55,9 +56,13 @@ export class RunService {
         this.runProcessIdx(idxFrom, this.ps.processes.length - 1);
     }
 
-    runThis(processIdx: number) {
+    runThisIdx(processIdx: number) {
         // Run from this to this process
         this.runProcessIdx(processIdx, processIdx);
+    }
+    runThis() {
+        // Run from this to this process
+        this.runThisIdx(this.ps.getSelectedProcessIdx());
     }
     getRunNextIdx(): number {
         return this.ps.processes.length == 0 || this.ps.getActiveProcessIdx() === null ||
@@ -65,11 +70,15 @@ export class RunService {
             this.ps.getActiveProcessIdx() + (this.ps.activeProcess.processDirty ? 0 : 1) : null;
     }
     canRunNext(): boolean {
-        return this.canRun() && this.getRunNextIdx() != null;
+        return this.canRun() && this.getRunNextIdx() != null && this.isProcessIdxRunnable(this.getRunNextIdx());
     }
+
     canRunFromHere(): boolean {
         return this.canRun() && this.ps.getSelectedProcessIdx() != null &&
-            (this.ps.getSelectedProcessIdx() == 0 || this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1);
+            this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && 
+            !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) &&
+            (this.ps.getSelectedProcessIdx() == this.firstProcessIdxRunnable(this.ps.getActiveProcessIdx() != null ? this.ps.getActiveProcessIdx() + 1: 0) || 
+            this.ps.getActiveProcessIdx() != null && this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1);
     }
 
     runNext() {
@@ -81,9 +90,28 @@ export class RunService {
     }
 
     getRunToHereIndexFrom(): number {
-        return this.ps.processes.length == 0 || this.ps.getSelectedProcessIdx() == null ? null :
-            this.ps.getActiveProcessIdx() == null ? 0 : Math.min(this.ps.getActiveProcessIdx() +
-                (this.ps.activeProcess.processDirty ? 0 : 1), this.ps.getSelectedProcessIdx());
+        if(this.ps.processes.length == 0 || this.ps.getSelectedProcessIdx() == null) {
+            return null;
+        }
+        let idx = 0;
+        if(this.ps.getActiveProcessIdx() != null) {
+            if(this.ps.getActiveProcessIdx() < this.ps.getSelectedProcessIdx()) {
+                idx = this.ps.getActiveProcessIdx() + (this.ps.activeProcess.processDirty ? 0 : 1);
+            } else {
+                idx = this.ps.getSelectedProcessIdx();
+            }
+        }
+        return this.firstProcessIdxRunnable(idx);
+    }
+
+    /*hasFunctionalError() {
+        return this.ps.processes != null && this.ps.processes.length > 0 && 
+        this.hasFunctionalErrorUpTo(this.ps.processes.length - 1);
+    }*/
+
+    hasFunctionalErrorUpTo(idx) {
+        let i = this.firstProcessIdxNotRunnable(idx, false, true)
+        return i != null;
     }
 
     getRunToHereIndexTo(): number {
@@ -91,13 +119,39 @@ export class RunService {
     }
 
     canRunToHere(): boolean {
-        return this.canRun() && this.ps.getSelectedProcessIdx() != null;
+        return this.canRun() && this.ps.getSelectedProcessIdx() != null &&
+        this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()); 
+    }
+
+    firstProcessIdxNotRunnable(idx, checkDisable : boolean = true, checkFunctionInputError : boolean = true) {
+        for(let i = 0; i < idx; i++) {
+            if(!this.isProcessIdxRunnable(i, checkDisable, checkFunctionInputError)) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    firstProcessIdxRunnable(idx, checkDisable : boolean = true, checkFunctionInputError : boolean = true) {
+        for(let i = idx; i < this.ps.processes.length; i++) {
+            if(this.isProcessIdxRunnable(i, checkDisable, checkFunctionInputError)) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    isProcessIdxRunnable(idx, checkDisable : boolean = true, checkFunctionInputError : boolean = true) {
+        return idx != null && idx >= 0 && idx <= this.ps.processes.length - 1 && 
+        !(checkDisable && !this.ps.processes[idx].enabled) && 
+        !(checkFunctionInputError && this.ps.processes[idx].functionInputError)
     }
 
     canRunThis(): boolean {
         let idxFrom: number = this.getRunToHereIndexFrom();
         let idxTo: number = this.getRunToHereIndexTo();
-        return idxFrom != null && idxTo != null && idxFrom == idxTo;
+        return idxFrom != null && idxTo != null && idxFrom == idxTo && this.isProcessIdxRunnable(idxTo) &&
+        !this.hasFunctionalErrorUpTo(idxTo);
     }
 
     runToHere() {
@@ -136,6 +190,12 @@ export class RunService {
         let processes: Process[] = this.ps.processes;
         for (var i = iFrom; i <= iTo; i++) {
             let p = processes[i];
+            if(!p.enabled) {
+                continue;
+            }
+            if(p.functionInputError) {
+                break;
+            }
             this.ps.runningProcessId = p.processID;
             //console.log("Run process " + p.processName + " with id " + p.processID);
             // this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "> Process " + p.processName));

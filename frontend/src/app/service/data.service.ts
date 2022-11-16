@@ -1,17 +1,16 @@
-import { Injectable, ɵCompiler_compileModuleAndAllComponentsAsync__POST_R3__ } from '@angular/core';
+import { Injectable} from '@angular/core';
 
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { Template } from '../data/Template';
 import { catchError, map, tap, mapTo } from 'rxjs/operators';
 import { UserLogEntry } from '../data/userlogentry';
-import { ProcessOutput } from '../data/processoutput';
 import { MapInfo } from '../data/MapInfo';
 import { UserLogType } from '../enum/enums';
-import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess } from '../data/runresult';
+import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess, ProcessOutputElement } from '../data/runresult';
 import { AcousticPSU } from '../data/processdata';
 import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
-import { ProcessProperties } from '../data/ProcessProperties';
+import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
 import { Process } from '../data/process';
 import { Project } from '../data/project';
 import { PackageVersion } from '../data/PackageVersion';
@@ -30,6 +29,7 @@ export class DataService {
   private jsonfromfile = '/api/jsonfromfile';
 
   constructor(private httpClient: HttpClient) {
+    console.log("Initializing http service")
   }
 
 
@@ -308,6 +308,11 @@ export class DataService {
         switch (typeof o) {
           case 'string': return JSON.stringify(o);
           case 'boolean': return o ? 'TRUE' : 'FALSE'
+          case 'object': {
+            if(Array.isArray(o)) {
+              return "(" + o.map(k => rVal(k)).join() + ")";
+            }
+          }
           default: return o;
         }
       }
@@ -383,9 +388,23 @@ export class DataService {
     });
   }
 
-  getProcessOutputTableNames(projectPath: string, modelName: string, processID: string): Observable<string[]> {
-    return this.runProcessFunc<string[]>('getProcessOutputTableNames', projectPath, modelName, processID);
+  getProcessOutputElements(projectPath: string, modelName: string, processID: string): Observable<ProcessOutputElement[]> {
+    return this.runProcessFunc<ProcessOutputElement[]>('getProcessOutputElements', projectPath, modelName, processID);
   }
+
+  hasFileOutput(projectPath: string, modelName: string, processID: string): Observable<boolean> {
+    return this.runProcessFunc<boolean>('hasFileOutput', projectPath, modelName, processID);
+  }
+
+  getProcessOutputFolder(projectPath: string, modelName: string, processID: string): Observable<string> {
+    return this.runFunction('getProcessOutputFolder', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "type": "output"
+    });    
+  }
+  
 
   getFilterOptionsAll(projectPath: string, modelName: string, processID: string, includeNumeric: Boolean): Observable<any> {
     return this.runFunction('getFilterOptionsAll', {
@@ -449,8 +468,8 @@ export class DataService {
     });
   }
 
-  getProcessOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<ProcessOutput> {
-    return this.runFunction('getProcessOutput', {
+  getProcessTableOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<ProcessTableOutput> {
+    return this.runFunction('getProcessTableOutput', {
       "projectPath": projectPath,
       "modelName": modelName,
       "processID": processID,
@@ -464,6 +483,26 @@ export class DataService {
       "drop": true
     });
 
+  }
+
+  getProcessGeoJsonOutput(projectPath: string, modelName: string, processID: string, geoJsonName: string): Observable<ProcessGeoJsonOutput> {
+    return this.runFunction('getProcessGeoJsonOutput', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "geoJsonName": geoJsonName,
+      "pretty": true,
+      "splitGeoJson": false
+    });
+  }
+
+  getProcessPlotOutput(projectPath: string, modelName: string, processID: string, plotName: string): Observable<string> {
+    return this.runFunction('getProcessPlotOutput', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "plotName": plotName
+    });
   }
 
   addEDSU(psu: string, edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
@@ -518,6 +557,10 @@ export class DataService {
   browse(defaultpath: string): Observable<any> {
     return this.postLocalNode('browse', defaultpath);
   }
+  
+  showinfolder(path: string): Observable<any> {
+    return this.postLocalNode('showinfolder', path);
+  }
 
   browsePath(options: any): Observable<any> {
     return this.postLocalNode('browsePath', options);
@@ -525,6 +568,10 @@ export class DataService {
 
   fileExists(filePath: string): Observable<any> {
     return this.postLocalNode('fileExists', filePath);
+  }
+
+  readFileAsBase64(filePath: string): Observable<any> {
+    return this.postLocalNode('readFileAsBase64', filePath);
   }
 
   makeDirectory(dirPath: string): Observable<any> {

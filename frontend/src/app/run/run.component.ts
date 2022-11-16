@@ -20,7 +20,8 @@ export class RunComponent implements OnInit {
     { cmd: "runfromhere", iclass: "runfromhereicon" },
     { cmd: "runto", iclass: "runtoicon" },
     { cmd: "reset", iclass: "reseticon" },
-    { cmd: "addprocess", iclass: "addprocessicon" },
+    { cmd: "addprocess", iclass: "addprocessicon" }
+//    { cmd: "stop", iclass: "stopicon" }
   ];
 
   public getActionTooltip(cmd: string): string {
@@ -31,17 +32,19 @@ export class RunComponent implements OnInit {
       case "runto": return "Run to here" // or "Run this if selected process < active process"
       case "reset": return "Reset model"
       case "addprocess": return "Add process"
+      case "stop": return "Stop model"
       default:
         throw "getActionTooltip(cmd) called with cmd=" + cmd;
     }
   }
   public getActionEnabled(cmd: string): boolean {
     switch (cmd) {
-      case "run": return this.runService.canRun(); // or "Continue model" if active process > -1
+      case "run": return this.runService.canRun(); /*&& !this.runService.hasFunctionalError()*/ // or "Continue model" if active process > -1
       case "runnext": return this.runService.canRunNext();
       case "runfromhere": return this.runService.canRunFromHere();
       case "runto": return this.runService.canRunToHere(); // or "Run this if selected process < active process"
       case "reset": return this.runService.canReset();
+      case "stop": return true;
       case "addprocess": return this.runService.canAddProcess();
       default:
         throw "getActionEnabled(cmd) called with cmd=" + cmd;
@@ -52,6 +55,7 @@ export class RunComponent implements OnInit {
     switch (command) {
       case "run": return this.runService.run();
       case "reset": return this.runService.reset();
+      case "stop": return null;
       case "runnext": return this.runService.runNext();
       case "runfromhere": return this.runService.runFromHere();
       case "addprocess": return this.runService.addProcess();

@@ -14,7 +14,6 @@ var mainWindow: any;
 
 
 
-
 var simpleNodeLogger = require('simple-node-logger');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -340,7 +339,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
   // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
   let fileName = Utils.getTempResFileName(UtilsConstants.RES_SERVER_FILENAME)
   logInfo("Spawning " + rscriptBin + " " + fileName);
-  backendProcess = await child_process.spawn(rscriptBin, [fileName]);
+  backendProcess = await child_process.spawn(rscriptBin, [fileName], { stdio: ['pipe', 'ignore', 'ignore'] });
   backendProcess.on('error', (er: any) => {
     logInfo("Spawning error " + er);
   });
@@ -509,7 +508,7 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       // Properties not read properly from file, or the file doesnt exist.
       logInfo("create initial properties")
       properties = {
-        "projectRootPath": require('os').homedir(),
+        "projectRootPath": "",
         "activeProject": "",
         "rPath": "",
         "rStoxFtpPath": ""
@@ -517,10 +516,13 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       logInfo("Properties initialized.");
     }
     if (properties.projectRootPath == null || properties.projectRootPath == "") {
-      properties.projectRootPath = require('os').homedir()
+      console.log("Electron Home: " + app.getPath('home'));
+      console.log("Node Home: " + require('os').homedir());
+      properties.projectRootPath = app.getPath('home');//require('os').homedir()
     }
     if(properties.mapInfo == null) {
-      properties.mapInfo = {projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]}
+      properties.mapInfo = {projection:'StoX_001_LAEA',zoom:4.3,origin:[10.01,60.01]}
+      //{projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]}
     }
   } catch (err) {
     logInfo("Error reading properties: " + err);
@@ -815,7 +817,8 @@ function setupServer() {
         //  logInfo("getpackageversion for " + elms[0]);
         let v = (await getPackageVersion(elms[0])).result;
         let elms2: string[] = v.split("_");
-        logInfo(elms[0] + " version: " + v);
+        logInfo("official " + elms[0] + " version: " + v);
+        logInfo("installed " + elms2[0] + " version: " + v);
         let v2 = elms2.length == 2 ? elms2[1] : "Not installed"
         return { packageName: elms[0], version: elms2[1], status: v == "NA" ? 2 : elms2[1] == elms[1] ? 0 : 1 };
       });
@@ -824,9 +827,9 @@ function setupServer() {
 
       // logInfo("updating status on first package based on the other packages" + packages);
       // step 2 - if some of the packages no 2... is unofficial, mark the first one as unofficial if official.
-      if (packages.length > 0 && packages[0].status == 0 && packages.slice(1).filter(p => p.status > 0).length > 0) {
+      /*if (packages.length > 0 && packages[0].status == 0 && packages.slice(1).filter(p => p.status > 0).length > 0) {
         packages[0].status = 1;
-      }
+      }*/
       //   logInfo("after updating status on first package based on the other packages" + packages);
     } else {
       packages.push({ packageName: "R disconnected", version: "", status: 3 });
@@ -880,6 +883,42 @@ function setupServer() {
       });
     }
   });
+
+  server.post('/showinfolder', function (req: any, res: any) {
+    logInfo("show in folder");
+    let path = resolveDefaultPath(req.body); // correct slashes in default path
+    const openExplorer = require('open-file-explorer');
+    openExplorer(path, (err: any) => {
+      if(err) {
+          console.log(err);
+      }
+      else {
+          //Do Something
+      }
+    });
+  });
+
+  server.post('/readFileAsBase64', async (req: any, res: any) => {
+    fs.readFileSync(req.body);
+    // read binary data
+    // convert binary data to base64 encoded string
+    let filePath: string = req.body;
+    if (filePath.length > 0 && fs.existsSync(filePath)) {
+      var bitmap = fs.readFileSync(req.body);
+      const p = require('png-dpi-reader-writer')
+      const {width, height, dpi} = p.parsePngFormat(bitmap)
+      // calculate in cm
+      let widthcm = width / dpi * 2.54;
+      let heightcm = height / dpi * 2.54;
+      console.log(width, height, dpi);
+      res.send({'img': Buffer.from(bitmap).toString('base64'), 
+      'width': widthcm, 'height': heightcm});
+    } else {
+      res.send("error - file doesnt exist");
+    }
+  });
+
+
 
   server.post('/fileExists', function (req: any, res: any) {
     logInfo("check if a file exists");

@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, Input } from '@angular/core';
 
 import { DataService } from '../../service/data.service';
 import { ProjectService } from '../../service/project.service';
 import { UserLogType } from '../../enum/enums'
+import { ContextMenu, MenuItem } from 'primeng';
 
 
 @Component({
@@ -12,6 +13,7 @@ import { UserLogType } from '../../enum/enums'
 })
 
 export class UserLogComponent implements OnInit {
+    @Input() cm: ContextMenu;
     //  projects: Project[];
     @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
     constructor(public ds: DataService, public ps: ProjectService) {
@@ -36,4 +38,20 @@ export class UserLogComponent implements OnInit {
             console.log("scrolled here")
         } catch (err) { }
     }
-}
+    async prepCm() {
+        // comment: add list of outputtablenames to runModel result. 
+        let m: MenuItem[] = [];
+        m.push(
+          { label: 'Clear log', icon: 'rib absa deleteicon', command: (event) => { this.ds.log.splice(0, this.ds.log.length) } }
+        );
+        this.cm.model = m;
+      }
+    
+      async openCm(event: MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        await this.prepCm();
+        this.cm.show(event);
+        return false;
+      }
+    }

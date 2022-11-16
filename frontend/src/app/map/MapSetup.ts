@@ -13,7 +13,6 @@ import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import GeometryType from 'ol/geom/GeometryType';
 import { fromLonLat } from 'ol/proj';
 //import { rgb } from 'color-convert/conversions';
 import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
@@ -186,6 +185,9 @@ export class MapSetup {
     static getStratumStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.05)', 'rgba(0, 0, 0, 0.2)', 1);
     }
+    static getFocusedStratumStyle(): Style {
+        return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.15)', 'rgba(0, 0, 0, 0.3)', 1);
+    }
     static getStratumNodeStyle(): Style {
         let s: Style = MapSetup.getPointStyleRect("rgba(255, 0, 0, 0.7)", MapSetup.POINT_OUTLINE_COLOR, 6);
         s.setGeometry(f => {
@@ -198,7 +200,7 @@ export class MapSetup {
     static getStratumSelectStyle(): Style {
         return MapSetup.getPolygonStyle('rgba(255, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 2);
     }
-    static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, projsel: ProjectionSelector) {
+    static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, mapInteraction: MapInteraction) {
         let m: Modify = new Modify({
             features: select.getFeatures()/*,
                         deleteCondition: e => singleClick(e) && shiftKeyOnly(e)*/
@@ -207,14 +209,14 @@ export class MapSetup {
             // Add the features back to API.
             //console.log(JSON.stringify(e.features.getArray()));
             let fcloned: Feature[] = e.features.getArray().map(f => {
-                let f2: Feature = f.clone();
+                let f2: Feature = (f as Feature).clone();
                 f2.set("layer", null);
                 f2.set("styleCache", null);
                 return f2;
             });
             console.log(JSON.stringify(fcloned));
 
-            let s: string = (new GeoJSON()).writeFeatures(fcloned, { featureProjection: projsel.getProj(), dataProjection: 'EPSG:4326' });
+            let s: string = (new GeoJSON()).writeFeatures(fcloned, { featureProjection: mapInteraction.getProj(), dataProjection: 'EPSG:4326' });
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
@@ -236,12 +238,12 @@ export class MapSetup {
         });
     }
     static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource,
-        dataService: DataService, ps: ProjectService, proj: string) {
+        dataService: DataService, ps: ProjectService, proj: string,  mapInteraction: MapInteraction) {
         let d: Draw = new Draw({
             source: source,
-            type: GeometryType.POLYGON
+            type: "Polygon"
         })
-        d.on('drawend', async function (e) {
+        d.on('drawend', async (e)  => {
             // Add the features back to API.
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
@@ -252,7 +254,7 @@ export class MapSetup {
             const dialogRef = dialog.open(StratumNameDlgComponent, {
                 width: '250px',
                 disableClose: true,
-                data: { stratum: '' }
+                data: { stratum: '', mapInteraction:mapInteraction }
             });
             let f: Feature = e.feature.clone(); // survive event e change after subdialog by cloning feature
             let strataName: any = await dialogRef.afterClosed().toPromise();
@@ -260,8 +262,8 @@ export class MapSetup {
                             dataProjection: 'EPSG:4326',
                             featureProjection: proj
                         })*/
+            console.log("Strata name " + strataName + " with hex " + MapSetup.toHex(strataName));
             if (typeof (strataName) == 'string') {
-                console.log("Strata name " + strataName + " with hex " + MapSetup.toHex(strataName));
                 // a valid stratum name has been entered
                 //f.setId(Math.max(...source.getFeatures().map(f2 => f2.getId() != null ? +f2.getId() : 0)) + 1);
                 f.setProperties({ 'StratumName': strataName });
@@ -270,7 +272,10 @@ export class MapSetup {
                 //source.getFeatures().map(f => f.getId())
                 //e.setId(33); // find the max id + 1
                 let res: ActiveProcessResult = ps.handleAPI(await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
-            }            //console.log("res :" + res); 
+                console.log("res :" + JSON.stringify(res)); 
+                ps.iaMode = "stratum"; // trigger the gui
+            }            
+            mapInteraction.resetInteraction();
 
         });
         return d;
@@ -297,7 +302,7 @@ export class MapSetup {
             format: new GeoJSON(),
             useSpatialIndex: false
         });
-        var v: Vector = new Vector({
+        var v: Vector<any> = new Vector<any>({
             source: s,
             style: MapSetup.getStyleCacheFunction(),
             zIndex: zIndex
@@ -319,6 +324,9 @@ export class MapSetup {
             evt.feature.set("selection", 0);
             if (layerType == 'EDSU') {
                 MapSetup.updateEDSUSelection(evt.feature, null);
+            }
+            if(layerType == 'stratum') {
+                MapSetup.updateStratumSelection(evt.feature, null);
             }
             MapSetup.connectInfoProperties(evt.feature);
             //evt.feature.set("selection", 0); // selection 0 by default.
@@ -384,7 +392,7 @@ export class MapSetup {
         }
     }
 
-    public static getGridLayer(proj, centerLongitude: number): Vector {
+    public static getGridLayer(proj, centerLongitude: number): Vector<any> {
         var gridLines = {
             'type': 'FeatureCollection',
             'features': []
@@ -428,7 +436,7 @@ export class MapSetup {
                 featureProjection: proj
             })
         });
-        var v: Vector = new Vector({
+        var v: Vector<any> = new Vector({
             source: s,
             style: style,
             zIndex: 10
@@ -455,7 +463,7 @@ export class MapSetup {
             // be placed within the map.
             className: 'custom-mouse-position',
             target: document.getElementById('mouse-position'),
-            undefinedHTML: '&nbsp;'
+            placeholder: '&nbsp;'
         });
 
     }
@@ -470,6 +478,13 @@ export class MapSetup {
                     selected != null && selected ? 1 : 0;
         f.set("selection", selection); // Set the style selection.
     }
+
+    static updateStratumSelection(f: Feature, selectedStratum) {
+        let stratumName = f.get("StratumName");
+        let focused : boolean = stratumName != null && stratumName.length != null && selectedStratum != null && stratumName == selectedStratum;
+        f.set("selection", focused ? 1 : 0);
+    }
+
 
     static isStationSelected(f: Feature, pds: ProcessDataService): boolean {
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");

@@ -19,6 +19,14 @@
             "name": "StoX in Chrome",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/frontend"
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "port": 9229,
+            "name": "Attach Chrome",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }

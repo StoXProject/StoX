@@ -7,16 +7,16 @@ import { ActiveProcess } from '../data/runresult';
 import { Model } from '../data/model';
 import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
-import { ProcessProperties } from '../data/ProcessProperties';
-import { ProcessOutput } from '../data/processoutput';
-import { OutputTable } from '../data/outputtable';
+import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
+import { OutputElement as OutputElement } from '../data/outputelement';
 import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult'
-import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion } from '../data/PackageVersion';
 import { HelpCache } from '../data/HelpCache';
 import { SubjectAction } from '../data/subjectaction';
+import { UserLogEntry } from '../data/userlogentry';
+import { UserLogType } from '../enum/enums';
 
 //import { RunService } from '../service/run.service';
 //import { DomSanitizer } from '@angular/platform-browser';
@@ -34,7 +34,7 @@ export class ProjectService {
   private m_projects: Project[] = [];
   private m_selectedProject: Project = null;
   //private m_isSelectedProjectSaved = true;
-  outputTables: OutputTable[] = [];
+  outputElements: OutputElement[] = [];
   public outputTableActivator: Subject<number> = new Subject<number>();
   public bottomViewActivator: Subject<number> = new Subject<number>();
 
@@ -52,19 +52,27 @@ export class ProjectService {
   m_isResetting: boolean = false; // current reset flag.
   rstoxPackages: PackageVersion[];
   rstoxFrameworkAvailable: boolean = false;
+  m_appStatus : string = null;
+  m_appStatusIsUpdating : boolean = false;
 
   userlog: string[] = [];
 
   constructor(private dataService: DataService/*, public rs: RunService*/, private dialog: MatDialog) {
+    console.log("Initializing project service")
     this.initData();
-
   }
 
   get application(): string {
     return this.m_Application;
   }
 
+  /*get busy() : boolean {
+    return this.m_busy;
+  }
 
+  set busy(busy : boolean) {
+    this.m_busy =  busy;
+  }*/
 
   get processes(): Process[] {
     return this.m_processes;
@@ -161,6 +169,7 @@ export class ProjectService {
     //this.initializeProperties();
     if (this.selectedProject != null && this.selectedModel != null) {
       this.processes = await this.dataService.getProcessTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+      this.activeProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
       if (this.processes == null) {
         this.processes = [];
       }
@@ -290,6 +299,8 @@ export class ProjectService {
   }
 
   async initData() {
+    try {
+      this.appStatus = "Initializing StoX"
     await this.checkRstoxFrameworkAvailability();
     this.m_Application = "StoX " + await this.dataService.getStoxVersion().toPromise();
     let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
@@ -298,9 +309,12 @@ export class ProjectService {
     // Read models and set selected to the first model
     if (projectPath.length > 0 && this.rstoxFrameworkAvailable) {
       //this.selectedModel = this.models[0]; 
-      this.openProject(projectPath, false, true, false);
+      await this.openProject(projectPath, false, true, false, true);
     }
+  } finally {
+    this.appStatus = null;
   }
+}
 
   async checkRstoxFrameworkAvailability() {
     this.rstoxPackages = JSON.parse(await this.dataService.getRstoxPackageVersions().toPromise());
@@ -310,18 +324,26 @@ export class ProjectService {
       this.setModels(await this.dataService.getModelInfo().toPromise());
     } else {
       this.setModels(null);
-      this.activateProject(null, false);
+      await this.activateProject(null, false);
     }
   }
 
-  async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave: boolean) {
+  async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave: boolean, withStatus = false) {
     // the following should open the project and make it selected in the GUI
+    try {
+      if(withStatus) {
+        this.appStatus = "Opening project " + projectPath + "..."
+      }
+//      this.busy = true;
     this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise(), askSave);
+    } finally {
+      this.appStatus = null
+//      this.busy = false;
+    }
   }
 
   /*Activate project in gui - at the moment only one project is listed*/
   async activateProject(project: Project, askSave: boolean) {
-    this.dataService.log = [];   // triggered by project activation
     if (project != null && project.projectPath == 'NA') {
       project = null; // openProject returns NA when project is renamed or moved.
     }
@@ -351,6 +373,10 @@ export class ProjectService {
     await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();
 
     this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
+    if(project != null) {
+       this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "\n\n-------------------------------------------------------------------------\nOpen project: " + project.projectName + " (" + project.projectPath + 
+       ")\n-------------------------------------------------------------------------"));
+    }
 
     //this.processes = null;       // triggered by selected model
     //this.selectedProcessId = null; // -> triggered by selection in gui or setProcesses
@@ -360,7 +386,7 @@ export class ProjectService {
     this.runFailedProcessId = null; // triggered by run service or active process id
     this.runningProcessId = null; // current running process
     this.m_isResetting = false; // current reset flag.    
-    this.outputTables = []; // clear output tables
+    this.outputElements = []; // clear output tables
   }
 
 
@@ -491,4 +517,50 @@ export class ProjectService {
       return p.processID == this.activeProcess.processID && this.activeProcess.processDirty;
     }
   }
+
+  async resolveElementOutput(oe: OutputElement) {
+    switch(oe.element.elementType) {
+      case "geojson": 
+        case "table": {
+          let tableOutput: ProcessTableOutput = null;
+          tableOutput = await this.dataService.getProcessTableOutput(this.selectedProject.projectPath,
+          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+        oe.output = tableOutput.data;
+      break;
+      }
+      //case "geojson": {
+        // getProcessGeoJsonOutput
+        /*let output: ProcessGeoJsonOutput = await this.dataService.getProcessGeoJsonOutput(this.selectedProject.projectPath,
+          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+        oe.output = output.data;
+        oe.outputjson = JSON.parse(output.data);*/
+      //break;
+      //} 
+      case "plot": {
+        let path: string = await this.dataService.getProcessPlotOutput(this.selectedProject.projectPath,
+          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+        let base64 : any = JSON.parse(await this.dataService.readFileAsBase64(path).toPromise());
+        oe.output = base64;
+      }
+      break;
+    }
+  }
+  
+  get appStatus(): string {
+    return this.m_appStatus;
+  }
+  
+  get appStatusIsUpdating(): boolean {
+    return this.m_appStatusIsUpdating;
+  }
+
+  set appStatus(status : string) {
+    this.m_appStatus = status;
+    (async () => { 
+        this.m_appStatusIsUpdating = true;
+        await new Promise(f => setTimeout(f, 500));
+        this.m_appStatusIsUpdating = false;
+    })(); 
+  }
+
 }
