@@ -7,7 +7,6 @@ import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
 //import Extent from 'ol/extent';
 import Overlay from 'ol/Overlay';
-import OverlayPositioning from 'ol/OverlayPositioning';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Geometry } from 'ol/geom';
@@ -23,7 +22,6 @@ import * as proj4x from 'proj4';
 
 //import { add as addProjection } from 'ol/proj/projection';
 import { Fill, Stroke, Style, RegularShape } from 'ol/style';
-import { mapToMapExpression } from '@angular/compiler/src/render3/util';
 
 import { click, singleClick, shiftKeyOnly, platformModifierKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
@@ -41,8 +39,7 @@ import { MapSetup } from './MapSetup';
 import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
 import { MatDialog } from '@angular/material/dialog';
-import { MapBrowserPointerEvent } from 'ol';
-import { isDefined } from '@angular/compiler/src/util';
+import { MapBrowserEvent } from 'ol';
 import { EDSU_PSU, BioticAssignment } from '../data/processdata';
 import { ActiveProcessResult } from '../data/runresult';
 import { MapInfo } from '../data/MapInfo';
@@ -68,8 +65,8 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   // source: OlXYZ;
   // toposource: VectorSource;
   // layer: OlTileLayer;
-  coastLine: Vector;
-  grid: Vector;
+  coastLine: Vector<any>;
+  grid: Vector<any>;
   view: OlView;
   /*stationLayer: Layer = null;
   edsuPointLayer: Layer = null;
@@ -372,7 +369,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     this.overlay = new Overlay({
       element: this.tooltip.nativeElement,
       offset: [10, 0],
-      positioning: OverlayPositioning.CENTER_LEFT
+      positioning: "center-left"
     });
     if(this.map != null) {
       this.map.addOverlay(this.overlay);
@@ -674,12 +671,12 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     }
     return res;
   }
-  displayTooltip(evt: MapBrowserPointerEvent) {
+  displayTooltip(evt: MapBrowserEvent<any>) {
     var pixel = evt.pixel;
     var features: Feature[] = [];
 
     this.map.forEachFeatureAtPixel(pixel, feature => {
-      let layer: Vector = feature.get("layer");
+      let layer: Vector<any> = feature.get("layer");
       if (layer != null && layer.get("hasTooltip")) {
         features.push(<Feature>feature)
       }

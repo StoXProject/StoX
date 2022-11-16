@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { Host, Self, Optional, Input, OnInit } from '@angular/core';
-import { MatAutocompleteTrigger, AUTOCOMPLETE_OPTION_HEIGHT, AUTOCOMPLETE_PANEL_HEIGHT } from '@angular/material/autocomplete';
+import { MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {
   _countGroupLabelsBeforeOption,
   _getOptionScrollPosition
@@ -12,8 +12,8 @@ import {
 
 export class DirectiveAccessor implements OnInit {
     
-    @Input() optionHeight: number = AUTOCOMPLETE_OPTION_HEIGHT;
-    @Input() panelHeight: number = AUTOCOMPLETE_PANEL_HEIGHT;
+    @Input() optionHeight: number = 48;
+    @Input() panelHeight: number = 256;
 
     constructor(
       @Host() @Self() @Optional() public _refTrigger: MatAutocompleteTrigger

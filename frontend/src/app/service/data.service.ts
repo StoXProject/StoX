@@ -1,4 +1,4 @@
-import { Injectable, ɵCompiler_compileModuleAndAllComponentsAsync__POST_R3__ } from '@angular/core';
+import { Injectable} from '@angular/core';
 
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable, Subject, of, interval, merge } from 'rxjs';
@@ -14,7 +14,6 @@ import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../
 import { Process } from '../data/process';
 import { Project } from '../data/project';
 import { PackageVersion } from '../data/PackageVersion';
-import { isArray } from 'util';
 
 @Injectable({
   providedIn: 'root'

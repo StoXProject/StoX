@@ -30,7 +30,7 @@ import { AngularSplitModule } from 'angular-split';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ParameterComponent } from './parameter/parameter.component';
 //import { AgGridModule } from 'ag-grid-angular';
-import { AngularResizedEventModule } from 'angular-resize-event';
+import { AngularResizeEventModule } from 'angular-resize-event';
 
 import { HttpClientModule } from '@angular/common/http';
 
@@ -206,7 +206,7 @@ export class MaterialModule { }
     TabViewModule,
     NgbModule,
     AngularSplitModule.forRoot(),
-    AngularResizedEventModule,
+    AngularResizeEventModule,
     //AgGridModule.withComponents([]),
     HttpClientModule,
     /*HttpClientInMemoryWebApiModule.forRoot(
