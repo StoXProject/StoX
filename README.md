@@ -93,10 +93,11 @@ StoX is now ready for use.
 
 ### Installation of Rstox packages in R for unofficial StoX versions
 
-# Insert the appropriate versions stored in the file [OfficialRstoxFrameworkVersions.txt](https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt). StoX 3.4.6 is given as example:
-'''remotes::install_github(repo = "stoxproject/RstoxData", ref = "RstoxData-v1.6.8")
-remotes::install_github(repo = "stoxproject/RstoxBase", ref = "RstoxBase-v1.9.8")
-remotes::install_github(repo = "stoxproject/RstoxFramework", ref = "RstoxFramework-v3.4.6")'''
+Insert the appropriate versions stored in the file [OfficialRstoxFrameworkVersions.txt](https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt). StoX 3.4.6 is given as example:
+
+    remotes::install_github(repo = "stoxproject/RstoxData", ref = "RstoxData-v1.6.8")
+    remotes::install_github(repo = "stoxproject/RstoxBase", ref = "RstoxBase-v1.9.8")
+    remotes::install_github(repo = "stoxproject/RstoxFramework", ref = "RstoxFramework-v3.4.6")
 
 ## Examples
 

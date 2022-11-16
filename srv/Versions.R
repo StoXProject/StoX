@@ -13,7 +13,7 @@ StoxInstallSettings <- list(
 )
 
 
-#' Tools to download and install Rstox packages and dependen packages.
+#' Tools to download and install Rstox packages and dependent packages.
 #' 
 #' \code{getNonRstoxDependencies} gets all package dependencies ("Depends", "Imports" and "LinkingTo") of the packages given by \code{packageName}, excluding any Rstox-packages. \cr \cr
 #' \code{installOfficialRstoxPackagesWithDependencies} installs the corrrect versions of Rstox-packages, and other packages that these packages depend on. This function is used by the StoX GUI. \cr \cr
@@ -790,7 +790,7 @@ getPackageBinaryURL <- function(packageName, version = NULL, repos = "https://cl
 
 getPackageFileExt <- function(platform = NA, type = c("binary", "source")) {
     
-    type <- RstoxData::match_arg_informative(type)
+    type <- match_arg(type)
     platform <- getPlatform(platform)
     
     if (platform == "windows") {
