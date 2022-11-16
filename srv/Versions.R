@@ -412,7 +412,11 @@ readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFil
     if(toTable) {
         dependencies <- strsplit(official$Dependencies, "[,]")
         dependencies <- lapply(dependencies, extractPackageNameAsNames)
-        official <- data.table::data.table(RstoxFramework = official$RstoxFramework, data.table::rbindlist(dependencies))
+        official <- data.table::data.table(
+            RstoxFramework = official$RstoxFramework, 
+            data.table::rbindlist(dependencies),
+            Official = official$Official
+        )
     }
     
     return(official)
@@ -786,7 +790,7 @@ getPackageBinaryURL <- function(packageName, version = NULL, repos = "https://cl
 
 getPackageFileExt <- function(platform = NA, type = c("binary", "source")) {
     
-    type <- match.arg(type)
+    type <- RstoxData::match_arg_informative(type)
     platform <- getPlatform(platform)
     
     if (platform == "windows") {

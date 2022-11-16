@@ -8,6 +8,8 @@ StoX is an open source software developed at IMR, Norway, to analyze survey data
 
 ## Installation
 
+The following describes installation of the latest *official* StoX version (Se [all official StoX versions](https://github.com/StoXProject/StoX/blob/master/Official_StoX_versions.md)). For unofficial versions installation of the Rstox-packages must be done in R (details given at the end of this paragraph). It is highly recommended to use official versions, as these are fully tested, whereas tetsting is limited for unofficial versions.
+
 See [release notes for StoX 3.5.0](https://github.com/StoXProject/StoX/blob/master/NEWS.md#Stox-v350-2022-08-15).
 
 Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v3.5.0). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
@@ -89,6 +91,13 @@ installOfficialRstoxPackagesWithDependencies("3.1.4", "/private/var/folders/gn/9
 Step 6: 
 StoX is now ready for use. 
 
+### Installation of Rstox packages in R for unofficial StoX versions
+
+# Insert the appropriate versions stored in the file [OfficialRstoxFrameworkVersions.txt](https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt). StoX 3.4.6 is given as example:
+'''remotes::install_github(repo = "stoxproject/RstoxData", ref = "RstoxData-v1.6.8")
+remotes::install_github(repo = "stoxproject/RstoxBase", ref = "RstoxBase-v1.9.8")
+remotes::install_github(repo = "stoxproject/RstoxFramework", ref = "RstoxFramework-v3.4.6")'''
+
 ## Examples
 
 Example StoX projects can be downloaded from https://github.com/StoXProject/StoXExamples.
@@ -99,4 +108,4 @@ MIT © Norwegian Institute of Marine research (IMR) ([homepage](https://www.hi.n
 
 ---
 
-### For historical release notes, see: https://github.com/StoXProject/StoX/blob/master/NEWS.md .
+### For historical release notes, see [NEWS.md](https://github.com/StoXProject/StoX/blob/master/NEWS.md).

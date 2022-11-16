@@ -33,7 +33,7 @@ export class InstallRPackagesDlgService {
             this.display = false;
         } finally {
             if (project != null) {
-                await this.ps.openProject(project, false, true, false);
+                await this.ps.openProject(project, true, true, false);
             }
         }
     }
