@@ -1,3 +1,16 @@
+# StoX v3.5.2 (2022-11-12)
+
+## Summary
+* A stratum can now be deletetd in the GUI by right click on the stratum name in the Stratu/PSU window when a proecss usinng DefineStratumPolygon as function is the active proecss.
+* Added the parameter TargetVariableUnit in ReportSuperIndividuals(), ReportQuantity() and ReportBootstrap(), DensityUnit in ReportDensity(), and ReportVariableUnit in ReportSpeciesCategoryCatch(), which all acn be used to set the units for the report.
+* Removed warning when a PSU to be added assignment to is not present in the BioticAssignment (this should be no problem, as PSUs are added with).
+* Fixed bug innrtoduced in 3.5.1 where scrolling was not possible in the Stratum/PSU window.
+* Changes to ICESDatras in RstoxData:
+- Added the function PrepareWriteICESDatras().
+- Fixed typo in ICESDatras() (BycSpecRecCode changed to BySpecRecCode).
+- Added specialstage in Maturity in CA.
+- Added the LiverWeight in CA, with values from the liverweight in NMDBiotic.
+
 # StoX v3.5.1 (2022-11-16)
 
 ## Summary
