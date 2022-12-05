@@ -899,7 +899,6 @@ function setupServer() {
   });
 
   server.post('/readFileAsBase64', async (req: any, res: any) => {
-    fs.readFileSync(req.body);
     // read binary data
     // convert binary data to base64 encoded string
     let filePath: string = req.body;
