@@ -51,6 +51,11 @@ export class ProcessDataService {
                         this.bioticAssignmentData = v;
                         break;
                     }
+                    case 'none': {
+                        this.selectedStratum = null;
+                        this.selectedPSU = null;
+                        break;
+                    }
                     case 'reset': {
                         this.stratum = null;
                         this.acousticPSU = null;
