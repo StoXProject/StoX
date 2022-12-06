@@ -3,7 +3,7 @@
     (keyup.enter)="onEnter()">
 <!--arrow_drop_down>-->
 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event)">
-    <mat-option *ngFor="let item of filterItems(myInput.nativeElement.value, items)" [value]="item" matTooltip="{{item}}"> 
+    <mat-option *ngFor="let item of filterItems(myInput.nativeElement.value, items)" [value]="item" [title]="item"> 
         <span>{{item}}</span>
     </mat-option>
 </mat-autocomplete>
