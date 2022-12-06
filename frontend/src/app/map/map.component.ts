@@ -449,8 +449,9 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           break;
         }
         case "selectedStratum": {
-          switch (this.ps.iaMode) {
-            case "acousticPSU": {
+          // Remove the check for iamode to update selected when always changed
+//          switch (this.ps.iaMode) {
+//            case "acousticPSU": {
               this.map.getLayers().getArray()
                 .filter(l => l.get("layerType") == "stratum")
                 .map(l => <VectorSource>(<Layer>l).getSource())
@@ -459,9 +460,9 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
                     // selected PSU.
                     MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
                   }))
-              break;
-            }
-          }
+//              break;
+//            }
+//          }
           break; 
         }
       }
