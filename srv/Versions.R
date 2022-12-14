@@ -89,6 +89,7 @@ getStoxDependencies <- function(
     platform = NA, 
     quiet = FALSE
 ) {
+    
     # Use the GitHub master as default if missing:
     if(missing(officialRstoxPackageVersionsFile)) {
         officialRstoxPackageVersionsFile <- "https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt"
@@ -1002,6 +1003,22 @@ getOfficialRstoxPackagesInfo <- function(
     )
     officialRstoxPackageName <- getOnlyPackageName(officialRstoxPackageNameAndVersion)
     officialRstoxPackageVersionList <- extractPackageNameAsNames(officialRstoxPackageNameAndVersion)
+    officialRstoxPackageVersionList <- officialRstoxPackageVersionList[rev(packageHierarchy)]
+    
+    # If the StoX version is not official, report an error with info on how to install manually from source in R:
+    if(isFALSE(as.logical(attr(officialRstoxPackageNameAndVersion, "Official")))) {
+        packageHierarchy
+        installCommands <- paste0(
+            "remotes::install_github(repo = \"stoxproject/", 
+            names(officialRstoxPackageVersionList), 
+            "\", ref = \"", 
+            names(officialRstoxPackageVersionList), 
+            "-v", 
+            unlist(officialRstoxPackageVersionList), 
+            "\")"
+        )
+        stop("The StoX version ", StoXGUIVersion, " is not an official version. Installation of Rstox packages for non-official versions is no longer supported in the StoX GUI. It is highly recommended to use the latest official version StoX ", getLatestOfficialStoxVersion(officialRstoxPackageVersionsFile), ".\nTo install the Rstox packages for this non-official version, the following lines must be run in R. If you are using Rstudio, it is adviced to restart R before installing the Rstox packages. Also, on Windows Rtools must be installed, as the Rstox packages are installed from source by these lines:\n", paste0(installCommands, collapse = "\n"))
+    }
     
     # Get the table of official Rstox package versions from the Rstox.repos:
     supportedRVersion <- getSupportedRVersions()
@@ -1045,6 +1062,13 @@ getOfficialRstoxPackagesInfo <- function(
     
     return(binaries)
 }
+
+
+getLatestOfficialStoxVersion <- function(officialRstoxPackageVersionsFile) {
+    official <- readOfficialRstoxPackageVersionsFile(officialRstoxPackageVersionsFile)
+    utils::tail(official[official$Official, ]$StoX, 1)
+}
+
 
 
 

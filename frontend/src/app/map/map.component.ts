@@ -449,18 +449,27 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           break;
         }
         case "selectedStratum": {
+          // Remove the check for iamode to update selected when always changed
+          let handleStratumSelection : Boolean = false;
           switch (this.ps.iaMode) {
-            case "acousticPSU": {
-              this.map.getLayers().getArray()
-                .filter(l => l.get("layerType") == "stratum")
-                .map(l => <VectorSource>(<Layer>l).getSource())
-                .forEach(s => s.getFeatures()
-                  .forEach(f => {
-                    // selected PSU.
-                    MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
-                  }))
+            case "stratum": 
+            case "acousticPSU": 
+            case "bioticAssignment": {
+              handleStratumSelection = true;
               break;
             }
+            default:
+              handleStratumSelection = this.pds.selectedStratum == null;
+          }
+          if(handleStratumSelection) {
+            this.map.getLayers().getArray()
+            .filter(l => l.get("layerType") == "stratum")
+            .map(l => <VectorSource>(<Layer>l).getSource())
+            .forEach(s => s.getFeatures()
+              .forEach(f => {
+                // selected PSU.
+                MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
+              }))
           }
           break; 
         }

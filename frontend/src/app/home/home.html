@@ -43,8 +43,8 @@
 <div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0; height:1.4rem;">
 	<button type="button" style="margin-left:4px;" (click)="createNewProject()" pButton icon="pi pi-clone" [disabled]="ps.getRunningProcess() != null"></button>
 	<button type="button" style="margin-left:4px;" (click)="openProject()" pButton icon="pi pi-folder-open" [disabled]="ps.getRunningProcess() != null"></button>
-	<button type="button" style="margin-left:4px;" (click)="save()" [disabled]="isSaved()" pButton
-		icon="pi pi-save" [disabled]="ps.getRunningProcess() != null"></button>
+	<button type="button" style="margin-left:4px;" (click)="save()" [disabled]="isSaved() || ps.getRunningProcess() != null" pButton
+		icon="pi pi-save"></button>
 	<div class="flex-grow-1" style="height:100%;">
 	</div>
 	<div class="stox-logo popup" (click)="myFunction()"
