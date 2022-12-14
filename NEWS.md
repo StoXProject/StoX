@@ -1,3 +1,30 @@
+# StoX v3.6.0-9001 (2022-12-14)
+
+## Summary
+* The StoX version 3.6.0-9001 is a pre-release before the forthcoming StoX 3.6.0. As of this pre-release the release schedule is changed to fully comply with semantic versioning (https://semver.org/), meaning that the following version convension is used: Major.Minor.Patch-Prerelease, where the pre-release number starts at 9001. 
+
+## General changes
+* Added CopyBiotic, CopyStoxBiotic, CopyICESBiotic, CopyICESDatras, CopyAcoustic, CopyStoxAcoustic, CopyICESAcoustic, CopyLanding and CopyStoxLanding, used for copying one column to another (possibly existing) column.
+* Added the new function PlotReportBootstrap().
+* Removed rows of the output from ReportBootstrap() that contained combinations of the GroupingVariables that are not present in the BootstrapData. There rows were created to ensure that all bootstrap runs contain all combinations of the GroupingVariables, but also introduced non-existing combinations.
+* Only Rstox packages for official StoX versions can now be installed from the GUI using Install Rstox packages. If trying to use Install Rstox packages in a pre-release, an error is printed with hints on how to install the Rstox packages manually in R.
+
+## Detailed changes
+* Added drop-down lists for the parameters VariableName and ConditionalVariableNames, and for valueColumn, newValueColumn and conditionalValueColumns in the case that the table is read from a file.
+* Improved warning when acoustic PSUs are not present in the BioticAssignment processData or have no assigned biotic Hauls.
+* Improved documentation of seed in Bootstrap().
+* Improved the documentation EstimateBioticRegression().
+* Improved warning when using RemoveMissingValues. This warning now informs the user that GruopingVariables can be useful to isolate missing values out from the relevant rows of the report.
+* Updated documentation of DefineTranslation and the Translate functions.
+
+## Bug fixes
+* Fixed bug when running a project with projectPath ending with exactly one slash ("/") (problem fixed in getRelativePath()).
+* Fixed bug in DefineSurvey() when reading from a table text file, which was attempted read as a project.xml file.
+* Fixed bug in StoxBiotic() from NMDBiotic <= 1.4 files, where platform from the mission table was used as CatchPlatform. Changed to using the platform from the fishstation.
+* Fixed bug in Translate functions where PreserveClass = TRUE had no effect.
+* Fixed error in the documentation of GroupingVariables.
+
+
 # StoX v3.5.2 (2022-11-12)
 
 ## Summary

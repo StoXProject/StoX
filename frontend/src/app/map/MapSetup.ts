@@ -154,7 +154,7 @@ export class MapSetup {
             MapSetup.getPointStyleCircle(MapSetup.DISTANCE_ABSENT_POINT_COLOR, outlineColor, edsuRadius), // 3 : absent
         ];
     }
-    static STATION_POINT_COLORS: string[] = ['rgb(92,172,238)', 'rgb(46,86,188)', 'rgb(0,0,139)', 'rgb(99,10,196)', 'rgb(199,21,133)'];
+    static STATION_POINT_COLORS: string[] = ['rgb(92,172,238)', 'rgb(78,96,188)', 'rgb(88,0,139)', 'rgb(169,10,186)', 'rgb(199,21,90)'];
     static DISTANCE_POINT_COLORS: string[] = ['rgb(255,192,203)', 'rgb(196,96,101)', 'rgb(139,0,0)', 'rgb(188,59,0)', 'rgb(238,118,0)'];
 
     static getStationPointStyleCache(layerIdx: number): Style[] {

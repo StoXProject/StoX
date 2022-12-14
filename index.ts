@@ -791,7 +791,14 @@ function setupServer() {
           officialsRFTmpFile + "\", quiet = TRUE, toJSON = TRUE)";
         logInfo(cmd);
         let res = (await callR(cmd) as any).result;
-        s = "Installed packages: " + res;
+        // Build a string naming the packages that were installed, or an error message:
+        if(res.startsWith('Error')) {
+          s = res;
+        }
+        else {
+          s = "Installed packages: " + res;
+        }
+        
         await checkLoadStatusRstoxFramework();
         logInfo(s);
       }

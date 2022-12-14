@@ -452,6 +452,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           // Remove the check for iamode to update selected when always changed
           let handleStratumSelection : Boolean = false;
           switch (this.ps.iaMode) {
+            case "stratum": 
             case "acousticPSU": 
             case "bioticAssignment": {
               handleStratumSelection = true;
