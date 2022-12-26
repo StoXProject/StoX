@@ -618,6 +618,14 @@ export class DataService {
     return this.getLocalNode('getRstoxPackageVersions');
   }
 
+  public getIsOfficialStoXVersion(): Observable<any> {
+    return this.getLocalNode('getIsOfficialStoXVersion');
+  }
+
+  public getIsCertifiedRstoxFramework(): Observable<any> {
+    return this.getLocalNode('getIsCertifiedRstoxFramework');
+  }
+
   public getProjectRootPath(): Observable<any> {
     return this.getLocalNode('projectrootpath');
   }
