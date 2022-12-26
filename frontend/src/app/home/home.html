@@ -53,7 +53,7 @@
 			style="height:0.7rem;width:45px;display:inline-block; vertical-align: middle; line-height:0.7rem;">
 		<span style="margin-left:10px;display:inline-block;font-size:0.7rem;font-weight:bold; vertical-align: middle;" 
 			[style.color]="getStoXVersionColor()">{{stoxVersion}}</span> 
-		<span style="font-size:0.7rem;font-weight:bold;" [style.color]="getPackageColor(ps.rstoxPackages != null ? ps.rstoxPackages[0] : null)">{{getMainPackageDescr()}}
+		<span style="font-size:0.7rem;font-weight:bold;" [style.color]="getPackageColorMain()">{{getMainPackageDescr()}}
 		</span>
 		<mat-list class="popuptext mat-elevation-z4" id="myPopup">
 			<mat-list-item *ngFor="let pkg of ps.rstoxPackages"

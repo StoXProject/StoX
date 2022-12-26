@@ -27,6 +27,7 @@ StoxInstallSettings <- list(
 #' @param sort Logical: If TRUE sort the dependent packages, defaulted to FALSE to enable installing the most basic dependencies first.
 #' @param StoXGUIVersion The version of the StoX GUI defining the combination of official Rstox package versions.
 #' @param officialRstoxPackageVersionsFile The path to the file holding the link between StoX GUI version and Rstox package versions. If missing, the file on the RstoxFramework master on GitHub is used ("https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt").
+#' @param optionalDependencies Logical: If TRUE include also the column OptionalDependencies from the OfficialRstoxFrameworkVersions.txt file, which holds Rstox packages used in the Sugggests field of the DESCRIPTION file.
 #' @param destdir The directory to download binaries to, defaulted to NA which implies tempdir().
 #' @param platform The platform to download binaries for, defaulted to the current platform, but with the option to download for other platforms (possible values are "windows" and "macosx").
 #' @param packageName The packages considered official Rstox pakcages, "RstoxFramework","RstoxBase" and "RstoxData".
@@ -83,6 +84,7 @@ getNonRstoxDependencies <- function(
 getStoxDependencies <- function(
     StoXGUIVersion, 
     officialRstoxPackageVersionsFile, 
+    optionalDependencies = FALSE, 
     Rstox.repos = "https://stoxproject.github.io/repo", 
     dependency.repos = "https://cloud.r-project.org", 
     dependencyTypes = NA, 
@@ -107,6 +109,7 @@ getStoxDependencies <- function(
     officialRstoxPackagesInfo <- getOfficialRstoxPackagesInfo(
         StoXGUIVersion = StoXGUIVersion, 
         officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile, 
+        optionalDependencies = optionalDependencies, 
         dependencyTypes = dependencyTypes, 
         Rstox.repos = Rstox.repos, 
         platform = platform, 
@@ -143,6 +146,7 @@ getStoxDependencies <- function(
 installOfficialRstoxPackagesWithDependencies <- function(
     StoXGUIVersion, 
     officialRstoxPackageVersionsFile, 
+    optionalDependencies = FALSE, 
     destdir = NA, 
     Rstox.repos = "https://stoxproject.github.io/repo", 
     dependency.repos = "https://cloud.r-project.org", 
@@ -173,6 +177,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     StoxDependencies <- getStoxDependencies(
         StoXGUIVersion = StoXGUIVersion, 
         officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile, 
+        optionalDependencies = optionalDependencies, 
         Rstox.repos = Rstox.repos, 
         dependency.repos = dependency.repos, 
         dependencyTypes = dependencyTypes, 
@@ -253,7 +258,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
 getOfficialRstoxPackageVersion <- function(
     StoXGUIVersion = NULL, 
     officialRstoxPackageVersionsFile = system.file("versions", "OfficialRstoxFrameworkVersions.txt", package = "RstoxFramework"), 
-    packageName = c("RstoxFramework","RstoxBase", "RstoxData"), 
+    optionalDependencies = FALSE, 
     toJSON = FALSE, 
     list.out = FALSE
 ) {
@@ -274,9 +279,20 @@ getOfficialRstoxPackageVersion <- function(
         }
         
         # Split the Dependencies:
-        dependencies <- strsplit(official$Dependencies, "[,]")[[1]]
-        dependencies <- extractPackageNameAsNames(dependencies)
-        packageVersionList <- c(list(RstoxFramework = official$RstoxFramework), dependencies)
+        officialDependencies <- strsplit(official$Dependencies, "[,]")[[1]]
+        officialDependencies <- extractPackageNameAsNames(officialDependencies)
+        packageVersionList <- c(list(RstoxFramework = official$RstoxFramework), officialDependencies)
+        
+        # Split the optional dependencies:
+        if(length(official$OptionalDependencies) && ( isTRUE(optionalDependencies) || !isFALSE(optionalDependencies)) ) {
+            officialOptionalDependencies <- strsplit(official$OptionalDependencies, "[,]")[[1]]
+            officialOptionalDependencies <- extractPackageNameAsNames(officialOptionalDependencies)
+            if(!isFALSE(optionalDependencies)) {
+                toKeep <- names(officialOptionalDependencies) %in% utils::installed.packages()[, "Package"]
+                officialOptionalDependencies <- subset(officialOptionalDependencies, toKeep)
+            }
+            packageVersionList <- c(packageVersionList, officialOptionalDependencies)
+        }
         
         if(list.out) {
             packageVersions <- list(
@@ -334,7 +350,7 @@ subsetBinaryPathsByIdenticallyInstalled <- function(packageTable, lib = NULL) {
     
     # Cannot use data.table, as it is not shipped with R:
     ### # Install only the packages that are not already installed with the exact same version:
-    ### installed <- data.table::as.data.table(installed.packages(lib))
+    ### installed <- data.table::as.data.table(utils::installed.packages(lib))
     ### # Create a table of the pakcages to install:
     ### toInstall <- data.table::data.table(
     ###     Package = getOnlyPackageName(basename(binaryPath)), 
@@ -392,7 +408,7 @@ getOnlyPackageVersion <- function(packageNameAndVersionString) {
 
 
 
-readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFile, toTable = FALSE) {
+readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFile, optionalDependencies = FALSE, toTable = FALSE) {
     # Get the file name:
     if(missing(officialRstoxPackageVersionsFile) || !length(officialRstoxPackageVersionsFile)) {
         officialRstoxPackageVersionsFile = system.file("versions", "OfficialRstoxFrameworkVersions.txt", package = "RstoxFramework")
@@ -403,7 +419,8 @@ readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFil
         read.table(
             officialRstoxPackageVersionsFile, 
             header = TRUE, 
-            stringsAsFactors = FALSE
+            stringsAsFactors = FALSE, 
+            sep = "\t"
         ), 
         error = function(e) {
             NULL
@@ -411,11 +428,33 @@ readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFil
     )
     
     if(toTable) {
-        dependencies <- strsplit(official$Dependencies, "[,]")
-        dependencies <- lapply(dependencies, extractPackageNameAsNames)
+        officialDependencies <- strsplit(official$Dependencies, "[,]")
+        officialDependencies <- lapply(officialDependencies, extractPackageNameAsNames)
+        officialDependencies <- data.table::rbindlist(officialDependencies)
+        
+        if(length(official$OptionalDependencies) && ( isTRUE(optionalDependencies) || !isFALSE(optionalDependencies)) ) {
+            officialOptionalDependencies <- lapply(official$OptionalDependencies, strsplit, "[,]")
+            officialOptionalDependencies <- lapply(official$OptionalDependencies, "[[", 1)
+            officialOptionalDependencies <- lapply(officialOptionalDependencies, extractPackageNameAsNames)
+            areEmptyString <- !sapply(officialOptionalDependencies, nzchar)
+            if(any(areEmptyString)) {
+                officialOptionalDependencies[areEmptyString] <- rep(list(list(NA)), sum(areEmptyString))
+            }
+            
+            officialOptionalDependencies <- data.table::rbindlist(officialOptionalDependencies, fill = TRUE)
+            
+            
+            if(!isFALSE(optionalDependencies)) {
+                keep <- names(officialOptionalDependencies) %in% utils::installed.packages()[, "Package"]
+                officialOptionalDependencies <- subset(officialOptionalDependencies, select = keep)
+            }
+            officialDependencies <- cbind(officialDependencies, officialOptionalDependencies)
+        }
+        
         official <- data.table::data.table(
+            StoX = official$StoX, 
             RstoxFramework = official$RstoxFramework, 
-            data.table::rbindlist(dependencies),
+            officialDependencies,
             Official = official$Official
         )
     }
@@ -431,8 +470,12 @@ readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFil
 #}
 # Small function to parse the string defining officical Rstox-package versions (for each RstoxFramwork):
 extractPackageNameAsNames <- function(x) {
+    if(!length(x) || !sum(nchar(x))) {
+        return(x)
+    }
     x <- strsplit(x, "[_]")
     x <- structure(lapply(x, "[", 2), names = sapply(x, "[", 1))
+    
     return(x)
 }
 
@@ -446,19 +489,36 @@ getPackageNameAndVersionString <- function(packageName, version, sep = "_") {
 
 
 
-get_deps <- function(package, dependencyTypes, not = c("R", "Rstox")) {
+get_deps <- function(package, dependencyTypes, onlyPrefix = NULL, notPrefix = NULL, not = NULL) {
     dcf <- read.dcf(system.file(package = package, "DESCRIPTION"))
     jj <- intersect(dependencyTypes, colnames(dcf))
     val <- unlist(strsplit(dcf[, jj], ","), use.names=FALSE)
     package <- gsub("\\s.*", "", trimws(val))
     version <- gsub(".*\\s|\\)+$", "", val)
-    hits <- mapply(startsWith, prefix = not, MoreArgs = list(x = package))
-    keep <- rowSums(hits) == 0
+    
+    keep <- NULL
+    if(length(onlyPrefix)) {
+        keep <- mapply(startsWith, prefix = onlyPrefix, MoreArgs = list(x = package))
+        keep <- rowSums(keep) > 0
+    }
+    else if (length(notPrefix)) {
+        keep <- mapply(startsWith, prefix = notPrefix, MoreArgs = list(x = package))
+        keep <- rowSums(keep) == 0
+    }
+    if (length(not)) {
+        keep <- !package %in% not
+    }
+    #hits <- mapply(startsWith, prefix = notPrefix, MoreArgs = list(x = package))
+    
+    
     out <- data.table::data.table(
         package = package, 
         version = version
     )
-    out <- subset(out, keep)
+    if(length(keep)) {
+        out <- subset(out, keep)
+    }
+    
     out
 }
 
@@ -474,7 +534,14 @@ getDependencies <- function(packageName, packageTable = NULL, repos = "https://c
             stop("repos must be given if recursive is TRUE")
         }
         
-        dependentPackages <- exlcudeBasePackages(get_deps("RstoxFramework", dependencyTypes = dependencyTypes)$package)
+        dependentPackages <- exlcudeBasePackages(
+            get_deps(
+                "RstoxFramework", 
+                dependencyTypes = dependencyTypes, 
+                notPrefix = "Rstox", 
+                not = "R"
+            )$package
+        )
         
     }
     else {
@@ -986,6 +1053,7 @@ initLocalLibrary <- function() {
 getOfficialRstoxPackagesInfo <- function(
     StoXGUIVersion, 
     officialRstoxPackageVersionsFile, 
+    optionalDependencies = FALSE, 
     dependencyTypes = NA, 
     Rstox.repos = "https://stoxproject.github.io/repo", 
     platform = NA, 
@@ -994,20 +1062,23 @@ getOfficialRstoxPackagesInfo <- function(
 ) {
     
     # Get the official versions defined by the officialRstoxPackageVersionsFile for the particular StoXGUIVersion:
-    packageHierarchy <- c("RstoxFramework","RstoxBase", "RstoxData")
     officialRstoxPackageNameAndVersion <- getOfficialRstoxPackageVersion(
         StoXGUIVersion = StoXGUIVersion, 
         officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile,
-        packageName = packageHierarchy, 
+        optionalDependencies = optionalDependencies, 
         toJSON = FALSE
     )
     officialRstoxPackageName <- getOnlyPackageName(officialRstoxPackageNameAndVersion)
+    
+    # Get the package hierarchy, so as to install the lowest package first:
+    packageHierarchy <- getRstoxPackageHierarchy(officialRstoxPackageName)
+    
+    # Get the ordered list of official packages:
     officialRstoxPackageVersionList <- extractPackageNameAsNames(officialRstoxPackageNameAndVersion)
-    officialRstoxPackageVersionList <- officialRstoxPackageVersionList[rev(packageHierarchy)]
+    officialRstoxPackageVersionList <- officialRstoxPackageVersionList[packageHierarchy]
     
     # If the StoX version is not official, report an error with info on how to install manually from source in R:
     if(isFALSE(as.logical(attr(officialRstoxPackageNameAndVersion, "Official")))) {
-        packageHierarchy
         installCommands <- paste0(
             "remotes::install_github(repo = \"stoxproject/", 
             names(officialRstoxPackageVersionList), 
@@ -1020,6 +1091,17 @@ getOfficialRstoxPackagesInfo <- function(
         stop("The StoX version ", StoXGUIVersion, " is not an official version. Installation of Rstox packages for non-official versions is no longer supported in the StoX GUI. It is highly recommended to use the latest official version StoX ", getLatestOfficialStoxVersion(officialRstoxPackageVersionsFile), ".\nTo install the Rstox packages for this non-official version, the following lines must be run in R. If you are using Rstudio, it is adviced to restart R before installing the Rstox packages. Also, on Windows Rtools must be installed, as the Rstox packages are installed from source by these lines:\n", paste0(installCommands, collapse = "\n"))
     }
     
+    
+    ### pat <- Sys.getenv("GITHUB_PAT")
+    ### if(nchar(pat)) {
+    ###     api_data <- httr::GET(URL_releases, httr::authenticate(Sys.getenv("GITHUB_PAT"), "x-oauth-basic", "basic"))
+    ### }
+    ### else {
+    ###     api_data <- httr::GET(URL_releases)
+    ###     warning("Please create a personal access token with the following procedure: Use `usethis::create_github_token()` to go the the GitHub page where you need to log in and click the green 'Generate token' button at the bottom of the page, but be sure to create personalized note in the required field (you will be reminded of this if not). Then copy this to the clipboard and use `usethis::edit_r_environ()` to open the .Renivron file. Add the token as `GITHUB_PAT=12345678901234567890` (replace with the copied token) and end the file with a line space. Save and close the file, and restart R to make the change effective.")
+    
+    
+            
     # Get the table of official Rstox package versions from the Rstox.repos:
     supportedRVersion <- getSupportedRVersions()
     binaries <- mapply(
@@ -1058,9 +1140,36 @@ getOfficialRstoxPackagesInfo <- function(
     #}
     
     # Order hierarchcically:
-    binaries <- binaries[match(rev(packageHierarchy), binaries$Package), ]
+    binaries <- binaries[match(packageHierarchy, binaries$Package), ]
     
     return(binaries)
+}
+
+
+getRstoxPackageHierarchy <- function(packageNames, dependencyTypes = "Imports") {
+    dependencyList <- lapply(packageNames, function(x) exlcudeBasePackages(get_deps(x, dependencyTypes = dependencyTypes, onlyPrefix = "Rstox")$package))
+    names(dependencyList) <- packageNames
+    # RstoxFramework is aways the highest:
+    dependencyList <- subset(dependencyList, names(dependencyList) != "RstoxFramework")
+    packageHierarchy <- NULL
+    
+    while(length(dependencyList)) {
+        # Find empty elements:
+        empty <- lengths(dependencyList) == 0
+        free <- names(dependencyList)[empty]
+        packageHierarchy <- c(packageHierarchy, free)
+        
+        # Remove these from the list:
+        dependencyList <- dependencyList[!empty]
+        
+        # Remove the empty from the dependencies:
+        dependencyList <- lapply(dependencyList, setdiff, free)
+    }
+    
+    # Add the RstoxFramework as the highest:
+    packageHierarchy <- c(packageHierarchy, "RstoxFramework")
+    
+    return(packageHierarchy)
 }
 
 
@@ -1085,8 +1194,8 @@ getInstallType <- function() {
 }
 
 
-
-is_online <- function(site="http://example.com/") {
+# Updated this to read from our file, after Dave Boyer had problems with the original site = "http://example.com/":
+is_online <- function(site = "https://raw.githubusercontent.com/StoXProject/repo/master/README.md") {
     tryCatch({
         readLines(site,n=1)
         TRUE
@@ -1094,4 +1203,81 @@ is_online <- function(site="http://example.com/") {
     warning = function(w) invokeRestart("muffleWarning"),
     error = function(e) FALSE)
 }
+
+
+
+
+isOfficialRstoxFrameworkVersion <- function() {
+    officialRstoxFrameworkVersion <- attr(getOfficialRstoxPackageVersion(), "Official")
+    return(officialRstoxFrameworkVersion)
+}
+
+
+isOfficialStoXVersion <- function(StoXVersion, officialRstoxPackageVersionsFile) {
+    official <- readOfficialRstoxPackageVersionsFile(officialRstoxPackageVersionsFile, toTable = TRUE)
+    officialStoXVersions <- official$StoX[official$Official]
+    StoXVersion %in% officialStoXVersions
+}
+
+
+isCertifiedRstoxFramework <- function(StoXVersion, officialRstoxPackageVersionsFile, optionalDependencies = FALSE) {
+    
+    # Read the officialRstoxPackageVersionsFile and select the row given by the StoXVersion:
+    certifiedTable <- readOfficialRstoxPackageVersionsFile(officialRstoxPackageVersionsFile, optionalDependencies = optionalDependencies, toTable = TRUE)
+    RstoxPackageColumnNames <- startsWith(names(certifiedTable), "Rstox")
+    certifiedTable <- subset(certifiedTable, certifiedTable$StoX == StoXVersion, select = RstoxPackageColumnNames)
+    
+    # Get the names of the Rstox packages:
+    RstoxPackageNames <- names(certifiedTable)
+    
+    # Get the status of each package:
+    status <- sapply(RstoxPackageNames, RstoxPackageStatus, StoXVersion = StoXVersion, officialRstoxPackageVersionsFile = officialRstoxPackageVersionsFile)
+    
+    
+    all(status == 0)
+}
+
+
+
+RstoxPackageStatus <- function(RstoxPackageName, StoXVersion, officialRstoxPackageVersionsFile) {
+    
+    # This function returns a status of an Rstox package that is 
+    # 3: Package not installed
+    # 2: Package is not an official RstoxPackage
+    # 1: Package version is not certified
+    # 0: Package version IS certified 
+    
+    # Read the officialRstoxPackageVersionsFile and select the row given by the StoXVersion:
+    certifiedTable <- readOfficialRstoxPackageVersionsFile(officialRstoxPackageVersionsFile, optionalDependencies = TRUE, toTable = TRUE)
+    RstoxPackageColumnNames <- startsWith(names(certifiedTable), "Rstox")
+    certifiedRow <- subset(certifiedTable, certifiedTable$StoX == StoXVersion, select = RstoxPackageColumnNames)
+    
+    # Check whether the packages are installed.:
+    isInstalled <- nzchar(system.file(package = RstoxPackageName))
+    if(!isInstalled) {
+        return(3)
+    }
+    
+    # Get the installed version:
+    currentVersion <- getVersionStringOfPackage(RstoxPackageName)
+    
+    # Compare to the certified versions:
+    if(! RstoxPackageName %in% names(certifiedRow)) {
+        return(2)
+    }
+    
+    certifiedVersion <- certifiedRow[[RstoxPackageName]]
+    
+    status <- as.numeric(certifiedVersion != currentVersion)
+    
+    return(status)
+}
+
+
+getVersionStringOfPackage <- function(packageName) {
+    pkgs <- utils::installed.packages()
+    vers <- pkgs[, "Version"]
+    vers[packageName]
+}
+
 

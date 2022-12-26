@@ -46,6 +46,10 @@ var versionR = "";
 var backendProcess: any; // Backend process
 require('pkginfo')(module, 'version');
 var stoxVersion = module.exports.version;
+var isOfficialStoXVersion: boolean = false;
+var isCertifiedRstoxFramework: boolean = false;
+var RstoxPackageStatus: number;
+
 //var officialRstoxFrameworkVersion = "1.2.27" // used to show red when official (ending with 0) but not the right official
 //var supportedRstoxFrameworkVersions : string[] = ""; 
 // Modules to control application life and create native browser window
@@ -371,7 +375,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     // Initiate local library
     //logInfo("libPaths before initiation" + (await callR(".libPaths()[1]") as any).result);
     logInfo("> initLocalLibrary(): " + (await callR("initLocalLibrary()") as any).result);
-    cmd = "getOfficialRstoxPackageVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", toJSON = T)";
+    cmd = "getOfficialRstoxPackageVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", optionalDependencies = TRUE, toJSON = T)";
     logInfo(cmd);
 
     officialRstoxPackages = JSON.parse((await callR(cmd) as any).result);
@@ -383,6 +387,13 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     versionRstoxFramework = (await callR(cmd) as any).result;
     logInfo(versionRstoxFramework);
 
+    cmd = "isOfficialStoXVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
+    isOfficialStoXVersion = (await callR(cmd) as any).result == "TRUE";
+    
+    cmd = "isCertifiedRstoxFramework(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", optionalDependencies = TRUE)";
+    isCertifiedRstoxFramework = (await callR(cmd) as any).result == "TRUE";
+    
+    
   }
   /*if (serverStarted) {
     let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
@@ -405,14 +416,24 @@ async function checkLoadStatusRstoxFramework() : Promise<string> {
   return "ok";
 }
 
-async function getPackageVersion(packageName: string) {
-  //logInfo("Installed packages:" + (await (callR("rownames(installed.packages())") as any)).result);
-  let cmd = "if(\"" + packageName + "\" %in% rownames(installed.packages()))  paste0(\"" +
-    packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))) else \"NA\"";
-  //let cmd = "tryCatch(paste0(\"" + packageName + "_\", as.character(packageVersion(\"" + packageName + "\"))),error = function(e) {\"NA\"})"
-  //logInfo(cmd);
+
+
+async function getPackageStatus(packageName: string, stoxVersion: string, officialsRFTmpFile: string) {
+  let cmd = "RstoxPackageStatus(\"" + packageName + "\", \"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
+  console.log(cmd)
+  RstoxPackageStatus = await (callR(cmd) as any);
+  console.log(RstoxPackageStatus)
+  return RstoxPackageStatus;
+}
+
+
+async function getVersionStringOfPackage(packageName: string) {
+  let cmd = "getVersionStringOfPackage(\"" + packageName + "\")";
   return await (callR(cmd) as any);
 }
+
+
+
 /**
  * Create a safe connection to socket with timeout loop. Either success or failure in each try.
  */
@@ -568,28 +589,6 @@ function callR(arg: string) {
   });
 }
 
-/*async function logAPI(p: any, withResult: any = true, withTime: any = false) {
-  //console.log("call p")
-  //console.log("after p")
-  let res: { time: number, result: string } = await p;
-  if (withResult) {
-    console.log(JSON.stringify(res.result, null, 2));
-  }
-  const time2 = process.hrtime();
-  //let dt = diff[0] + (diff[1] / 1000000000.0);
-  if (withTime) {
-    console.log(" took " + res.time + " sec");
-  }
-  return res.result;
-}*/
-
-/*function body(what: string, args: string, pkg: string) {
-  return JSON.stringify({
-    "what": what,
-    "args": args,
-    "package": pkg
-  });
-}*/
 
 async function evaluate(client: any, cmd: string) {
   if (client == null) {
@@ -746,7 +745,7 @@ function setupServer() {
       return;
     }
     if (loadStatusRstoxFramework != "") {
-      res.send({ value: null, message: [], warning: [], error: ['RstoxFramework is not loaded properly due to message: \"' + loadStatusRstoxFramework + '\". Try to reinstall from Tools->Install R packages. (Remember also to close other R applications first)'] });
+      res.send({ value: null, message: [], warning: [], error: ['RstoxFramework is not loaded properly due to message:\n\"' + loadStatusRstoxFramework + '\". \nTry to reinstall from Tools->Install R packages. (Remember also to close other R applications first)'] });
       return;
     }
     // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
@@ -814,38 +813,36 @@ function setupServer() {
       version: string;
       status: number;
     }[] = [];
-    logInfo("/getRstoxPackageVersions");
     if (serverStarted) {
       // logInfo("iterating through officialRstoxPackages " + officialRstoxPackages);
-
-      let packages2 = officialRstoxPackages.map(async s => {
+      let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+      let packagesStatus = officialRstoxPackages.map(async s => {
         let elms: string[] = s.split("_");
         // Determine status of each official package
-        //  logInfo("getpackageversion for " + elms[0]);
-        let v = (await getPackageVersion(elms[0])).result;
-        let elms2: string[] = v.split("_");
-        logInfo("official " + elms[0] + " version: " + v);
-        logInfo("installed " + elms2[0] + " version: " + v);
-        let v2 = elms2.length == 2 ? elms2[1] : "Not installed"
-        return { packageName: elms[0], version: elms2[1], status: v == "NA" ? 2 : elms2[1] == elms[1] ? 0 : 1 };
-      });
-      packages = await Promise.all(packages2);
-      // logInfo("finished iterating through officialRstoxPackages" + packages);
+        let thisStatus = (await getPackageStatus(elms[0], stoxVersion, officialsRFTmpFile) as any).result
 
-      // logInfo("updating status on first package based on the other packages" + packages);
-      // step 2 - if some of the packages no 2... is unofficial, mark the first one as unofficial if official.
-      /*if (packages.length > 0 && packages[0].status == 0 && packages.slice(1).filter(p => p.status > 0).length > 0) {
-        packages[0].status = 1;
-      }*/
-      //   logInfo("after updating status on first package based on the other packages" + packages);
+        let version = (await getVersionStringOfPackage(elms[0]) as any).result  
+
+        return { packageName: elms[0], version: thisStatus == "3" ? " not installed" : version, status: thisStatus };
+      });
+      packages = await Promise.all(packagesStatus);
     } else {
       packages.push({ packageName: "R disconnected", version: "", status: 3 });
     }
     // logInfo(JSON.stringify(packages));
     res.send(packages);
 
-  })
+  });
 
+  server.get('/getIsOfficialStoXVersion', function (req: any, res: any) {
+   res.send(isOfficialStoXVersion);
+   });
+
+   server.get('/getIsCertifiedRstoxFramework', function (req: any, res: any) {
+    res.send(isCertifiedRstoxFramework);
+   });
+  
+  
   function resolveDefaultPath(defPath: string): string {
     // electron showOpenDialog defaultPath requires c:\\temp\\test on win32, otherwise c:/temp/test on mac/linux
     return defPath == null ? require('os').homedir() : process.platform == "win32" ? defPath.replace(/\//g, "\\") : defPath.replace(/\\/g, "/");

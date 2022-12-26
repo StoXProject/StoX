@@ -51,6 +51,8 @@ export class ProjectService {
   runningProcessId: string = null; // current running process
   m_isResetting: boolean = false; // current reset flag.
   rstoxPackages: PackageVersion[];
+  isOfficialStoXVersion: boolean = false;
+  isCertifiedRstoxFramework: boolean = false;
   rstoxFrameworkAvailable: boolean = false;
   m_appStatus : string = null;
   m_appStatusIsUpdating : boolean = false;
@@ -317,8 +319,9 @@ export class ProjectService {
 }
 
   async checkRstoxFrameworkAvailability() {
+    this.isOfficialStoXVersion = JSON.parse(await this.dataService.getIsOfficialStoXVersion().toPromise());
+    this.isCertifiedRstoxFramework = JSON.parse(await this.dataService.getIsCertifiedRstoxFramework().toPromise());
     this.rstoxPackages = JSON.parse(await this.dataService.getRstoxPackageVersions().toPromise());
-    console.log("Rstoxpackages: " + this.rstoxPackages)
     this.rstoxFrameworkAvailable = this.rstoxPackages[0].status < 2;// (await this.dataService.rstoxFrameworkAvailable().toPromise()) == "true";
     if (this.rstoxFrameworkAvailable) {
       this.setModels(await this.dataService.getModelInfo().toPromise());

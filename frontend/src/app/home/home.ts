@@ -117,8 +117,11 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   }
   
   getStoXVersionColor() {
-      let p : PackageVersion = this.ps.rstoxPackages?.find(p=>{p.status > 0});
-      return p != null ? "rgb(255,30,78)" : "rgb(0,0,0)"; 
+    return this.ps.isOfficialStoXVersion ? "black" : "rgb(255,30,78)"; 
+}
+
+  getPackageColorMain() {
+    return this.ps.isCertifiedRstoxFramework ? "black" : "rgb(255,30,78)"; 
   }
 
   getPackageColor(pkg: PackageVersion) {
