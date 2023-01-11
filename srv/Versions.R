@@ -489,41 +489,50 @@ getPackageNameAndVersionString <- function(packageName, version, sep = "_") {
 
 
 
-get_deps <- function(package, dependencyTypes, onlyPrefix = NULL, notPrefix = NULL, not = NULL) {
-    dcf <- read.dcf(system.file(package = package, "DESCRIPTION"))
+get_deps <- function(package, dependencyTypes, onlyStartingWith = NULL, excludeStartingWith = NULL, not = NULL) {
+    DESCRIPTIONFile <- system.file(package = package, "DESCRIPTION")
+    # Return empty table if the package is not installed:
+    if(DESCRIPTIONFile == "") {
+        return(data.table::data.table())
+    }
+    dcf <- read.dcf(DESCRIPTIONFile)
     jj <- intersect(dependencyTypes, colnames(dcf))
     val <- unlist(strsplit(dcf[, jj], ","), use.names=FALSE)
     package <- gsub("\\s.*", "", trimws(val))
     version <- gsub(".*\\s|\\)+$", "", val)
     
-    keep <- NULL
-    if(length(onlyPrefix)) {
-        keep <- mapply(startsWith, prefix = onlyPrefix, MoreArgs = list(x = package))
-        keep <- rowSums(keep) > 0
-    }
-    else if (length(notPrefix)) {
-        keep <- mapply(startsWith, prefix = notPrefix, MoreArgs = list(x = package))
-        keep <- rowSums(keep) == 0
-    }
-    if (length(not)) {
-        keep <- !package %in% not
-    }
-    #hits <- mapply(startsWith, prefix = notPrefix, MoreArgs = list(x = package))
-    
+    keep <- getKeep(package,  onlyStartingWith = onlyStartingWith, excludeStartingWith = excludeStartingWith, not = not)
     
     out <- data.table::data.table(
         package = package, 
         version = version
     )
-    if(length(keep)) {
-        out <- subset(out, keep)
-    }
+    
+    out <- subset(out, keep)
     
     out
 }
 
+getKeep <- function(x,  onlyStartingWith = NULL, excludeStartingWith = NULL, not = NULL) {
+    keep <- !logical(length(x))
+    if(length(onlyStartingWith)) {
+        keep <- mapply(startsWith, prefix = onlyStartingWith, MoreArgs = list(x = x))
+        keep <- rowSums(keep) > 0
+    }
+    else if (length(excludeStartingWith)) {
+        keep <- mapply(startsWith, prefix = excludeStartingWith, MoreArgs = list(x = x))
+        keep <- rowSums(keep) == 0
+    }
+    if (length(not)) {
+        keep <- !x %in% not
+    }
+    
+    
+    return(keep)
+}
+
 # Function to read the description file of an RstoxPackage
-getDependencies <- function(packageName, packageTable = NULL, repos = "https://cloud.r-project.org", dependencyTypes = NA, excludeStartingWith = NULL, recursive = TRUE, append = FALSE, sort = FALSE) {
+getDependencies <- function(packageName, packageTable = NULL, repos = "https://cloud.r-project.org", dependencyTypes = NA, excludeStartingWith = NULL, onlyStartingWith = NULL, recursive = TRUE, append = FALSE, sort = FALSE) {
     
     # Get the dependencies of the Rstox packages:
     if(identical(NA, dependencyTypes)) {
@@ -538,7 +547,7 @@ getDependencies <- function(packageName, packageTable = NULL, repos = "https://c
             get_deps(
                 "RstoxFramework", 
                 dependencyTypes = dependencyTypes, 
-                notPrefix = "Rstox", 
+                excludeStartingWith = "Rstox", 
                 not = "R"
             )$package
         )
@@ -574,10 +583,13 @@ getDependencies <- function(packageName, packageTable = NULL, repos = "https://c
         dependentPackages <- c(packageName, dependentPackages)
     }
     
-    # Remove other starting patterns:
-    for(pattern in excludeStartingWith) {
-        dependentPackages <- subset(dependentPackages, !startsWith(dependentPackages, pattern))
-    }
+    keep <- getKeep(dependentPackages,  onlyStartingWith = onlyStartingWith, excludeStartingWith = excludeStartingWith)
+    dependentPackages <- subset(dependentPackages, keep)
+    
+    ### # Remove other starting patterns:
+    ### for(pattern in excludeStartingWith) {
+    ###     dependentPackages <- subset(dependentPackages, !startsWith(dependentPackages, pattern))
+    ### }
     
     
     dependentPackages <- unique(dependentPackages)
@@ -1071,7 +1083,8 @@ getOfficialRstoxPackagesInfo <- function(
     officialRstoxPackageName <- getOnlyPackageName(officialRstoxPackageNameAndVersion)
     
     # Get the package hierarchy, so as to install the lowest package first:
-    packageHierarchy <- getRstoxPackageHierarchy(officialRstoxPackageName)
+    # We need to use reversed = TRUE since remotes::install_github() finds the Additional_repositories and installs the dependent Rstox-packages from that repo, which does not contain the pre-releases:
+    packageHierarchy <- getRstoxPackageHierarchy(officialRstoxPackageName, reversed = TRUE)
     
     # Get the ordered list of official packages:
     officialRstoxPackageVersionList <- extractPackageNameAsNames(officialRstoxPackageNameAndVersion)
@@ -1146,10 +1159,11 @@ getOfficialRstoxPackagesInfo <- function(
 }
 
 
-getRstoxPackageHierarchy <- function(packageNames, dependencyTypes = "Imports") {
-    dependencyList <- lapply(packageNames, function(x) exlcudeBasePackages(get_deps(x, dependencyTypes = dependencyTypes, onlyPrefix = "Rstox")$package))
+getRstoxPackageHierarchy <- function(packageNames, dependencyTypes = "Imports", reversed = FALSE) {
+    #dependencyList <- lapply(packageNames, function(x) exlcudeBasePackages(get_deps(x, dependencyTypes = dependencyTypes, onlyStartingWith = "Rstox")$package))
+    dependencyList <- lapply(packageNames,  getDependencies, repos = "https://stoxproject.github.io/repo", onlyStartingWith = "Rstox")
     names(dependencyList) <- packageNames
-    # RstoxFramework is aways the highest:
+    # RstoxFramework is always the highest:
     dependencyList <- subset(dependencyList, names(dependencyList) != "RstoxFramework")
     packageHierarchy <- NULL
     
@@ -1168,6 +1182,10 @@ getRstoxPackageHierarchy <- function(packageNames, dependencyTypes = "Imports") 
     
     # Add the RstoxFramework as the highest:
     packageHierarchy <- c(packageHierarchy, "RstoxFramework")
+    
+    if(reversed) {
+        packageHierarchy <- rev(packageHierarchy)
+    }
     
     return(packageHierarchy)
 }
