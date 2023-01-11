@@ -91,6 +91,17 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 * Improved the documentation EstimateBioticRegression().
 * Updated documentation of DefineTranslation and the Translate functions.
 
+# StoX v3.6.0-9003 (2023-01-11)
+
+## General changes
+* Added the parameter Percentages with default c(5, 50, 95) in ReportBootstrap() when BootstrapReportFunction = "summaryStox" (currently the only option).
+* Fixed bug in the GUI, where running a process in one model did not reset all later models.
+* Fixed bug in output file of Bootstrap() when OutputProcesses contained processes with more than one table (e.g. the Data and Resolution table of Quantity()) mixed with single table outputs (e.g. ImputeSuperIndividuals()). The list of output data was flattened to include e.g. Quantity_Data and Quantity_Resolution. However, for BootstrapData, the output is saved to an RData file, and no such flattening of the list is necessary, and also corrupts the data when read back in when using the UseOutputData option in Bootstrap(). This may break scripts using the output file of a Bootstrap process with datta from multi table processes. This is however rare, and the function RstoxFramework::unlistToDataType() can be used to re-create the previous list in the output file of Bootstrap processes.
+* Changed defaultPlotGeneralOptions AxisTitleSize (10 to 12) and LegendTitleSize (10 to 12).
+* Changed defaultPlotFileOptions Height (17 to 10).
+* Reversed the order of installation of Rstox packages for pre-releases, to ensure that the lower packages get the correct ersion (ultimately RstoxData).
+
+
 # StoX v3.6.0-9002 (2022-12-26)
 
 ## Summary
