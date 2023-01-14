@@ -13,6 +13,7 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 * When a statum is selected in the Stratum/PSU window it is now marked with darker grey color in the map. This currently only applies to AcousticPSU processes.
 * The Distance table has been completed, and can now be used to select EDSUs for an AcousticPSU processes.
 * The User log no longer resets when opening a different project. Instead the right click option "Clear log" has been added.
+* A stratum can now be deletetd in the GUI by right click on the stratum name in the Stratu/PSU window when a proecss usinng DefineStratumPolygon as function is the active proecss.
 * Added scroll bar in the process parameter window.
 * Changed colors to red for processing error and orange for function input error. 
 * The GUI now disables process parameter view, open/new project, and R connection and Install Rstox packages, when running a process.
@@ -38,7 +39,7 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 * Only Rstox packages for official StoX versions can now be installed from the GUI using Install Rstox packages. If trying to use Install Rstox packages in a pre-release, an error is printed with hints on how to install the Rstox packages manually in R.
 * StoX now deletes output files when a parameter of tha procecss is changed.
 * Removed all non-official Rstox-package versions from the StoX repository (https://github.com/StoXProject/repo). This implies that non-official StoX versions can no longer use Install Rstox packages. The user must instetad install the appropriate Rstox packages in R.
-* A stratum can now be deletetd in the GUI by right click on the stratum name in the Stratu/PSU window when a proecss usinng DefineStratumPolygon as function is the active proecss.
+* Added the parameter Percentages with default c(5, 50, 95) in ReportBootstrap() when BootstrapReportFunction = "summaryStox" (currently the only option).
 * Added the parameter TargetVariableUnit in ReportSuperIndividuals(), ReportQuantity() and ReportBootstrap(), DensityUnit in ReportDensity(), and ReportVariableUnit in ReportSpeciesCategoryCatch(), which all acn be used to set the units for the report.
 * Removed warning when a PSU to be added assignment to is not present in the BioticAssignment (this should be no problem, as PSUs are added with).
 * Fixed bug innrtoduced in 3.5.1 where scrolling was not possible in the Stratum/PSU window.
@@ -67,6 +68,8 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 * Fixed possible values for AcousticCategory in SpeciesLink in SplitNASC(), from the available AcousticCategory in the NASCData to the SplitAcousticCategory in the AcousticCategoryLink. Also reordered the parameters so that AcousticCategoryLink comes before SpeciesLink.
 * Fixed bug with R < 4.2, where a filter process with unspecified FilterExpression retuns error "zero-length inputs cannot be mixed with those of non-zero length". The error is returned both when opening the FilterExpression and when running the process.
 * Changed to not remove rows with missing Haul in DefineBioticAssignment(). This was introduced by a misunderstanding in StoX 3.5.0, in the case when DefinitionMethod == "Stratum". The warning when all Hauls are missing is kept.
+* Fixed bug in the GUI, where running a process in one model did not reset all later models.
+* Fixed bug in output file of Bootstrap() when OutputProcesses contained processes with more than one table (e.g. the Data and Resolution table of Quantity()) mixed with single table outputs (e.g. ImputeSuperIndividuals()). The list of output data was flattened to include e.g. Quantity_Data and Quantity_Resolution. However, for BootstrapData, the output is saved to an RData file, and no such flattening of the list is necessary, and also corrupts the data when read back in when using the UseOutputData option in Bootstrap(). This may break scripts using the output file of a Bootstrap process with datta from multi table processes. This is however rare, and the function RstoxFramework::unlistToDataType() can be used to re-create the previous list in the output file of Bootstrap processes.
 
 ## Warning and error messages
 * Improved warning when using RemoveMissingValues. This warning now informs the user that GruopingVariables can be useful to isolate missing values out from the relevant rows of the report.
