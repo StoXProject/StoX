@@ -23,7 +23,7 @@
 * Fixed bug in translateOneTranslationOneTable() used by Translate-functions, where type conversion was applied before applying the translation, which for a function such as IndividualAge > 9 resulted in 10, 11, ... to be comared as text and thus not translated.
 
 
-# StoX v3.6.0 (2023-01-16)
+# StoX v3.6.0 (2023-01-18)
 
 ## Summary
 StoX 3.6.0 contains several improvements to the graphical user interface (GUI), as well as important new additions such as the function PlotReportBootstrap, functions to copy the values of a column to a new or existing column, better warnings and errors, and fewer rows with mostly missing values in ReportBootstrap (rows generated as an unwated consequence of the way the function was coded).

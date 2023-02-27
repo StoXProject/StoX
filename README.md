@@ -20,7 +20,7 @@ Step 1:
 Install by double-clicking on the downloaded .msi file, and follow the instructions. If you get a message along the lines that the installer is blocked by the system, you can click on "More info" and select "Run anyway".
 
 Step 2: 
-Install R 3.6.3 or newer if not already installed.
+Install R 3.6.3 or newer if not already installed. For StoX 3.5.0 on Windows it is recommended to use R 4.2 or newer for the filter expression builder to work properly. 
 
 Step 3: 
 Click on "Tools" > "R connection" in the menu to define the path to R (for example C:\Program Files\R\R-4.0.3\bin\x64).
