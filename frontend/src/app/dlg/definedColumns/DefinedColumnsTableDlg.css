@@ -32,3 +32,10 @@
    .mat-cell {
      padding: .4375em 0.5em !important;
    }
+
+   input[type=number]::-webkit-inner-spin-button, 
+
+   input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+   margin: 0; 
+  }

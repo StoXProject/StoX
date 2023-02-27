@@ -1,3 +1,28 @@
+# StoX v3.7.0-9001 (2023-02-27)
+
+## Summary
+* The StoX version 3.6.0-9001 is a pre-release before StoX 3.7.0, schduled in April 2023. 
+
+## General changes
+* Removed the StoX XML from https://acoustic.ices.dk/submissions.
+* Reduced memory for large BootstrapData in ReportBootstrap() by sending only the relevant columns to the report function.
+* Added support for more than one row in the Regression input to ImputeSuperIndividuals.
+
+## Detailed changes
+* Changed the requirements of the the BaselineSeedTable of the function Bootstrap to only need the ImputeSuperIndividuals processes which use ImputationMethod = "RandomSampling".
+* Changed RegroupLengthICESDatras() to regroup lengths both in the HL and the CA table, and also to support recalculating both HLNoAtLngt and CANoAtLngt. Also added the parameters ResolutionTableVariables and ResolutionTable to support specices specific (or other variables) regrouping.
+* Changed HaulNo to use the serialnumber and not the station variable of NMDBiotic >= 3 in ICESDatras().
+* Improved error message when there are missing LogOrigin or LogOrigin2.
+* Changed the error "The BaselineSeedTable must contain Seed for the processes..." to ignore ImputeSuperIndividuals proecsses with Regressio method (no seed required).
+* Corrected warning " There are more than one 'serialnumber' ..." to end with "More than one serialnumber for the following cruise/station (of the fishstation table of the BioticData):" instead of "Duplicated serialnumber for the following cruise/station (of the fishstation table of the BioticData):".
+* Corrected warning for more NASC in B than in P.
+* Corrected warninig for non-supported NMDEhcosounder format from >= 1.4 to >= 1.1.
+* Corrected the documentation of RegroupLengthDistribution().
+
+## Bug fixes
+* Fixed bug in translateOneTranslationOneTable() used by Translate-functions, where type conversion was applied before applying the translation, which for a function such as IndividualAge > 9 resulted in 10, 11, ... to be comared as text and thus not translated.
+
+
 # StoX v3.6.0 (2023-01-16)
 
 ## Summary

@@ -22,6 +22,7 @@ export class DefinedColumns {
     NewValue: string;   */
 
     columnValues: ColumnValue[] = [];
+    columnTypes: any;
 
     getValue(columnName: string): any {
         for(let i = 0; i< this.columnValues.length; i++) {
