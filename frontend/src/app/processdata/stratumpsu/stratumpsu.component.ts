@@ -110,7 +110,7 @@ export class StratumpsuComponent implements OnInit {
           m.push(
           {
           label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
-            // psu a new psu node
+            // Delete stratum
             let res: ActiveProcessResult = this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeStratum(node.data.id,
               this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
             this.ps.iaMode = "stratum"; // trigger the gui
@@ -125,7 +125,7 @@ export class StratumpsuComponent implements OnInit {
           m.push(
           {
             label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
-              // psu a new psu node
+              // Delete a psu node
               this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeAcousticPSU(
                 [node.data.id], this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
               this.ps.iaMode = "acousticPSU"; // trigger the gui
