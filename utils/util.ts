@@ -9,7 +9,8 @@ module Constants {
 export module UtilsConstants {
     export const RES_SERVER_FILENAME = 'server.R';
     export const RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS = "OfficialRstoxFrameworkVersions.txt"
-    export const RES_SERVER_VERSIONS = "Versions.R"
+    //export const RES_SERVER_VERSIONS = "Versions.R"
+    export const RES_SERVER_STOXGUIINTERNAL = "StoXGUIInternal_0.1.tar.gz"
 }
 
 export class Utils {

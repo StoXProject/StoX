@@ -1,10 +1,17 @@
-import { start } from "repl";
-import { platform } from "os";
+//import { start } from "repl";
+//import { platform } from "os";
 import { Utils, UtilsConstants } from "./utils/util";
-import { resolve } from "path";
+//import { resolve } from "path";
+
+import path from 'path';
 //handle setupevents as quickly as possible
 const setupEvents = require('./../installers/setupEvents')
 var mainWindow: any;
+
+// local constants
+module Constants {
+  export const RES_PATH = 'srv';
+}
 
 // global variables
 // var projectRootPath: string;
@@ -71,9 +78,9 @@ app.on('ready', async () => {
   readPropertiesFromFile();
   // Extract resurces
   Utils.extractResourceFile(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
-  Utils.extractResourceFile(UtilsConstants.RES_SERVER_VERSIONS);
+  //Utils.extractResourceFile(UtilsConstants.RES_SERVER_VERSIONS);
   Utils.extractResourceFile(UtilsConstants.RES_SERVER_FILENAME);
-
+  
   await startBackendServer(true);
   await checkLoadStatusRstoxFramework();
   createWindow()
@@ -356,7 +363,15 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
   if (serverStarted) {
 
     let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
-    let versionsTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_VERSIONS);
+    //let versionsTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_VERSIONS);
+    //logInfo(versionsTmpFile);
+    //let StoXGUIInternalFile = 'srv/StoXGUIInternal_0.1.tar.gz';
+    //let StoXGUIInternalFile = path.join(path.join(__dirname, "../.."), 'srv/StoXGUIInternal_0.1.tar.gz')
+    //let StoXGUIInternalFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
+    let StoXGUIInternalFile = path.join(path.join(__dirname, ".."), Constants.RES_PATH, UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
+
+    logInfo(UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
+    logInfo(StoXGUIInternalFile);
     let cmd = "paste(R.Version()$major, gsub(\"(.+?)([.].*)\", \"\\\\1\", R.Version()$minor), sep = \".\")"
     versionR = (await callR(cmd) as any).result;
     logInfo("R version " + versionR);
@@ -368,29 +383,50 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     //logInfo(cmd);
     //let res22 = (await callR(cmd) as any).result;
     
-    cmd = "source(\"" + versionsTmpFile + "\")";
+    // With R 4.3.0 the source() no longer works with callR. It simplly froze. Building a package instead:
+    // cmd = "source(\"" + versionsTmpFile + "\")";
+    // logInfo(cmd);
+    // let res = (await callR(cmd) as any).result;
+
+    // Install StoXGUIInternal every time for safety:
+    //cmd = "if(!require(StoXGUIInternal, quietly = TRUE)) utils::install.packages(\"" + StoXGUIInternalFile + "\", repos = NULL, type = \"source\", lib = .libPaths()[1])";
+    cmd = "utils::install.packages(\"" + StoXGUIInternalFile + "\", repos = NULL, type = \"source\", lib = .libPaths()[1])";
     logInfo(cmd);
     let res = (await callR(cmd) as any).result;
 
+    
     // Initiate local library
     //logInfo("libPaths before initiation" + (await callR(".libPaths()[1]") as any).result);
-    logInfo("> initLocalLibrary(): " + (await callR("initLocalLibrary()") as any).result);
-    cmd = "getOfficialRstoxPackageVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", optionalDependencies = TRUE, toJSON = T)";
-    logInfo(cmd);
-
-    officialRstoxPackages = JSON.parse((await callR(cmd) as any).result);
-    logInfo(JSON.stringify(officialRstoxPackages));
+    logInfo("> StoXGUIInternal::initLocalLibrary(): " + (await callR("StoXGUIInternal::initLocalLibrary()") as any).result);
+    
+    // Test whether RstoxFramework is installed:
     if(checkLoadStatus) {
       await checkLoadStatusRstoxFramework();
+      if (loadStatusRstoxFramework != "") {
+        return "";
+      }
     }
+    
+    
+    
+    // This vector holds the PackageName_PackageVersion of all installed Rstox packages that are listed in the officialsRFTmpFile.
+    // The vector is however only used as a list of package names, when checking the status of the packages in the
+    // server.get('/getRstoxPackageVersions'...
+    // below on line 800-ish:
+    cmd = "RstoxFramework::getOfficialRstoxPackageVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", optionalDependencies = TRUE, toJSON = T)";
+    logInfo(cmd);
+    officialRstoxPackages = JSON.parse((await callR(cmd) as any).result);
+    logInfo(JSON.stringify(officialRstoxPackages));
+    
+    
     cmd = "tryCatch(paste0(\"RstoxFramework_\", as.character(packageVersion(\"RstoxFramework\"))),error = function(e) {\"\"})"
     versionRstoxFramework = (await callR(cmd) as any).result;
     logInfo(versionRstoxFramework);
 
-    cmd = "isOfficialStoXVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
+    cmd = "RstoxFramework::isOfficialStoXVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
     isOfficialStoXVersion = (await callR(cmd) as any).result == "TRUE";
     
-    cmd = "isCertifiedRstoxFramework(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", optionalDependencies = TRUE)";
+    cmd = "RstoxFramework::isCertifiedRstoxFramework(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", optionalDependencies = TRUE)";
     isCertifiedRstoxFramework = (await callR(cmd) as any).result == "TRUE";
     
     
@@ -419,7 +455,7 @@ async function checkLoadStatusRstoxFramework() : Promise<string> {
 
 
 async function getPackageStatus(packageName: string, stoxVersion: string, officialsRFTmpFile: string) {
-  let cmd = "RstoxPackageStatus(\"" + packageName + "\", \"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
+  let cmd = "StoXGUIInternal::RstoxPackageStatus(\"" + packageName + "\", \"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
   console.log(cmd)
   RstoxPackageStatus = await (callR(cmd) as any);
   console.log(RstoxPackageStatus)
@@ -428,9 +464,13 @@ async function getPackageStatus(packageName: string, stoxVersion: string, offici
 
 
 async function getVersionStringOfPackage(packageName: string) {
-  let cmd = "getVersionStringOfPackage(\"" + packageName + "\")";
+  // 2023-04-25 (Work to separate the GUI from the Versions.R in RstoxFramework): Changed this to use utils directly, since the getVersionStringOfPackage is used in RstoxFramework:
+  //let cmd = "StoXGUIInternal::getVersionStringOfPackage(\"" + packageName + "\")";
+  let cmd = "utils::installed.packages()[, \"Version\"][\"" + packageName + "\"]";
   return await (callR(cmd) as any);
 }
+
+
 
 
 
@@ -479,22 +519,7 @@ async function createClient() {
   };
 }
 
-function getRstoxFrameworkInstallCmd(): string {
-  let major = versionR.startsWith("4.")
-  let platformCode: string = process.platform == "win32" ? "windows" : process.platform == "darwin" ?
-    versionR.startsWith("4.") ? "macosx" : versionR.startsWith("3.6") ? "macosx/el-capitan" : "" : "";
-  if (platformCode == "") {
-    return "";
-  }
-  return "packagesToInstall <-  c(\\\"RstoxFramework\\\", \\\"RstoxBase\\\", \\\"RstoxData\\\")\\n" +
-    "tryCatch(remove.packages(packagesToInstall), error = function(e) {NULL})\\n" +
-    "install.packages( \\\"https://stoxproject.github.io/repo/bin/" + platformCode + "/contrib/" + versionR +
-    "/RstoxFramework_1.2.27.zip\\\" , repos = NULL)\\n" +
-    "install.packages( \\\"https://stoxproject.github.io/repo/bin/" + platformCode + "/contrib/" + versionR +
-    "/RstoxBase_1.2.35.zip\\\" , repos = NULL)\\n" +
-    "install.packages( \\\"https://stoxproject.github.io/repo/bin/" + platformCode + "/contrib/" + versionR +
-    "/RstoxData_1.0.18.zip\\\" , repos = NULL)"
-}
+
 
 /*function isRunning(win: string, mac: string, linux: string) {
   return new Promise(function (resolve, reject) {
@@ -782,11 +807,11 @@ function setupServer() {
       let res12 = (await callR(cmd) as any).result;
     
 
-      await startBackendServer(false);
+      await startBackendServer(true);
       logInfo('server started: ' + serverStarted + ", client: " + client);
       if (serverStarted) {
         let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
-        let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
+        let cmd = "StoXGUIInternal::installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
           officialsRFTmpFile + "\", quiet = TRUE, toJSON = TRUE)";
         logInfo(cmd);
         let res = (await callR(cmd) as any).result;
