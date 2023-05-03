@@ -1,3 +1,52 @@
+# StoX v3.6.1 (2023-04-21)
+
+## Summary
+* The StoX version 3.6.1 is a patch-release containing a number of bug fixes. Particularly, StoX <= 3.6.0 cannot be used with R 4.3. StoX 3.6.1 can.
+
+## Bug fixes
+* Fixed bug when on R 4.3 where StoX could not be opened on MacOS and R connection failed on Windows.
+* Fixed slow RstoxFramework::ReportBootstrap() in StoX 3.6.0 by removing repeated unnecessary call to getReportFunctions(getMultiple = TRUE) to get the column names of the output in aggregateBaselineDataOneTable().
+* Fixed bug in SuperIndividuals() where the test for equal total Abundance from the QuantityData and in the SuperIndividualsData failed when both were 0. This could be a problem if there were no NASC or no catch of the target species in a stratum for acoustic-trawl or swept-area models, respectively.
+* Fixed bug in SuperIndividuals() where bootstrapping could result in artificial rows with missing Abundance for certain length grups only present in biotic PSUs that are not resampled in a bootstrap replicate. This was only a problem when DistributionMethod = "HaulDensity". The result was that when not using IndividualTotalLength in the GroupingVariables in ReportBootstrap(), many rows contained NAs. In the new version the NAs can be isolated by including "Survey" and "SpeciesCategory" in the GroupingVariables.
+* Fixed bug in EstimateRegression when insufficient data to estimate the regression. Now returning NA for all parameters.
+* Fixed bug where only the varaibles from the Individual table of StoxBioticData were available as GroupingVariables in EstimateBioticRegression() in the GUI.
+* Fixed bug in translateOneTranslationOneTable() used by Translate-functions, where type conversion was applied before applying the translation, which for a function such as IndividualAge > 9 resulted in 10, 11, ... to be comared as text and thus not translated.
+* Fixed bug in StoX 3.6.0 where simply selecting a process in a model would reset the later models.
+* Fixed bug in runProjects(), where processes returning StratumPolygon and BioticData and AcousticData could not be included in the processes argument.
+* Fixed bug in modifyProcessNameInFunctionInputs() where function input were modified only in the same model, and failed when at least one function input was empty.
+* Fixed bug in SuperIndividuals() for when all lengths of the QuantityData are NA.
+* Fixed bug in RegroupLengthICESDatras(), where the columns were reordered with ResolutionTableVariables first.
+* Fixed bug in ICESDatras() where distance was first rounded in nautical miles and then multiplied by 1852.
+* Fixed bug where slash and backslash were mixed in file name in json schema validation error message. Now using only slash. Also changed this to a warning instead of an error, so that StoX tries to open the project anyhow.
+
+## Other changes
+* Stopped using the Versions.R file in the StoX GUI, but rather separated out the functions used by the GUI to an exclusive GUI file. Simplified functions for getting versions used in the project.json file.
+* Improved how StoX changes the active process so that setting a parameter without actually changing it value does not reset the process.
+* Changed the requirements of the the BaselineSeedTable of the function Bootstrap to only need the ImputeSuperIndividuals processes which use ImputationMethod = "RandomSampling".
+* Added support for more than one row in the Regression input to ImputeSuperIndividuals.
+* Updated documentation of StoxAcoustic and StoxBiotic with tables defining each variable.
+* Removed variable names related to the NMCBiotic tables "prey", "preylengthfrequencytable" and "copepodedevstagefrequencytable".
+* Added LogDistance to tooltip for EDSUs in the map.
+
+## Detailed changes
+* Added support for specifying startProcess and endProcess in runProject() and runProjects() as a list named by the proecsses, such as endProcess = list(report = 2) to only run the first two processes of the report model.
+* Changed to check function input errors only for enabled processes.
+* Improved warming for function input not enabled (added the name of the process).
+* Improved error message when there are missing LogOrigin or LogOrigin2.
+* Changed the error "The BaselineSeedTable must contain Seed for the processes..." to ignore ImputeSuperIndividuals proecsses with Regressio method (no seed required).
+* Reduced memory for large BootstrapData in ReportBootstrap() by sending only the relevant columns to the report function.
+* Added test for non-empty AcousticPSU in BioticAssignment().
+* Added support for starting out with no PSUs in DefineAcousticPSU.
+* Now reporting a warning if the user tries to set unit to a variable that has no units defined in ReportSuperIndividuals().
+* Improved warning when EstimateBioticRegression() returns NA.
+* Corrected the documentation of RegroupLengthDistribution().
+* Changed RegroupLengthICESDatras() to regroup lengths both in the HL and the CA table, and also to support recalculating both HLNoAtLngt and CANoAtLngt. Also added the parameters ResolutionTableVariables and ResolutionTable to support specices specific (or other variables) regrouping.
+* Added a warning if there are more than one tag for at least one individual in AddToStoxBiotic() for NMDBiotic >= 3 files.
+* Corrected warning " There are more than one 'serialnumber' ..." to end with "More than one serialnumber for the following cruise/station (of the fishstation table of the BioticData):" instead of "Duplicated serialnumber for the following cruise/station (of the fishstation table of the BioticData):".
+* Corrected warning for more NASC in B than in P.
+* Corrected warninig for non-supported NMDEhcosounder format from >= 1.4 to >= 1.1.
+
+
 # StoX v3.7.0-9001 (2023-02-27)
 
 ## Summary
@@ -51,7 +100,7 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 * Processes with enabled = FALSE is now marked with grey process symbol.
 * Added progress spinner on R connection and Preview.
 * Expand buttons in the process parameter window have changed logic to the natural logic (arrow down means open the list, arrow right means close the list).
-* Add PSU now activates only on AcousticPSU procecsses.
+* Add PSU now activates only on AcousticPSU processes.
 * The GUI now stops immediately before a process with function input error, bu jumps over processes which are not enabled.
 * Added highlighting of a stratum in the map when selected in the Stratum/PSU window when tthe active process uses one of the functions DefineStratumPolygon, DefineAcousticPSU or DefineBioticAssignment.
 * Removed tooltip in drop-down lists, as this obscured the selection of the elements in the list.
@@ -62,7 +111,7 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 * Added the new function PlotReportBootstrap().
 * Removed rows of the output from ReportBootstrap() that contained combinations of the GroupingVariables that are not present in the BootstrapData. There rows were created to ensure that all bootstrap runs contain all combinations of the GroupingVariables, but also introduced non-existing combinations.
 * Only Rstox packages for official StoX versions can now be installed from the GUI using Install Rstox packages. If trying to use Install Rstox packages in a pre-release, an error is printed with hints on how to install the Rstox packages manually in R.
-* StoX now deletes output files when a parameter of tha procecss is changed.
+* StoX now deletes output files when a parameter of tha process is changed.
 * Removed all non-official Rstox-package versions from the StoX repository (https://github.com/StoXProject/repo). This implies that non-official StoX versions can no longer use Install Rstox packages. The user must instetad install the appropriate Rstox packages in R.
 * Added the parameter Percentages with default c(5, 50, 95) in ReportBootstrap() when BootstrapReportFunction = "summaryStox" (currently the only option).
 * Added the parameter TargetVariableUnit in ReportSuperIndividuals(), ReportQuantity() and ReportBootstrap(), DensityUnit in ReportDensity(), and ReportVariableUnit in ReportSpeciesCategoryCatch(), which all acn be used to set the units for the report.
@@ -204,10 +253,10 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 	* Processes with enabled = FALSE is now marked with grey process symbol.
 	* Added progress spinner on R connection and Preview.
 	* Expand buttons in the process parameter window have changed logic to the natural logic (arrow down means open the list, arrow right means close the list).
-	* Add PSU now activates only on AcousticPSU procecsses.
+	* Add PSU now activates only on AcousticPSU processes.
 	* The GUI now stops immediately before a process with function input error, bu jumps over processes which are not enabled.
 * Added a line "... truncated" if a table in Preview does not contain all rows (the GUI shows at most 200000 rows).
-* StoX now deletes output files when a parameter of tha procecss is changed.
+* StoX now deletes output files when a parameter of tha process is changed.
 * Removed all non-official Rstox-package versions from the StoX repository (https://github.com/StoXProject/repo). This implies that non-official StoX versions can no longer use Install Rstox packages. The user must instetad install the appropriate Rstox packages in R.
 
 ## Changes affecting backward compatibility
@@ -444,7 +493,7 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 * Fixed bug in JSON schema for AcousticLayer and BioticLayer.
 * Fixed bug "names do not match previous names" when adding a new stratum in the StoX GUI.
 * Fixed bug where the blue dot marking processes as 'run' was turned on on a newly modified process when immediately modifying a later process.
-* Fixed bug when working with a DefineStratumPolygon procecss with no polygons defined (readProcessOutputFile() did nor read deal properly with the empty SpatialPolygonsDataFrame with jsonlite::prettify(geojsonsf::sf_geojson(sf::st_as_sf(data))), but ok when using replaceSpatialFileReference(buildSpatialFileReferenceString(data)) instead).
+* Fixed bug when working with a DefineStratumPolygon process with no polygons defined (readProcessOutputFile() did nor read deal properly with the empty SpatialPolygonsDataFrame with jsonlite::prettify(geojsonsf::sf_geojson(sf::st_as_sf(data))), but ok when using replaceSpatialFileReference(buildSpatialFileReferenceString(data)) instead).
 * Fixed bug in ICESDatras() occurring when there were rows with the same aphia and species, but with missing sex.
 * Fixed bug in drop-down list for DensityType in SweptAreaDensity() when SweptAreaDensityMethod == "LengthDistributed". To avoid error the user had to type in the value manually as ["AreaNumberDensity"]. Moved from testthat to tinytest.
 * Fixed bug causing stream = TRUE to fail on MacOS Monterey in readXmlFile().
@@ -558,7 +607,7 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 ## Bug fixes
 * Fixed bug "names do not match previous names" when adding a new stratum in the StoX GUI.
 * Fixed bug where the blue dot marking processes as 'run' was turned on on a newly modified process when immediately modifying a later process.
-* Fixed bug when working with a DefineStratumPolygon procecss with no polygons defined (readProcessOutputFile() did nor read deal properly with the empty SpatialPolygonsDataFrame with jsonlite::prettify(geojsonsf::sf_geojson(sf::st_as_sf(data))), but ok when using replaceSpatialFileReference(buildSpatialFileReferenceString(data)) instead).
+* Fixed bug when working with a DefineStratumPolygon process with no polygons defined (readProcessOutputFile() did nor read deal properly with the empty SpatialPolygonsDataFrame with jsonlite::prettify(geojsonsf::sf_geojson(sf::st_as_sf(data))), but ok when using replaceSpatialFileReference(buildSpatialFileReferenceString(data)) instead).
 
 
 # StoX v3.3.3 (2022-02-14)

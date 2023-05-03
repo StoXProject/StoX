@@ -303,18 +303,18 @@ export class ProjectService {
   async initData() {
     try {
       this.appStatus = "Initializing StoX"
-    await this.checkRstoxFrameworkAvailability();
-    this.m_Application = "StoX " + await this.dataService.getStoxVersion().toPromise();
-    let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
+      await this.checkRstoxFrameworkAvailability();
+      this.m_Application = "StoX " + await this.dataService.getStoxVersion().toPromise();
+      let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
 
-    console.log("Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);
-    // Read models and set selected to the first model
-    if (projectPath.length > 0 && this.rstoxFrameworkAvailable) {
-      //this.selectedModel = this.models[0]; 
-      await this.openProject(projectPath, false, true, false, true);
-    }
+      console.log("Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);
+      // Read models and set selected to the first model
+      if (projectPath.length > 0 && this.rstoxFrameworkAvailable) {
+        //this.selectedModel = this.models[0]; 
+        await this.openProject(projectPath, false, true, false, true);
+      }
   } finally {
-    this.appStatus = null;
+      this.appStatus = null;
   }
 }
 
