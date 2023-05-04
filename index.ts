@@ -369,6 +369,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     //let StoXGUIInternalFile = path.join(path.join(__dirname, "../.."), 'srv/StoXGUIInternal_0.1.tar.gz')
     //let StoXGUIInternalFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
     let StoXGUIInternalFile = path.join(path.join(__dirname, ".."), Constants.RES_PATH, UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
+    StoXGUIInternalFile = StoXGUIInternalFile.replace(/\\/g, "/"); // convert backslash to forward
 
     logInfo(UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
     logInfo(StoXGUIInternalFile);
@@ -393,6 +394,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     cmd = "utils::install.packages(\"" + StoXGUIInternalFile + "\", repos = NULL, type = \"source\", lib = .libPaths()[1])";
     logInfo(cmd);
     let res = (await callR(cmd) as any).result;
+    logInfo(res);
 
     
     // Initiate local library

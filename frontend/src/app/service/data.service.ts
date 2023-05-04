@@ -549,7 +549,7 @@ export class DataService {
   }
 
   callR(j: any): Observable<any> {
-    console.log("RstoxFramework::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
+    //console.log("RstoxFramework::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
     return this.postLocalNode('callR', j);
   }
 
