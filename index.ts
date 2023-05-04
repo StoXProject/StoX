@@ -77,9 +77,9 @@ app.on('ready', async () => {
   await startNodeServer();
   readPropertiesFromFile();
   // Extract resurces
-  Utils.extractResourceFile(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+  Utils.extractResourceFile(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
   //Utils.extractResourceFile(UtilsConstants.RES_SERVER_VERSIONS);
-  Utils.extractResourceFile(UtilsConstants.RES_SERVER_FILENAME);
+  Utils.extractResourceFile(UtilsConstants.RES_SERVER_FILENAME, "stox");
   
   await startBackendServer(true);
   await checkLoadStatusRstoxFramework();
@@ -348,7 +348,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
   var rscriptBin = rScriptBin();
 
   // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
-  let fileName = Utils.getTempResFileName(UtilsConstants.RES_SERVER_FILENAME)
+  let fileName = Utils.getTempResFileName(UtilsConstants.RES_SERVER_FILENAME, "stox")
   logInfo("Spawning " + rscriptBin + " " + fileName);
   backendProcess = await child_process.spawn(rscriptBin, [fileName], { stdio: ['pipe', 'ignore', 'ignore'] });
   backendProcess.on('error', (er: any) => {
@@ -362,20 +362,25 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
 
   if (serverStarted) {
 
-    let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+    let cmd = "paste(R.Version()$major, gsub(\"(.+?)([.].*)\", \"\\\\1\", R.Version()$minor), sep = \".\")"
+    versionR = (await callR(cmd) as any).result;
+    logInfo("R version " + versionR);
+    
+
+    let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
     //let versionsTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_VERSIONS);
     //logInfo(versionsTmpFile);
     //let StoXGUIInternalFile = 'srv/StoXGUIInternal_0.1.tar.gz';
     //let StoXGUIInternalFile = path.join(path.join(__dirname, "../.."), 'srv/StoXGUIInternal_0.1.tar.gz')
     //let StoXGUIInternalFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
-    let StoXGUIInternalFile = path.join(path.join(__dirname, ".."), Constants.RES_PATH, UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
-    StoXGUIInternalFile = StoXGUIInternalFile.replace(/\\/g, "/"); // convert backslash to forward
-
-    logInfo(UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
-    logInfo(StoXGUIInternalFile);
-    let cmd = "paste(R.Version()$major, gsub(\"(.+?)([.].*)\", \"\\\\1\", R.Version()$minor), sep = \".\")"
-    versionR = (await callR(cmd) as any).result;
-    logInfo("R version " + versionR);
+    //let StoXGUIInternalFile = path.join(path.join(__dirname, ".."), Constants.RES_PATH, UtilsConstants.RES_SERVER_STOXGUIINTERNAL);
+    let StoXGUIInternalFolder = Utils.getTempResFileName("StoXGUIInternal", "stox")
+    logInfo(StoXGUIInternalFolder);
+    StoXGUIInternalFolder = StoXGUIInternalFolder.replace(/\\/g, "/"); // convert backslash to forward
+    logInfo(StoXGUIInternalFolder);
+    
+    
+    
     /*cmd = "paste(.libPaths(), collapse=\",\")";
     versionR = (await callR(cmd) as any).result;
     logInfo("Lib paths " + versionR);*/
@@ -390,8 +395,10 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     // let res = (await callR(cmd) as any).result;
 
     // Install StoXGUIInternal every time for safety:
+    // Create the pakcage:
+    Utils.createStoXGUIInternal();
     //cmd = "if(!require(StoXGUIInternal, quietly = TRUE)) utils::install.packages(\"" + StoXGUIInternalFile + "\", repos = NULL, type = \"source\", lib = .libPaths()[1])";
-    cmd = "utils::install.packages(\"" + StoXGUIInternalFile + "\", repos = NULL, type = \"source\", lib = .libPaths()[1])";
+    cmd = "utils::install.packages(\"" + StoXGUIInternalFolder + "\", repos = NULL, type = \"source\", lib = .libPaths()[1])";
     logInfo(cmd);
     let res = (await callR(cmd) as any).result;
     logInfo(res);
@@ -433,14 +440,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     
     
   }
-  /*if (serverStarted) {
-    let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
-    let cmd = "installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
-      officialsRFTmpFile + "\", quiet = T, skip.identical=T, toJSON=T)";
-    logInfo(cmd);
-    let res = (await callR(cmd) as any).result;
-    logInfo("Installed packages: " + res);
-  }*/
+ 
   return "ok";
 }
 
@@ -729,7 +729,7 @@ function setupServer() {
   });
   server.post('/mapInfo', async (req: any, res: any) => {
     properties.mapInfo = JSON.parse(req.body);
-    logInfo('set mapInfo ' + properties.mapInfo);
+    //logInfo('set mapInfo ' + properties.mapInfo);
     res.send('mapInfo updated');
   });
   // observe project root path
@@ -812,7 +812,7 @@ function setupServer() {
       await startBackendServer(true);
       logInfo('server started: ' + serverStarted + ", client: " + client);
       if (serverStarted) {
-        let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+        let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
         let cmd = "StoXGUIInternal::installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
           officialsRFTmpFile + "\", quiet = TRUE, toJSON = TRUE)";
         logInfo(cmd);
@@ -842,7 +842,7 @@ function setupServer() {
     }[] = [];
     if (serverStarted) {
       // logInfo("iterating through officialRstoxPackages " + officialRstoxPackages);
-      let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS);
+      let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
       let packagesStatus = officialRstoxPackages.map(async s => {
         let elms: string[] = s.split("_");
         // Determine status of each official package
