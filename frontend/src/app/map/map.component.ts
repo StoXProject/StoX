@@ -294,7 +294,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     this.mapInfo.zoom = this.map.getView().getZoom();
     this.mapInfo.origin = this.currentLAEAOrigin;
     this.mapInfo.projection = this.proj; 
-    console.log("MapInfo:" + JSON.stringify(this.mapInfo))
+    //console.log("MapInfo:" + JSON.stringify(this.mapInfo))
     await this.dataService.setMapInfo(this.mapInfo).toPromise();
   }
   
@@ -302,7 +302,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
 
     console.log("get mapinfo from backend")
     this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise());// {zoom:2.3, origin:[10,60], projection:''};
-    console.log("MapInfo:" + JSON.stringify(this.mapInfo))
+    //console.log("MapInfo:" + JSON.stringify(this.mapInfo))
 
     console.log("init projections")
     this.initProjections(this.mapInfo.origin); 
@@ -603,7 +603,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
         this.openCm(evt);
     })
     this.map.getView().on('change:resolution', async evt => {
-        console.log("Resolution changed - write to backend")
+        //console.log("Resolution changed - write to backend")
         await this.updateMapInfoInBackend();
     });
   } // end of ngOnInit()
