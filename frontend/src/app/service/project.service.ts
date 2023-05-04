@@ -322,7 +322,14 @@ export class ProjectService {
     this.isOfficialStoXVersion = JSON.parse(await this.dataService.getIsOfficialStoXVersion().toPromise());
     this.isCertifiedRstoxFramework = JSON.parse(await this.dataService.getIsCertifiedRstoxFramework().toPromise());
     this.rstoxPackages = JSON.parse(await this.dataService.getRstoxPackageVersions().toPromise());
-    this.rstoxFrameworkAvailable = this.rstoxPackages[0].status < 2;// (await this.dataService.rstoxFrameworkAvailable().toPromise()) == "true";
+    
+    // Accept empty list of Rstox packages:
+    if (this.rstoxPackages.length > 0) {
+      this.rstoxFrameworkAvailable = this.rstoxPackages[0].status < 2;
+    } else {
+      this.rstoxFrameworkAvailable = false;
+    }
+    
     if (this.rstoxFrameworkAvailable) {
       this.setModels(await this.dataService.getModelInfo().toPromise());
     } else {
