@@ -1,3 +1,2 @@
-export(initLocalLibrary)
 export(installOfficialRstoxPackagesWithDependencies)
 export(RstoxPackageStatus)
