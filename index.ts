@@ -435,7 +435,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     // The vector is however only used as a list of package names, when checking the status of the packages in the
     // server.get('/getRstoxPackageVersions'...
     // below on line 800-ish:
-    cmd = "RstoxFramework::getOfficialRstoxPackageVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", optionalDependencies = TRUE, toJSON = T)";
+    cmd = "StoXGUIInternal::getOfficialRstoxPackageVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", optionalDependencies = TRUE, toJSON = T)";
     logInfo(cmd);
     officialRstoxPackages = JSON.parse((await callR(cmd) as any).result);
     logInfo(JSON.stringify(officialRstoxPackages));
@@ -822,7 +822,7 @@ function setupServer() {
       let res12 = (await callR(cmd) as any).result;
     
 
-      await startBackendServer(true);
+      await startBackendServer(false);
       logInfo('server started: ' + serverStarted + ", client: " + client);
       if (serverStarted) {
         let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
