@@ -367,6 +367,14 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     logInfo("R version " + versionR);
     
 
+
+
+    await callR("# Check that we are on Windows:\nif (.Platform$OS.type == \"windows\") {\n# If no non-programfiles libraries, create the same that Rstudio creates:\nlib <- .libPaths()\nwritable <- file.access(lib, mode = 2) == 0\nif(!writable[1]) {\nhomeFolder <- utils::readRegistry(key=\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\Shell Folders\", hive=\"HCU\")$Personal\n# As of R 4.2.0 the folder for the packages changed:\ntwoDigitRVersion <- paste(R.Version()$major, strsplit(R.Version()$minor, \".\", fixed = TRUE)[[1L]][1L], sep = \".\")\nif(getRversion() >= \"4.2.0\") {\nnewLib <- paste(Sys.getenv(\"USERPROFILE\"), \"AppData\", \"Local\", \"R\", \"win-library\", twoDigitRVersion, sep=\"/\")\n}\nelse {\nnewLib <- paste(homeFolder, \"R\", \"win-library\", twoDigitRVersion, sep=\"/\")\n}\n# Add the local library as the first:\nif(!dir.exists(newLib)) {\ndir.create(newLib, recursive = TRUE)\n}vv.libPaths(newLib)\n}\n}")
+    
+    logInfo("> R packages installed in: " + (await callR(".libPaths()[1]") as any).result);
+
+    
+
     let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
     //let versionsTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_VERSIONS);
     //logInfo(versionsTmpFile);
@@ -404,9 +412,12 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     logInfo(res);
 
     
-    // Initiate local library
+    // Initiate a local library
     //logInfo("libPaths before initiation" + (await callR(".libPaths()[1]") as any).result);
-    logInfo("> StoXGUIInternal::initLocalLibrary(): " + (await callR("StoXGUIInternal::initLocalLibrary()") as any).result);
+    //logInfo("> StoXGUIInternal::initLocalLibrary(): " + (await callR("StoXGUIInternal::initLocalLibrary()") as any).result);
+
+
+
     
     // Test whether RstoxFramework is installed:
     if(checkLoadStatus) {

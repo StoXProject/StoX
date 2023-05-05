@@ -6,51 +6,6 @@ supportedRVersion = c(
     "3.6"
     )
 
-
-# Used by the GUI:
-initLocalLibrary <- function() {
-    # Check that we are on Windows:
-    if (.Platform$OS.type == "windows") {
-        # If no non-programfiles libraries, create the same that Rstudio creates:
-        lib <- .libPaths()
-        
-        writable <- file.access(lib, mode = 2) == 0
-        #if(!any(writable) || !writable[1]) {
-        if(!writable[1]) {
-            homeFolder <- utils::readRegistry(key="Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", hive="HCU")$Personal
-            twoDigitRVersion <- paste(R.Version()$major, gsub("(.+?)([.].*)", "\\1", R.Version()$minor), sep = ".")
-            #newLib <- paste(path.expand('~'), 'R', 'win-library', paste(R.Version()$major, gsub("(.+?)([.].*)", "\\1", R.Version()$minor), sep = "."), sep="/")
-            #newLib <- paste(homeFolder, 'R', 'win-library', twoDigitRVersion, sep="/")
-            # As of R 4.2.0 the folder for the packages changed:
-            # The default personal library on Windows, folder ‘R\win-library\x.y’ where ‘x.y’ stands for R release ‘x.y.z’, is now a subdirectory of Local Application Data directory (usually a hidden directory ‘C:\Users\username\AppData\Local’). Use shell.exec(.libPaths()[1]) from R to open the personal library in Explorer when it is first in the list (PR#17842).
-            # Chekc R version 4.2.0 or newer:
-            if(getRversion() >= "4.2.0") {
-                newLib <- paste(Sys.getenv("USERPROFILE"), "AppData", "Local", "R", "win-library", twoDigitRVersion, sep="/")
-            }
-            else {
-                newLib <- paste(homeFolder, 'R', 'win-library', twoDigitRVersion, sep="/")
-            }
-            
-            # Add the local library as the first:
-            if(!dir.exists(newLib)) {
-                dir.create(newLib, recursive = TRUE)
-            }
-            
-            # Add the local library in this session:
-            .libPaths(newLib)
-        }
-        else {
-            newLib <- .libPaths()
-        }
-        
-        return(newLib)
-    }
-    else {
-        return(NA)
-    }
-}
-
-
 #'
 #' @export
 #' @rdname installPackages
