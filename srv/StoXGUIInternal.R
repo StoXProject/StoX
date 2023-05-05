@@ -6,9 +6,9 @@ supportedRVersion = c(
     "3.6"
     )
 
-#'
+#' Install official Rstox packages
+#' 
 #' @export
-#' @rdname installPackages
 #'
 installOfficialRstoxPackagesWithDependencies <- function(
     StoXVersion, 
@@ -154,7 +154,6 @@ installOfficialRstoxPackagesWithDependencies <- function(
     ### )
 
 
-browser()
     localFiles <- mapply( 
         downloadRstoxPackage, 
         packageName = RstoxPackages$packageName, 
@@ -647,3 +646,4 @@ getVersionStringOfPackage <- function(packageName) {
     vers <- pkgs[, "Version"]
     vers[packageName]
 }
+
