@@ -24,12 +24,16 @@ export class RConnectionDlgService {
 
     async apply() {
         console.log("apply");
-        console.log("Posting rpath " + this.rpath)
+        console.log("Posting rpath: " + this.rpath)
         this.rpath = this.rpath.replace(/\\/g, "/"); // convert backslash to forward
+        console.log("Posting rpath with forward slash: " + this.rpath)
         this.isConnecting = true;
         try {
-        var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
-        await this.ps.checkRstoxFrameworkAvailability();
+            console.log("Setting R path...");
+            var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
+            console.log("checkRstoxFrameworkAvailability...");
+            await this.ps.checkRstoxFrameworkAvailability();
+            console.log("DONE checkRstoxFrameworkAvailability");
         } finally {
             this.isConnecting = false;
         }
