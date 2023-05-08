@@ -366,7 +366,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     versionR = (await callR(cmd) as any).result;
     logInfo("> R version " + versionR);
     
-    let firstLibPath = (await callR(".libPaths()") as any).result;
+    let firstLibPath = (await callR(".libPaths()[1]") as any).result;
     logInfo("> First of .libPaths: " + firstLibPath);
     
 
@@ -617,14 +617,20 @@ function callR(arg: string) {
       // pause when client is busy. 
       await new Promise(r => setTimeout(() => { r(null); }, 50/*ms*/));
     }
+    logInfo("> 2 callr_evaluate.length: " + callr_evaluate.length)
     callr_evaluate.push(true); // make my self ready. lock the other calls out if they appear at same time.
+    logInfo("> 3 callr_evaluate.length: " + callr_evaluate.length)
     while (callr_evaluate.length > 1) {
       // pause if 2 calls are released asynchronously from the first pause. (it could maybe happen) only one at the time.
       await new Promise(r => setTimeout(() => { r(null); }, 50/*ms*/));
     }
+    logInfo("> 4 callr_evaluate.length: " + callr_evaluate.length)
     let ans: any = await evaluate(client, arg);
 
+    logInfo("> 5 callr_evaluate.length: " + callr_evaluate.length)
     callr_evaluate.splice(callr_evaluate.length - 1, 1);
+    
+    logInfo("> 6 callr_evaluate.length: " + callr_evaluate.length)
     //let resparsed = JSON.parse(ans);
     let diff = process.hrtime(startTime);
     resolve({ time: diff[0] + diff[1] / 1000000000, result: ans });
