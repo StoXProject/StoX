@@ -609,6 +609,8 @@ const writePropertiesToFile = function writePropertiesToFile() {
 }
 
 function callR(arg: string) {
+  logInfo("> Running callR in index.ts: ")
+  logInfo("> callr_evaluate.length: " + callr_evaluate.length)
   const startTime = process.hrtime();
   return new Promise(async (resolve) => {
     while (callr_evaluate.length > 0) {
