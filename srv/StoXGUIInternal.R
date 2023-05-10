@@ -514,6 +514,7 @@ RstoxPackageStatus <- function(RstoxPackageName, StoXVersion, officialRstoxPacka
     
     # Check whether the packages are installed.:
     isInstalled <- nzchar(system.file(package = RstoxPackageName))
+    #isInstalled <- isTRUE(require(RstoxPackageName))
     if(!isInstalled) {
         return(3)
     }
@@ -539,13 +540,17 @@ RstoxPackageStatus <- function(RstoxPackageName, StoXVersion, officialRstoxPacka
 
 
 
-
-
-
-
-
-
-
+#' Test for whether the given StoX version is an official version
+#' 
+#' @inheritParams getOfficialRstoxPackageVersion
+#' 
+#' @export
+#' 
+isOfficialStoXVersion <- function(StoXVersion, officialRstoxPackageVersionsFile) {
+    official <- readOfficialRstoxPackageVersionsFile(officialRstoxPackageVersionsFile, toTable = TRUE)
+    officialStoXVersions <- official$StoX[official$Official]
+    StoXVersion %in% officialStoXVersions
+}
 
 
 

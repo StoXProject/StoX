@@ -52,7 +52,6 @@ export class ProjectService {
   m_isResetting: boolean = false; // current reset flag.
   rstoxPackages: PackageVersion[];
   isOfficialStoXVersion: boolean = false;
-  isCertifiedRstoxFramework: boolean = false;
   rstoxFrameworkAvailable: boolean = false;
   m_appStatus : string = null;
   m_appStatusIsUpdating : boolean = false;
@@ -319,13 +318,10 @@ export class ProjectService {
 }
 
   async checkRstoxFrameworkAvailability() {
-    console.log('_____ checkRstoxFrameworkAvailability _____');
     this.isOfficialStoXVersion = JSON.parse(await this.dataService.getIsOfficialStoXVersion().toPromise());
-    console.log('_____ this.isOfficialStoXVersion _____' + this.isOfficialStoXVersion);
-    this.isCertifiedRstoxFramework = JSON.parse(await this.dataService.getIsCertifiedRstoxFramework().toPromise());
-    console.log('_____ this.isCertifiedRstoxFramework _____' + this.isCertifiedRstoxFramework);
+    console.log("> this.isOfficialStoXVersion: " + this.isOfficialStoXVersion);
     this.rstoxPackages = JSON.parse(await this.dataService.getRstoxPackageVersions().toPromise());
-    console.log('_____ this.rstoxPackages _____' + this.rstoxPackages);
+    console.log("> this.rstoxPackages: " + this.rstoxPackages);
     
     // Accept empty list of Rstox packages:
     if (this.rstoxPackages.length > 0) {
@@ -333,7 +329,6 @@ export class ProjectService {
     } else {
       this.rstoxFrameworkAvailable = false;
     }
-    console.log('_____ this.rstoxFrameworkAvailable _____' + this.rstoxFrameworkAvailable);
     
     if (this.rstoxFrameworkAvailable) {
       this.setModels(await this.dataService.getModelInfo().toPromise());
@@ -342,8 +337,6 @@ export class ProjectService {
       await this.activateProject(null, false);
     }
 
-    console.log('_____ DONE _____');
-    
   }
 
   async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave: boolean, withStatus = false) {

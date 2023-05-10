@@ -221,7 +221,7 @@ export class DataService {
     return "http://" + host + ":" + port + "/" + api;
   }
   public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<HttpResponse<any>> {
-    console.log(api + " post " + JSON.stringify(body));
+    //console.log(api + " post " + JSON.stringify(body));
     return this.httpClient.post(DataService.getURL(host, port, api), body,
       {
         observe: 'response', // 'body' or 'response'
@@ -245,11 +245,6 @@ export class DataService {
   }
 
   public postLocalNode(api: string, body: any, responseType: string = 'text'): Observable<HttpResponse<any>> {
-    console.log("> postLocalNode: api " + api);
-    console.log("> postLocalNode: body " + body);
-    console.log("> postLocalNode: responseType " + responseType);
-    console.log("> postLocalNode: DataService.LOCALHOST " + DataService.LOCALHOST);
-    console.log("> postLocalNode: DataService.NODE_PORT " + DataService.NODE_PORT);
     return this.post(DataService.LOCALHOST, DataService.NODE_PORT, api, body, responseType)
       .pipe(map(_ => _.body));
   }
@@ -626,10 +621,6 @@ export class DataService {
 
   public getIsOfficialStoXVersion(): Observable<any> {
     return this.getLocalNode('getIsOfficialStoXVersion');
-  }
-
-  public getIsCertifiedRstoxFramework(): Observable<any> {
-    return this.getLocalNode('getIsCertifiedRstoxFramework');
   }
 
   public getProjectRootPath(): Observable<any> {
