@@ -1,3 +1,4 @@
 export(installOfficialRstoxPackagesWithDependencies)
 export(RstoxPackageStatus)
 export(getOfficialRstoxPackageVersion)
+export(isOfficialStoXVersion)

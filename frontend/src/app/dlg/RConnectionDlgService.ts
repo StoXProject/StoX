@@ -31,9 +31,7 @@ export class RConnectionDlgService {
         try {
             console.log("Setting R path...");
             var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
-            console.log("checkRstoxFrameworkAvailability...");
             await this.ps.checkRstoxFrameworkAvailability();
-            console.log("DONE checkRstoxFrameworkAvailability");
         } finally {
             this.isConnecting = false;
         }
@@ -42,7 +40,6 @@ export class RConnectionDlgService {
     }
 
     async browse() {
-        console.log("browse");
         this.rpath = await this.dataService.browse(this.rpath).toPromise();
     }
 }

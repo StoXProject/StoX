@@ -120,9 +120,21 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     return this.ps.isOfficialStoXVersion ? "black" : "rgb(255,30,78)"; 
 }
 
-  getPackageColorMain() {
-    return this.ps.isCertifiedRstoxFramework ? "black" : "rgb(255,30,78)"; 
+  getPackageColorMain(packages: PackageVersion[]) {
+
+    let maxStatus = 0;
+    for(let i = 0; i< packages.length; i++) {
+      if(packages[i] == null) {
+        maxStatus = 3;
+      }
+      else if(packages[i].status > maxStatus) {
+        maxStatus = packages[i].status;
+      }
+    }
+
+    return maxStatus > 1 ? 'grey' : maxStatus == 1 ? 'rgb(255,30,78)' : 'black';
   }
+
 
   getPackageColor(pkg: PackageVersion) {
     return pkg == null || pkg.status > 1 ? 'grey' : pkg.status == 1 ? 'rgb(255,30,78)' : 'black';

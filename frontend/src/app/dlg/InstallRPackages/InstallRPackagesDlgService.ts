@@ -26,6 +26,7 @@ export class InstallRPackagesDlgService {
         try {
             await this.ps.activateProject(null, true);
             this.isInstalling = true;
+            await this.ps.checkRstoxFrameworkAvailability();
             let res = await this.dataService.installRstoxFramework().toPromise();
             this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, res));
             await this.ps.checkRstoxFrameworkAvailability();
