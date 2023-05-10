@@ -10,9 +10,9 @@ StoX is an open source software developed at IMR, Norway, to analyze survey data
 
 The following describes installation of the latest *official* StoX version (Se [all official StoX versions](https://github.com/StoXProject/StoX/blob/master/Official_StoX_versions.md)). For unofficial versions installation of the Rstox-packages must be done in R (details given at the end of this paragraph). It is highly recommended to use official versions, as these are fully tested, whereas tetsting is limited for unofficial versions.
 
-See [release notes for StoX 3.6.0](https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v350-2022-08-15).
+See [release notes for StoX 3.6.1](https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v361-2023-04-21).
 
-Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v3.6.0). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
+Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v3.6.1). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
 
 ### Windows:
 
@@ -20,7 +20,7 @@ Step 1:
 Install by double-clicking on the downloaded .msi file, and follow the instructions. If you get a message along the lines that the installer is blocked by the system, you can click on "More info" and select "Run anyway".
 
 Step 2: 
-Install R 3.6.3 or newer if not already installed. For StoX 3.5.0 on Windows it is recommended to use R 4.2 or newer for the filter expression builder to work properly. 
+Install R 4.0.0 or newer if not already installed. For StoX 3.5.0 on Windows it is recommended to use R 4.2 or newer for the filter expression builder to work properly. 
 
 Step 3: 
 Click on "Tools" > "R connection" in the menu to define the path to R (for example C:\Program Files\R\R-4.0.3\bin\x64).
@@ -37,7 +37,7 @@ Step 1:
 Install by double-clicking on the downloaded .dmg file, and follow the instructions.
 
 Step 2: 
-Install R 3.6.3 or newer if not already installed.
+Install R 4.0.0 or newer if not already installed.
 
 Step 3: 
 Open StoX by double clicking on the "StoX.app" in the Applications folder in the Finder app. If you get a message saying "StoX can't be opened because the identity of the developer cannot be confirmed", or similar, ctr + click and select Open. Some users may need to 
@@ -57,7 +57,7 @@ Step 1:
 Install by double-clicking on the downloaded .rpm or .deb file, and follow the instructions.
 
 Step 2: 
-Install R 3.6.3 or newer if not already installed.
+Install R 4.0.0 or newer if not already installed.
 
 Step 3: 
 Open StoX either by clicking on the StoX icon or using the command 'StoX'.

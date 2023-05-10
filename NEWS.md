@@ -20,6 +20,7 @@
 * Fixed bug where slash and backslash were mixed in file name in json schema validation error message. Now using only slash. Also changed this to a warning instead of an error, so that StoX tries to open the project anyhow.
 
 ## Other changes
+* Temporarily disabled installing the Rstox packages from binaries on macOS, due to the change in R 4.3 to serparate between Intel Macs and Apple silicon (M1/M2) Macs. This will slow down "Install Rstox packages" from the menu in StoX on macOS by a minute or two. Installation from binaries is expected to return to macOS in one of the forthcoming releases.
 * Stopped using the Versions.R file in the StoX GUI, but rather separated out the functions used by the GUI to an exclusive GUI file. Simplified functions for getting versions used in the project.json file.
 * Improved how StoX changes the active process so that setting a parameter without actually changing it value does not reset the process.
 * Changed the requirements of the the BaselineSeedTable of the function Bootstrap to only need the ImputeSuperIndividuals processes which use ImputationMethod = "RandomSampling".
