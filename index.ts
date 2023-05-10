@@ -77,6 +77,7 @@ app.on('ready', async () => {
   readPropertiesFromFile();
   // Extract resurces
   Utils.extractResourceFile(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
+  Utils.extractResourceFile(UtilsConstants.RES_SERVER_OFFICIASTOXVERSIONS, "stox");
   //Utils.extractResourceFile(UtilsConstants.RES_SERVER_VERSIONS);
   Utils.extractResourceFile(UtilsConstants.RES_SERVER_FILENAME, "stox");
   
@@ -386,6 +387,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
 
 
     let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
+    let officialStoXVersionTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIASTOXVERSIONS, "stox");
     //let versionsTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_VERSIONS);
     //logInfo(versionsTmpFile);
     //let StoXGUIInternalFile = 'srv/StoXGUIInternal_0.1.tar.gz';
@@ -448,10 +450,18 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     versionRstoxFramework = (await callR(cmd) as any).result;
     logInfo("> " + versionRstoxFramework);
 
-    cmd = "StoXGUIInternal::isOfficialStoXVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
-    logInfo("> " + cmd);
-    isOfficialStoXVersion = (await callR(cmd) as any).result == "TRUE";
-    logInfo("> isOfficialStoXVersion" + isOfficialStoXVersion.toString());
+    // cmd = "StoXGUIInternal::isOfficialStoXVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
+    // logInfo("> " + cmd);
+    // isOfficialStoXVersion = (await callR(cmd) as any).result == "TRUE";
+    // logInfo("> isOfficialStoXVersion" + isOfficialStoXVersion.toString());
+
+
+    let officialStoXVersions = fs.readFile(officialStoXVersionTmpFile, function (err: any, data: any) {
+      if (err) throw err;
+      isOfficialStoXVersion = data.includes(stoxVersion);
+    });
+
+
   }
  
   return "ok";
