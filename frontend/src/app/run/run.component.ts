@@ -51,7 +51,7 @@ export class RunComponent implements OnInit {
     }
   }
   async handleClick(command) {
-    //console.log(command)
+    //console.log("> " + command)
     switch (command) {
       case "run": return this.runService.run();
       case "reset": return this.runService.reset();

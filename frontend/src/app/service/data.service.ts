@@ -29,7 +29,7 @@ export class DataService {
   private jsonfromfile = '/api/jsonfromfile';
 
   constructor(private httpClient: HttpClient) {
-    console.log("Initializing http service")
+    console.log("> " + "Initializing http service")
   }
 
 
@@ -174,15 +174,6 @@ export class DataService {
     });
   }
 
-  getFilterOptions(projectPath: string, modelName: string, processID: string, tableName: string): Observable<QueryBuilderConfig> {
-    return this.runFunctionThrowFramework('getFilterOptions', {
-      "projectPath": projectPath,
-      "modelName": modelName,
-      "processID": processID,
-      "tableName": tableName
-    }, true);
-  }
-
   expression2list(expr: string): Observable<RuleSet> {
     return this.runFunction('expression2list', {
       "expr": expr
@@ -221,7 +212,7 @@ export class DataService {
     return "http://" + host + ":" + port + "/" + api;
   }
   public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<HttpResponse<any>> {
-    //console.log(api + " post " + JSON.stringify(body));
+    //console.log("> " + api + " post " + JSON.stringify(body));
     return this.httpClient.post(DataService.getURL(host, port, api), body,
       {
         observe: 'response', // 'body' or 'response'
@@ -268,13 +259,13 @@ export class DataService {
   }
 
   private handleError(error: HttpErrorResponse) {
-    console.log("> Error.message : " + error.message);
-    console.log("> Error.name : " + error.name);
-    console.log("> Error.error : " + error.error);
-    console.log("> Error.status : " + error.status);
-    console.log("> Error.statusText : " + error.statusText);
-    console.log("> Error.url : " + error.url);
-    console.log("> Error.ok : " + error.ok);
+    console.log("> " + "Error.message : " + error.message);
+    console.log("> " + "Error.name : " + error.name);
+    console.log("> " + "Error.error : " + error.error);
+    console.log("> " + "Error.status : " + error.status);
+    console.log("> " + "Error.statusText : " + error.statusText);
+    console.log("> " + "Error.url : " + error.url);
+    console.log("> " + "Error.ok : " + error.ok);
 
   }
 
@@ -318,8 +309,8 @@ export class DataService {
       }
       return o;
     }
-    console.log(pkg + "::" + what + "(" + Object.keys(argsobj).map(k => k + "=" + rVal(argsobj[k])).join() + ")");
-    // console.log("RstoxFramework::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
+    console.log("> " + pkg + "::" + what + "(" + Object.keys(argsobj).map(k => k + "=" + rVal(argsobj[k])).join() + ")");
+    // console.log("> " + "RstoxFramework::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")") 
     return <any>this.callR({ what: what, args: args, package: pkg })
       .pipe(map(res => {
         let r2: RunResult = null;
@@ -382,6 +373,12 @@ export class DataService {
     });
   }
 
+  duplicateProcess(projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
+    return this.runFunction('duplicateProcess', {
+      "projectPath": projectPath, "modelName": modelName, "processID": processID
+    });
+  }
+
   addProcess(projectPath: string, modelName: string, value: any): Observable<ProcessTableResult> {
     return this.runFunction('addProcess', {
       "projectPath": projectPath, "modelName": modelName, "value": value
@@ -414,6 +411,18 @@ export class DataService {
       "include.numeric": includeNumeric
     });
   }
+
+  /*getFilterOptions(projectPath: string, modelName: string, processID: string, tableName: string, fieldName: string, includeNumeric: Boolean): Observable<any> {
+    return this.runFunction('getFilterOptions', {
+      "projectPath": projectPath,
+      "modelName": modelName,
+      "processID": processID,
+      "tableName": tableName,
+      "fieldName": fieldName,
+      "include.numeric": includeNumeric
+    });
+  }
+  */
 
   getInteractiveMode(projectPath: string, modelName: string, processID: string): Observable<string> {
     return this.runProcessFunc<string>('getInteractiveMode', projectPath, modelName, processID);
@@ -541,7 +550,7 @@ export class DataService {
   }
 
   setRPath(rpath: string): Observable<any> {
-    console.log("> setRPathsetRPath. path = ", + rpath);
+    console.log("> " + "setRPathsetRPath. path = ", + rpath);
     return this.postLocalNode('rpath', rpath);
   }
 
@@ -550,7 +559,7 @@ export class DataService {
   }
 
   callR(j: any): Observable<any> {
-    //console.log("RstoxFramework::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
+    //console.log("> " + "RstoxFramework::runFunction.JSON(" + JSON.stringify(JSON.stringify(j)) + ")");
     return this.postLocalNode('callR', j);
   }
 

@@ -16,26 +16,26 @@ export class RConnectionDlgService {
     isConnecting : boolean;
 
     async showDialog() {
-        console.log("showDialog");
+        console.log("> " + "showDialog");
         this.rpath = <string>await this.dataService.getRPath().toPromise();
-        console.log("rpath retrieved: " + this.rpath);
+        console.log("> " + "rpath retrieved: " + this.rpath);
         this.display = true;
     }
 
     async apply() {
-        console.log("apply");
-        console.log("Posting rpath: " + this.rpath)
+        console.log("> " + "apply");
+        console.log("> " + "Posting rpath: " + this.rpath)
         this.rpath = this.rpath.replace(/\\/g, "/"); // convert backslash to forward
-        console.log("Posting rpath with forward slash: " + this.rpath)
+        console.log("> " + "Posting rpath with forward slash: " + this.rpath)
         this.isConnecting = true;
         try {
-            console.log("Setting R path...");
+            console.log("> " + "Setting R path...");
             var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
             await this.ps.checkRstoxFrameworkAvailability();
         } finally {
             this.isConnecting = false;
         }
-        console.log("Posting rpath, response " + res)
+        console.log("> " + "Posting rpath, response " + res)
         this.display = false;
     }
 

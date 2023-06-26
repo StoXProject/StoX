@@ -19,7 +19,7 @@ export class InMemoryDataService implements InMemoryDbService {
   constructor() {
     // this.getJSON().subscribe(data => {
     //      this.jsonfromfile = data;
-    //      console.log(data + " in consturctor");
+    //      console.log("> " + data + " in consturctor");
     //  });
   }
 
@@ -27,7 +27,7 @@ export class InMemoryDataService implements InMemoryDbService {
 
     // this.getJSON().subscribe(data => {
     //   this.jsonfromfile = data;
-    //   console.log(data + " in createDb");
+    //   console.log("> " + data + " in createDb");
     // });
 
     let geojson = {
@@ -60,7 +60,7 @@ export class InMemoryDataService implements InMemoryDbService {
       f.setId(i);
       f.setProperties({ 'description': "id_" + i + "_lon_" + lon + "_lat_" + lat, 'hascatch': i % 2 == 0 });
       features[i] = f;
-      // console.log( Features[i].getId());
+      // console.log("> " +  Features[i].getId());
     };
 
     let obj = {

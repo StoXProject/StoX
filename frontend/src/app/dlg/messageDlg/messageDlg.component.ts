@@ -18,7 +18,7 @@ export class MessageDlgComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<MessageDlgComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData) {
-      console.log(data)
+      console.log("> " + data)
      }
 
   ngOnInit() {

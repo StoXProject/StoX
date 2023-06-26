@@ -50,7 +50,7 @@ export class ExpressionBuilderDlg  implements OnInit {
     // removeSelectedRows() {
     //     this.selection.selected.forEach(item => {
     //       let index: number = this.service.tableExpressions.findIndex(d => d === item);
-    //       console.log(this.service.tableExpressions.findIndex(d => d === item));
+    //       console.log("> " + this.service.tableExpressions.findIndex(d => d === item));
     //       this.service.tableExpressions.splice(index,1);
     //       this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
     //     });
@@ -113,7 +113,7 @@ export class ExpressionBuilderDlg  implements OnInit {
     //         return;            
     //     }
 
-    //     console.log("current table name : " + currentTableExpression.tableName);
+    //     console.log("> " + "current table name : " + currentTableExpression.tableName);
 
     //     this.service.setCurrentTableExpression(currentTableExpression);
 
@@ -126,7 +126,7 @@ export class ExpressionBuilderDlg  implements OnInit {
     // }
 
     onTableNameChange(tableExpression: TableExpression) {
-        // console.log("tableName changed => expression = null");
+        // console.log("> " + "tableName changed => expression = null");
         tableExpression.expression = null;
     }
 
@@ -137,7 +137,7 @@ export class ExpressionBuilderDlg  implements OnInit {
             return;            
         }
 
-        console.log("current table name : " + tableExpression.tableName);
+        console.log("> " + "current table name : " + tableExpression.tableName);
 
         this.service.setCurrentTableExpression(tableExpression);
 
@@ -149,13 +149,13 @@ export class ExpressionBuilderDlg  implements OnInit {
 
     delete(tableExpression: TableExpression) {
         let index: number = this.service.tableExpressions.findIndex(d => d === tableExpression);
-        //console.log(this.service.tableExpressions.findIndex(d => d === tableExpression));
+        //console.log("> " + this.service.tableExpressions.findIndex(d => d === tableExpression));
         this.service.tableExpressions.splice(index,1);
         this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
     }
 
     async apply() {
-        console.log("start ExpressionBuilderDlg.apply()");
+        console.log("> " + "start ExpressionBuilderDlg.apply()");
 
         // check if there is empty field in dialog
         for(let i=0; i< this.service.tableExpressions.length; i++) {
@@ -182,8 +182,8 @@ export class ExpressionBuilderDlg  implements OnInit {
         //     temporary = "[" + this.combinedExpression +"]";
         // }
 
-        console.log("this.combinedExpression : " + this.combinedExpression);
-        console.log("this.service.currentPropertyItem.value : " + this.service.currentPropertyItem.value);
+        console.log("> " + "this.combinedExpression : " + this.combinedExpression);
+        console.log("> " + "this.service.currentPropertyItem.value : " + this.service.currentPropertyItem.value);
 
         if(this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
 
@@ -198,7 +198,7 @@ export class ExpressionBuilderDlg  implements OnInit {
                         this.ps.handleAPI(s);
                     });
                 } catch (error) {
-                  console.log(error.error);
+                  console.log("> " + error.error);
                   var firstLine = error.error.split('\n', 1)[0];
                   this.msgService.setMessage(firstLine);
                   this.msgService.showMessage();

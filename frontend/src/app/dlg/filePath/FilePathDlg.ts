@@ -42,7 +42,7 @@ export class FilePathDlg  implements OnInit {
     // removeSelectedRows() {
     //     this.selection.selected.forEach(item => {
     //       let index: number = this.service.paths.findIndex(d => d === item);
-    //       console.log("index to remove : " + index);
+    //       console.log("> " + "index to remove : " + index);
     //       this.service.paths.splice(index, 1);
     //       this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
     //     });
@@ -91,16 +91,16 @@ export class FilePathDlg  implements OnInit {
 
     //     let filePath = await this.dataService.browsePath(options).toPromise();
 
-    //     // console.log("filePath : " + filePath);
+    //     // console.log("> " + "filePath : " + filePath);
 
     //     if(filePath != null) {
     //         let paths = <string[]>JSON.parse(filePath);
 
-    //         //console.log("1st element : " + paths[0]);
+    //         //console.log("> " + "1st element : " + paths[0]);
 
     //         paths[0] = paths[0].replace(/\\/g, "/"); // convert backslash to forward
             
-    //         //console.log("1st element : " + paths[0]);
+    //         //console.log("> " + "1st element : " + paths[0]);
 
     //         currentFilePath.path = paths[0];
     //     }
@@ -111,16 +111,16 @@ export class FilePathDlg  implements OnInit {
 
         let filePath = await this.dataService.browsePath(options).toPromise();
 
-        // console.log("filePath : " + filePath);
+        // console.log("> " + "filePath : " + filePath);
 
         if(filePath != null) {
             let paths = <string[]>JSON.parse(filePath);
 
-            //console.log("1st element : " + paths[0]);
+            //console.log("> " + "1st element : " + paths[0]);
 
             paths[0] = paths[0].replace(/\\/g, "/"); // convert backslash to forward
             
-            //console.log("1st element : " + paths[0]);
+            //console.log("> " + "1st element : " + paths[0]);
 
             currentFilePath.path = paths[0];
         }
@@ -128,7 +128,7 @@ export class FilePathDlg  implements OnInit {
 
     delete(currentFilePath: FilePath) {
         let index: number = this.service.paths.findIndex(d => d === currentFilePath);
-        // console.log(this.service.paths.findIndex(d => d === currentFilePath));
+        // console.log("> " + this.service.paths.findIndex(d => d === currentFilePath));
         this.service.paths.splice(index,1);
         this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
     }    
@@ -179,7 +179,7 @@ export class FilePathDlg  implements OnInit {
                       this.ps.handleAPI(s);
                   });
               } catch (error) {
-                console.log(error.error);
+                console.log("> " + error.error);
                 var firstLine = error.error.split('\n', 1)[0];
                 this.msgService.setMessage(firstLine);
                 this.msgService.showMessage();

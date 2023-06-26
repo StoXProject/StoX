@@ -65,11 +65,11 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
       }
     );
 
-    //    this.keyboard.select("cmd + f").subscribe(e => console.log(e));
+    //    this.keyboard.select("cmd + f").subscribe(e => console.log("> " + e));
   }
   @ViewChild(KeyboardShortcutsComponent, { static: false }) private keyboard: KeyboardShortcutsComponent;
   showMessage(message: any) {
-    console.log(message);
+    console.log("> " + message);
   }
   toggleBreak(p: Process) {
     //p.breakingui = !p.breakingui
@@ -95,6 +95,9 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     m.push(
       { label: 'Delete', icon: 'rib absa deleteicon', command: (event) => { this.ps.removeSelectedProcess(); } }
     );
+    m.push(
+      { label: 'Duplicate', icon: 'rib absa duplicate', command: (event) => { this.ps.duplicateSelectedProcess(); } }
+    );
     if (this.ps.selectedProcess.hasBeenRun && this.rs.isProcessIdxRunnable(this.ps.getSelectedProcessIdx())) {
       let elements: ProcessOutputElement[] = await this.ds.getProcessOutputElements(this.ps.selectedProject.projectPath,
         this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
@@ -109,7 +112,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
                   if (idx == -1) {
                     let oe : OutputElement = { processId: this.ps.selectedProcessId, element: e};
                     this.ps.outputElements.push(oe);
-                    console.log(JSON.stringify(oe))
+                    console.log("> " + JSON.stringify(oe))
                     try {
                       this.ps.appStatus = 'Loading...'
                     await this.ps.resolveElementOutput(oe);
@@ -149,7 +152,7 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     // TODO: Incorpoate dynamic ng-action-outlet with material. or support scrolling primeng menus
     // https://stackblitz.com/edit/ng-action-outlet-demo?file=src/app/app.component.ts
     this.ps.selectedProcess = process;
-    //console.log("selecting process " + process.processID + " in contextmenu handler");
+    //console.log("> " + "selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
     await this.prepCm();
@@ -162,12 +165,12 @@ export class ProcessComponent implements OnInit/*, DoCheck*/ {
     if(event.previousIndex == event.currentIndex) {
       return;
     }
-    console.log(event.previousIndex, event.currentIndex);
+    console.log("> " + event.previousIndex, event.currentIndex);
     let draggedProcessId : string= this.ps.processes[event.previousIndex].processID;
     let droppedProcessAfterIndex : number = event.previousIndex < event.currentIndex ? event.currentIndex : event.currentIndex - 1;
     let droppedProcessAfterId = droppedProcessAfterIndex >= 0 ? this.ps.processes[droppedProcessAfterIndex].processID : null; 
     if (draggedProcessId != null) {
-      console.log("dragging " + draggedProcessId + " to after " + droppedProcessAfterId);
+      console.log("> " + "dragging " + draggedProcessId + " to after " + droppedProcessAfterId);
       let pr: ProcessTableResult = this.ps.handleAPI(await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, 
         this.ps.selectedModel.modelName, draggedProcessId, droppedProcessAfterId).toPromise());
     }

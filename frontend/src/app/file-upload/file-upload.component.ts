@@ -20,9 +20,9 @@ export class FileUploadComponent extends AppComponentBase {
   }
 
   myUploader(event): void {
-    console.log('My File upload', event);
+    console.log("> " + 'My File upload', event);
     if (event.files.length == 0) {
-      console.log('No file selected.');
+      console.log("> " + 'No file selected.');
       return;
     }
     var fileToUpload = event.files[0];
@@ -31,7 +31,7 @@ export class FileUploadComponent extends AppComponentBase {
     /*   this.http
          .post(this.uploadUrl, input)
          .subscribe(res => {
-           console.log(res);
+           console.log("> " + res);
          });*/
   }
 

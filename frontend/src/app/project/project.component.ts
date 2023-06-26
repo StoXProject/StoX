@@ -39,7 +39,7 @@ export class ProjectComponent implements OnInit {
     // TODO: Incorpoate dynamic ng-action-outlet with material. or support scrolling primeng menus
     // https://stackblitz.com/edit/ng-action-outlet-demo?file=src/app/app.component.ts
     this.ps.selectedProject = project;
-    //console.log("selecting process " + process.processID + " in contextmenu handler");
+    //console.log("> " + "selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
     await this.prepCm();

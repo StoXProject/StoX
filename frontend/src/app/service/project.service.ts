@@ -59,7 +59,7 @@ export class ProjectService {
   userlog: string[] = [];
 
   constructor(private dataService: DataService/*, public rs: RunService*/, private dialog: MatDialog) {
-    console.log("Initializing project service")
+    console.log("> " + "Initializing project service")
     this.initData();
   }
 
@@ -152,7 +152,7 @@ export class ProjectService {
     // if (event.value.projectName) {
     // }
 
-    console.log("selected project changed : " + this.selectedProject.projectName);
+    console.log("> " + "selected project changed : " + this.selectedProject.projectName);
 
     // the following is implemented in setSelctedProject
     // set selected model to 'Baseline'
@@ -189,6 +189,14 @@ export class ProjectService {
       this.handleAPI(await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise());
     }
   }
+
+  async duplicateSelectedProcess() {
+    if (this.selectedProject != null && this.selectedProcessId != null) {
+      this.processSubject.next(SubjectAction.of("duplicate", this.selectedProcessId));
+      this.handleAPI(await this.dataService.duplicateProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise());
+    }
+  }
+
 
   async addProcess() {
     // this.initializeProperties();
@@ -275,7 +283,7 @@ export class ProjectService {
 
   async updateHelp() {
     if (this.selectedProject != null && this.selectedProcess != null && this.selectedModel != null) {
-      console.log('Update help');
+      console.log("> " + 'Update help');
       this.helpContent = await this.dataService.getFunctionHelpAsHtml(this.selectedProject.projectPath,
         this.selectedModel.modelName, this.selectedProcessId).toPromise();
     } else {
@@ -306,7 +314,7 @@ export class ProjectService {
       this.m_Application = "StoX " + await this.dataService.getStoxVersion().toPromise();
       let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
 
-      console.log("Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);
+      console.log("> " + "Read projectpath:" + projectPath) // let activeProject: Project = <Project>JSON.parse(projectPath);
       // Read models and set selected to the first model
       if (projectPath.length > 0 && this.rstoxFrameworkAvailable) {
         //this.selectedModel = this.models[0]; 
@@ -319,9 +327,9 @@ export class ProjectService {
 
   async checkRstoxFrameworkAvailability() {
     this.isOfficialStoXVersion = JSON.parse(await this.dataService.getIsOfficialStoXVersion().toPromise());
-    console.log("> this.isOfficialStoXVersion: " + this.isOfficialStoXVersion);
+    console.log("> " + "this.isOfficialStoXVersion: " + this.isOfficialStoXVersion);
     this.rstoxPackages = JSON.parse(await this.dataService.getRstoxPackageVersions().toPromise());
-    console.log("> this.rstoxPackages: " + this.rstoxPackages);
+    console.log("> " + "this.rstoxPackages: " + this.rstoxPackages);
     
     // Accept empty list of Rstox packages:
     if (this.rstoxPackages.length > 0) {
@@ -491,7 +499,7 @@ export class ProjectService {
   set activeProcess(activeProcess: ActiveProcess) {
     this.m_activeProcess = activeProcess;
     if (activeProcess != null) {
-      console.log("ActiveProcessId: " + activeProcess.processID);
+      console.log("> " + "ActiveProcessId: " + activeProcess.processID);
       this.m_processSubject.next(SubjectAction.of("activate", activeProcess.processID)); // propagate activation of process id 
     }
   }

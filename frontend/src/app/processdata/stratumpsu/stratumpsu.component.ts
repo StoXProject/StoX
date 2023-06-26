@@ -75,7 +75,7 @@ export class StratumpsuComponent implements OnInit {
         break;
       }
     }
-    console.log("selected node" + val.data.id);
+    console.log("> " + "selected node" + val.data.id);
   }
 
   get selectedNode(): TreeNode {
@@ -140,7 +140,7 @@ export class StratumpsuComponent implements OnInit {
 
   async openCm(event, node: TreeNode) {
     this.selectedNode = node;
-    //console.log("selecting process " + process.processID + " in contextmenu handler");
+    //console.log("> " + "selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
     await this.prepCm(node);

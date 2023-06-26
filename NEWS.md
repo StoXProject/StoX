@@ -1,3 +1,27 @@
+# StoX v3.6.2-9001 (2023-06-26)
+
+## Summary
+* The StoX version 3.6.0-9001 is a pre-release before StoX 3.6.2, schduled end of June 2023. 
+
+## Bug fixes
+* Fixed a bug introduced in StoX 3.6.1, where the output file of Bootstrap() was a number of text file instead of a single RData file, causing the option UseOutputData to fail.
+* Fixed a ReportBootstrap() where TargetVariableUnit did not work. Also the base unit for the variable Biomass of the QuantityData was corrected from g to kg, as this data originates from SweptAreaDensity() with SweptAreaDensityMethod = "TotalCatch".
+* Removed SpeciesCategoryKey from ReportSpeciesCategoryCatch(), as the output is per haul.
+* Fixed bug when translating with PreserveClass = FALSE, in which case the class change could corrupt the condition of the translation (e.g., translating a copy of the DateTime in the Log table of the StoxAcousticData would convert that to string after the first line of the TranslationTable, and then any time condition will fail, as the class is no longer POSIX).
+
+## Other changes
+* Added the right-click option "Duplicate process".
+* Increased speed of frequently used functions in RstoxFramework by using list instead of data.table for the definition og reportFunctions.
+* Added tables listing the variables of the data types NASC, SumNASC, MeanNASC, LengthDistribution, SumLengthDistribution, MeanLengthDistribution, Density, MeanDensity and Quantity. 
+* Added better warning when at least one of bottomdepthstart and bottomdepthstop are missing.
+* Improved warning when variables that cannot be converted to numeric as requested by the XSD are set to NA in ReadAcoustic()/ReadBiotic().
+
+## Detailed changes
+* Updated the test projects coastalCod_20 and cod_19 to have RData as Bootstrap output, since StoX 3.6.1 introduced the error that this file was txt.
+* Added check for output file names in the tesing.
+* Relaxed testUnits.R to accept that Biomass has different units in QuantityData and SuperIndividualsData.
+
+
 # StoX v3.6.1 (2023-04-21)
 
 ## Summary
@@ -32,7 +56,7 @@
 ## Detailed changes
 * Added support for specifying startProcess and endProcess in runProject() and runProjects() as a list named by the proecsses, such as endProcess = list(report = 2) to only run the first two processes of the report model.
 * Changed to check function input errors only for enabled processes.
-* Improved warming for function input not enabled (added the name of the process).
+* Improved warning for function input not enabled (added the name of the process).
 * Improved error message when there are missing LogOrigin or LogOrigin2.
 * Changed the error "The BaselineSeedTable must contain Seed for the processes..." to ignore ImputeSuperIndividuals proecsses with Regressio method (no seed required).
 * Reduced memory for large BootstrapData in ReportBootstrap() by sending only the relevant columns to the report function.

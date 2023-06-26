@@ -10,7 +10,7 @@ export class QueryBuilderDlgService {
     display: boolean = false;
 
     showDialog() {
-        console.log("QueryBuilderDlgService showDialog");
+        console.log("> " + "QueryBuilderDlgService showDialog");
         this.display = true;
     }
 }

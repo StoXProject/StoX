@@ -502,6 +502,10 @@ input:focus {
   @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
 }
 
+.duplicate:before {
+  @include icon_content("\f24d", 1.2rem, rgb(19, 40, 58), true);
+}
+
 .closeicon:before {
   @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
 }

@@ -35,7 +35,7 @@ export class UserLogComponent implements OnInit {
     scrollToBottom(): void {
         try {
             this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-            //console.log("scrolled here")
+            //console.log("> " + "scrolled here")
         } catch (err) { }
     }
     async prepCm() {

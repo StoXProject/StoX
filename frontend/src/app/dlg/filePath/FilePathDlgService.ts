@@ -30,7 +30,7 @@ export class FilePathDlgService {
   }
   async showDialog() {
     // parse currentPropertyItem and populate array paths and broadcast this to component
-    console.log("currentPropertyItem.value : " + this.currentPropertyItem.value);
+    console.log("> " + "currentPropertyItem.value : " + this.currentPropertyItem.value);
 
     let o: any = JSON.parse(this.currentPropertyItem.value);
     // The propertyItem is an array, map each element to FilePath

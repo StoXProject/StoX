@@ -67,7 +67,7 @@ export class AutocompleteComponent {
   updateSelectedItem(val: string) {
     //if (this.selectedItem != val) {
     this.selectedItem = val;
-    console.log("Emmitting complete event " + this.selectedItem + " on autocomplete")
+    console.log("> " + "Emmitting complete event " + this.selectedItem + " on autocomplete")
     this.complete.emit({ selectedItem: this.selectedItem });
     //}
   }
@@ -81,7 +81,7 @@ export class AutocompleteComponent {
     }
   }
   /*onKeydown(event: KeyboardEvent) {
-    console.log(event);
+    console.log("> " + event);
     if (event.key === "Enter") {
       let val = (event.target as HTMLInputElement).value;
       if (val == "") {

@@ -30,8 +30,8 @@ export class Utils {
      */
     public static async extractResourceFile(resName: string, subFolder: string) {
         let resFile = Utils.getResFileName(resName);
-        //console.log("__dirname " + __dirname);
-        //console.log("Res file name " + resFile)
+        //console.log("> " + "__dirname " + __dirname);
+        //console.log("> " + "Res file name " + resFile)
         //logInfo('Resource file ' + resFile);
         let serverScript = fs.readFileSync(resFile, { encoding: 'utf-8', flag: 'r' })
         let fileName = Utils.getTempResFileName(resName, subFolder);

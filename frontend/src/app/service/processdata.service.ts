@@ -19,33 +19,33 @@ export class ProcessDataService {
     private m_processDataSubject = new Subject<string>();
 
     constructor(private ds: DataService, private ps: ProjectService) {
-        console.log("Initializing processdata service")
+        console.log("> " + "Initializing processdata service")
         this.ps.iaModeSubject.subscribe({
             next: async (newVal) => {
                 switch (newVal) {
                     case 'stratum': {
-                        console.log("Process data - listen on iamode=stratum")
+                        console.log("> " + "Process data - listen on iamode=stratum")
                         let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
                             ps.selectedModel.modelName, ps.activeProcessId).toPromise();
                         this.stratum = v; // change this to v
                         break;
                     }
                     case 'acousticPSU': {
-                        console.log("Process data - listen on iamode=acousticPSU")
+                        console.log("> " + "Process data - listen on iamode=acousticPSU")
                         let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
                             ps.selectedModel.modelName, ps.activeProcessId).toPromise();
                         this.acousticPSU = v;
                         break;
                     }
                     case 'acousticLayer': {
-                        console.log("Process data - listen on iamode=acousticLayer")
+                        console.log("> " + "Process data - listen on iamode=acousticLayer")
                         let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
                             ps.selectedModel.modelName, ps.activeProcessId).toPromise();
                         this.acousticLayerData = v;
                         break;
                     }
                     case 'bioticAssignment': {
-                        console.log("Process data - listen on iamode=bioticAssignment")
+                        console.log("> " + "Process data - listen on iamode=bioticAssignment")
                         let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
                             ps.selectedModel.modelName, ps.activeProcessId).toPromise();
                         this.bioticAssignmentData = v;
@@ -66,7 +66,7 @@ export class ProcessDataService {
                         break;
                     }
                 }
-                //      console.log(newVal);
+                //      console.log("> " + newVal);
             }
         });
     }

@@ -49,7 +49,7 @@ export class HelpContentHandler {
           } 
           else {  // else if(!stringToMatch.startsWith(".."))
             // open url using node
-            this.dataService.openUrl(stringToMatch).toPromise().then(st => console.log(st)); 
+            this.dataService.openUrl(stringToMatch).toPromise().then(st => console.log("> " + st)); 
             return false;
           }
       }

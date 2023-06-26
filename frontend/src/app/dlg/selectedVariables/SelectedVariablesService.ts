@@ -43,7 +43,7 @@ export class SelectedVariablesService {
         t => { combinedArray.push(new String(t.variableName)) }
       );      
 
-      console.log("combinedArray : " + JSON.stringify(combinedArray));
+      console.log("> " + "combinedArray : " + JSON.stringify(combinedArray));
 
       return JSON.stringify(combinedArray);      
     }
@@ -67,13 +67,13 @@ export class SelectedVariablesService {
       // this.returnValue  = <any> await this.dataService.getParameterVectorInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, this.currentPropertyItem.format).toPromise();
       
       if(this.returnValue != null) {
-        console.log("returnValue : " + JSON.stringify(this.returnValue));
-        console.log("returnValue['parameterVectorTitle'] : " + this.returnValue['parameterVectorTitle']);
+        console.log("> " + "returnValue : " + JSON.stringify(this.returnValue));
+        console.log("> " + "returnValue['parameterVectorTitle'] : " + this.returnValue['parameterVectorTitle']);
 
         this.title = this.returnValue['parameterVectorTitle'];
         this.currentTitleSource.next(this.title);
 
-        console.log("returnValue['parameterVectorPossibleValues'] : " + JSON.stringify(this.returnValue['parameterVectorPossibleValues']));
+        console.log("> " + "returnValue['parameterVectorPossibleValues'] : " + JSON.stringify(this.returnValue['parameterVectorPossibleValues']));
 
         if(this.returnValue['parameterVectorPossibleValues'] != null) {
           this.possibleValues = this.returnValue['parameterVectorPossibleValues'];
