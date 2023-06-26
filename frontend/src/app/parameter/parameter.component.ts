@@ -39,7 +39,7 @@ export class ParameterComponent implements OnInit {
           a.push(j);
           j.name = 'test' + i;
         }
-        console.log(a[0].name + a[1].name);*/
+        console.log("> " + a[0].name + a[1].name);*/
   }
 
   getMetParameterValueList(): any[] {
@@ -47,14 +47,14 @@ export class ParameterComponent implements OnInit {
   }
 
   onChanged(category: PropertyCategory, pi: PropertyItem) {
-    console.log("In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
+    console.log("> " + "In group " + category.groupName + " parameter " + pi.name + " is changed to " + pi.value);
     // function name change sends first pi.value == undefined from autocomplete
 
     /*if (pi.value == undefined) {
       return;
     }*/
     if (pi.value == null) {
-      console.log("p.value==null")
+      console.log("> " + "p.value==null")
       pi.value = ""; // send null as empty string.
     }
     let val = pi.value;
@@ -75,7 +75,7 @@ export class ParameterComponent implements OnInit {
             this.ps.handleAPI(s);
           });
       } catch (error) {
-        console.log(error.error);
+        console.log("> " + error.error);
         var firstLine = error.error.split('\n', 1)[0];
         this.msgService.setMessage(firstLine);
         this.msgService.showMessage();
@@ -109,7 +109,7 @@ export class ParameterComponent implements OnInit {
     this.exprBuilderService.currentPropertyCategory = category;
 
     // let tableNames = <string[]>await this.dataService.getProcessOutputTableNames(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
-    // console.log("tableNames : " + JSON.stringify(tableNames));
+    // console.log("> " + "tableNames : " + JSON.stringify(tableNames));
 
     // if (tableNames != null && JSON.stringify(tableNames) == '{}') {
     //   tableNames = [];
@@ -129,7 +129,7 @@ export class ParameterComponent implements OnInit {
   async definedVector(category: PropertyCategory, pi: PropertyItem) {
 
     let returnValue  = <any> await this.dataService.getParameterVectorInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, pi.format).toPromise();
-    console.log("returnValue : " + JSON.stringify(returnValue));
+    console.log("> " + "returnValue : " + JSON.stringify(returnValue));
 
     if(this.ps.isEmpty(returnValue)) {
       this.msgService.setMessage("Empty object from backend. See user log.");
@@ -147,7 +147,7 @@ export class ParameterComponent implements OnInit {
 
   async filePath(category: PropertyCategory, pi: PropertyItem) {
 
-    // console.log("project path : " + this.ps.selectedProject.projectPath);
+    // console.log("> " + "project path : " + this.ps.selectedProject.projectPath);
 
     let options = {};
 

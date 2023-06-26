@@ -34,7 +34,7 @@ export class QueryBuilderDlg  implements OnInit {
         public exprBuilderService: ExpressionBuilderDlgService, private dataService: DataService
     ) 
     {
-      console.log("start QueryBuilderDlg constructor");
+      console.log("> " + "start QueryBuilderDlg constructor");
       
       try {
         this.queryCtrl = this.formBuilder.control(this.query);
@@ -49,21 +49,21 @@ export class QueryBuilderDlg  implements OnInit {
 
         this.exprBuilderService.currentConfig.subscribe(
             config => {
-              console.log("currentConfig : " + JSON.stringify(config));
+              console.log("> " + "currentConfig : " + JSON.stringify(config));
               this.adjustConfig(config);
               this.currentConfig = config;
-              // console.log("currentConfig : " + JSON.stringify(this.currentConfig));
+              // console.log("> " + "currentConfig : " + JSON.stringify(this.currentConfig));
             }
           );
 
         this.exprBuilderService.currentQuery.subscribe(
             query => {
               this.query = query;
-              console.log("query : " + JSON.stringify(this.query));
+              console.log("> " + "query : " + JSON.stringify(this.query));
             }
           );
       } catch (error) {
-        console.log(error);
+        console.log("> " + error);
       }
     }
   
@@ -77,13 +77,13 @@ export class QueryBuilderDlg  implements OnInit {
   
     async apply() {
 
-      console.log("current query : " + JSON.stringify(this.query));
+      console.log("> " + "current query : " + JSON.stringify(this.query));
 
       // a call to dataservice to get R expression for this.query
       // convert this.query to rExpression
       let rExpression = <string> await this.dataService.json2expression(this.query).toPromise();
 
-      console.log("rExpression : '" + rExpression + "'");
+      console.log("> " + "rExpression : '" + rExpression + "'");
 
       if(rExpression != null && rExpression.trim() == "") {
         rExpression = null;
@@ -97,31 +97,31 @@ export class QueryBuilderDlg  implements OnInit {
     }
 
     adjustConfig(paramConfig: QueryBuilderConfig) {
-      // console.log("adjusted config : ");
+      // console.log("> " + "adjusted config : ");
       for(let key in paramConfig) {
         let value = paramConfig[key];
-        // console.log("key : " + key + ", value : " + value);
+        // console.log("> " + "key : " + key + ", value : " + value);
         
         for(let key2 in value) {
           let value2 = value[key2];
-          // console.log("key2 : " + key2 + ", value2 : " + value2);
+          // console.log("> " + "key2 : " + key2 + ", value2 : " + value2);
 
           for(let key3 in value2) {
             let value3 = value2[key3];
-            // console.log("key3 : " + key3 + ", value3 : " + value3);
+            // console.log("> " + "key3 : " + key3 + ", value3 : " + value3);
 
             if(key3 == 'options') {
               let optionsLength = value3.length;
-              // console.log("option length : " + optionsLength);
+              // console.log("> " + "option length : " + optionsLength);
 
               if(optionsLength > 0) {
                 // value2["type"] = "category";
                 value2["multiselect"] = true;
-                // console.log("type changed to 'category'!");
-                // console.log("multiselect is true!");
+                // console.log("> " + "type changed to 'category'!");
+                // console.log("> " + "multiselect is true!");
               } else {
                 delete value2[key3];      
-                // console.log("empty options deleted!");          
+                // console.log("> " + "empty options deleted!");          
               }
             }
           }

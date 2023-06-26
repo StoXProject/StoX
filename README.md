@@ -10,9 +10,9 @@ StoX is an open source software developed at IMR, Norway, to analyze survey data
 
 The following describes installation of the latest *official* StoX version (Se [all official StoX versions](https://github.com/StoXProject/StoX/blob/master/Official_StoX_versions.md)). For unofficial versions installation of the Rstox-packages must be done in R (details given at the end of this paragraph). It is highly recommended to use official versions, as these are fully tested, whereas tetsting is limited for unofficial versions.
 
-See [release notes for StoX 3.6.1](https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v361-2023-04-21).
+See [release notes for StoX 3.6.0](https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v360-2023-01-18).
 
-Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v3.6.1). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
+Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v3.6.0). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
 
 ### Windows:
 
@@ -98,6 +98,10 @@ Insert the appropriate versions stored in the file [OfficialRstoxFrameworkVersio
     remotes::install_github(repo = "stoxproject/RstoxData", ref = "RstoxData-v1.6.8")
     remotes::install_github(repo = "stoxproject/RstoxBase", ref = "RstoxBase-v1.9.8")
     remotes::install_github(repo = "stoxproject/RstoxFramework", ref = "RstoxFramework-v3.4.6")
+
+## Known issues
+
+StoX uses files to store the memory of an open StoX project. These files are located in the folder "process/projectSession", which only exists while the StoX project is open. These memory files occupy 113 characters in the file paths after the StoX project folder. If the StoX project contains processes with long names, the output files can occupy more than 113 characters. For Windows systems with maximum 256 character file path only 143 characters are left for the path of the StoX project folder. When working with StoX projects with long names, it is adivced to change the Windows Registry to accept long file paths (search, e.g., for "How to Make Windows 10 Accept long File Paths" for more information). 
 
 ## Examples
 

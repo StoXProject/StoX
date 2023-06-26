@@ -37,9 +37,9 @@ export class EdsutableComponent implements OnInit {
                 );
                 this.viewPort.checkViewportSize();
                 let nItems : number = this.viewPort.getViewportSize() / 18; // use this to calculate the 
-                console.log("Viewport size: " + nItems);
+                console.log("> " + "Viewport size: " + nItems);
                 this.viewPort.scrollToIndex(indexOfLastValue - nItems / 2); 
-              //console.log(this.pds.acousticPSU.EDSU_PSU[indexOfLastValue]);
+              //console.log("> " + this.pds.acousticPSU.EDSU_PSU[indexOfLastValue]);
             }
           }
         }
@@ -66,7 +66,7 @@ export class EdsutableComponent implements OnInit {
         }
         let edsuPsu1: EDSU_PSU = this.pds.acousticPSU.EDSU_PSU[prevClickIndex];
         if (edsuPsu1 == null) {
-          console.log("Error EDSU not found");
+          console.log("> " + "Error EDSU not found");
         }
         let psuToUse: string = edsuPsu1.PSU;
         if (prevClickIndex == clickedIndex) {

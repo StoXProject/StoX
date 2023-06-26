@@ -20,17 +20,17 @@ export class RunService {
 
 
     constructor(private ps: ProjectService, private dataService: DataService, private rf: RendererFactory2) {
-        console.log("Initializing run service")
+        console.log("> " + "Initializing run service")
         //this.iaMode = this.iaSubject.asObservable();
         this.ps.iaModeSubject.subscribe({
             next: (newVal) => {
-                //      console.log(newVal);
+                //      console.log("> " + newVal);
             }
         });
         //this.iaSubject.next('stratum');
         //this.reset();
         let r: Renderer2 = rf.createRenderer(null, null)
-        r.listen(document, 'document:keydown', (evt) => { console.log(evt); this.runToHere(); })
+        r.listen(document, 'document:keydown', (evt) => { console.log("> " + evt); this.runToHere(); })
     }
     canAddProcess(): boolean {
         return this.ps.selectedProject != null && this.ps.selectedModel != null &&
@@ -197,13 +197,13 @@ export class RunService {
                 break;
             }
             this.ps.runningProcessId = p.processID;
-            //console.log("Run process " + p.processName + " with id " + p.processID);
+            //console.log("> " + "Run process " + p.processName + " with id " + p.processID);
             // this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "> Process " + p.processName));
             // this.dataService.logSubject.next('log-message');
             // this.ps.iaMode = '';
             let res: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise());
 
-            //console.log("run result: " + res);
+            //console.log("> " + "run result: " + res);
             //await new Promise(resolve => setTimeout(resolve, 1200));
             // ask backend for new active process id
             if (res.activeProcess === undefined) {

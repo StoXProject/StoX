@@ -207,21 +207,21 @@ export class MapSetup {
         })
         m.on('modifyend', async function (e) {
             // Add the features back to API.
-            //console.log(JSON.stringify(e.features.getArray()));
+            //console.log("> " + JSON.stringify(e.features.getArray()));
             let fcloned: Feature[] = e.features.getArray().map(f => {
                 let f2: Feature = (f as Feature).clone();
                 f2.set("layer", null);
                 f2.set("styleCache", null);
                 return f2;
             });
-            console.log(JSON.stringify(fcloned));
+            console.log("> " + JSON.stringify(fcloned));
 
             let s: string = (new GeoJSON()).writeFeatures(fcloned, { featureProjection: mapInteraction.getProj(), dataProjection: 'EPSG:4326' });
             /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
             })*/
-            //console.log(s);
+            //console.log("> " + s);
             ps.handleAPI(await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
         });
         return m;
@@ -250,7 +250,7 @@ export class MapSetup {
                 featureProjection: 'EPSG:4326',
             })*/
 
-            console.log("get a name of the strata");
+            console.log("> " + "get a name of the strata");
             const dialogRef = dialog.open(StratumNameDlgComponent, {
                 width: '250px',
                 disableClose: true,
@@ -262,17 +262,17 @@ export class MapSetup {
                             dataProjection: 'EPSG:4326',
                             featureProjection: proj
                         })*/
-            console.log("Strata name " + strataName + " with hex " + MapSetup.toHex(strataName));
+            console.log("> " + "Strata name " + strataName + " with hex " + MapSetup.toHex(strataName));
             if (typeof (strataName) == 'string') {
                 // a valid stratum name has been entered
                 //f.setId(Math.max(...source.getFeatures().map(f2 => f2.getId() != null ? +f2.getId() : 0)) + 1);
                 f.setProperties({ 'StratumName': strataName });
                 let stratum: string = (new GeoJSON()).writeFeatures([f], { featureProjection: proj, dataProjection: 'EPSG:4326' });
-                console.log(stratum);
+                console.log("> " + stratum);
                 //source.getFeatures().map(f => f.getId())
                 //e.setId(33); // find the max id + 1
                 let res: ActiveProcessResult = ps.handleAPI(await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
-                console.log("res :" + JSON.stringify(res)); 
+                console.log("> " + "res :" + JSON.stringify(res)); 
                 ps.iaMode = "stratum"; // trigger the gui
             }            
             mapInteraction.resetInteraction();
@@ -509,11 +509,11 @@ export class MapSetup {
         let secInfos: NamedStringIndex[] = f.get("secondaryInfo");
 /*        let layers: string[] = pds.acousticLayerData != null ? pds.acousticLayerData.AcousticLayer.map(al => al.Layer) : null;
         if(layers == null) {
-            console.log('Missing acoustic layer definition when changing assignment');
+            console.log("> " + 'Missing acoustic layer definition when changing assignment');
             return;
         }*/
         let hauls: string[] = secInfos.map(secInfo => secInfo["Haul"]);
-        console.log('selectStation: ' + on ? 'on' : 'off');
+        console.log("> " + 'selectStation: ' + on ? 'on' : 'off');
         let res: ActiveProcessResult = ps.handleAPI(await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
             stratum, psu, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
                 stratum, psu, hauls).toPromise()));
@@ -521,10 +521,10 @@ export class MapSetup {
         //layers.forEach(layer =>
             hauls.forEach(haul => {
                 let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Haul == haul && psu == asg.PSU);
-                console.log("haul " + haul + " idx " + idx);
+                console.log("> " + "haul " + haul + " idx " + idx);
                 if (on) {
                     if (idx < 0) {
-                        console.log('push assignment');
+                        console.log("> " + 'push assignment');
                         pds.bioticAssignmentData.BioticAssignment.push({
                             PSU: pds.selectedPSU, /*Layer: layer,*/
                             Haul: haul/*, WeightingFactor: "1"*/
@@ -532,7 +532,7 @@ export class MapSetup {
                     }
                 } else {
                     if (idx >= 0) {
-                        console.log('remove assignment');
+                        console.log("> " + 'remove assignment');
                         pds.bioticAssignmentData.BioticAssignment.splice(idx, 1);
                     }
                 }

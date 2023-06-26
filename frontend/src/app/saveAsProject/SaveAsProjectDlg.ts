@@ -26,7 +26,7 @@ export class SaveAsProjectDlg  implements OnInit {
     }
 
     async browse() {
-        console.log("browse");
+        console.log("> " + "browse");
         this.projectRootPath = await this.dataService.browse(this.projectRootPath).toPromise();
         this.projectRootPath = this.projectRootPath.replace(/\\/g, "/");
     }
@@ -39,14 +39,14 @@ export class SaveAsProjectDlg  implements OnInit {
             this.msgService.showMessage();
             return;
         }
-        console.log("project : " + this.projectName);
+        console.log("> " + "project : " + this.projectName);
 
         if(!this.projectRootPath) {
             this.msgService.setMessage("Project folder is empty!");
             this.msgService.showMessage();            
             return;
         }
-        console.log("projectRootPath : " + this.projectRootPath);        
+        console.log("> " + "projectRootPath : " + this.projectRootPath);        
 
         // check if projectRootPath exists
         let exists = await this.dataService.fileExists(this.projectRootPath).toPromise();
@@ -84,7 +84,7 @@ export class SaveAsProjectDlg  implements OnInit {
             // make a shift to this project (make it as current project??)
             
         } catch(error) {
-            console.log(error);
+            console.log("> " + error);
             var firstLine = error;
             this.msgService.setMessage(firstLine);
             this.msgService.showMessage();            

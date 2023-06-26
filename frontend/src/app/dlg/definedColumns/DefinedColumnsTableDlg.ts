@@ -81,7 +81,7 @@ export class DefinedColumnsTableDlg implements OnInit {
     removeSelectedRows() {
         this.selection.selected.forEach(item => {
             let index: number = this.service.definedColumnsData.findIndex(d => d === item);
-            // console.log(this.service.definedColumnsData.findIndex(d => d === item));
+            // console.log("> " + this.service.definedColumnsData.findIndex(d => d === item));
             this.service.definedColumnsData.splice(index, 1);
             this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
         });
@@ -175,7 +175,7 @@ export class DefinedColumnsTableDlg implements OnInit {
         
             for(let j=0; j<this.service.definedColumnsData[i].columnValues.length; j++) {
                 //if(this.service.definedColumnsData[i].columnValues[j].value == null) {
-                    /*console.log("Field " + this.service.definedColumnsData[i].columnValues[j].columnName + " is null in row index : " + i);
+                    /*console.log("> " + "Field " + this.service.definedColumnsData[i].columnValues[j].columnName + " is null in row index : " + i);
                     this.msgService.setMessage("One or more fields are empty!");
                     this.msgService.showMessage();
                     blankFound = true;*/
@@ -196,8 +196,8 @@ export class DefinedColumnsTableDlg implements OnInit {
         // get the combined string from service
         this.combinedExpression = this.service.combinedExpression();
 
-        console.log("this.service.currentPropertyItem.value : " + this.service.currentPropertyItem.value);
-        console.log("this.combinedExpression : " + this.combinedExpression);
+        console.log("> " + "this.service.currentPropertyItem.value : " + this.service.currentPropertyItem.value);
+        console.log("> " + "this.combinedExpression : " + this.combinedExpression);
 
         // save the combined string into current property item and run set property values function if there is a change in value
         if (this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
@@ -212,7 +212,7 @@ export class DefinedColumnsTableDlg implements OnInit {
                             this.ps.handleAPI(s);
                         });
                 } catch (error) {
-                    console.log(error.error);
+                    console.log("> " + error.error);
                     var firstLine = error.error.split('\n', 1)[0];
                     this.msgService.setMessage(firstLine);
                     this.msgService.showMessage();

@@ -58,7 +58,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   }
 
   async ngOnInit() {
-    console.log("Home init")
+    console.log("> " + "Home init")
     this.stoxVersion = await this.ds.getStoxVersion().toPromise()/*'2.9.17'*/;
     this.items = [/*{
       label: 'R connection...', command: e => this.rConnectionDlgService.showDialog()
@@ -66,7 +66,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     //if (this.ps.rAvailable) {
     //this.items.push(...[]);
     this.m_isDesktop = "true" == await this.ds.isdesktop().toPromise();
-    console.log("isdesktop=" + typeof (this.m_isDesktop))
+    console.log("> " + "isdesktop=" + typeof (this.m_isDesktop))
     //   }
   }
 
@@ -121,17 +121,26 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
 }
 
   getPackageColorMain(packages: PackageVersion[]) {
-
     let maxStatus = 0;
-    for(let i = 0; i< packages.length; i++) {
-      if(packages[i] == null) {
-        maxStatus = 3;
-      }
-      else if(packages[i].status > maxStatus) {
-        maxStatus = packages[i].status;
+    
+    if(packages) {
+      maxStatus = 0;
+      // Loop through the packages: 
+      for(let i = 0; i< packages.length; i++) {
+        // If the package does not exist, return status 3:
+        if(packages[i] == null) {
+          maxStatus = 3;
+        }
+        // Otherwise get the status as maxStatus if larger:
+        else if(packages[i].status > maxStatus) {
+          maxStatus = packages[i].status;
+        }
       }
     }
-
+    else {
+      maxStatus = 3;
+    }
+    
     return maxStatus > 1 ? 'grey' : maxStatus == 1 ? 'rgb(255,30,78)' : 'black';
   }
 
@@ -144,7 +153,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     return " / " + this.getPackageDescr(this.ps.rstoxPackages != null ? this.ps.rstoxPackages[0] : null, false);
   }
   getPackageDescr(pkg: PackageVersion, withVersion : boolean = true) {
-    //console.log("getPackageDescr:" + pkg)
+    //console.log("> " + "getPackageDescr:" + pkg)
     return pkg == null ? "Loading..." : pkg.packageName + (withVersion ? " " + pkg.version : "");
   }
 

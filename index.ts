@@ -69,9 +69,9 @@ app.on('ready', async () => {
     return;
   }
 
-  logInfo("> stox version: "  + stoxVersion);
+  logInfo("stox version: "  + stoxVersion);
   setupLogger();
-  logInfo("> lifecycle: ready")
+  logInfo("lifecycle: ready")
   setupServer();
   await startNodeServer();
   readPropertiesFromFile();
@@ -109,7 +109,7 @@ app.on('activate', function () {
 
 app.on('quit', function () {
   // Write app properties file to disc here.
-  logInfo('> ev:app quit');
+  logInfo('ev:app quit');
   writePropertiesToFile();
 });
 
@@ -117,17 +117,13 @@ function logInfo(str: string) {
   if (log != null) {
     log.info(str);
   }
-  console.log(str);
+  console.log("> " + str);
 }
 
-function logError(str: string) {
-  log.log('error', str);
-  console.log(str);
-}
 
 function setupLogger() {
   var logDir = require('temp-dir') + "/stox";
-  console.log("Logging to " + logDir);
+  logInfo("Logging to " + logDir);
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
   }
@@ -143,10 +139,10 @@ function setupLogger() {
 async function startNodeServer() {
   // start server
   var port = 3000;
-  logInfo("> Starting Node Server at port " + port + "...");
+  logInfo("Starting Node Server at port " + port + "...");
   await new Promise(r => {
     server.listen(port, () => {
-      logInfo('> Node Server started at http://localhost:' + port);
+      logInfo('Node Server started at http://localhost:' + port);
       r(null)
     });
   });
@@ -155,10 +151,10 @@ async function startNodeServer() {
 
 function createWindow() {
   if (process.argv.filter(arg => arg == '--server').length > 0) {
-    logInfo('> No window created due to --server flag');
+    logInfo('No window created due to --server flag');
     return;
   }
-  logInfo('> creating window');
+  logInfo('creating window');
   app.allowRendererProcessReuse = true; // required or forced by electron 9
 
   // Create the browser window.
@@ -211,7 +207,7 @@ function showElectronMessageBox(title: string, message: string, buttons: string[
 
 async function onClosed(e: any) {
   if (properties != null && properties.activeProject !== null && !isClosing) {
-    logInfo('> close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
+    logInfo('close - saved:' + activeProjectSaved + ' project: ' + (properties != null && properties.activeProject != null ? properties.activeProject : ''))
     // need to stop application from quitting to let Promise work, and then re-close. with properties.activeProject = null
     e.preventDefault();
     let save = false;
@@ -240,7 +236,7 @@ async function onClosed(e: any) {
 
 const createMenu = function createMenu() {
   // Read app properties file from disc here.
-  logInfo('> ev:ready');
+  logInfo('ev:ready');
 
   const template = [
     // { role: 'appMenu' }
@@ -328,26 +324,26 @@ function rScriptBin() {
 
 async function checkRAvailable(): Promise<boolean> {
   var rscriptBin = rScriptBin();
-  logInfo('> Rscript bin ' + rscriptBin);
+  logInfo('Rscript bin ' + rscriptBin);
   let p1 = child_process.spawnSync(rscriptBin, ["--no-environ", "-e", "TRUE"]);
-  logInfo('> Check Rscript availability ' + p1.stdout);
+  logInfo('Check Rscript availability ' + p1.stdout);
 
   if (p1.stdout == null || !p1.stdout.includes("TRUE")) {
     rAvailable = false;
-    logInfo('> Rscript is not available. Set R path in the properties."');
+    logInfo('Rscript is not available. Set R path in the properties."');
     serverStarted = false;
     return false;
   }
-  logInfo('> Rscript is available.');
+  logInfo('Rscript is available.');
   return true;
 }
 
 async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
-  logInfo('> Starting backend');
+  logInfo('Starting backend');
 
   rAvailable = await checkRAvailable();
   if (!rAvailable) {
-    logInfo('> R is not available- quitting startBackendServer');
+    logInfo('R is not available- quitting startBackendServer');
 
     // Set the status of the Rstox packages according to missing R:
     RstoxPackageStatus = 3;
@@ -358,14 +354,14 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
 
   // spawn a process instead of exec (this will not include a intermediate hidden shell process cmd)
   let fileName = Utils.getTempResFileName(UtilsConstants.RES_SERVER_FILENAME, "stox")
-  logInfo("> Spawning " + rscriptBin + " " + fileName);
+  logInfo("Spawning " + rscriptBin + " " + fileName);
   backendProcess = await child_process.spawn(rscriptBin, [fileName], { stdio: ['pipe', 'ignore', 'ignore'] });
   backendProcess.on('error', (er: any) => {
-    logInfo("> Spawning error " + er);
+    logInfo("Spawning error " + er);
   });
-  // console.log("Process " + backendProcess.pid + " started with " + serverCmd)
-  logInfo("> Backend started.");
-  //console.log(backendProcess.pid);
+  // logInfo("Process " + backendProcess.pid + " started with " + serverCmd)
+  logInfo("Backend started.");
+  //logInfo(backendProcess.pid);
   //rserve_client = await connectRserve(rserve);
   await createClient();
 
@@ -373,16 +369,16 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
 
     let cmd = "paste(R.Version()$major, gsub(\"(.+?)([.].*)\", \"\\\\1\", R.Version()$minor), sep = \".\")"
     versionR = (await callR(cmd) as any).result;
-    logInfo("> R version " + versionR);
+    logInfo("R version " + versionR);
     
     let firstLibPath = (await callR(".libPaths()[1]") as any).result;
-    logInfo("> First of .libPaths: " + firstLibPath);
+    logInfo("First of .libPaths: " + firstLibPath);
     
 
 
     await callR("# Check that we are on Windows:\nif (.Platform$OS.type == \"windows\") {\n\t# If no non-programfiles libraries, create the same that Rstudio creates:\n\tlib <- .libPaths()\n\twritable <- file.access(lib, mode = 2) == 0\n\tif(!writable[1]) {\n\t\thomeFolder <- utils::readRegistry(key=\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\Shell Folders\", hive=\"HCU\")$Personal\n\t\t# As of R 4.2.0 the folder for the packages changed:\n\t\ttwoDigitRVersion <- paste(R.Version()$major, strsplit(R.Version()$minor, \".\", fixed = TRUE)[[1L]][1L], sep = \".\")\n\t\tif(getRversion() >= \"4.2.0\") {\n\t\t\tnewLib <- paste(Sys.getenv(\"USERPROFILE\"), \"AppData\", \"Local\", \"R\", \"win-library\", twoDigitRVersion, sep=\"/\")\n\t\t}\n\t\telse {\n\t\t\tnewLib <- paste(homeFolder, \"R\", \"win-library\", twoDigitRVersion, sep=\"/\")\n\t\t}\n\t\t# Add the local library as the first:\n\t\tif(!dir.exists(newLib)) {\n\t\t\tdir.create(newLib, recursive = TRUE)\n\t\t}\n\t\t# Add the local library in this session:\n\t\t.libPaths(newLib)\n\t}\n}")
     
-    logInfo("> R packages installed in: " + (await callR(".libPaths()[1]") as any).result);
+    logInfo("R packages installed in: " + (await callR(".libPaths()[1]") as any).result);
 
 
 
@@ -401,7 +397,7 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     
     /*cmd = "paste(.libPaths(), collapse=\",\")";
     versionR = (await callR(cmd) as any).result;
-    logInfo("> Lib paths " + versionR);*/
+    logInfo("Lib paths " + versionR);*/
     
     //cmd = "if(!suppressWarnings(require(RCurl, quietly = TRUE))) install.packages(\"RCurl\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
     //logInfo(cmd);
@@ -417,14 +413,14 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     Utils.createStoXGUIInternal();
     //cmd = "if(!require(StoXGUIInternal, quietly = TRUE)) utils::install.packages(\"" + StoXGUIInternalFile + "\", repos = NULL, type = \"source\", lib = .libPaths()[1])";
     cmd = "utils::install.packages(\"" + StoXGUIInternalFolder + "\", repos = NULL, type = \"source\", lib = .libPaths()[1])";
-    logInfo("> " + cmd);
+    logInfo(cmd);
     let res = (await callR(cmd) as any).result;
-    logInfo("> " + res);
+    logInfo(res);
 
     
     // Initiate a local library
-    //logInfo("> libPaths before initiation" + (await callR(".libPaths()[1]") as any).result);
-    //logInfo("> StoXGUIInternal::initLocalLibrary(): " + (await callR("StoXGUIInternal::initLocalLibrary()") as any).result);
+    //logInfo("libPaths before initiation" + (await callR(".libPaths()[1]") as any).result);
+    //logInfo("StoXGUIInternal::initLocalLibrary(): " + (await callR("StoXGUIInternal::initLocalLibrary()") as any).result);
 
 
 
@@ -441,19 +437,19 @@ async function startBackendServer(checkLoadStatus : boolean): Promise<string> {
     // server.get('/getRstoxPackageVersions'...
     // below on line 800-ish:
     cmd = "StoXGUIInternal::getOfficialRstoxPackageVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\", optionalDependencies = TRUE, toJSON = T)";
-    logInfo("> " + cmd);
+    logInfo(cmd);
     officialRstoxPackages = JSON.parse((await callR(cmd) as any).result);
-    logInfo("> " + JSON.stringify(officialRstoxPackages));
+    logInfo(JSON.stringify(officialRstoxPackages));
     
     
     cmd = "tryCatch(paste0(\"RstoxFramework_\", as.character(packageVersion(\"RstoxFramework\"))),error = function(e) {\"\"})"
     versionRstoxFramework = (await callR(cmd) as any).result;
-    logInfo("> " + versionRstoxFramework);
+    logInfo(versionRstoxFramework);
 
     // cmd = "StoXGUIInternal::isOfficialStoXVersion(\"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
-    // logInfo("> " + cmd);
+    // logInfo(cmd);
     // isOfficialStoXVersion = (await callR(cmd) as any).result == "TRUE";
-    // logInfo("> isOfficialStoXVersion" + isOfficialStoXVersion.toString());
+    // logInfo("isOfficialStoXVersion" + isOfficialStoXVersion.toString());
 
 
     let officialStoXVersions = fs.readFile(officialStoXVersionTmpFile, function (err: any, data: any) {
@@ -473,7 +469,7 @@ async function checkLoadStatusRstoxFramework() : Promise<string> {
   }
   let cmd = "tryCatch({library(\"RstoxFramework\"); \"\"} ,error = function(e) {e})"
   loadStatusRstoxFramework = (await callR(cmd) as any).result.trim();
-  logInfo("> Load status RstoxFramework: " + loadStatusRstoxFramework);
+  logInfo("Load status RstoxFramework: " + loadStatusRstoxFramework);
   return "ok";
 }
 
@@ -481,9 +477,8 @@ async function checkLoadStatusRstoxFramework() : Promise<string> {
 
 async function getPackageStatus(packageName: string, stoxVersion: string, officialsRFTmpFile: string) {
   let cmd = "StoXGUIInternal::RstoxPackageStatus(\"" + packageName + "\", \"" + stoxVersion + "\", \"" + officialsRFTmpFile + "\")";
-  //console.log(cmd)
+  //logInfo(cmd)
   RstoxPackageStatus = await (callR(cmd) as any);
-  console.log(RstoxPackageStatus)
   return RstoxPackageStatus;
 }
 
@@ -508,24 +503,24 @@ async function createClient() {
     await new Promise(r => setTimeout(() => { r(null); }, 50/*ms*/));
   }
   if (client != null) {
-    logInfo('> Close existing client');
+    logInfo('Close existing client');
     client.destroy();
-    logInfo('> Client closed');
+    logInfo('Client closed');
   }
-  logInfo('> Create client socket');
+  logInfo('Create client socket');
   client = null;//new net.Socket();  
   for (let i = 1; i <= 10000; i++) {
     await new Promise(r => setTimeout(() => { r(null); }, 400/*ms*/)); // createConnection synchr. takes however 1 sec.
-    logInfo("> Connecting to " + "localhost" + ":" + 6312 + " try " + i);
+    logInfo("Connecting to " + "localhost" + ":" + 6312 + " try " + i);
     serverStarted = false;
     await new Promise(resolve => {
       client = new net.createConnection(6312, "localhost")
         .on('connect', function () {
           serverStarted = true;
-          logInfo("> Connected in try " + i);
+          logInfo("Connected in try " + i);
           resolve(null);
         }).on('error', function (err: any) {
-          logInfo("> Error connecting client: " + err);
+          logInfo("Error connecting client: " + err);
           resolve(null);
         });
     });
@@ -565,30 +560,31 @@ const getPropertiesFileName = function getPropertiesFileName() {
 
 const readPropertiesFromFile = function readPropertiesFromFile() {
   let propFileName =getPropertiesFileName();
+  logInfo("Properties read from file: ");
   try {
     if (fs.existsSync(propFileName)) {
       try {
         properties = JSON.parse(fs.readFileSync(propFileName, { encoding: 'utf-8', flag: 'r' }));
       } catch (err) {
         properties = null;
-        logInfo("> Properties not read due to error " + err);
+        logInfo("Properties not read due to error " + err);
       }
-      logInfo("> Properties read from file: " + propFileName);
+      logInfo("Properties read from file: " + propFileName);
     }
     if (properties == null) {
       // Properties not read properly from file, or the file doesnt exist.
-      logInfo("> create initial properties")
+      logInfo("create initial properties")
       properties = {
         "projectRootPath": "",
         "activeProject": "",
         "rPath": "",
         "rStoxFtpPath": ""
       };
-      logInfo("> Properties initialized.");
+      logInfo("Properties initialized.");
     }
     if (properties.projectRootPath == null || properties.projectRootPath == "") {
-      console.log("Electron Home: " + app.getPath('home'));
-      console.log("Node Home: " + require('os').homedir());
+      console.log("> " + "Electron Home: " + app.getPath('home'));
+      console.log("> " + "Node Home: " + require('os').homedir());
       properties.projectRootPath = app.getPath('home');//require('os').homedir()
     }
     if(properties.mapInfo == null) {
@@ -596,25 +592,27 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       //{projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]}
     }
   } catch (err) {
-    logInfo("> Error reading properties: " + err);
+    logInfo("Error reading properties: " + err);
   }
 }
 
 const writePropertiesToFile = function writePropertiesToFile() {
+  logInfo("writePropertiesToFile... ");
   if (properties == null) {
     return; // Prevent properties to be reset.
   }
   let resourcefile = getPropertiesFileName();
+  logInfo("resourcefile... " + resourcefile);
   try {
     let options = { encoding: 'utf-8', flag: 'w' };
     /*if (properties.projectRootPath) {
       properties.projectRootPath = require('os').homedir();
     */
     let str = JSON.stringify(properties, null, 2);
-    //logInfo("> jsonString : " + jsonString);
+    //logInfo("jsonString : " + jsonString);
     fs.writeFileSync(resourcefile, str, options)
   } catch (err) {
-    logInfo("> Error writing properties " + err);
+    logInfo("Error writing properties " + err);
   }
 }
 
@@ -643,11 +641,11 @@ function callR(arg: string) {
 
 async function evaluate(client: any, cmd: string) {
   if (client == null) {
-    logInfo("> client=NULL: " + cmd)
+    logInfo("client=NULL: " + cmd)
     return null;
   }
 
-  //console.log("evaluate: " + cmd);
+  //console.log("> " + "evaluate: " + cmd);
   let s = Buffer.from(cmd, 'utf8').toString('hex'); // Encode command as hex
   let lens = "" + s.length;
   await new Promise(async resolve => {
@@ -655,12 +653,12 @@ async function evaluate(client: any, cmd: string) {
       if (data == lens) {
         // The length is send forth and back, we an proceed
         resolve(null);
-        //console.log("length received: " + data);
+        //console.log("> " + "length received: " + data);
       } /*else {
-        console.log("length error: " + data);
+        console.log("> " + "length error: " + data);
       }*/
     };
-    //console.log("write length: " + lens);
+    //console.log("> " + "write length: " + lens);
     await client.write("" + s.length);
 
   });
@@ -671,12 +669,12 @@ async function evaluate(client: any, cmd: string) {
       if (nResp != null) {
         // recevied response length 
         resolve(null);
-        //console.log("write data nChar = " + nResp);
+        //console.log("> " + "write data nChar = " + nResp);
       } /*else {
-        console.log("write data error nChar = null");
+        console.log("> " + "write data error nChar = null");
       }*/
     };
-    //console.log("write cmd hex: " + s);
+    //console.log("> " + "write cmd hex: " + s);
     await client.write(s); // may lead to throttling on the server side, but the server uses length info to get the string
   });
   // Total buffered preallocated before throttling, to avoid dynamic allocation time loss
@@ -692,15 +690,15 @@ async function evaluate(client: any, cmd: string) {
       nChunks++;
       if (bufLen == nResp) { // test on length
         // The response is received - finish
-        //console.log("throttling bufLen == nResp " + bufLen);
+        //console.log("> " + "throttling bufLen == nResp " + bufLen);
         resolve(null);
       } /*else if(bufLen < nResp) {
-        console.log("throttling bufLen, nResp " + bufLen + "," + nResp);
+        console.log("> " + "throttling bufLen, nResp " + bufLen + "," + nResp);
       } else {
-        console.log("throttling overflow error bufLen=" + bufLen, ", nResp=" + nResp);
+        console.log("> " + "throttling overflow error bufLen=" + bufLen, ", nResp=" + nResp);
       }*/
     };
-    //console.log("write response length " + nResp);
+    //console.log("> " + "write response length " + nResp);
     await client.write("" + nResp); // handshake response length
   });
   return Buffer.from(buf.toString(), 'hex').toString("utf8");
@@ -724,56 +722,56 @@ function setupServer() {
   server.post('/updateactiveproject', function (req: any, res: any) {
     properties.activeProject = req.body;
     properties.projectRootPath = require("path").resolve(properties.activeProject, "..")
-    logInfo("> update active project: " + properties.activeProject)
+    logInfo("update active project: " + properties.activeProject)
     res.send("ok");
   });
   server.post('/updateactiveprojectsavedstatus', function (req: any, res: any) {
     activeProjectSaved = req.body === "true";
-    logInfo("> update active project saved status: " + activeProjectSaved)
+    logInfo("update active project saved status: " + activeProjectSaved)
     res.send("ok");
   });
 
   server.get('/readactiveproject', function (req: any, res: any) {
-    logInfo("> read active project: " + properties.activeProject)
+    logInfo("read active project: " + properties.activeProject)
     res.send(properties.activeProject);
   });
 
   server.post('/updateprojectrootpath', function (req: any, res: any) {
     let projectRootPath = req.body;
-    //logInfo("> in updateprojectrootpath jsonString : " + jsonString);
+    //logInfo("in updateprojectrootpath jsonString : " + jsonString);
     properties.projectRootPath = projectRootPath;
     res.send("project root path updated");
   });
   // modify rpath in backend
   server.post('/rpath', async (req: any, res: any) => {
     properties.rPath = req.body;
-    logInfo('> set rpath ' + properties.rPath);
+    logInfo('set rpath ' + properties.rPath);
     let resultstr: string = await startBackendServer(true);
     res.send('post /rpath result:' + resultstr);
   });
   server.post('/mapInfo', async (req: any, res: any) => {
     properties.mapInfo = JSON.parse(req.body);
-    //logInfo('> set mapInfo ' + properties.mapInfo);
+    //logInfo('set mapInfo ' + properties.mapInfo);
     res.send('mapInfo updated');
   });
   // observe project root path
   server.get('/projectrootpath', function (req: any, res: any) {
-    //logInfo('> get project root path ' + properties.projectRootPath);
+    //logInfo('get project root path ' + properties.projectRootPath);
     res.send(properties.projectRootPath);
   });
   // observe rpath in backend
   server.get('/', function (req: any, res: any) {
-    //logInfo('> get rpath ' + properties.rPath);
+    //logInfo('get rpath ' + properties.rPath);
     res.send("Node server started");
   });
   // observe rpath in backend
   server.get('/rpath', function (req: any, res: any) {
-    logInfo('> get rpath ' + properties.rPath);
+    logInfo('get rpath ' + properties.rPath);
     res.send(properties.rPath);
   });
 
   server.get('/mapInfo', function (req: any, res: any) {
-    logInfo('> get mapInfo ' + properties.mapInfo);
+    logInfo('get mapInfo ' + properties.mapInfo);
     res.send(properties.mapInfo);
   });
 
@@ -799,7 +797,7 @@ function setupServer() {
       res.send({ value: null, message: [], warning: [], error: ['RstoxFramework is not loaded properly due to message:\n\"' + loadStatusRstoxFramework + '\". \nTry to reinstall from Tools->Install R packages. (Remember also to close other R applications first)'] });
       return;
     }
-    // console.log("cmd: \"" + s.replace(/"/g, '\\"') + "\"");
+    // console.log("> " + "cmd: \"" + s.replace(/"/g, '\\"') + "\"");
     //logInfo(req.body);
     // this is a timout for a specific route for node express server.
     // This will make long r calls like bootstrapping work.
@@ -807,13 +805,13 @@ function setupServer() {
 
     let cmd: string = "RstoxFramework::runFunction.JSON(" + JSON.stringify(req.body) + ")";
     //cmd = cmd.replace(/\"/g, "\\\"");
-    //logInfo("> cmd:" + cmd)
+    //logInfo("cmd:" + cmd)
     // The server is parsing the expression, a need for stringify to have 2^n-1 escapes where n is 
     // starting at 1 and going to 2 (because of parse). stringify and parse operates oppocite ways.
     // The args in the body is already stringified (because of need to do do.call)
     //cmd = JSON.stringify(cmd);
     let s: any = await callR(cmd);
-    //logInfo('> call R result ' + JSON.stringify(s));
+    //logInfo('call R result ' + JSON.stringify(s));
     // res.type('text/plain');
     res.send(s.result);
   });
@@ -822,24 +820,24 @@ function setupServer() {
     try {
       let s : string = "R is not available";
       rPackagesIsInstalling = true;
-      logInfo('> /installRstoxFramework');
+      logInfo('/installRstoxFramework');
 
       // Install remotes and data.table.
       let cmd = "if(!suppressWarnings(require(remotes, quietly = TRUE))) install.packages(\"remotes\", type = \"binary\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
-      logInfo("> " + cmd);
+      logInfo(cmd);
       let res11 = (await callR(cmd) as any).result;
       cmd = "if(!suppressWarnings(require(data.table, quietly = TRUE))) install.packages(\"data.table\", type = \"binary\", quiet = TRUE, repos = \"https://cloud.r-project.org\")";
-      logInfo("> " + cmd);
+      logInfo(cmd);
       let res12 = (await callR(cmd) as any).result;
     
 
       await startBackendServer(false);
-      logInfo('> server started: ' + serverStarted + ", client: " + client);
+      logInfo('server started: ' + serverStarted + ", client: " + client);
       if (serverStarted) {
         let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
         let cmd = "StoXGUIInternal::installOfficialRstoxPackagesWithDependencies(\"" + stoxVersion + "\", \"" +
           officialsRFTmpFile + "\", quiet = TRUE, toJSON = TRUE)";
-        logInfo("> " + cmd);
+        logInfo(cmd);
         let res = (await callR(cmd) as any).result;
         // Build a string naming the packages that were installed, or an error message:
         if(res.startsWith('Error')) {
@@ -851,7 +849,7 @@ function setupServer() {
         
         await startBackendServer(true);
         await checkLoadStatusRstoxFramework();
-        logInfo("> " + s);
+        logInfo(s);
       }
       res.send(s);
     } finally {
@@ -866,7 +864,7 @@ function setupServer() {
       status: number;
     }[] = [];
     if (serverStarted) {
-      // logInfo("> iterating through officialRstoxPackages " + officialRstoxPackages);
+      // logInfo("iterating through officialRstoxPackages " + officialRstoxPackages);
       let officialsRFTmpFile = Utils.getTempResFileName(UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS, "stox");
       let packagesStatus = officialRstoxPackages.map(async s => {
         let elms: string[] = s.split("_");
@@ -898,39 +896,39 @@ function setupServer() {
   }
 
   server.post('/browse', function (req: any, res: any) {
-    logInfo("> select a folder... wait");
+    logInfo("select a folder... wait");
     let defPath = resolveDefaultPath(req.body); // correct slashes in default path
-    logInfo("> default folder " + defPath);
+    logInfo("default folder " + defPath);
     require('electron').dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
       title: 'Select a folder', defaultPath: /*require('os').homedir()*/ defPath,
       properties: [/*'openFile'*/'openDirectory']
     }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
       if (!object.filePaths || !object.filePaths.length) {
-        logInfo("> You didn't select a folder");
+        logInfo("You didn't select a folder");
         return;
       }
-      logInfo("> You did select a folder");
+      logInfo("You did select a folder");
       logInfo(object.filePaths[0]);
       res.send(object.filePaths[0]);
     });
   });
 
   server.post('/browsePath', function (req: any, res: any) {
-    logInfo("> select a file/folder path(s)");
+    logInfo("select a file/folder path(s)");
     let options: any = JSON.parse(req.body);
     if (Object.keys(options).length) {
       let defPath = resolveDefaultPath(options.defaultPath); // correct slashes in default path
-      logInfo("> default folder " + defPath);
+      logInfo("default folder " + defPath);
       require('electron').dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
         title: options.title, defaultPath: defPath,
         properties: options.properties
       }).then((object: { canceled: boolean, filePaths: string[], bookmarks: string[] }) => {
         if (!object.filePaths || !object.filePaths.length) {
-          logInfo("> You didn't select anything");
+          logInfo("You didn't select anything");
           return;
         }
 
-        logInfo("> You selected : " + object.filePaths);
+        logInfo("You selected : " + object.filePaths);
 
         res.send(object.filePaths);
       });
@@ -938,12 +936,13 @@ function setupServer() {
   });
 
   server.post('/showinfolder', function (req: any, res: any) {
-    logInfo("> show in folder");
+    logInfo("show in folder___logInfo");
+    console.log("> " + "show in folder___console.log");
     let path = resolveDefaultPath(req.body); // correct slashes in default path
     const openExplorer = require('open-file-explorer');
     openExplorer(path, (err: any) => {
       if(err) {
-          console.log(err);
+          console.log("> " + err);
       }
       else {
           //Do Something
@@ -962,7 +961,7 @@ function setupServer() {
       // calculate in cm
       let widthcm = width / dpi * 2.54;
       let heightcm = height / dpi * 2.54;
-      console.log(width, height, dpi);
+      console.log("> " + width, height, dpi);
       res.send({'img': Buffer.from(bitmap).toString('base64'), 
       'width': widthcm, 'height': heightcm});
     } else {
@@ -973,7 +972,7 @@ function setupServer() {
 
 
   server.post('/fileExists', function (req: any, res: any) {
-    logInfo("> check if a file exists");
+    logInfo("check if a file exists");
 
     let filePath: string = req.body;
     if (filePath.length > 0 && fs.existsSync(filePath)) {
@@ -985,7 +984,7 @@ function setupServer() {
 
   server.post('/openUrl', function (req: any, res: any) {
     let url: string = req.body;
-    logInfo("> open url: " + url);
+    logInfo("open url: " + url);
     if (url.length > 0) {
       try {
         require('electron').shell.openExternal(url);
@@ -997,18 +996,18 @@ function setupServer() {
   });
 
   server.get('/rAvailable', async (req: any, res: any) => {
-    // logInfo("> check if r is available");
+    // logInfo("check if r is available");
     res.send(rAvailable);
   });
   /*server.get('/rstoxFrameworkAvailable', async (req: any, res: any) => {
-    //logInfo("> check if rstoxframework is available");
+    //logInfo("check if rstoxframework is available");
     res.send(rAvailable && versionRstoxFramework != "");
   });*/
 
 
 
   server.post('/makeDirectory', function (req: any, res: any) {
-    logInfo("> make directory");
+    logInfo("make directory");
     var dirPath = req.body;
     if (dirPath.length > 0) {
       try {
@@ -1023,17 +1022,17 @@ function setupServer() {
   });
 
   server.post('/exit', function (req: any, res: any) {
-    logInfo("> /exit");
-    logInfo("> " + mainWindow);
+    logInfo("/exit");
+    logInfo(mainWindow);
     if (mainWindow != null) {
-      logInfo("> have window");
+      logInfo("have window");
       mainWindow.close()
       res.send("true");
     }
   });
 
   server.post('/stoxhome', async function (req: any, res: any) {
-    logInfo("> /stoxhome");
+    logInfo("/stoxhome");
     const { shell } = require('electron');
     await shell.openExternal('http://www.imr.no/forskning/prosjekter/stox/');
   });
@@ -1043,7 +1042,7 @@ function setupServer() {
   });
 
   server.post('/toggledevtools', async function (req: any, res: any) {
-    logInfo("> /toggledevtools");
+    logInfo("/toggledevtools");
     if (mainWindow.webContents.isDevToolsOpened()) {
       mainWindow.webContents.closeDevTools();
     } else {

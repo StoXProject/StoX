@@ -98,7 +98,7 @@ export class OutputComponent implements OnInit {
             next: (action: SubjectAction) => {
                 switch (action.action) {
                     case "activate": {
-                        //console.log("ActiveProcessId: " + action.data);
+                        //console.log("> " + "ActiveProcessId: " + action.data);
                         this.refreshData(action.data);
                         break;
                     }
@@ -116,7 +116,7 @@ export class OutputComponent implements OnInit {
         return s.join("\n");
     }
     getItemOutput(item) {
-        console.log(JSON.stringify(item.outputjson)); 
+        console.log("> " + JSON.stringify(item.outputjson)); 
         return item.outputjson;
     }
 

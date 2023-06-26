@@ -57,7 +57,7 @@ export class SelectedVariablesDlg implements OnInit {
     // removeSelectedRows() {
     //     this.selection.selected.forEach(item => {
     //         let index: number = this.service.selectedVariables.findIndex(d => d === item);
-    //         // console.log(this.service.definedColumnsData.findIndex(d => d === item));
+    //         // console.log("> " + this.service.definedColumnsData.findIndex(d => d === item));
     //         this.service.selectedVariables.splice(index, 1);
     //         this.dataSource = new MatTableDataSource<SelectedVariable>(this.service.selectedVariables);
     //     });
@@ -102,7 +102,7 @@ export class SelectedVariablesDlg implements OnInit {
         // check if there is empty field in dialog
         for (let i = 0; i < this.service.selectedVariables.length; i++) {            
             if(this.service.selectedVariables[i].variableName == null) {
-                console.log("Field is null in row index : " + i);
+                console.log("> " + "Field is null in row index : " + i);
                 this.msgService.setMessage("One or more fields are empty!");
                 this.msgService.showMessage();
                 return;
@@ -119,8 +119,8 @@ export class SelectedVariablesDlg implements OnInit {
         // get the combined string from service
         this.combinedExpression = this.service.combinedExpression();
 
-        console.log("this.service.currentPropertyItem.value : " + this.service.currentPropertyItem.value);
-        console.log("this.combinedExpression : " + this.combinedExpression);
+        console.log("> " + "this.service.currentPropertyItem.value : " + this.service.currentPropertyItem.value);
+        console.log("> " + "this.combinedExpression : " + this.combinedExpression);
 
         // save the combined string into current property item and run set property values function if there is a change in value
         if (this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
@@ -135,7 +135,7 @@ export class SelectedVariablesDlg implements OnInit {
                             this.ps.handleAPI(s);
                         });
                 } catch (error) {
-                    console.log(error.error);
+                    console.log("> " + error.error);
                     var firstLine = error.error.split('\n', 1)[0];
                     this.msgService.setMessage(firstLine);
                     this.msgService.showMessage();

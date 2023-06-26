@@ -62,7 +62,7 @@ export class DefinedColumnsService {
         }
       );      
 
-      console.log("combinedArray : " + JSON.stringify(combinedArray));
+      console.log("> " + "combinedArray : " + JSON.stringify(combinedArray));
 
       return JSON.stringify(combinedArray);
     }
@@ -94,17 +94,17 @@ export class DefinedColumnsService {
       let returnValue  = <any> await this.dataService.getParameterTableInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, this.currentPropertyItem.format).toPromise();
       
       if(returnValue != null) {
-        console.log("returnValue : " + JSON.stringify(returnValue));
+        console.log("> " + "returnValue : " + JSON.stringify(returnValue));
 
-        console.log("returnValue['parameterTableTitle'] : " + returnValue['parameterTableTitle']);
+        console.log("> " + "returnValue['parameterTableTitle'] : " + returnValue['parameterTableTitle']);
         this.title = returnValue['parameterTableTitle'];
         this.currentTitleSource.next(this.title);
-        console.log("returnValue['parameterTableColumnNames'] : " + returnValue['parameterTableColumnNames']);
-        console.log("returnValue['parameterTableVariableTypes'] : " + returnValue['parameterTableVariableTypes']);
+        console.log("> " + "returnValue['parameterTableColumnNames'] : " + returnValue['parameterTableColumnNames']);
+        console.log("> " + "returnValue['parameterTableVariableTypes'] : " + returnValue['parameterTableVariableTypes']);
         
         let columns = returnValue['parameterTableColumnNames'];
         for(let i = 0; i < columns.length; i++) {
-          console.log(columns[i]);
+          console.log("> " + columns[i]);
           this.displayedColumns.push(columns[i]);
           let column = new ColumnPossibleValues(); 
           column.columnName =  columns[i];
@@ -127,7 +127,7 @@ export class DefinedColumnsService {
         this.columnPossibleValuesSource.next(this.columnPossibleValues);
         this.columnTypesSource.next(this.columnTypes);
         
-        console.log("returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
+        console.log("> " + "returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
       }
       this.isOpening = false;
     }

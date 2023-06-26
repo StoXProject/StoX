@@ -606,6 +606,13 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
         //console.log("Resolution changed - write to backend")
         await this.updateMapInfoInBackend();
     });
+
+    // Attempt to speed up zooming by only updating at move end, but it is not updateMapInfoInBackend that takes time:
+    //this.map.on('moveend', async evt => {
+    //  console.log("Resolution changed - write to backend")
+    //  await this.updateMapInfoInBackend();
+    //});
+
   } // end of ngOnInit()
 
   async handleIaMode(iaMode: string, proj) {

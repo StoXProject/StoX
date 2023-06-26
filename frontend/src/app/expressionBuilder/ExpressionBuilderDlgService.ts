@@ -76,7 +76,7 @@ export class ExpressionBuilderDlgService {
     
             this.config = <QueryBuilderConfig>this.allOptions.allFields[this.currentTableExpression.tableName];
 
-            // console.log("this.config : " + JSON.stringify(this.config));
+            // console.log("> " + "this.config : " + JSON.stringify(this.config));
 
             if (this.currentTableExpression.expression != null && this.currentTableExpression.expression.trim() != "") {
                 // build query object from rExpression
@@ -84,12 +84,12 @@ export class ExpressionBuilderDlgService {
                 this.query = <RuleSet>await this.dataService.expression2list(this.currentTableExpression.expression).toPromise();
             }
 
-            // console.log("this.query : " + JSON.stringify(this.query));
+            // console.log("> " + "this.query : " + JSON.stringify(this.query));
     
             this.configSource.next(this.config);
             this.querySource.next(this.query);
         } catch(error) {
-            console.log(error);
+            console.log("> " + error);
         }
     }
 
@@ -104,7 +104,7 @@ export class ExpressionBuilderDlgService {
         this.isOpening = true;
 
         let allOptions = await this.dataService.getFilterOptionsAll(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, false).toPromise();
-        console.log("allOptions : " + JSON.stringify(allOptions));
+        //console.log("> " + "allOptions : " + JSON.stringify(allOptions));
     
         if (this.ps.isEmpty(allOptions)) {
           this.msgService.setMessage("Can not get filter options. See user log.");
@@ -115,23 +115,23 @@ export class ExpressionBuilderDlgService {
     
         this.allOptions = allOptions;
         this.tableNames = allOptions.tableNames;
-        console.log("tableNames : " + JSON.stringify(this.tableNames));
+        console.log("> " + "tableNames : " + JSON.stringify(this.tableNames));
     
         // build array of tableExpressions from rExpression
-        console.log("this.currentPropertyItem.value : " + this.currentPropertyItem.value);
+        console.log("> " + "this.currentPropertyItem.value : " + this.currentPropertyItem.value);
 
         this.tableExpressions = [];
         if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != "") {
             let o: any = JSON.parse(this.currentPropertyItem.value);
             let keys = Object.keys(o);
             keys.forEach(key => {
-                console.log(key + "=>" + o[key]);
+                console.log("> " + key + "=>" + o[key]);
                 this.tableExpressions.push({ tableName: key, expression: o[key] });
             });
 
             this.tableExpressionsSource.next(this.tableExpressions);
 
-            console.log("this.tableExpressions.length : " + this.tableExpressions.length);
+            console.log("> " + "this.tableExpressions.length : " + this.tableExpressions.length);
         }
 
         this.isOpening = false;
