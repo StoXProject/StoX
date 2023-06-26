@@ -41,6 +41,11 @@
             ]
           },
           {
+            "title": "Known issues",
+            "depth": 2,
+            "id": "known-issues"
+          },
+          {
             "title": "Examples",
             "depth": 2,
             "id": "examples"
@@ -99,6 +104,11 @@
               "id": "installation-of-rstox-packages-in-r-for-unofficial-stox-versions"
             }
           ]
+        },
+        {
+          "title": "Known issues",
+          "depth": 2,
+          "id": "known-issues"
         },
         {
           "title": "Examples",

@@ -30,6 +30,8 @@
                   </li>
                 </ul>
               </li>
+              <li class="menu-item -level-1"><a class="link title link-known-issues" href="#known-issues">Known issues</a>
+              </li>
               <li class="menu-item -level-1"><a class="link title link-examples" href="#examples">Examples</a>
               </li>
               <li class="menu-item -level-1 -parent"><a class="link title link-license" href="#license">License</a>
@@ -53,8 +55,8 @@
 <p>&#x201C;StoX is designed as a tool for transparent and reproducible survey estimation across nations and survey objectives. All methods, user settings and links to input data are documented in a description file. A process is a user&#x2010;defined call to one function available in a library of functions defined by StoX. Any StoX model can be modified by changing parameters of the processes, adding or removing processes and by rearranging their order of execution. Different StoX functions require one or more input datasets, which can be data files or output from previously executed processes.&#x201D; <a href="https://doi.org/10.1111/2041-210X.13250">Johnsen, E., Totland, A., Sk&#xE5;levik, &#xC5;., Holmin, A. J., Dings&#xF8;r, G. E., Fuglebakk, E., &amp; Handegard, N. O. (2019). StoX: An open source software for marine survey analyses. Methods in Ecology and Evolution, 10(9), 1523-1528.</a></p>
 <h2 id="installation">Installation</h2>
 <p>The following describes installation of the latest <em>official</em> StoX version (Se <a href="https://github.com/StoXProject/StoX/blob/master/Official_StoX_versions.md">all official StoX versions</a>). For unofficial versions installation of the Rstox-packages must be done in R (details given at the end of this paragraph). It is highly recommended to use official versions, as these are fully tested, whereas tetsting is limited for unofficial versions.</p>
-<p>See <a href="https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v361-2023-04-21">release notes for StoX 3.6.1</a>.</p>
-<p>Download StoX from (<a href="https://github.com/StoXProject/StoX/releases/tag/v3.6.1">https://github.com/StoXProject/StoX/releases/tag/v3.6.1</a>). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:</p>
+<p>See <a href="https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v360-2023-01-18">release notes for StoX 3.6.0</a>.</p>
+<p>Download StoX from (<a href="https://github.com/StoXProject/StoX/releases/tag/v3.6.0">https://github.com/StoXProject/StoX/releases/tag/v3.6.0</a>). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:</p>
 <h3 id="windows:">Windows:</h3>
 <p>Step 1:
 Install by double-clicking on the downloaded .msi file, and follow the instructions. If you get a message along the lines that the installer is blocked by the system, you can click on &quot;More info&quot; and select &quot;Run anyway&quot;.</p>
@@ -116,6 +118,8 @@ StoX is now ready for use.</p>
 remotes::install_github(repo = &quot;stoxproject/RstoxBase&quot;, ref = &quot;RstoxBase-v1.9.8&quot;)
 remotes::install_github(repo = &quot;stoxproject/RstoxFramework&quot;, ref = &quot;RstoxFramework-v3.4.6&quot;)
 </code></pre>
+<h2 id="known-issues">Known issues</h2>
+<p>StoX uses files to store the memory of an open StoX project. These files are located in the folder &quot;process/projectSession&quot;, which only exists while the StoX project is open. These memory files occupy 113 characters in the file paths after the StoX project folder. If the StoX project contains processes with long names, the output files can occupy more than 113 characters. For Windows systems with maximum 256 character file path only 143 characters are left for the path of the StoX project folder. When working with StoX projects with long names, it is adivced to change the Windows Registry to accept long file paths (search, e.g., for &quot;How to Make Windows 10 Accept long File Paths&quot; for more information).</p>
 <h2 id="examples">Examples</h2>
 <p>Example StoX projects can be downloaded from <a href="https://github.com/StoXProject/StoXExamples">https://github.com/StoXProject/StoXExamples</a>.</p>
 <h2 id="license">License</h2>
@@ -127,4 +131,4 @@ remotes::install_github(repo = &quot;stoxproject/RstoxFramework&quot;, ref = &qu
       </div>
     </div>
   </body>
-</html> 
+</html>
