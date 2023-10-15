@@ -63,12 +63,12 @@
 </div>
 <div style="height:calc(100vh - 2.6rem);"> 
 	<as-split style="height:100%" direction="horizontal" gutterSize=6>
-		<as-split-area size="25">
+		<as-split-area size="20">
 			<as-split direction="vertical" gutterSize=6>
-				<as-split-area size=30 style="overflow:hidden">
+				<as-split-area size=10 style="overflow:hidden">
 					<app-project [cm]="cm"></app-project>
 				</as-split-area>
-				<as-split-area size=70 style="overflow:hidden;">
+				<as-split-area size=90 style="overflow:hidden;">
 					<div style="height:1.2rem; width:100%;">
 						<app-model></app-model>
 					</div>
@@ -114,7 +114,7 @@
 				</as-split-area>
 			</as-split>
 		</as-split-area>
-		<as-split-area size="20">
+		<as-split-area size="25">
 			<as-split direction="vertical" gutterSize=6>
 				<as-split-area size="50">
 					<ExpressionBuilderDlg></ExpressionBuilderDlg>

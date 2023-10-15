@@ -52,6 +52,10 @@ installOfficialRstoxPackagesWithDependencies <- function(
         list.out = TRUE, 
         reverse = TRUE
     )
+    if(!length(RstoxPackages)) {
+        warning("Rstox packages not specified. Did you specify the 'officialRstoxPackageVersionsFile'?")
+        return(NULL)
+    }
 
     # If the StoX version is not official, report an error with info on how to install manually from source in R:
     if(isFALSE(as.logical(attr(RstoxPackages, "Official")))) {
@@ -346,7 +350,7 @@ getPlatform <- function(platform = NA) {
 #'
 getOfficialRstoxPackageVersion <- function(
     StoXVersion = NULL, 
-    officialRstoxPackageVersionsFile = system.file("versions", "OfficialRstoxFrameworkVersions.txt", package = "RstoxFramework"), 
+    officialRstoxPackageVersionsFile = "https://raw.githubusercontent.com/StoXProject/StoX/master/srv/OfficialRstoxFrameworkVersions.txt", 
     optionalDependencies = FALSE, 
     toJSON = FALSE, 
     list.out = FALSE, 
