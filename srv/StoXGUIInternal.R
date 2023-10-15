@@ -16,6 +16,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     optionalDependencies = FALSE, 
     destdir = NA, 
     Rstox.repos = "https://stoxproject.github.io/repo", 
+    Rstox_preRelease.repos = "https://stoxproject.github.io/testingRepo", 
     dependency.repos = "https://cloud.r-project.org", 
     lib = NULL, 
     toJSON = FALSE, 
@@ -59,16 +60,17 @@ installOfficialRstoxPackagesWithDependencies <- function(
 
     # If the StoX version is not official, report an error with info on how to install manually from source in R:
     if(isFALSE(as.logical(attr(RstoxPackages, "Official")))) {
-        installCommands <- paste0(
-            "remotes::install_github(repo = \"stoxproject/", 
-            names(RstoxPackages$version), 
-            "\", ref = \"", 
-            names(RstoxPackages$version), 
-            "-v", 
-            unlist(RstoxPackages$version), 
-            "\", dependencies = FALSE)"
-        )
-        stop("The StoX version ", StoXVersion, " is not an official version. Installation of Rstox packages for non-official versions is no longer supported in the StoX GUI. It is highly recommended to use the latest official version StoX ", getLatestOfficialStoxVersion(officialRstoxPackageVersionsFile), ".\nTo install the Rstox packages for this non-official version, the following lines must be run in R. If you are using Rstudio, it is adviced to restart R before installing the Rstox packages. Also, on Windows Rtools must be installed, as the Rstox packages are installed from source by these lines:\n", paste0(installCommands, collapse = "\n"))
+        #installCommands <- paste0(
+        #    "remotes::install_github(repo = \"stoxproject/", 
+        #    names(RstoxPackages$version), 
+        #    "\", ref = \"", 
+        #    names(RstoxPackages$version), 
+        #    "-v", 
+        #    unlist(RstoxPackages$version), 
+        #    "\", dependencies = FALSE)"
+        #)
+        #stop("The StoX version ", StoXVersion, " is not an official version. Installation of Rstox packages for non-official versions is no longer supported in the StoX GUI. It is highly recommended to use the latest official version StoX ", getLatestOfficialStoxVersion(officialRstoxPackageVersionsFile), ".\nTo install the Rstox packages for this non-official version, the following lines must be run in R. If you are using Rstudio, it is adviced to restart R before installing the Rstox packages. Also, on Windows Rtools must be installed, as the Rstox packages are installed from source by these lines:\n", paste0(installCommands, collapse = "\n"))
+        Rstox.repos <- Rstox_preRelease.repos
     }
 
     #### Step 2: List and install the dependencies: ####
