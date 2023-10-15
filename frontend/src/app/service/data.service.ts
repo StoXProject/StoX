@@ -331,11 +331,11 @@ export class DataService {
               this.m_logSubject.next('log-message');
             });
           r2.warning?.forEach(elm => {
-            this.log.push(new UserLogEntry(UserLogType.WARNING, elm));
+            this.log.push(new UserLogEntry(UserLogType.WARNING, elm + "\n"));
             this.m_logSubject.next('log-warning');
           });
           r2.error?.forEach(elm => {
-            this.log.push(new UserLogEntry(UserLogType.ERROR, elm));
+            this.log.push(new UserLogEntry(UserLogType.ERROR, elm + "\n"));
             this.m_logSubject.next('log-error');
           });
         }
@@ -348,7 +348,8 @@ export class DataService {
     return this.runFunction('runProcesses', {
       "projectPath": projectPath, "modelName": modelName,
       "startProcess": startProcess, "endProcess": endProcess,
-      "save": false
+      "save": false, 
+      "msg.GUI": true
     });
   }
 

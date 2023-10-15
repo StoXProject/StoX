@@ -1,7 +1,42 @@
+# StoX v3.6.3-9001 (2023-10-15)
+
+## Summary
+* The StoX version 3.6.2 is a pre-release prepareing for StoX 4.0.0. The pre-release intrtoduces bootstrapping using netCDF4 files which facilitates practically unlimited number of bootstrap replicates. Also, a new resampling function for BioticAssignment is introduced, where Hauls are resampled for each individual AcousicPSU, eliminating the risk of missing assignment length distribution in SplitNASC and AcousticDensity  which could  result in under-estimation. In addition, dependency on the R package sp has been  completely removed from RstoxData, RstoxBase and RstoxFramework.
+
+## Bug fixes
+* Moved functions to set precision to RstoxFramework, and fixed the following two bugs: 1. Datatypes which are lists of lists (AcousticData and BioticData) were not set precision to. 2. Integer fields were set precision to.
+* Fixing a problem with setting default precision in StoX. Before, precision was not set for process outputs which were lists of lists of tables (ReadBioic() and ReadAcousic()). Also, all numeric columns, even integer ones were set precision to, which is now changed to exclude integer columns.
+* Fixed bug where runProject() did not open the project.
+* Fixed bug in LengthDistribution() where missing raising factor was reported for samples with no individuals.
+*  Fixed bug in getNumberOfCores() where the number of cores was not restricted by the number of available cores.
+
+## General changes
+* Removed dependency on the retiring R package sp.
+* Added BootstrapNetCDF4() and ReportBootstrapNetCDF4(). These will replace Bootstrap() and ReportBootstrap() in StoX 4.0.0.
+* Added ResampleBioticAssignmentByPSU() and ResampleBioticAssignmentByStratum(), where the latter is identical to the ResampleBioticAssignment() of StoX <= 3.6.2.
+* Speeding up openProject() for StoX projects with large process data tables.
+* Added printing of messages, warnings and errors for parallel bootstrapping (by applying runFunction() in each core).
+* Added the number of identical warnings in the warning printout. This is needed e.g. to get an idea of how many bootstrap replicates that has a problem of missing assignment length distribution for AcousticPSUs.
+* Moved printing of "Running baseline process" type of messages from backend to frontend, so that this gets printed before the process runs and not after.
+* Changed GearDependentCatchCompensation() to keep all variables from the input SpeciesCategoryCatchData.
+* Exposing PlotAcousticTrawlSurvey().
+
+## Detailed changes
+* Changed isOpenProject() to only require that the projectSession folder exits, with an option strict = TRUE to use the old requirement that all folders must exist.
+* Added warning when replaceArgs contains non-existent arguments.
+* Changed to using unlistDepth2 = FALSE in compareProjectToStoredOutputFiles(), as this is in line with the bug fix from StoX 3.6.0 where outputs with multiple tables were no longer unlisted in Bootstrap data.
+* Improved error message then Percentages is not given (now saying exactly that and not "SpecificationParameter must be given").
+* Improved documentation of DefinitionMethod in DefineBioticPSU(), DefineAcousticPSU() and DefineBioticAssignment().
+* Added a warning when reading BioticPSUs from a StoX 2.7 project.xml file where Method is Station and not UseProcessData in DefineSweptAreaPSU(), which makes the BioticPSUs of the project.xml file unused.
+* Improved warning when there are Individuals in the IndividualsData with IndividualTotalLength that does not match any of the length intervals of the QuantityData.
+* Improved warning for when there are positive NASC values with no assignment length distribution, also removing the list of the  affected PSUs.
+* Improved simplifyStratumPolygon() used in DefineStratumPolygon() which got stuck in an endless loop in certain cases.
+
+
 # StoX v3.6.2 (2023-06-28)
 
 ## Summary
-* The StoX version 3.6.1 is a patch-release containing an important bug fix for Bootstap(), where the output was text files instead of a single RData in StoX 3.6.1, causing the UseOutputData option to not work. 
+* The StoX version 3.6.2 is a patch-release containing an important bug fix for Bootstap(), where the output was text files instead of a single RData in StoX 3.6.1, causing the UseOutputData option to not work. 
 
 ## Bug fixes
 * Fixed a bug introduced in StoX 3.6.1, where the output file of Bootstrap() was a number of text file instead of a single RData file, causing the option UseOutputData to fail.
@@ -12,7 +47,7 @@
 ## Other changes
 * Added the right-click option "Duplicate process".
 * Increased speed of frequently used functions in RstoxFramework by using list instead of data.table for the definition og reportFunctions.
-* Added tables listing the variables of the data types NASC, SumNASC, MeanNASC, LengthDistribution, SumLengthDistribution, MeanLengthDistribution, Density, MeanDensity and Quantity. 
+* Added tables listing the variables of the data types NASCData, SumNASCData, MeanNASCData, LengthDistributionData, SumLengthDistributionData, MeanLengthDistributionData, DensityData, MeanDensityData and QuantityData. 
 * Added better warning when at least one of bottomdepthstart and bottomdepthstop are missing.
 * Improved warning when variables that cannot be converted to numeric as requested by the XSD are set to NA in ReadAcoustic()/ReadBiotic().
 
@@ -36,7 +71,7 @@
 ## Other changes
 * Added the right-click option "Duplicate process".
 * Increased speed of frequently used functions in RstoxFramework by using list instead of data.table for the definition og reportFunctions.
-* Added tables listing the variables of the data types NASC, SumNASC, MeanNASC, LengthDistribution, SumLengthDistribution, MeanLengthDistribution, Density, MeanDensity and Quantity. 
+* Added tables listing the variables of the data types NASCData, SumNASCData, MeanNASCData, LengthDistributionData, SumLengthDistributionData, MeanLengthDistributionData, DensityData, MeanDensityData and QuantityData. 
 * Added better warning when at least one of bottomdepthstart and bottomdepthstop are missing.
 * Improved warning when variables that cannot be converted to numeric as requested by the XSD are set to NA in ReadAcoustic()/ReadBiotic().
 
