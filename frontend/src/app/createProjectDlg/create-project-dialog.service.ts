@@ -3,15 +3,14 @@ import { DataService } from '../service/data.service';
 // import { Template } from '../data/Template';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CreateProjectDialogService {
-
   constructor() {}
 
   display: boolean = false;
 
   async showDialog() {
-      this.display = true;
+    this.display = true;
   }
 }

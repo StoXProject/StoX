@@ -18,21 +18,21 @@ import { MatTabGroup } from '@angular/material/tabs';
 import { PackageVersion } from './../data/PackageVersion';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
-import { ContextMenu } from 'primeng';
+import { ContextMenu } from 'primeng/contextmenu';
 
 @Component({
   selector: 'homeComponent',
   templateUrl: './home.html',
-  styleUrls: ['./home.scss']
+  styleUrls: ['./home.scss'],
 })
-
 export class HomeComponent /*implements OnInit, OnDestroy*/ {
-  @ViewChild("bottomTabGroup") bottomTabGroup: MatTabGroup;
-  @ViewChild("cm") cm: ContextMenu;
+  @ViewChild('bottomTabGroup') bottomTabGroup: MatTabGroup;
+  @ViewChild('cm') cm: ContextMenu;
 
   title = 'StoX';
   stoxVersion: string;
-  constructor(private rConnectionDlgService: RConnectionDlgService,
+  constructor(
+    private rConnectionDlgService: RConnectionDlgService,
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
     public ps: ProjectService,
@@ -41,7 +41,11 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     private installRPackagesDlgService: InstallRPackagesDlgService,
     private ds: DataService
   ) {
-    ps.bottomViewActivator.subscribe({ next: (idx) => { this.bottomTabGroup.selectedIndex = idx; } })
+    ps.bottomViewActivator.subscribe({
+      next: idx => {
+        this.bottomTabGroup.selectedIndex = idx;
+      },
+    });
     // document.addEventListener('touchstart', function(){}, {passive: false});
   }
   items?: MenuItem[];
@@ -50,23 +54,24 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     await this.ds.resetProject(this.ps.selectedProject.projectPath, false, false).toPromise();
   }*/
   @HostListener('window:beforeunload', ['$event'])
-  async unloadHandler(event: any) {
-  }
+  async unloadHandler(event: any) {}
 
   getPropertiesHdr() {
-    return "Properties" + (this.ps.selectedProcess != null ? (" - " + this.ps.selectedProcess.processName) : '');
+    return 'Properties' + (this.ps.selectedProcess != null ? ' - ' + this.ps.selectedProcess.processName : '');
   }
 
   async ngOnInit() {
-    console.log("> " + "Home init")
-    this.stoxVersion = await this.ds.getStoxVersion().toPromise()/*'2.9.17'*/;
-    this.items = [/*{
+    console.log('> ' + 'Home init');
+    this.stoxVersion = await this.ds.getStoxVersion().toPromise() /*'2.9.17'*/;
+    this.items = [
+      /*{
       label: 'R connection...', command: e => this.rConnectionDlgService.showDialog()
-    }*/];
+    }*/
+    ];
     //if (this.ps.rAvailable) {
     //this.items.push(...[]);
-    this.m_isDesktop = "true" == await this.ds.isdesktop().toPromise();
-    console.log("> " + "isdesktop=" + typeof (this.m_isDesktop))
+    this.m_isDesktop = 'true' == (await this.ds.isdesktop().toPromise());
+    console.log('> ' + 'isdesktop=' + typeof this.m_isDesktop);
     //   }
   }
 
@@ -84,7 +89,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.ps.save();
   }
   saveProjectAs() {
-    this.saveProjectAsService.show()
+    this.saveProjectAsService.show();
   }
   resetProject() {
     this.resetProjectService.checkSaved();
@@ -97,7 +102,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     return this.ps.selectedProject != null;
   }
   isSaved(): boolean {
-    return !this.isProjectSelected() || this.ps.selectedProject.saved
+    return !this.isProjectSelected() || this.ps.selectedProject.saved;
   }
   async stoxHome() {
     await this.ds.stoxHome().toPromise();
@@ -115,57 +120,55 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   async installRstoxFramework() {
     this.installRPackagesDlgService.showDialog();
   }
-  
+
   getStoXVersionColor() {
-    return this.ps.isOfficialStoXVersion ? "black" : "rgb(255,30,78)"; 
-}
+    return this.ps.isOfficialStoXVersion ? 'black' : 'rgb(255,30,78)';
+  }
 
   getPackageColorMain(packages: PackageVersion[]) {
     let maxStatus = 0;
-    
-    if(packages) {
+
+    if (packages) {
       maxStatus = 0;
-      // Loop through the packages: 
-      for(let i = 0; i< packages.length; i++) {
+      // Loop through the packages:
+      for (let i = 0; i < packages.length; i++) {
         // If the package does not exist, return status 3:
-        if(packages[i] == null) {
+        if (packages[i] == null) {
           maxStatus = 3;
         }
         // Otherwise get the status as maxStatus if larger:
-        else if(packages[i].status > maxStatus) {
+        else if (packages[i].status > maxStatus) {
           maxStatus = packages[i].status;
         }
       }
-    }
-    else {
+    } else {
       maxStatus = 3;
     }
-    
+
     return maxStatus > 1 ? 'grey' : maxStatus == 1 ? 'rgb(255,30,78)' : 'black';
   }
-
 
   getPackageColor(pkg: PackageVersion) {
     return pkg == null || pkg.status > 1 ? 'grey' : pkg.status == 1 ? 'rgb(255,30,78)' : 'black';
   }
 
   getMainPackageDescr() {
-    return " / " + this.getPackageDescr(this.ps.rstoxPackages != null ? this.ps.rstoxPackages[0] : null, false);
+    return ' / ' + this.getPackageDescr(this.ps.rstoxPackages != null ? this.ps.rstoxPackages[0] : null, false);
   }
-  getPackageDescr(pkg: PackageVersion, withVersion : boolean = true) {
+  getPackageDescr(pkg: PackageVersion, withVersion: boolean = true) {
     //console.log("> " + "getPackageDescr:" + pkg)
-    return pkg == null ? "Loading..." : pkg.packageName + (withVersion ? " " + pkg.version : "");
+    return pkg == null ? 'Loading...' : pkg.packageName + (withVersion ? ' ' + pkg.version : '');
   }
 
   myFunction() {
-    var popup = document.getElementById("myPopup");
-    popup.classList.toggle("show");
+    var popup = document.getElementById('myPopup');
+    popup.classList.toggle('show');
   }
   @HostListener('document:mousedown', ['$event'])
   onMouseDown(event) {
-    var popup = document.getElementById("myPopup");
-    if (popup.classList.contains("show") && !event.target.classList.contains("popup")) {
-      popup.classList.remove("show");
+    var popup = document.getElementById('myPopup');
+    if (popup.classList.contains('show') && !event.target.classList.contains('popup')) {
+      popup.classList.remove('show');
       event.preventDefault();
     }
   }

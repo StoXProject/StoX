@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root',
 })
 export class SaveAsProjectDlgService {
-    public display: boolean = false;
-    
-    async show() {    
+  public display: boolean = false;
 
-        this.display = true;
-    }
+  async show() {
+    this.display = true;
+  }
 }

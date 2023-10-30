@@ -49,14 +49,14 @@ const proj4 = (proj4x as any).default;
 import { get as getProjection, getTransform } from 'ol/proj';
 import { Coordinate } from 'ol/coordinate';
 import { SubjectAction } from '../data/subjectaction';
-import { ContextMenu, MenuItem } from 'primeng';
+import { ContextMenu } from 'primeng/contextmenu';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+  styleUrls: ['./map.component.scss'],
 })
-
 export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   @ViewChild('tooltip', { static: false }) tooltip: ElementRef;
   @Input() cm: ContextMenu;
@@ -77,25 +77,29 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   stratumModify: Modify;
   stratumDraw: Draw;
   overlay: Overlay;
-  private m_Tool: string = "freemove";
+  private m_Tool: string = 'freemove';
   proj = 'StoX_001_LAEA';
-  currentLAEAOrigin : Coordinate // the origin for the current dynamic LAEA
-  mapInfo : MapInfo;
+  currentLAEAOrigin: Coordinate; // the origin for the current dynamic LAEA
+  mapInfo: MapInfo;
   contextMenu: MenuItem[];
-  
-  constructor(private dataService: DataService, private ps: ProjectService, private pds: ProcessDataService, private dialog: MatDialog) {
+
+  constructor(
+    private dataService: DataService,
+    private ps: ProjectService,
+    private pds: ProcessDataService,
+    private dialog: MatDialog
+  ) {}
+
+  getProj(): string {
+    return this.proj;
   }
-  
-    getProj(): string {
-      return this.proj;
-    }
-    resetInteraction() {
-      this.tool = 'freemove';
-    }
-    stratumExists(stratum : string) : boolean {
-      return this.pds.stratum.includes(stratum);
-    }
-    
+  resetInteraction() {
+    this.tool = 'freemove';
+  }
+  stratumExists(stratum: string): boolean {
+    return this.pds.stratum.includes(stratum);
+  }
+
   /*@HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     console.log(event);
@@ -109,36 +113,38 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     // }
   }*/
   tools = [
-    { tool: "freemove", iclass: "freemoveicon" },
-    { tool: "stratum-edit", iclass: "editicon" },
-    { tool: "stratum-add", iclass: "addicon" }/*,
-    { tool: "stratum-delete", iclass: "deleteicon" }*/
-
+    { tool: 'freemove', iclass: 'freemoveicon' },
+    { tool: 'stratum-edit', iclass: 'editicon' },
+    { tool: 'stratum-add', iclass: 'addicon' } /*,
+    { tool: "stratum-delete", iclass: "deleteicon" }*/,
   ];
   projectionsMenu = [
     {
-      label: 'Lambert Azimuthal Equal Area Projection', command: e => {
+      label: 'Lambert Azimuthal Equal Area Projection',
+      command: e => {
         this.setProjectionProj4('StoX_001_LAEA');
         this.updateMapInfoInBackend();
-      }
+      },
     },
     {
-      label: 'Equirectangular Projection', command: e => {
+      label: 'Equirectangular Projection',
+      command: e => {
         this.setProjectionProj4('StoX_002_Geographical');
         this.updateMapInfoInBackend();
-      }
-    }
+      },
+    },
   ];
 
   public getToolEnabled(tool: string): boolean {
     switch (tool) {
-      case "freemove": return true;
-      case "stratum-edit":
-        return this.ps.iaMode == "stratum" && this.stratumSelect != null && this.stratumModify != null;
-      case "stratum-add":
-        return this.ps.iaMode == "stratum" && this.stratumDraw != null;
-      case "stratum-delete":
-        return this.ps.iaMode == "stratum" && this.stratumDraw != null /**stratum layer is initiated */;
+      case 'freemove':
+        return true;
+      case 'stratum-edit':
+        return this.ps.iaMode == 'stratum' && this.stratumSelect != null && this.stratumModify != null;
+      case 'stratum-add':
+        return this.ps.iaMode == 'stratum' && this.stratumDraw != null;
+      case 'stratum-delete':
+        return this.ps.iaMode == 'stratum' && this.stratumDraw != null /**stratum layer is initiated */;
     }
     return false;
   }
@@ -146,20 +152,19 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   // set accessor for tool
   set tool(tool: string) {
     this.m_Tool = tool;
-    console.log("setting tool: " + tool);
+    console.log('setting tool: ' + tool);
     this.resetInteractions();
     switch (tool) {
-      case "stratum-edit":
+      case 'stratum-edit':
         this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
         break;
-      case "stratum-add":
+      case 'stratum-add':
         if (this.map != null && this.map.getInteractions() != null && this.stratumDraw != null) {
           this.map.getInteractions().extend([this.stratumDraw]);
         }
         //console.log("add stratum");//this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
         break;
       default:
-
     }
   }
 
@@ -178,21 +183,21 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       this.map.getInteractions().remove(this.stratumModify);
     }
   }
-  
-  projectionCenter(){
-    console.log("Projection center")
+
+  projectionCenter() {
+    console.log('Projection center');
   }
-  
+
   getNumLayersWithLayerType(lt): number {
     return []
       .concat(...Array.from(this.layerMap.values())) // flatting by concatinated spread elements
-      .filter(l => l.get("layerType") == lt).length; // filter and count up
+      .filter(l => l.get('layerType') == lt).length; // filter and count up
   }
 
   addLayerToProcess(pid: string, l: Layer) {
     let la = this.layerMap.get(pid);
     if (la == null) {
-      la = []; 
+      la = [];
       this.layerMap.set(pid, la);
     }
     la.push(l);
@@ -213,7 +218,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     });
   }
 
-  removeLayersByProcessId(id : string) {
+  removeLayersByProcessId(id: string) {
     if (id != null) {
       let la = this.layerMap.get(id);
       if (la != null) {
@@ -223,35 +228,34 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     }
   }
 
-
   setProjectionProj4(newProjCode, cnt = null) {
     var newProj = getProjection(newProjCode);
-    console.log("newProjCode: " + newProjCode, ", newProj: " + newProj + ", this.proj: " + this.proj)
-    let zoom = this.map.getView()?.getZoom(); 
-    console.log("Existing Zoom: " + zoom);
-    if(zoom == null) {
+    console.log('newProjCode: ' + newProjCode, ', newProj: ' + newProj + ', this.proj: ' + this.proj);
+    let zoom = this.map.getView()?.getZoom();
+    console.log('Existing Zoom: ' + zoom);
+    if (zoom == null) {
       // Set default zoom if not existing
-      zoom = this.mapInfo.zoom
-      console.log("Zoom: " + zoom);
+      zoom = this.mapInfo.zoom;
+      console.log('Zoom: ' + zoom);
     }
-    let center : Coordinate
-    if(cnt != null) {
+    let center: Coordinate;
+    if (cnt != null) {
       center = cnt;
     } else {
       center = this.map.getView()?.getCenter();
-      if(center == null) {
-        center = this.mapInfo.origin//getCenter(newProj.getExtent())
-        console.log("Get view center from middle of projection extent: " + center);
+      if (center == null) {
+        center = this.mapInfo.origin; //getCenter(newProj.getExtent())
+        console.log('Get view center from middle of projection extent: ' + center);
       } else {
-        center = transform(center, this.proj, newProjCode)
+        center = transform(center, this.proj, newProjCode);
         //console.log("Transformed view center from previous projection: " + center);
-      } 
+      }
     }
-    
+
     var newView = new OlView({
       projection: newProj,
-      center: center,//fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
-      zoom: zoom//,
+      center: center, //fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
+      zoom: zoom, //,
       //extent: newProjExtent || undefined
     });
     this.map.setView(newView);
@@ -259,55 +263,53 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     //this.map.getLayers().forEach(l=>this.map.removeLayer(l));
     this.map.removeLayer(this.grid);
     // this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
-    if(this.proj != newProjCode) {
-      console.log("Converting features from " + this.proj + " to " + newProjCode)
-      this.map.getLayers().forEach(l => (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures()
-        .forEach(f => {
-          f.getGeometry().transform(this.proj, newProjCode)
-        }));
+    if (this.proj != newProjCode) {
+      console.log('Converting features from ' + this.proj + ' to ' + newProjCode);
+      this.map.getLayers().forEach(l =>
+        (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures().forEach(f => {
+          f.getGeometry().transform(this.proj, newProjCode);
+        })
+      );
     }
-    let centerLongitude : number = 0//this.mapInfo.origin[0]
+    let centerLongitude: number = 0; //this.mapInfo.origin[0]
     this.grid = MapSetup.getGridLayer(newProjCode, centerLongitude);
     this.map.addLayer(this.grid);
 
     this.proj = newProjCode;
   }
 
-
-  initProjections(origin : Coordinate) {
+  initProjections(origin: Coordinate) {
     clearAllProjections();
-  //  console.log("origin: " + origin)
+    //  console.log("origin: " + origin)
     //origin = [0,0]
-    if(this.currentLAEAOrigin == null) {
+    if (this.currentLAEAOrigin == null) {
       this.currentLAEAOrigin = origin;
     }
     proj4.defs('StoX_001_LAEA', '+proj=laea +lat_0=' + origin[1] + ' +lon_0=' + origin[0] + ' +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
     proj4.defs('StoX_001_LAEA_PREV', '+proj=laea +lat_0=' + this.currentLAEAOrigin[1] + ' +lon_0=' + this.currentLAEAOrigin[0] + ' +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs');
-    this.currentLAEAOrigin = origin
+    this.currentLAEAOrigin = origin;
     proj4.defs('StoX_002_Geographical', '+proj=longlat +ellps=WGS84 +units=degrees +no_defs');
     register(proj4);
-    var StoX_001_LAEA = getProjection('StoX_001_LAEA'); 
+    var StoX_001_LAEA = getProjection('StoX_001_LAEA');
     //StoX_001_LAEA.setExtent(transformExtent([-80, -70, +100, +80], 'EPSG:4326', 'StoX_001_LAEA'));
   }
-  
+
   async updateMapInfoInBackend() {
     this.mapInfo.zoom = this.map.getView().getZoom();
     this.mapInfo.origin = this.currentLAEAOrigin;
-    this.mapInfo.projection = this.proj; 
+    this.mapInfo.projection = this.proj;
     //console.log("MapInfo:" + JSON.stringify(this.mapInfo))
     await this.dataService.setMapInfo(this.mapInfo).toPromise();
   }
-  
-  async ngOnInit() {
 
-    console.log("get mapinfo from backend")
-    this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise());// {zoom:2.3, origin:[10,60], projection:''};
+  async ngOnInit() {
+    console.log('get mapinfo from backend');
+    this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise()); // {zoom:2.3, origin:[10,60], projection:''};
     //console.log("MapInfo:" + JSON.stringify(this.mapInfo))
 
-    console.log("init projections")
-    this.initProjections(this.mapInfo.origin); 
-    
-    
+    console.log('init projections');
+    this.initProjections(this.mapInfo.origin);
+
     /*var StoX_002_BarentsSea = getProjection('StoX_002_BarentsSea');
     StoX_002_BarentsSea.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'StoX_002_BarentsSea'));
     
@@ -323,17 +325,15 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     var StoX_006_Geographical = getProjection('StoX_006_Geographical');
     StoX_006_Geographical.setExtent(transformExtent([-180, -90, 180, 90], 'EPSG:4326', 'StoX_006_Geographical'));
     */
-    
 
-
-    console.log("Creating coastline")
+    console.log('Creating coastline');
     this.coastLine = new Vector({
       source: new Source({
         //url: 'assets/landflate_verden.json',
         url: 'assets/landflate_verden_gap180.json',
-        //url: 'assets/World_polygons.json', 
-        //url: 'assets/World_polygons_susbset.json', 
-        
+        //url: 'assets/World_polygons.json',
+        //url: 'assets/World_polygons_susbset.json',
+
         format: new TopoJSON({
           // don't want to render the full world polygon (stored as 'land' layer),
           // which repeats all countries
@@ -343,9 +343,8 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
         overlaps: false,
       }),
       style: MapSetup.getMapStyle(),
-      zIndex: 11
+      zIndex: 11,
     });
-
 
     /*this.layer = new OlTileLayer({
       source: this.source
@@ -357,21 +356,21 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
        projection: this.proj,
        zoom: 2,
      });*/
-     console.log("Creating map")
+    console.log('Creating map');
     this.map = new OlMap({
       target: 'map',
       //layers: [this.grid, this.coastLine],
       //  view: this.view,
-      controls: [MapSetup.getMousePositionControl()]
+      controls: [MapSetup.getMousePositionControl()],
     });
 
-    console.log("Create overlay " + this.map)
+    console.log('Create overlay ' + this.map);
     this.overlay = new Overlay({
       element: this.tooltip.nativeElement,
       offset: [10, 0],
-      positioning: "center-left"
+      positioning: 'center-left',
     });
-    if(this.map != null) {
+    if (this.map != null) {
       this.map.addOverlay(this.overlay);
     }
 
@@ -386,92 +385,100 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     this.ps.processSubject.subscribe({
       next: (action: SubjectAction) => {
         switch (action.action) {
-          case "remove": {
-            console.log("remove process - handle in map, id: " + action.data)
+          case 'remove': {
+            console.log('remove process - handle in map, id: ' + action.data);
             this.removeLayersByProcessId(action.data);
             break;
           }
-          case "activate": {
+          case 'activate': {
             // TODO: implement interactive mode handling and remove iamodesubject
             break;
           }
         }
-      }
-    })
+      },
+    });
     this.ps.iaModeSubject.subscribe(iaMode => {
       this.handleIaMode(iaMode, this.proj);
     });
 
     this.pds.processDataSubject.subscribe(async evt => {
       switch (evt) {
-        case "acousticPSU": {
-          this.map.getLayers().getArray()
-            .filter(l => l.get("layerType") == "EDSU")
+        case 'acousticPSU': {
+          this.map
+            .getLayers()
+            .getArray()
+            .filter(l => l.get('layerType') == 'EDSU')
             .map(l => <VectorSource>(<Layer>l).getSource())
-            .forEach(s => s.getFeatures()
-              .forEach(f => {
-                let edsu: string = f.get("EDSU");
+            .forEach(s =>
+              s.getFeatures().forEach(f => {
+                let edsu: string = f.get('EDSU');
                 let edsupsu: EDSU_PSU = this.pds.acousticPSU != null && this.pds.acousticPSU.EDSU_PSU != null ? this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu) : null;
                 // Connect EDSU_PSU to feature
                 if (this.pds.acousticPSU != null && this.pds.acousticPSU.EDSU_PSU != null && edsupsu == null) {
-                  console.log("edsu " + edsu + " not mapped");
+                  console.log('edsu ' + edsu + ' not mapped');
                 }
-                f.set("edsupsu", edsupsu);
+                f.set('edsupsu', edsupsu);
                 // Get default any selection (not focused by user):
                 MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
               })
-            )
+            );
           break;
         }
-        case "bioticAssignmentData": {
+        case 'bioticAssignmentData': {
           this.updateStationSelection();
           break;
         }
-        case "changedEDSU":
-        case "selectedPSU": {
+        case 'changedEDSU':
+        case 'selectedPSU': {
           switch (this.ps.iaMode) {
-            case "bioticAssignment": {
+            case 'bioticAssignment': {
               this.updateStationSelection();
               // drop to EDSU selection to get EDSU focus change
             }
-            case "acousticPSU": {
-              this.map.getLayers().getArray()
-                .filter(l => l.get("layerType") == "EDSU")
+            case 'acousticPSU': {
+              this.map
+                .getLayers()
+                .getArray()
+                .filter(l => l.get('layerType') == 'EDSU')
                 .map(l => <VectorSource>(<Layer>l).getSource())
-                .forEach(s => s.getFeatures()
-                  .forEach(f => {
+                .forEach(s =>
+                  s.getFeatures().forEach(f => {
                     // selected PSU.
                     MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-                  }))
+                  })
+                );
               break;
             }
           }
           break;
         }
-        case "selectedStratum": {
+        case 'selectedStratum': {
           // Remove the check for iamode to update selected when always changed
-          let handleStratumSelection : Boolean = false;
+          let handleStratumSelection: Boolean = false;
           switch (this.ps.iaMode) {
-            case "stratum": 
-            case "acousticPSU": 
-            case "bioticAssignment": {
+            case 'stratum':
+            case 'acousticPSU':
+            case 'bioticAssignment': {
               handleStratumSelection = true;
               break;
             }
             default:
               handleStratumSelection = this.pds.selectedStratum == null;
           }
-          if(handleStratumSelection) {
-            this.map.getLayers().getArray()
-            .filter(l => l.get("layerType") == "stratum")
-            .map(l => <VectorSource>(<Layer>l).getSource())
-            .forEach(s => s.getFeatures()
-              .forEach(f => {
-                // selected PSU.
-                MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
-              }))
+          if (handleStratumSelection) {
+            this.map
+              .getLayers()
+              .getArray()
+              .filter(l => l.get('layerType') == 'stratum')
+              .map(l => <VectorSource>(<Layer>l).getSource())
+              .forEach(s =>
+                s.getFeatures().forEach(f => {
+                  // selected PSU.
+                  MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
+                })
+              );
           }
-          break; 
+          break;
         }
       }
     });
@@ -484,36 +491,36 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
         if (l == null || f == null) {
           return;
         }
-        let layerType: string = l.get("layerType");
-        if (this.ps.iaMode == "acousticPSU" && layerType == "EDSU" ||
-          this.ps.iaMode == "bioticAssignment" && layerType == "station") {
+        let layerType: string = l.get('layerType');
+        if ((this.ps.iaMode == 'acousticPSU' && layerType == 'EDSU') || (this.ps.iaMode == 'bioticAssignment' && layerType == 'station')) {
           farr.push(<Feature>f);
         }
       });
       // handle the top feature only.
-      farr.sort((a: Feature, b: Feature) => (<Layer>a.get("layer")).getZIndex() -
-        (<Layer>b.get("layer")).getZIndex()).slice(0, 1).
-        forEach(async f => {
-          let l: Layer = <Layer>f.get("layer");
-          console.log("Z index: " + l.getZIndex());
-          let fe: Feature = (<Feature>f);
+      farr
+        .sort((a: Feature, b: Feature) => (<Layer>a.get('layer')).getZIndex() - (<Layer>b.get('layer')).getZIndex())
+        .slice(0, 1)
+        .forEach(async f => {
+          let l: Layer = <Layer>f.get('layer');
+          console.log('Z index: ' + l.getZIndex());
+          let fe: Feature = <Feature>f;
           if (this.pds.selectedPSU == null) {
             return;
           }
           switch (this.ps.iaMode) {
-            case "acousticPSU": {
+            case 'acousticPSU': {
               // Controlling focus.
               //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
-              let prevClickIndex = l.get("lastClickedIndex"); // handle range selection with respect to last clicked index
+              let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
               let clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
-              l.set("lastClickedIndex", clickedIndex);
+              l.set('lastClickedIndex', clickedIndex);
               if (!shiftKeyOnly(e) || prevClickIndex == null) {
                 prevClickIndex = clickedIndex;
               }
               let fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
-              let edsuPsu1: EDSU_PSU = fi1.get("edsupsu");
+              let edsuPsu1: EDSU_PSU = fi1.get('edsupsu');
               if (edsuPsu1 == null) {
-                console.log(fi1.get("EDSU") + " is missing edsu  for " + fi1.get("EDSU") + " layer " + l.get("name"));
+                console.log(fi1.get('EDSU') + ' is missing edsu  for ' + fi1.get('EDSU') + ' layer ' + l.get('name'));
               }
               let psuToUse: string = edsuPsu1.PSU;
               if (prevClickIndex == clickedIndex) {
@@ -524,7 +531,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
               let changedEDSUs: string[] = [];
               for (let idx: number = iFirst; idx <= iLast; idx++) {
                 let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
-                let edsuPsu: EDSU_PSU = fi.get("edsupsu");
+                let edsuPsu: EDSU_PSU = fi.get('edsupsu');
                 if (edsuPsu != null) {
                   if (edsuPsu.PSU != psuToUse) {
                     changedEDSUs.push(edsuPsu.EDSU);
@@ -535,22 +542,19 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
                 }
               }
               if (changedEDSUs.length > 0) {
-                let res: ActiveProcessResult = this.ps.handleAPI(psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs,
-                  this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
-                  await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath,
-                    this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+                let res: ActiveProcessResult = this.ps.handleAPI(psuToUse != null ? await this.dataService.addEDSU(psuToUse, changedEDSUs, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() : await this.dataService.removeEDSU(changedEDSUs, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
               }
               //l.changed();
               //(<VectorSource>l.getSource()).changed();
               break;
             }
-            case "bioticAssignment": {
+            case 'bioticAssignment': {
               let selected: boolean = MapSetup.isStationSelected(fe, this.pds);
               MapSetup.selectStation(fe, this.ps, this.pds, this.dataService, !selected);
               MapSetup.updateStationSelection(fe, this.pds);
               break;
             }
-          };
+          }
         });
     });
 
@@ -600,11 +604,11 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     });*/
     this.map.on('pointermove', e => this.displayTooltip(e));
     this.map.getViewport().addEventListener('contextmenu', evt => {
-        this.openCm(evt);
-    })
+      this.openCm(evt);
+    });
     this.map.getView().on('change:resolution', async evt => {
-        //console.log("Resolution changed - write to backend")
-        await this.updateMapInfoInBackend();
+      //console.log("Resolution changed - write to backend")
+      await this.updateMapInfoInBackend();
     });
 
     // Attempt to speed up zooming by only updating at move end, but it is not updateMapInfoInBackend that takes time:
@@ -612,44 +616,42 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     //  console.log("Resolution changed - write to backend")
     //  await this.updateMapInfoInBackend();
     //});
-
   } // end of ngOnInit()
 
   async handleIaMode(iaMode: string, proj) {
-    let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
+    let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + '-' + iaMode : null;
     this.resetInteractions();
     switch (iaMode) {
-      case "none": {
+      case 'none': {
         this.resetLayersToProcess(this.ps.activeProcessId);
         break;
       }
-      case "reset": {
+      case 'reset': {
         this.layerMap.forEach((value, key, map) => {
           value.forEach(l => this.map.removeLayer(l));
         });
         this.layerMap.clear();
         break;
       }
-      case "station": {
+      case 'station': {
         this.resetLayersToProcess(this.ps.activeProcessId);
         let data: { stationPoints: string; stationInfo: NamedStringTable; haulInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();
         let layerIdx = this.getNumLayersWithLayerType(iaMode);
         this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 300, data.stationPoints, proj, MapSetup.getStationPointStyleCache(layerIdx), false, 4, [data.stationInfo, data.haulInfo]));
         break;
       }
-      case "EDSU": {
+      case 'EDSU': {
         this.resetLayersToProcess(this.ps.activeProcessId);
-        let data: { EDSUPoints: string; EDSULines: string; EDSUInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+        let data: { EDSUPoints: string; EDSULines: string; EDSUInfo: NamedStringTable } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise(); //MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
         let layerIdx = this.getNumLayersWithLayerType(iaMode);
-        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + "line", 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle(layerIdx)], false, 2, []));
+        this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode + 'line', 200, data.EDSULines, proj, [MapSetup.getEDSULineStyle(layerIdx)], false, 2, []));
         this.addLayerToProcess(this.ps.activeProcessId, MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 210, data.EDSUPoints, proj, MapSetup.getEDSUPointStyleCache(layerIdx), false, 3, [data.EDSUInfo]));
         break;
       }
-      case "stratum": {
+      case 'stratum': {
         this.resetLayersToProcess(this.ps.activeProcessId);
-        let data: { stratumPolygon: string } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise();//MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
-        let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, data.stratumPolygon, proj, 
-          [MapSetup.getStratumStyle(), MapSetup.getFocusedStratumStyle()], false, 1, []);
+        let data: { stratumPolygon: string } = await this.dataService.getMapData(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.getActiveProcess().processID).toPromise(); //MapSetup.getGeoJSONLayerFromURL("strata", '/assets/test/strata_test.json', s2, false)
+        let layer: Layer = MapSetup.getGeoJSONLayerFromFeatureString(layerName, iaMode, 100, data.stratumPolygon, proj, [MapSetup.getStratumStyle(), MapSetup.getFocusedStratumStyle()], false, 1, []);
         this.addLayerToProcess(this.ps.activeProcessId, layer);
         this.stratumDraw = MapSetup.createStratumDrawInteraction(this.dialog, <VectorSource>layer.getSource(), this.dataService, this.ps, proj, this);
         break;
@@ -658,19 +660,17 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
         //this.map.removeLayer(this.map.getLayers()."station");
       }
     }
-    this.tool = "freemove";
+    this.tool = 'freemove';
   }
 
   ngAfterViewInit() {
     // was used before because tooltip overlay was inited here. Dont know why?
   }
 
-  onClick() {
-
-  }
+  onClick() {}
 
   onResized(event: ResizedEvent) {
-    if(this.map != null) {
+    if (this.map != null) {
       this.map.updateSize();
     }
   }
@@ -678,11 +678,11 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   getTooltip(obj) {
     let res: string = '';
     for (var key in obj) {
-      if (obj.hasOwnProperty(key) && typeof (obj[key]) != 'object') {
+      if (obj.hasOwnProperty(key) && typeof obj[key] != 'object') {
         if (res.length > 0) {
-          res += '<br>'
+          res += '<br>';
         }
-        res = res + key + ": " + obj[key];
+        res = res + key + ': ' + obj[key];
       }
     }
     return res;
@@ -692,33 +692,30 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     var features: Feature[] = [];
 
     this.map.forEachFeatureAtPixel(pixel, feature => {
-      let layer: Vector<any> = feature.get("layer");
-      if (layer != null && layer.get("hasTooltip")) {
-        features.push(<Feature>feature)
+      let layer: Vector<any> = feature.get('layer');
+      if (layer != null && layer.get('hasTooltip')) {
+        features.push(<Feature>feature);
       }
-    }
-    );
+    });
     features.sort((f1, f2) => {
-      return f2.get("layer").get("layerOrder") - f1.get("layer").get("layerOrder")
-    })
+      return f2.get('layer').get('layerOrder') - f1.get('layer').get('layerOrder');
+    });
     let feature: Feature = features.length > 0 ? features[0] : null;
     if (platformModifierKeyOnly(evt) && feature != null) {
-
       this.overlay.setPosition(evt.coordinate);
       this.tooltip.nativeElement.innerHTML = this.getTooltip(this.getTooltipProperties(feature));
       this.tooltip.nativeElement.style.display = '';
       return;
-
     }
     this.tooltip.nativeElement.style.display = 'none';
-  };
+  }
 
   private getTooltipProperties(feature: Feature): { [key: string]: any } {
     let res: NamedStringIndex = {};
-    let primaryIdx: NamedStringIndex = <NamedStringIndex>feature.get("primaryInfo");
-    let secondaryIdx: NamedStringIndex[] = <NamedStringIndex[]>feature.get("secondaryInfo");
+    let primaryIdx: NamedStringIndex = <NamedStringIndex>feature.get('primaryInfo');
+    let secondaryIdx: NamedStringIndex[] = <NamedStringIndex[]>feature.get('secondaryInfo');
     if (primaryIdx != null) {
-      Object.assign(res, primaryIdx); // 
+      Object.assign(res, primaryIdx); //
     }
     if (secondaryIdx != null && secondaryIdx.length == 1) {
       Object.assign(res, secondaryIdx[0]);
@@ -732,41 +729,44 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
    */
   private updateStationSelection() {
     let bioticAssignments: BioticAssignment[] = [];
-    if (this.ps.iaMode == "bioticAssignment" && this.pds.bioticAssignmentData != null && this.pds.selectedPSU != null) {
+    if (this.ps.iaMode == 'bioticAssignment' && this.pds.bioticAssignmentData != null && this.pds.selectedPSU != null) {
       bioticAssignments = this.pds.bioticAssignmentData.BioticAssignment.filter(ba => ba.PSU == this.pds.selectedPSU);
     }
-    this.map.getLayers().getArray()
-      .filter(l => l.get("layerType") == "station")
+    this.map
+      .getLayers()
+      .getArray()
+      .filter(l => l.get('layerType') == 'station')
       .map(l => <VectorSource>(<Layer>l).getSource())
-      .forEach(s => s.getFeatures()
-        .forEach(f => {
+      .forEach(s =>
+        s.getFeatures().forEach(f => {
           // selected PSU.
           MapSetup.updateStationSelection(f, this.pds);
-        }))
+        })
+      );
   }
 
   async prepCm() {
-    // comment: add list of outputtablenames to runModel result. 
+    // comment: add list of outputtablenames to runModel result.
     let m: MenuItem[] = [];
     if (true) {
       const originHandler = evt => {
-        if (this.proj=="StoX_001_LAEA") {
-          var  coords = this.map.getEventCoordinate(evt.originalEvent); 
-          console.log(coords)
+        if (this.proj == 'StoX_001_LAEA') {
+          var coords = this.map.getEventCoordinate(evt.originalEvent);
+          console.log(coords);
           coords = transform(coords, this.proj, 'EPSG:4326');
-          console.log(coords)
-          if(isNaN(coords[0]) || isNaN(coords[1])){
-            return  
+          console.log(coords);
+          if (isNaN(coords[0]) || isNaN(coords[1])) {
+            return;
           }
-          console.log("Init projection with new coords" + coords);
-          //this.setProjectionProj4('EPSG:4326'); 
+          console.log('Init projection with new coords' + coords);
+          //this.setProjectionProj4('EPSG:4326');
           this.initProjections(coords);
-          this.proj = "StoX_001_LAEA_PREV"
-          this.setProjectionProj4("StoX_001_LAEA", coords); 
+          this.proj = 'StoX_001_LAEA_PREV';
+          this.setProjectionProj4('StoX_001_LAEA', coords);
           this.updateMapInfoInBackend();
         }
       };
-      m.push({ label: 'Select projection origin', icon: 'rib absa originicon', command: originHandler.bind(this)});
+      m.push({ label: 'Select projection origin', icon: 'rib absa originicon', command: originHandler.bind(this) });
     }
     this.cm.model = m;
   }
@@ -777,7 +777,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     this.cm.show(event);
     return false;
   }
-
 }
 /*
 convert text delimited file with wkt geometry to arced topojson file

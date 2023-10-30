@@ -1,70 +1,70 @@
 /* Purchase the Designer API to get full access to the theme engine. */
 
 body {
-    .ui-button {
-        margin: 0;
-        color: $buttonTextColor;
-        background-color: $buttonBgColor;
-        border: $buttonBorder;
-        font-size: $fontSize;
-        @include transition($buttonTransition);
+  .p-button {
+    margin: 0;
+    color: $buttonTextColor;
+    background-color: $buttonBgColor;
+    border: $buttonBorder;
+    font-size: $fontSize;
+    @include transition($buttonTransition);
 
-        &:enabled:hover {
-            background-color: $buttonHoverBgColor;
-            color: $buttonHoverTextColor;
-            border-color: $buttonHoverBorderColor;
-        }
-
-        &:enabled:focus {
-            outline: $buttonFocusOutline;
-            outline-offset: $buttonFocusOutlineOffset;
-            background-color: darken($buttonHoverBgColor, 10%);
-        }
-
-        &:enabled:active  {
-            background-color: $buttonActiveBgColor;
-            color: $buttonActiveTextColor;
-            border-color: $buttonActiveBorderColor;
-        }
-
-        &.ui-button-text-only {
-            .ui-button-text {
-                padding: $buttonTextOnlyPadding;
-            }
-        }
-
-        &.ui-button-text-icon-left {
-            .ui-button-text {
-                padding: $buttonWithLeftIconPadding;
-            }
-        }
-
-        &.ui-button-text-icon-right {
-            .ui-button-text {
-                padding: $buttonWithRightIconPadding;
-            }
-        }
-
-        &.ui-button-icon-only {
-            width: $buttonIconOnlyWidth;
-
-            .ui-button-text {
-                padding: $buttonIconOnlyPadding;
-            }
-        }
-
-        &.ui-button-raised {
-            @include shadow($raisedButtonShadow);
-        }
-
-        &.ui-button-rounded {
-            @include border-radius($roundedButtonBorderRadius);
-        }
+    &:enabled:hover {
+      background-color: $buttonHoverBgColor;
+      color: $buttonHoverTextColor;
+      border-color: $buttonHoverBorderColor;
     }
 
-    .ui-fluid {
-        .ui-button-icon-only {
-            width: $buttonIconOnlyWidth;
-        }
+    &:enabled:focus {
+      outline: $buttonFocusOutline;
+      outline-offset: $buttonFocusOutlineOffset;
+      background-color: darken($buttonHoverBgColor, 10%);
     }
+
+    &:enabled:active {
+      background-color: $buttonActiveBgColor;
+      color: $buttonActiveTextColor;
+      border-color: $buttonActiveBorderColor;
+    }
+
+    &.p-button-text-only {
+      .p-button-text {
+        padding: $buttonTextOnlyPadding;
+      }
+    }
+
+    &.p-button-text-icon-left {
+      .p-button-text {
+        padding: $buttonWithLeftIconPadding;
+      }
+    }
+
+    &.p-button-text-icon-right {
+      .p-button-text {
+        padding: $buttonWithRightIconPadding;
+      }
+    }
+
+    &.p-button-icon-only {
+      width: $buttonIconOnlyWidth;
+
+      .p-button-text {
+        padding: $buttonIconOnlyPadding;
+      }
+    }
+
+    &.p-button-raised {
+      @include shadow($raisedButtonShadow);
+    }
+
+    &.p-button-rounded {
+      @include border-radius($roundedButtonBorderRadius);
+    }
+  }
+
+  .p-fluid {
+    .p-button-icon-only {
+      width: $buttonIconOnlyWidth;
+    }
+  }
 }

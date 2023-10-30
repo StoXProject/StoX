@@ -1,9 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 /* You can add global styles to this file, and also import other style files */
-@import "assets/hi-theme-primeng/hi-primeng.scss";
-@import "material-icons/iconfont/material-icons.css";
+@import 'assets/hi-theme-primeng/hi-primeng.scss';
+@import 'material-icons/iconfont/material-icons.css';
 //@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
 //@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
 //@import '~@angular/material/prebuilt-themes/purple-green.css';
 
@@ -24,8 +24,8 @@ $waiting: #f9d457;
 $unknown: #ad75cc;
 $nodata: #acacac;
 
-.ui-accordion {
-  .ui-accordion-header {
+.p-accordion {
+  .p-accordion-header {
     background-color: rgb(213, 213, 213) !important;
     color: black !important;
     a {
@@ -40,30 +40,30 @@ $nodata: #acacac;
       color: black !important;
     }
   }
-  .ui-accordion-content {
+  .p-accordion-content {
     padding: 0 !important;
     font-size: $fontSize !important;
     border: none !important;
   }
 }
 
-.ui-listbox {
+.p-listbox {
   padding: 0 !important;
   width: 100% !important;
   height: 100% !important;
   box-sizing: content-box !important;
   border: none !important;
-  .ui-listbox-list-wrapper {
+  .p-listbox-list-wrapper {
     width: 100% !important;
     height: 100% !important;
-    .ui-listbox-list {
+    .p-listbox-list {
       width: 100% !important;
       height: 100% !important;
       overflow-y: auto !important;
     }
   }
 }
-.ui-listbox-item {
+.p-listbox-item {
   padding-left: 0.4rem !important;
   padding-top: 2px !important;
   padding-bottom: 2px !important;
@@ -76,20 +76,20 @@ $nodata: #acacac;
   white-space: nowrap;
 }
 
-.ui-listbox-item:focus,
-.ui-menuitem-link,
-.ui-treenode-content:focus {
+.p-listbox-item:focus,
+.p-menuitem-link,
+.p-treenode-content:focus {
   outline: none !important; // prevent webkit :focus outline.
   box-shadow: none !important; // add by primeng
   white-space: nowrap;
 }
 
-.ui-menuitem-icon {
+.p-menuitem-icon {
   margin-left: 0.2em;
 }
 
 // tabview
-.ui-tabmenu {
+.p-tabmenu {
   padding: 0 !important;
   margin: 0 !important;
   width: 100% !important;
@@ -100,7 +100,7 @@ $nodata: #acacac;
   color: black !important;
   //display: inline-block;
 
-  .ui-tabmenu-nav {
+  .p-tabmenu-nav {
     background-color: rgb(240, 240, 240) !important;
     //height: 1.5rem;
     // inline/nowrap
@@ -110,7 +110,7 @@ $nodata: #acacac;
     overflow: hidden;
     line-height: 0;
     padding: 1px !important;
-    .ui-tabmenuitem {
+    .p-tabmenuitem {
       padding: 0 !important;
       margin: 0 !important;
       // border: none !important;
@@ -120,11 +120,11 @@ $nodata: #acacac;
       display: inline-block;
       float: none;
       line-height: 1rem;
-      .ui-menuitem-link {
+      .p-menuitem-link {
         padding: 0.1em 0.4em !important;
         margin: 0 !important;
         color: black !important;
-        .ui-menuitem-text {
+        .p-menuitem-text {
           color: black !important;
           font-weight: 600;
           font-size: 0.75rem;
@@ -134,7 +134,7 @@ $nodata: #acacac;
     }
   }
 }
-.ui-tree {
+.p-tree {
   border: none !important;
   margin: 1px !important;
   padding: 0 !important;
@@ -142,36 +142,36 @@ $nodata: #acacac;
   width: inherit !important;
   //overflow-y: scroll;
 }
-.ui-treenode-label,
-.ui-treenode,
-.ui-tree-container {
+.p-treenode-label,
+.p-treenode,
+.p-tree-container {
   padding: 0 !important;
 }
 
-.ui-treenode-content:focus {
+.p-treenode-content:focus {
   outline: none;
 }
-.ui-contextmenu .ui-menuitem-link {
+.p-contextmenu .p-menuitem-link {
   padding: 0 20px 0 0 !important ;
   text-decoration: none !important;
-  .ui-menuitem-text {
+  .p-menuitem-text {
     font-size: 0.75rem;
   }
 }
-.ui-menu {
+.p-menu {
   width: unset;
-  .ui-menuitem-link {
+  .p-menuitem-link {
     padding: 2px 2px 2px 2px !important;
   }
-  .ui-menuitem-text {
+  .p-menuitem-text {
     white-space: nowrap;
   }
 }
-//.ui-menuitem-link {
+//.p-menuitem-link {
 //white-space: nowrap !important;
 //display: inline-block !important;
 //}
-.ui-submenu-list {
+.p-submenu-list {
   //padding: 0 20px 0 0 !important ;
   width: unset !important;
   bottom: unset !important;
@@ -181,7 +181,7 @@ $nodata: #acacac;
   left: 100% !important;
 }
 
-.ui-toolbar {
+.p-toolbar {
   padding: 1px !important;
   background-color: rgb(240, 240, 240) !important;
   border: 1px solid #d3d4d4 !important;
@@ -201,7 +201,7 @@ $nodata: #acacac;
   }
 }
 
-.ui-tooltip  {
+.p-tooltip {
   //left: auto!important;
   overflow-wrap: break-word;
 }
@@ -210,7 +210,7 @@ button:focus,
 input:focus {
   outline: none !important;
 }
-.ui-tabview {
+.p-tabview {
   padding: 0 !important;
   margin: 0 !important;
   width: 100% !important;
@@ -219,10 +219,10 @@ input:focus {
   border: none !important;
   user-select: none !important;
 
-  .ui-tabview-title {
+  .p-tabview-title {
     font-size: 0.75rem;
   }
-  .ui-tabview-nav {
+  .p-tabview-nav {
     background-color: rgb(240, 240, 240) !important;
     height: 1.5rem;
     border: 1px solid #d3d4d4 !important;
@@ -236,12 +236,12 @@ input:focus {
     }
   }
 
-  .ui-tabview-panel {
+  .p-tabview-panel {
     //padding: 0;
     width: inherit;
     height: 100%;
   }
-  .ui-tabview-panels {
+  .p-tabview-panels {
     padding: 0px !important;
     width: 100% !important;
     //display: table-cell !important;
@@ -250,12 +250,12 @@ input:focus {
     height: calc(100% - 1.5rem);
     //width: 100%;
     //overflow-y: scroll;
-    .ui-tabview-panel {
+    .p-tabview-panel {
       //padding: 0;
       //height:100%;
       //border: none;
       //overflow: scroll;
-      .ui-toolbar {
+      .p-toolbar {
         padding: 0px;
         background-color: $menuColor;
         border: none;
@@ -299,18 +299,18 @@ input:focus {
   }
 }
 
-/*.ui-listbox-item {
+/*.p-listbox-item {
     padding: .1em  !important;
     margin: 0 !important;
     //background-color: white !important;
 }
-.ui-listbox .ui-listbox-list-wrapper {
+.p-listbox .p-listbox-list-wrapper {
     overflow-y:scroll  !important;
     overflow-x:auto  !important;
     height: 100% !important;
 }*/
 
-//.ui-widget, .ui-widget .ui-widget {    font-size: $fontSize !important;}
+//.p-component, .p-component .p-component {    font-size: $fontSize !important;}
 
 .as-split-area {
   overflow-y: hidden !important;
@@ -341,7 +341,7 @@ input:focus {
 }
 
 @mixin icon_content($content, $fontSize, $color, $shadow: false) {
-  font-family: "FontAwesome";
+  font-family: 'FontAwesome';
   content: $content;
   font-size: $fontSize !important;
   line-height: 1rem;
@@ -352,66 +352,65 @@ input:focus {
 }
 
 .processicon:before {
-  @include icon_content("\f013", 1rem, rgb(145, 173, 131), true);
+  @include icon_content('\f013', 1rem, rgb(145, 173, 131), true);
   left: 0px;
   top: 0px;
   position: relative;
 }
 
 .addprocessicon:before {
-  @include icon_content("\f013", 1rem, rgb(145, 173, 131), true);
+  @include icon_content('\f013', 1rem, rgb(145, 173, 131), true);
 }
 
 .addprocessicon:after {
-  @include icon_content("\f067", 0.6rem, rgb(83, 39, 88), true);
+  @include icon_content('\f067', 0.6rem, rgb(83, 39, 88), true);
   top: 20%;
   left: 80%;
 }
 
 .inactiveprocessicon:before {
-  @include icon_content("\f013", 1rem, rgb(218, 219, 217), true);
+  @include icon_content('\f013', 1rem, rgb(218, 219, 217), true);
   left: 0px;
   top: 0px;
   position: relative;
 }
 
-
 .stratumicon:before {
-  @include icon_content("\f00a", 1rem, rgb(145, 173, 131), true);
+  @include icon_content('\f00a', 1rem, rgb(145, 173, 131), true);
 }
 
 .psuicon:before {
-  @include icon_content("\f03a", 1rem, rgb(145, 173, 131), true);
+  @include icon_content('\f03a', 1rem, rgb(145, 173, 131), true);
 }
 
 .interactiveicon:after {
-  @include icon_content("\f111", 0.34rem, rgb(77, 94, 69));
+  @include icon_content('\f111', 0.34rem, rgb(77, 94, 69));
 }
 
 .inactiveinteractiveicon:after {
-  @include icon_content("\f111", 0.34rem, rgb(161, 161, 161));
+  @include icon_content('\f111', 0.34rem, rgb(161, 161, 161));
 }
 
 .mapicon:after {
-  @include icon_content("\f0ac", 0.5rem, rgb(21, 40, 216));
+  @include icon_content('\f0ac', 0.5rem, rgb(21, 40, 216));
   top: 20%;
   left: 20%;
 }
 
 .inactivemapicon:after {
-  @include icon_content("\f0ac", 0.5rem, rgb(95, 96, 104));
+  @include icon_content('\f0ac', 0.5rem, rgb(95, 96, 104));
   top: 20%;
   left: 20%;
 }
 
 .globeicon:after {
-  @include icon_content("\f0ac", 0.9rem, rgb(21, 40, 216));
+  @include icon_content('\f0ac', 0.9rem, rgb(21, 40, 216));
   top: 10%;
   left: 50%;
 }
 
 .runicon:before {
-  @include icon_content("\f111", 1rem, rgb(33, 122, 196));
+  @include icon_content('\f111', 1rem, rgb(33, 122, 196));
   -webkit-text-fill-color: transparent;
   background: -webkit-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
   background: -o-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
@@ -423,95 +422,94 @@ input:focus {
 }
 
 .runicon:after {
-  @include icon_content("\f0da", 0.8rem, rgb(255, 255, 255), false);
+  @include icon_content('\f0da', 0.8rem, rgb(255, 255, 255), false);
   left: 55%;
 }
 .runnexticon:before {
-  @include icon_content("\f064", 1rem, rgb(33, 122, 196)); // 051?
+  @include icon_content('\f064', 1rem, rgb(33, 122, 196)); // 051?
 }
 .runnexticon:after {
-  @include icon_content("\f013", 0.3rem, rgb(33, 122, 196)); // 051?
+  @include icon_content('\f013', 0.3rem, rgb(33, 122, 196)); // 051?
   top: 80%;
 }
 .runfromhereicon:before {
-  @include icon_content("\f08b", 1rem, rgb(33, 122, 196));
+  @include icon_content('\f08b', 1rem, rgb(33, 122, 196));
 }
 .foldericon:before {
-  @include icon_content("\f07b", 1.2rem, rgb(232, 199, 102));
+  @include icon_content('\f07b', 1.2rem, rgb(232, 199, 102));
 }
 .previewicon:before {
-  @include icon_content("\f06e", 1.2rem, rgb(11, 11, 68));
+  @include icon_content('\f06e', 1.2rem, rgb(11, 11, 68));
 }
 
 .fileicon:before {
-  @include icon_content("\f016", 1.0rem, rgb(128, 128, 133));
+  @include icon_content('\f016', 1rem, rgb(128, 128, 133));
 }
 
 .originicon:before {
-  @include icon_content("\f2dd", 1.0rem, rgb(245, 141, 57));
+  @include icon_content('\f2dd', 1rem, rgb(245, 141, 57));
 }
 
-
 .runtoicon:before {
-  @include icon_content("\f090", 1rem, rgb(33, 122, 196));
+  @include icon_content('\f090', 1rem, rgb(33, 122, 196));
 }
 
 .runthisicon:before {
-  @include icon_content("\f061", 0.8rem, rgb(33, 122, 196));
+  @include icon_content('\f061', 0.8rem, rgb(33, 122, 196));
 }
 
 .reseticon:before {
-  @include icon_content("\f04d", 0.7rem, rgb(33, 122, 196));
+  @include icon_content('\f04d', 0.7rem, rgb(33, 122, 196));
 }
 
 .stopicon:before {
-  @include icon_content("\f111", 0.7rem, rgb(231, 18, 28));
+  @include icon_content('\f111', 0.7rem, rgb(231, 18, 28));
 }
 
 .emptyicon:before {
-  @include icon_content("\f0c8", 1rem, rgb(33, 122, 196, 0));
+  @include icon_content('\f0c8', 1rem, rgb(33, 122, 196, 0));
 }
 .runstatusokicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(63, 72, 204), true);
+  @include icon_content('\f0c8', 0.4rem, rgb(63, 72, 204), true);
   top: 72%;
 }
 .runstatusfailedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(173, 8, 8), true);
+  @include icon_content('\f0c8', 0.4rem, rgb(173, 8, 8), true);
   top: 72%;
 }
 .runstatusmodifiedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(134, 139, 209), true);
+  @include icon_content('\f0c8', 0.4rem, rgb(134, 139, 209), true);
   top: 72%;
 }
 .functioninputerroricon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(252, 165, 116), true);
+  @include icon_content('\f0c8', 0.4rem, rgb(252, 165, 116), true);
   top: 28%;
 }
 .editicon:before {
-  @include icon_content("\f040", 0.7rem, rgb(19, 40, 58));
+  @include icon_content('\f040', 0.7rem, rgb(19, 40, 58));
 }
 .freemoveicon:before {
-  @include icon_content("\f0b2", 0.7rem, rgb(19, 40, 58));
+  @include icon_content('\f0b2', 0.7rem, rgb(19, 40, 58));
 }
 
 .addicon:before {
-  @include icon_content("\f067", 0.8rem, rgb(129, 133, 194), true);
+  @include icon_content('\f067', 0.8rem, rgb(129, 133, 194), true);
 }
 
 .deleteicon:before {
-  @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
+  @include icon_content('\f00d', 1.2rem, rgb(153, 35, 35), true);
 }
 
 .duplicate:before {
-  @include icon_content("\f24d", 1.2rem, rgb(19, 40, 58), true);
+  @include icon_content('\f24d', 1.2rem, rgb(19, 40, 58), true);
 }
 
 .closeicon:before {
-  @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
+  @include icon_content('\f00d', 1.2rem, rgb(153, 35, 35), true);
 }
 
 .saveicon:before {
-  @include icon_content("\f0c7", 1rem, rgb(1, 1, 2), true);
+  @include icon_content('\f0c7', 1rem, rgb(1, 1, 2), true);
 }
 
 .blink {
@@ -616,7 +614,7 @@ input:focus {
 
 .mat-tab-body-content {
   overflow: hidden !important;
-}/*
+} /*
 .mat-tab-body {
   overflow-y: hidden !important;
 }*/
@@ -680,16 +678,16 @@ mat-option.mat-option {
   line-height: 1.2rem !important;
   height: 1.2rem !important;
   padding: 0 !important;
-  font-size: 14px !important; 
+  font-size: 14px !important;
 }
 
-.mat-list-item-content, .mat-list-base {
-  padding: 1px !important; 
+.mat-list-item-content,
+.mat-list-base {
+  padding: 1px !important;
 }
 .mat-list-base {
   padding: 2px !important;
 }
-
 
 .mat-menu-item:focus {
   outline: none;

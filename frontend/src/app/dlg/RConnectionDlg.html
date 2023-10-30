@@ -5,10 +5,10 @@
 		<button style="width:22px;" type="button" pButton icon="pi pi-ellipsis-h" (click)="service.browse()"></button>
 	<p>The path to R bin (location to binary executable) is the folder where the R binary is located. StoX will use this
 		path to trigger R commands. When pressing OK, a check will be performed to ensure the dependent Rstox packages are installed.</p>
-	<p-footer>
+	<ng-template pTemplate="footer">
 		<mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isConnecting"></mat-spinner> <!--class="spinner"--> 
 		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
-			class="ui-button-secondary"></button>
+			class="p-button-secondary"></button>
 		<button type="button" pButton icon="pi pi-check" (click)="service.apply()" label="OK"></button>
-	</p-footer>
+	</ng-template>
 </p-dialog>

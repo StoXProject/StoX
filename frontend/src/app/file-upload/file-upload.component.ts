@@ -5,11 +5,9 @@ import { Injector, ElementRef } from '@angular/core';
 @Component({
   selector: 'app-file-upload',
   templateUrl: './file-upload.component.html',
-  styleUrls: ['./file-upload.component.css']
+  styleUrls: ['./file-upload.component.css'],
 })
-
 export class FileUploadComponent extends AppComponentBase {
-
   uploadUrl: string;
 
   uploadedFiles: any[] = [];
@@ -20,14 +18,14 @@ export class FileUploadComponent extends AppComponentBase {
   }
 
   myUploader(event): void {
-    console.log("> " + 'My File upload', event);
+    console.log('> ' + 'My File upload', event);
     if (event.files.length == 0) {
-      console.log("> " + 'No file selected.');
+      console.log('> ' + 'No file selected.');
       return;
     }
     var fileToUpload = event.files[0];
     let input = new FormData();
-    input.append("file", fileToUpload);
+    input.append('file', fileToUpload);
     /*   this.http
          .post(this.uploadUrl, input)
          .subscribe(res => {

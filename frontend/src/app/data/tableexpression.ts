@@ -1,5 +1,4 @@
-
 export class TableExpression {
-    tableName: string;
-    expression: string;
+  tableName: string;
+  expression: string;
 }
