@@ -27,6 +27,8 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { ToolbarModule } from 'primeng/toolbar';
 import { DragDropModule } from 'primeng/dragdrop';
 import { AngularSplitModule } from 'angular-split';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ParameterComponent } from './parameter/parameter.component';
 // import { AgGridModule } from 'ag-grid-angular';
@@ -195,6 +197,7 @@ export class MaterialModule {}
 @NgModule({
   exports: [DirectiveAccessor],
   imports: [
+    ScrollingModule,
     MaterialModule,
     BrowserModule,
     ButtonModule,
