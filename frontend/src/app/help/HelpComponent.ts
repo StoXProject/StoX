@@ -30,7 +30,7 @@ export class SanitizeHtmlPipe implements PipeTransform {
 })
 export class HelpContentHandler {
   constructor(
-    private ps: ProjectService,
+    public ps: ProjectService,
     private dataService: DataService
   ) {}
 
@@ -87,7 +87,7 @@ export class HelpContentHandler {
   styleUrls: ['./HelpComponent.scss'],
 })
 export class HelpComponent {
-  constructor(private ps: ProjectService) {}
+  constructor(public ps: ProjectService) {}
 
   hasNext(): boolean {
     return this.ps.helpCache.hasNext();

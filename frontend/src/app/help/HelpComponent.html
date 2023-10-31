@@ -1,14 +1,11 @@
-
 <mat-tab-group [@.disabled]="true" #bottomTabGroup>
-    <mat-tab label="Function description">
-        <p-toolbar name="toolbar">
-            <div class="p-toolbar-group-left">
-                  <button pButton type="button" icon="pi pi-caret-left" iconPos="left" [disabled]="!hasPrevious()" (click)="previous()"></button>
-                  <button pButton type="button" icon="pi pi-caret-right" iconPos="left" [disabled]="!hasNext()" (click)="next()"></button>
-            </div>
-        </p-toolbar>
-        <ng-template pTemplate="content">
-             <div class="helpcontent" helpContent [innerHTML]="ps.helpContent | sanitizeHtml" style="overflow:scroll;height:calc(100% - 1.5rem);"></div>
-        </ng-template>
-    </mat-tab>
+  <mat-tab label="Function description">
+    <p-toolbar name="toolbar">
+      <div class="p-toolbar-group-left">
+        <button pButton type="button" icon="pi pi-caret-left" iconPos="left" [disabled]="!hasPrevious()" (click)="previous()"></button>
+        <button pButton type="button" icon="pi pi-caret-right" iconPos="left" [disabled]="!hasNext()" (click)="next()"></button>
+      </div>
+    </p-toolbar>
+    <div class="helpcontent" helpContent *ngIf="ps.helpContent" [innerHTML]="ps.helpContent | sanitizeHtml" style="overflow: scroll; height: calc(100% - 1.5rem)"></div>
+  </mat-tab>
 </mat-tab-group>
