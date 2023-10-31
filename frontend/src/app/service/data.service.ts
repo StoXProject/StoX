@@ -78,7 +78,7 @@ export class DataService {
         projectPath: projectPath,
         //"template": "UserDefined",
         ow: false,
-        showWarnings: false,
+        showWarnings: true, // DEBUGGING
         open: true,
         Application: application,
       },
@@ -102,7 +102,7 @@ export class DataService {
       'openProject',
       {
         projectPath: projectPath,
-        showWarnings: false,
+        showWarnings: true, // DEBUGGING
         force: force,
         reset: false,
         verbose: true,
@@ -236,7 +236,7 @@ export class DataService {
     return 'http://' + host + ':' + port + '/' + api;
   }
   public post(host: string, port: number, api: string, body: any, responseType: string = 'text'): Observable<HttpResponse<any>> {
-    //console.log("> " + api + " post " + JSON.stringify(body));
+    // console.log('> ' + api + ' post ' + JSON.stringify(body));
     return this.httpClient
       .post(DataService.getURL(host, port, api), body, {
         observe: 'response', // 'body' or 'response'

@@ -315,8 +315,8 @@ export class ProjectService {
       console.log('> ' + 'Read projectpath:' + projectPath); // let activeProject: Project = <Project>JSON.parse(projectPath);
       // Read models and set selected to the first model
       if (projectPath.length > 0 && this.rstoxFrameworkAvailable) {
-        //this.selectedModel = this.models[0];
-        await this.openProject(projectPath, false, true, false, true);
+        // THROW WHILE DEBUGGING
+        await this.openProject(projectPath, true, true, false, true);
       }
     } finally {
       this.appStatus = null;
@@ -350,11 +350,9 @@ export class ProjectService {
       if (withStatus) {
         this.appStatus = 'Opening project ' + projectPath + '...';
       }
-      //      this.busy = true;
-      this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise(), askSave);
+      await this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise(), askSave);
     } finally {
       this.appStatus = null;
-      //      this.busy = false;
     }
   }
 
