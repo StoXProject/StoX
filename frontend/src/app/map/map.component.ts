@@ -25,7 +25,8 @@ import { Fill, Stroke, Style, RegularShape } from 'ol/style';
 
 import { click, singleClick, shiftKeyOnly, platformModifierKeyOnly } from 'ol/events/condition';
 import { Select, Draw, Modify, Snap } from 'ol/interaction';
-import { ResizedEvent } from 'angular-resize-event';
+// TODO https://jira.imr.no/browse/STOX-690
+// import { ResizedEvent } from 'angular-resize-event';
 import { defaults as defaultControls } from 'ol/control';
 import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
@@ -669,11 +670,12 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
 
   onClick() {}
 
-  onResized(event: ResizedEvent) {
-    if (this.map != null) {
-      this.map.updateSize();
-    }
-  }
+  // TODO https://jira.imr.no/browse/STOX-690
+  // onResized(event: ResizedEvent) {
+  //   if (this.map != null) {
+  //     this.map.updateSize();
+  //   }
+  // }
 
   getTooltip(obj) {
     let res: string = '';

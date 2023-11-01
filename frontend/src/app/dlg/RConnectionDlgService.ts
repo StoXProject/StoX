@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class RConnectionDlgService {
   constructor(
     private dataService: DataService,

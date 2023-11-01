@@ -4,9 +4,7 @@ import { ProjectService } from '../../service/project.service';
 import { UserLogEntry } from '../../data/userlogentry';
 import { UserLogType } from '../../enum/enums';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class InstallRPackagesDlgService {
   constructor(
     private dataService: DataService,

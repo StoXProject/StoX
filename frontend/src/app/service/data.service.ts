@@ -15,9 +15,7 @@ import { Process } from '../data/process';
 import { Project } from '../data/project';
 import { PackageVersion } from '../data/PackageVersion';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class DataService {
   log: UserLogEntry[] = []; // user log.
   private m_logSubject = new Subject<string>();

@@ -13,9 +13,7 @@ import { Observable, of } from 'rxjs';
 // import { data_json } from 'acoustic';
 // import SampleJson from './assets/acoustic.json';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class InMemoryDataService implements InMemoryDbService {
   // private jsonfromfile: any;
 

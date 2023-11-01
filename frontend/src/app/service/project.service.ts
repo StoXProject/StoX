@@ -22,9 +22,7 @@ import { UserLogType } from '../enum/enums';
 //import { DomSanitizer } from '@angular/platform-browser';
 // import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ProjectService {
   private m_Application: string;
   private m_iaMode: string;

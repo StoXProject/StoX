@@ -9,9 +9,7 @@ import { PropertyCategory } from '../data/propertycategory';
 import { RuleSet } from '../querybuilder/module/query-builder.interfaces';
 import { MessageService } from '../message/MessageService';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ExpressionBuilderDlgService {
   public tableNames: string[] = [];
   public allOptions: any;

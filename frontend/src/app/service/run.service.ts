@@ -10,9 +10,7 @@ import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
 import { RunProcessesResult, ProcessTableResult } from './../data/runresult';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 /**
  * Manage Run process logic
  */

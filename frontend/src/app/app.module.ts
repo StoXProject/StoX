@@ -31,8 +31,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ParameterComponent } from './parameter/parameter.component';
-// import { AgGridModule } from 'ag-grid-angular';
-import { AngularResizeEventModule } from 'angular-resize-event';
+// TODO https://jira.imr.no/browse/STOX-690
+// import { AngularResizeEventModule } from 'angular-resize-event';
 
 import { HttpClientModule } from '@angular/common/http';
 
@@ -136,6 +136,24 @@ import { EdsutableComponent } from './processdata/edsutable/edsutable.component'
 import { DirectiveAccessor } from './autocomplete/directive-accessor';
 import { StatusbarComponent } from './statusbar/statusbar.component';
 import { BusydlgComponent } from './busydlg/busydlg.component';
+import { CreateProjectDialogService } from './createProjectDlg/create-project-dialog.service';
+import { RConnectionDlgService } from './dlg/RConnectionDlgService';
+import { DefinedColumnsService } from './dlg/definedColumns/DefinedColumnsService';
+import { FilePathDlgService } from './dlg/filePath/FilePathDlgService';
+import { InstallRPackagesDlgService } from './dlg/InstallRPackages/InstallRPackagesDlgService';
+import { SelectedVariablesService } from './dlg/selectedVariables/SelectedVariablesService';
+import { ExpressionBuilderDlgService } from './expressionBuilder/ExpressionBuilderDlgService';
+import { MessageService } from './message/MessageService';
+import { OpenProjectDlgService } from './openProjectDlg/OpenProjectDlgService';
+import { QueryBuilderDlgService } from './querybuilder/dlg/QueryBuilderDlgService';
+import { ResetProjectDlgService } from './resetProject/ResetProjectDlgService';
+import { SaveAsProjectDlgService } from './saveAsProject/SaveAsProjectDlgService';
+import { AcousticPSUService } from './service/acoustic-psu.service';
+import { DataService } from './service/data.service';
+import { ProcessDataService } from './service/processdata.service';
+import { ProjectService } from './service/project.service';
+import { RunService } from './service/run.service';
+import { InMemoryDataService } from 'test/in-memory-data.service';
 
 @NgModule({
   exports: [
@@ -209,9 +227,10 @@ export class MaterialModule {}
     TabViewModule,
     NgbModule,
     AngularSplitModule.forRoot(),
-    AngularResizeEventModule,
-    // AgGridModule.withComponents([]),
+    // TODO https://jira.imr.no/browse/STOX-690
+    //AngularResizeEventModule,
     HttpClientModule,
+    // AgGridModule.withComponents([]),
     /*HttpClientInMemoryWebApiModule.forRoot(
       InMemoryDataService, { dataEncapsulation: false }
     ),*/
@@ -251,12 +270,29 @@ export class MaterialModule {}
     QueryBuilderModule,
     TooltipModule,
   ],
-  entryComponents: [StratumNameDlgComponent, MessageDlgComponent],
   declarations: [HomeComponent, RConnectionDlg, InstallRPackagesDlg, CreateProjectDialog, OpenProjectDlg, BusydlgComponent, ExpressionBuilderDlg, QueryBuilderDlg, DefinedColumnsTableDlg, SelectedVariablesDlg, FilePathDlg, SaveAsProjectDlg, ResetProjectDlg, MessageDlg, FileUploadComponent, ProjectComponent, MapComponent, StratumpsuComponent, EdsutableComponent, ProcessComponent, ParameterComponent, StatusbarComponent, ModelComponent, RunComponent, UserLogComponent, OutputComponent, HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent, MessageDlgComponent, AutocompleteComponent, TooltipDirective, DirectiveAccessor],
   bootstrap: [HomeComponent],
   providers: [
     { provide: APP_BASE_HREF, useValue: '/' },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    CreateProjectDialogService,
+    RConnectionDlgService,
+    DefinedColumnsService,
+    FilePathDlgService,
+    InstallRPackagesDlgService,
+    SelectedVariablesService,
+    ExpressionBuilderDlgService,
+    MessageService, // NOT PRIMENG MESSAGE SERVICE
+    OpenProjectDlgService,
+    QueryBuilderDlgService,
+    ResetProjectDlgService,
+    SaveAsProjectDlgService,
+    AcousticPSUService,
+    DataService,
+    ProcessDataService,
+    ProjectService,
+    RunService,
+    InMemoryDataService,
   ],
 })
 export class AppModule {}

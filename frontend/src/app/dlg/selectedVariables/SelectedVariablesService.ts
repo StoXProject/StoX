@@ -6,9 +6,7 @@ import { DataService } from '../../service/data.service';
 import { ProjectService } from '../../service/project.service';
 import { BehaviorSubject } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class SelectedVariablesService {
   constructor(
     private ps: ProjectService,

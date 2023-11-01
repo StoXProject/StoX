@@ -576,11 +576,11 @@ input:focus {
   width: 100%;
 }
 .mat-tab-labels,
-.mat-tab-links {
+.mat-tab-links, .mat-mdc-tab-link, .mat-mdc-tab.mdc-tab  {
   background-color: #e5e5e5 !important;
 }
 .mat-tab-label,
-.mat-tab-link {
+.mat-tab-link, .mat-mdc-tab-link, .mat-mdc-tab.mdc-tab {
   padding: 0 10px !important;
   height: 1.2rem !important;
   line-height: 1.2rem !important;

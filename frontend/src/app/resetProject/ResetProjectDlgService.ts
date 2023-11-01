@@ -4,9 +4,7 @@ import { DataService } from './../service/data.service';
 import { Injectable } from '@angular/core';
 import { MessageService } from './../message/MessageService';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ResetProjectDlgService {
   public display: boolean = false;
 

@@ -4,9 +4,7 @@ import { PropertyCategory } from '../../data/propertycategory';
 import { BehaviorSubject } from 'rxjs';
 import { FilePath } from '../../data/FilePath';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class FilePathDlgService {
   public display: boolean = false;
 

@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataService } from './../service/data.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class OpenProjectDlgService {
   constructor(private dataService: DataService) {}
 

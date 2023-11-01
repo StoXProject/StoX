@@ -5,9 +5,7 @@ import { ProjectService } from './project.service';
 import { AcousticPSU, AcousticLayerData, BioticAssignmentData, BioticAssignment } from './../data/processdata';
 import { Subject } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ProcessDataService {
   private m_stratum: string[];
   private m_acousticPSU: AcousticPSU;
