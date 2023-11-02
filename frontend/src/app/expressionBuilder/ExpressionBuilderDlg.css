@@ -16,7 +16,7 @@
     width: 100%;
   }
   
-  .mat-table {
+  .mat-table , .mat-mdc-table {
     overflow: auto;
     max-height: 750px;
   }
