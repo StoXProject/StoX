@@ -87,7 +87,7 @@
 					<app-map class="map" [cm] = "cm"></app-map>
 				</as-split-area>
 				<as-split-area size="25">
-					<mat-tab-group [@.disabled]="true" #bottomTabGroup>
+					<mat-tab-group [@.disabled]="true" #bottomTabGroup style="height: 100%;">
 						<mat-tab label="User log">
 							<userlog style="height:inherit; width:inherit;"  [cm]="cm"></userlog>
 						</mat-tab>
