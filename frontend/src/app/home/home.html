@@ -10,12 +10,12 @@
 <ResetProjectDlg></ResetProjectDlg>
 <InstallRPackagesDlg></InstallRPackagesDlg>
 <div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0; height:1.2rem;">
-	<button *ngIf="isDesktop()" mat-button [matMenuTriggerFor]="filemenu" [disabled]="ps.getRunningProcess() != null">File
+	<button *ngIf="isDesktop()" mat-button [matMenuTriggerFor]="filemenu" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined">File
 		<mat-menu #filemenu="matMenu">
 			<button *ngIf="isDesktop()" mat-menu-item (click)="exit()">Exit</button>
 		</mat-menu>
 	</button>
-	<button mat-button [matMenuTriggerFor]="projectmenu" [disabled]="ps.getRunningProcess() != null">Project
+	<button mat-button [matMenuTriggerFor]="projectmenu" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined">Project
 		<mat-menu #projectmenu="matMenu">
 			<button mat-menu-item (click)="createNewProject()">Create new project</button>
 			<button mat-menu-item (click)="openProject()">Open project</button>
@@ -24,14 +24,14 @@
 			<button mat-menu-item (click)="saveProjectAs()" [disabled]="!isProjectSelected()">Save project as</button>
 		</mat-menu>
 	</button>
-	<button mat-button [matMenuTriggerFor]="toolsmenu" [disabled]="ps.getRunningProcess() != null">Tools
+	<button mat-button [matMenuTriggerFor]="toolsmenu" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined">Tools
 		<mat-menu #toolsmenu="matMenu">
 			<button mat-menu-item (click)="rConnection()">R connection</button>
 			<button mat-menu-item (click)="installRstoxFramework()">Install Rstox packages</button>
 			<button *ngIf="isDesktop()" mat-menu-item (click)="toggleDevTools()">Toggle Developer Tools</button>
 		</mat-menu>
 	</button>
-	<button mat-button [matMenuTriggerFor]="helpmenu" [disabled]="ps.getRunningProcess() != null">Help
+	<button mat-button [matMenuTriggerFor]="helpmenu" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined">Help
 		<mat-menu #helpmenu="matMenu">
 			<button mat-menu-item (click)="stoxHome()">StoX Home</button>
 		</mat-menu>
@@ -41,9 +41,9 @@
 	</div>
 </div>
 <div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0; height:1.4rem;">
-	<button type="button" style="margin-left:4px;" (click)="createNewProject()" pButton icon="pi pi-clone" [disabled]="ps.getRunningProcess() != null"></button>
-	<button type="button" style="margin-left:4px;" (click)="openProject()" pButton icon="pi pi-folder-open" [disabled]="ps.getRunningProcess() != null"></button>
-	<button type="button" style="margin-left:4px;" (click)="save()" [disabled]="isSaved() || ps.getRunningProcess() != null" pButton
+	<button type="button" style="margin-left:4px;" (click)="createNewProject()" pButton icon="pi pi-clone" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined"></button>
+	<button type="button" style="margin-left:4px;" (click)="openProject()" pButton icon="pi pi-folder-open" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined"></button>
+	<button type="button" style="margin-left:4px;" (click)="save()" [disabled]="isSaved() || ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined" pButton
 		icon="pi pi-save"></button>
 	<div class="flex-grow-1" style="height:100%;">
 	</div>

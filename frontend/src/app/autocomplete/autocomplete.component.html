@@ -1,4 +1,4 @@
-<input #txtVal matInput [matAutocomplete]="auto" required matTooltipPosition="after" [(ngModel)]="selectedItem" [disabled]="ps.getRunningProcess() != null"
+<input #txtVal matInput [matAutocomplete]="auto" required matTooltipPosition="after" [(ngModel)]="selectedItem" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined"
     #trigger="matAutocompleteTrigger" class="ellipsiscolumn" matAutocompleteTriggerAccessor [optionHeight]="18" spellcheck="false"
     (keyup.enter)="onEnter()">
 <!--arrow_drop_down>-->

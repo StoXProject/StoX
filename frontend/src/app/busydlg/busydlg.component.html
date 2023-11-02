@@ -1,4 +1,4 @@
-<p-dialog header="Please wait..." [visible]="!ps.appStatusIsUpdating && ps.appStatus != null" [modal]="true" [closable]="false"
+<p-dialog header="Please wait..." [visible]="!ps.appStatusIsUpdating && ps.appStatus !== null && ps.appStatus !== undefined" [modal]="true" [closable]="false"
     [style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
 	
 	<p>{{ps.appStatus}}</p>
