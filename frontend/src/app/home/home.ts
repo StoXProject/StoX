@@ -19,6 +19,7 @@ import { PackageVersion } from './../data/PackageVersion';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
 import { ContextMenu } from 'primeng/contextmenu';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'homeComponent',
@@ -39,7 +40,8 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     private saveProjectAsService: SaveAsProjectDlgService,
     private resetProjectService: ResetProjectDlgService,
     private installRPackagesDlgService: InstallRPackagesDlgService,
-    private ds: DataService
+    private ds: DataService,
+    private cd: ChangeDetectorRef
   ) {
     ps.bottomViewActivator.subscribe({
       next: idx => {
@@ -73,6 +75,10 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.m_isDesktop = 'true' == (await this.ds.isdesktop().toPromise());
     console.log('> ' + 'isdesktop=' + typeof this.m_isDesktop);
     //   }
+  }
+
+  ctxMenuShow(e) {
+    this.cd.detectChanges(); // Trigger change detection manually
   }
 
   createNewProject() {
