@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { PropertyItem } from '../../data/propertyitem';
-import { PropertyCategory } from '../../data/propertycategory';
 import { BehaviorSubject } from 'rxjs';
+
 import { FilePath } from '../../data/FilePath';
+import { PropertyCategory } from '../../data/propertycategory';
+import { PropertyItem } from '../../data/propertyitem';
 
 @Injectable()
 export class FilePathDlgService {
@@ -16,7 +17,8 @@ export class FilePathDlgService {
   public currentPropertyCategory: PropertyCategory = null;
 
   combinedPaths(): string[] {
-    let combined: string[] = [];
+    const combined: string[] = [];
+
     for (let i = 0; i < this.paths.length; i++) {
       combined.push(this.paths[i].path);
     }
@@ -30,7 +32,8 @@ export class FilePathDlgService {
     // parse currentPropertyItem and populate array paths and broadcast this to component
     console.log('> ' + 'currentPropertyItem.value : ' + this.currentPropertyItem.value);
 
-    let o: any = JSON.parse(this.currentPropertyItem.value);
+    const o: any = JSON.parse(this.currentPropertyItem.value);
+
     // The propertyItem is an array, map each element to FilePath
     // Enhanced: Otherwise map propertyItem to FilePath? The user may enter a path manually without []
     this.paths = Array.isArray(o) ? o.map(s => this.obj2FilePath(s)) : [this.obj2FilePath(o)];

@@ -1,12 +1,13 @@
+import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+
+import { SelectedVariable } from '../../data/DefinedColumns';
+import { ProcessProperties } from '../../data/ProcessProperties';
+import { MessageService } from '../../message/MessageService';
+import { DataService } from '../../service/data.service';
+import { ProjectService } from '../../service/project.service';
 // import { SelectionModel } from '@angular/cdk/collections';
 import { SelectedVariablesService } from './SelectedVariablesService';
-import { Component, OnInit } from '@angular/core';
-import { MessageService } from '../../message/MessageService';
-import { ProjectService } from '../../service/project.service';
-import { DataService } from '../../service/data.service';
-import { ProcessProperties } from '../../data/ProcessProperties';
-import { SelectedVariable } from '../../data/DefinedColumns';
 
 @Component({
   selector: 'SelectedVariablesDlg',
@@ -48,7 +49,8 @@ export class SelectedVariablesDlg implements OnInit {
   }
 
   addRow() {
-    let obj = new SelectedVariable();
+    const obj = new SelectedVariable();
+
     obj.variableName = null;
     this.service.selectedVariables.push(obj);
     this.dataSource = new MatTableDataSource<SelectedVariable>(this.service.selectedVariables);
@@ -67,7 +69,8 @@ export class SelectedVariablesDlg implements OnInit {
   // }
 
   delete(selectedVariable: SelectedVariable) {
-    let index: number = this.service.selectedVariables.findIndex(d => d === selectedVariable);
+    const index: number = this.service.selectedVariables.findIndex(d => d === selectedVariable);
+
     this.service.selectedVariables.splice(index, 1);
     this.dataSource = new MatTableDataSource<SelectedVariable>(this.service.selectedVariables);
   }
@@ -84,8 +87,9 @@ export class SelectedVariablesDlg implements OnInit {
   }
 
   hasDuplicates(arr: SelectedVariable[]) {
-    let uniqueSet = new Set();
-    for (var i = 0; i < arr.length; i++) {
+    const uniqueSet = new Set();
+
+    for (let i = 0; i < arr.length; i++) {
       uniqueSet.add(arr[i].variableName);
     }
 
@@ -104,6 +108,7 @@ export class SelectedVariablesDlg implements OnInit {
         console.log('> ' + 'Field is null in row index : ' + i);
         this.msgService.setMessage('One or more fields are empty!');
         this.msgService.showMessage();
+
         return;
       }
     }
@@ -112,6 +117,7 @@ export class SelectedVariablesDlg implements OnInit {
     if (this.hasDuplicates(this.service.selectedVariables)) {
       this.msgService.setMessage('There are duplicates!');
       this.msgService.showMessage();
+
       return;
     }
 
@@ -135,9 +141,11 @@ export class SelectedVariablesDlg implements OnInit {
             });
         } catch (error) {
           console.log('> ' + error.error);
-          var firstLine = error.error.split('\n', 1)[0];
+          const firstLine = error.error.split('\n', 1)[0];
+
           this.msgService.setMessage(firstLine);
           this.msgService.showMessage();
+
           return;
         }
       }

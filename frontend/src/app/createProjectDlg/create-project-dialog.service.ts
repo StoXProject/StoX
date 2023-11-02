@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { DataService } from '../service/data.service';
 // import { Template } from '../data/Template';
 
 @Injectable()

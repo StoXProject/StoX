@@ -1,29 +1,25 @@
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
-import { Observable, Subject, of, interval, merge } from 'rxjs';
-import { Template } from '../data/Template';
-import { catchError, map, tap, mapTo } from 'rxjs/operators';
-import { UserLogEntry } from '../data/userlogentry';
 import { MapInfo } from '../data/MapInfo';
-import { UserLogType } from '../enum/enums';
-import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess, ProcessOutputElement } from '../data/runresult';
-import { AcousticPSU } from '../data/processdata';
-import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
-import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
 import { Process } from '../data/process';
+import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
 import { Project } from '../data/project';
-import { PackageVersion } from '../data/PackageVersion';
+import { ActiveProcess, ActiveProcessResult, ProcessOutputElement, ProcessTableResult, PSUResult, RunProcessesResult, RunResult } from '../data/runresult';
+import { UserLogEntry } from '../data/userlogentry';
+import { UserLogType } from '../enum/enums';
+import { RuleSet } from '../querybuilder/module/query-builder.interfaces';
 
 @Injectable()
 export class DataService {
-  log: UserLogEntry[] = []; // user log.
+  log: UserLogEntry[] = []; // user log
   private m_logSubject = new Subject<string>();
   public get logSubject() {
     return this.m_logSubject;
   }
 
-  // private featuresUrl = '/api/features';
   private geojsonUrl = '/api/geojson';
   private jsonfromfile = '/api/jsonfromfile';
 
@@ -33,7 +29,9 @@ export class DataService {
 
   isRstoxInstalled(): Observable<any> {
     const formData = new FormData();
+
     formData.set('expr', '"Rstox" %in% rownames(installed.packages())');
+
     return this.httpClient.post('http://localhost:5307/ocpu/library/base/R/eval/json', formData).pipe(
       tap(
         _ => _,
@@ -44,8 +42,10 @@ export class DataService {
 
   installRstox(): Observable<any> {
     const formData = new FormData();
+
     formData.set('pkgs', '"ftp://ftp.imr.no/StoX/Download/Rstox/Rstox_1.11.tar.gz"');
     formData.set('repos', null);
+
     return this.httpClient.post('http://localhost:5307/ocpu/library/utils/R/install.packages/json', formData, { responseType: 'text' }).pipe(
       tap(
         _ => _,
@@ -56,7 +56,9 @@ export class DataService {
 
   removeRstox(): Observable<any> {
     const formData = new FormData();
+
     formData.set('pkgs', '"Rstox"');
+
     return this.httpClient.post('http://localhost:5307/ocpu/library/utils/R/remove.packages/json', formData, { responseType: 'text' }).pipe(
       tap(
         _ => _,
@@ -74,7 +76,6 @@ export class DataService {
       'createProject',
       {
         projectPath: projectPath,
-        //"template": "UserDefined",
         ow: false,
         showWarnings: true, // DEBUGGING
         open: true,
@@ -137,13 +138,12 @@ export class DataService {
         projectPath: projectPath,
         newProjectPath: newProjectPath,
         Application: application,
-        /*, "ow": ow */
       },
       true
     );
   }
 
-  closeProject(projectPath: string, save: Boolean, application: string): Observable<any> {
+  closeProject(projectPath: string, save: boolean, application: string): Observable<any> {
     return this.runFunction('closeProject', {
       projectPath: projectPath,
       save: save,
@@ -310,13 +310,14 @@ export class DataService {
   /** runFunction API wrapper - includes logging of user message/warning/errors from R*/
   runFunctionThrow(what: string, argsobj: any, dothrow: boolean, pkg: string): Observable<any> {
     // runFunction wraps a doCall with what/args and exception handling that returns a list.
-    let args: any = JSON.stringify(argsobj);
+    const args: any = JSON.stringify(argsobj);
+
     /*const body = new FormData();
     body.set('what', "'" + what + "'");
     body.set('args', args);
     body.set('package', "'" + pkg + "'");
     */
-    let rVal = (o: any) => {
+    const rVal = (o: any) => {
       if (o != null) {
         switch (typeof o) {
           case 'string':
@@ -328,12 +329,15 @@ export class DataService {
               return '(' + o.map(k => rVal(k)).join() + ')';
             }
           }
+
           default:
             return o;
         }
       }
+
       return o;
     };
+
     console.log(
       '> ' +
         pkg +
@@ -345,10 +349,12 @@ export class DataService {
           .join() +
         ')'
     );
+
     // console.log("> " + "RstoxFramework::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")")
     return <any>this.callR({ what: what, args: args, package: pkg }).pipe(
       map(res => {
         let r2: RunResult = null;
+
         try {
           r2 = JSON.parse(res.body !== undefined ? res.body : res);
         } catch (e) {
@@ -356,6 +362,7 @@ export class DataService {
           r2 = new RunResult();
           r2.error = [res];
         }
+
         if (dothrow) {
           if (r2.error.length > 0) {
             throw r2.error[0];
@@ -374,6 +381,7 @@ export class DataService {
             this.m_logSubject.next('log-error');
           });
         }
+
         return r2.value;
       })
     );
@@ -447,7 +455,7 @@ export class DataService {
     });
   }
 
-  getFilterOptionsAll(projectPath: string, modelName: string, processID: string, includeNumeric: Boolean): Observable<any> {
+  getFilterOptionsAll(projectPath: string, modelName: string, processID: string, includeNumeric: boolean): Observable<any> {
     return this.runFunction('getFilterOptionsAll', {
       projectPath: projectPath,
       modelName: modelName,
@@ -613,6 +621,7 @@ export class DataService {
 
   setRPath(rpath: string): Observable<any> {
     console.log('> ' + 'setRPathsetRPath. path = ', +rpath);
+
     return this.postLocalNode('rpath', rpath);
   }
 

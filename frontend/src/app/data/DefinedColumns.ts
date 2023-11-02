@@ -30,6 +30,7 @@ export class DefinedColumns {
         return this.columnValues[i].value;
       }
     }
+
     return null;
   }
 
@@ -39,6 +40,7 @@ export class DefinedColumns {
         return this.columnValues[i];
       }
     }
+
     return null;
   }
 }

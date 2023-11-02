@@ -1,13 +1,14 @@
-import { ExpressionBuilderDlgService } from './ExpressionBuilderDlgService';
-import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+
+import { ProcessProperties } from '../data/ProcessProperties';
 import { TableExpression } from '../data/tableexpression';
 // import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from '../message/MessageService';
-import { ProjectService } from '../service/project.service';
+import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { DataService } from '../service/data.service';
-import { ProcessProperties } from '../data/ProcessProperties';
+import { ProjectService } from '../service/project.service';
+import { ExpressionBuilderDlgService } from './ExpressionBuilderDlgService';
 
 @Component({
   selector: 'ExpressionBuilderDlg',
@@ -80,14 +81,16 @@ export class ExpressionBuilderDlg implements OnInit {
   // }
 
   areTableNamesUnique() {
-    var tmpArr = [];
-    for (var obj in this.service.tableExpressions) {
+    const tmpArr = [];
+
+    for (const obj in this.service.tableExpressions) {
       if (tmpArr.indexOf(this.service.tableExpressions[obj].tableName) < 0) {
         tmpArr.push(this.service.tableExpressions[obj].tableName);
       } else {
         return false; // Duplicate value for tableName found
       }
     }
+
     return true; // No duplicate values found for tableName
   }
 
@@ -134,6 +137,7 @@ export class ExpressionBuilderDlg implements OnInit {
     if (tableExpression != null && tableExpression.tableName == null) {
       this.msgService.setMessage('Table name is not given in the selected row!');
       this.msgService.showMessage();
+
       return;
     }
 
@@ -148,7 +152,8 @@ export class ExpressionBuilderDlg implements OnInit {
   }
 
   delete(tableExpression: TableExpression) {
-    let index: number = this.service.tableExpressions.findIndex(d => d === tableExpression);
+    const index: number = this.service.tableExpressions.findIndex(d => d === tableExpression);
+
     //console.log("> " + this.service.tableExpressions.findIndex(d => d === tableExpression));
     this.service.tableExpressions.splice(index, 1);
     this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
@@ -163,6 +168,7 @@ export class ExpressionBuilderDlg implements OnInit {
         // show the message that one or more fields are empty
         this.msgService.setMessage('One or more fields are empty!');
         this.msgService.showMessage();
+
         return;
       }
     }
@@ -171,6 +177,7 @@ export class ExpressionBuilderDlg implements OnInit {
     if (!this.areTableNamesUnique()) {
       this.msgService.setMessage('Table or file names are not unique!');
       this.msgService.showMessage();
+
       return;
     }
 
@@ -198,9 +205,11 @@ export class ExpressionBuilderDlg implements OnInit {
             });
         } catch (error) {
           console.log('> ' + error.error);
-          var firstLine = error.error.split('\n', 1)[0];
+          const firstLine = error.error.split('\n', 1)[0];
+
           this.msgService.setMessage(firstLine);
           this.msgService.showMessage();
+
           return;
         }
       }

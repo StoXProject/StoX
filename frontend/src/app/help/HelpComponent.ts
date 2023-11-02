@@ -1,7 +1,8 @@
 import { Component, Directive, HostListener, Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ProjectService } from '../service/project.service';
+
 import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
 
 /**
  * Declare a angular sanitizing pipe to bypass trusted html, and skip sanitizing and warning.
@@ -41,12 +42,16 @@ export class HelpContentHandler {
   @HostListener('click', ['$event.target']) onClick(elm: HTMLElement) {
     if (elm.tagName.toUpperCase() == 'A') {
       // handle element <a>
-      let hRefAttr: Attr = elm.attributes['href'];
+      const hRefAttr: Attr = elm.attributes['href'];
+
       if (hRefAttr != null) {
-        var stringToMatch = hRefAttr.value;
-        var matches = stringToMatch.match(/\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html/gi);
+        const stringToMatch = hRefAttr.value;
+
+        const matches = stringToMatch.match(/\.\.\/\.\.\/(.*?)\/html\/(.*?)\.html/gi);
+
         if (matches != null && matches.length == 1) {
           this.updateHelpContentByHref(matches[0]);
+
           return false; // prevent default and stop propagation in a synchr. manner
         } else {
           // else if(!stringToMatch.startsWith(".."))
@@ -55,10 +60,12 @@ export class HelpContentHandler {
             .openUrl(stringToMatch)
             .toPromise()
             .then(st => console.log('> ' + st));
+
           return false;
         }
       }
     }
+
     return true; // allow default handler and up-propagation
   }
 
@@ -69,11 +76,16 @@ export class HelpContentHandler {
    * @param hRef on the form ../../packageName/html/objectName.html
    */
   private updateHelpContentByHref(oneMatch: string) {
-    var splitElms = oneMatch.split('/');
-    var packageName = splitElms[2];
-    var fileName = splitElms[4];
-    var fileNameElms = fileName.split('.');
-    var objectName = fileNameElms[0];
+    const splitElms = oneMatch.split('/');
+
+    const packageName = splitElms[2];
+
+    const fileName = splitElms[4];
+
+    const fileNameElms = fileName.split('.');
+
+    const objectName = fileNameElms[0];
+
     this.dataService
       .getObjectHelpAsHtml(packageName, objectName)
       .toPromise()

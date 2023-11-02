@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { PropertyItem } from '../../data/propertyitem';
+import { BehaviorSubject } from 'rxjs';
+
 import { SelectedVariable } from '../../data/DefinedColumns';
 import { PropertyCategory } from '../../data/propertycategory';
+import { PropertyItem } from '../../data/propertyitem';
 import { DataService } from '../../service/data.service';
 import { ProjectService } from '../../service/project.service';
-import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class SelectedVariablesService {
@@ -37,7 +38,8 @@ export class SelectedVariablesService {
   }
 
   combinedExpression(): string {
-    let combinedArray = [];
+    const combinedArray = [];
+
     this.selectedVariables.forEach(t => {
       combinedArray.push(new String(t.variableName));
     });
@@ -52,10 +54,11 @@ export class SelectedVariablesService {
 
     // parse currentPropertyItem.value and populate definedColumnsData and send it to dialog
     if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {
-      let o: any[] = JSON.parse(this.currentPropertyItem.value);
+      const o: any[] = JSON.parse(this.currentPropertyItem.value);
 
       o.forEach(o1 => {
-        let obj = new SelectedVariable();
+        const obj = new SelectedVariable();
+
         obj.variableName = o1;
         this.selectedVariables.push(obj);
       });

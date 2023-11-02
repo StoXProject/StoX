@@ -1,12 +1,13 @@
-import { MatTableDataSource } from '@angular/material/table';
-import { DefinedColumns, ColumnPossibleValues, ColumnType, ColumnValue } from '../../data/DefinedColumns';
 import { SelectionModel } from '@angular/cdk/collections';
-import { DefinedColumnsService } from './DefinedColumnsService';
 import { Component, OnInit } from '@angular/core';
-import { MessageService } from '../../message/MessageService';
-import { ProjectService } from '../../service/project.service';
-import { DataService } from '../../service/data.service';
+import { MatTableDataSource } from '@angular/material/table';
+
+import { ColumnPossibleValues, ColumnType, ColumnValue,DefinedColumns } from '../../data/DefinedColumns';
 import { ProcessProperties } from '../../data/ProcessProperties';
+import { MessageService } from '../../message/MessageService';
+import { DataService } from '../../service/data.service';
+import { ProjectService } from '../../service/project.service';
+import { DefinedColumnsService } from './DefinedColumnsService';
 
 @Component({
   selector: 'DefinedColumnsTableDlg',
@@ -64,11 +65,13 @@ export class DefinedColumnsTableDlg implements OnInit {
 
   addRow() {
     // let obj = <DefinedColumns>{};
-    let obj = new DefinedColumns();
+    const obj = new DefinedColumns();
+
     this.displayedColumns.forEach(key => {
       if (key != 'select') {
         // obj[key] = null;
-        let cv = new ColumnValue();
+        const cv = new ColumnValue();
+
         cv.columnName = key;
         cv.value = null;
         obj.columnValues.push(cv);
@@ -82,7 +85,8 @@ export class DefinedColumnsTableDlg implements OnInit {
 
   removeSelectedRows() {
     this.selection.selected.forEach(item => {
-      let index: number = this.service.definedColumnsData.findIndex(d => d === item);
+      const index: number = this.service.definedColumnsData.findIndex(d => d === item);
+
       // console.log("> " + this.service.definedColumnsData.findIndex(d => d === item));
       this.service.definedColumnsData.splice(index, 1);
       this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
@@ -93,7 +97,9 @@ export class DefinedColumnsTableDlg implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
+
     const numRows = this.dataSource.data.length;
+
     return numSelected === numRows;
   }
 
@@ -116,6 +122,7 @@ export class DefinedColumnsTableDlg implements OnInit {
         return this.columnPossibleValues[i].possibleValues;
       }
     }
+
     return null;
   }
 
@@ -125,6 +132,7 @@ export class DefinedColumnsTableDlg implements OnInit {
         return this.columnTypes[i].type;
       }
     }
+
     return null;
   }
 
@@ -170,7 +178,7 @@ export class DefinedColumnsTableDlg implements OnInit {
     // validate input for null values in dialog and show messages if necessary
     // check if there is empty field in dialog
     for (let i = 0; i < this.service.definedColumnsData.length; i++) {
-      let blankFound = false;
+      const blankFound = false;
 
       for (let j = 0; j < this.service.definedColumnsData[i].columnValues.length; j++) {
         //if(this.service.definedColumnsData[i].columnValues[j].value == null) {
@@ -212,9 +220,11 @@ export class DefinedColumnsTableDlg implements OnInit {
             });
         } catch (error) {
           console.log('> ' + error.error);
-          var firstLine = error.error.split('\n', 1)[0];
+          const firstLine = error.error.split('\n', 1)[0];
+
           this.msgService.setMessage(firstLine);
           this.msgService.showMessage();
+
           return;
         }
       }

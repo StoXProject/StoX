@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Injector } from '@angular/core';
+
 import { AppComponentBase } from '../AppComponentBase';
-import { Injector, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-file-upload',
@@ -21,10 +22,14 @@ export class FileUploadComponent extends AppComponentBase {
     console.log('> ' + 'My File upload', event);
     if (event.files.length == 0) {
       console.log('> ' + 'No file selected.');
+
       return;
     }
-    var fileToUpload = event.files[0];
-    let input = new FormData();
+
+    const fileToUpload = event.files[0];
+
+    const input = new FormData();
+
     input.append('file', fileToUpload);
     /*   this.http
          .post(this.uploadUrl, input)

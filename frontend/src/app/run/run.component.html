@@ -1,5 +1,4 @@
-<p-toolbar
-  ><!--using <mat-toolbar>-->
+<p-toolbar>
   <ng-container *ngFor="let btn of buttons">
     <button class="b" (click)="handleClick(btn.cmd)" openDelay="800" placement="right" [ngbTooltip]="getActionTooltip(btn.cmd)" [ngClass]="{ disabled: !getActionEnabled(btn.cmd) }">
       <ng-template [ngIf]="'true'">

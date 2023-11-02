@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { DataService } from '../../service/data.service';
-import { ProjectService } from '../../service/project.service';
+
 import { UserLogEntry } from '../../data/userlogentry';
 import { UserLogType } from '../../enum/enums';
+import { DataService } from '../../service/data.service';
+import { ProjectService } from '../../service/project.service';
 
 @Injectable()
 export class InstallRPackagesDlgService {
@@ -20,12 +21,14 @@ export class InstallRPackagesDlgService {
   }
 
   async apply() {
-    let project: string = this.ps.selectedProject?.projectPath;
+    const project: string = this.ps.selectedProject?.projectPath;
+
     try {
       await this.ps.activateProject(null, true);
       this.isInstalling = true;
       await this.ps.checkRstoxFrameworkAvailability();
-      let res = await this.dataService.installRstoxFramework().toPromise();
+      const res = await this.dataService.installRstoxFramework().toPromise();
+
       this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, res));
       await this.ps.checkRstoxFrameworkAvailability();
       this.isInstalling = false;

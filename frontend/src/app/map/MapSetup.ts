@@ -1,35 +1,30 @@
-import { Fill, Stroke, Style, RegularShape, Circle, Icon } from 'ol/style';
-import { StyleLike, StyleFunction } from 'ol/style/Style';
-import { FeatureLike } from 'ol/Feature';
+import { MatDialog } from '@angular/material/dialog';
+import MousePosition from 'ol/control/MousePosition';
 import { Coordinate } from 'ol/coordinate';
-import { Layer, Vector } from 'ol/layer';
-import BaseObject from 'ol/Object';
-import { Vector as VectorSource, UrlTile } from 'ol/source';
+import { createStringXY } from 'ol/coordinate';
+//import { rgb } from 'color-convert/conversions';
+import { shiftKeyOnly, singleClick } from 'ol/events/condition';
+import { FeatureLike } from 'ol/Feature';
+import Feature from 'ol/Feature';
 import { GeoJSON } from 'ol/format';
 import { MultiPoint } from 'ol/geom';
-
-import { Button } from 'primeng/button';
-import MousePosition from 'ol/control/MousePosition';
-import { createStringXY } from 'ol/coordinate';
-import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import { fromLonLat } from 'ol/proj';
-//import { rgb } from 'color-convert/conversions';
-import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
-import { Select, Draw, Modify, Snap } from 'ol/interaction';
-import { DataService } from '../service/data.service';
-import { ProjectService } from '../service/project.service';
-import { ProcessDataService } from '../service/processdata.service';
-import { MatDialog } from '@angular/material/dialog';
+import { Draw, Modify, Select } from 'ol/interaction';
+import { Layer, Vector } from 'ol/layer';
+import { Vector as VectorSource } from 'ol/source';
+import { Fill, Icon, Stroke, Style } from 'ol/style';
+import { StyleFunction } from 'ol/style/Style';
+
+import { ActiveProcessResult } from '../data/runresult';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
-import { Color } from './Color';
-import { clone } from 'ol/extent';
-import { ProcessTableResult, ActiveProcessResult } from '../data/runresult';
+import { DataService } from '../service/data.service';
+import { ProcessDataService } from '../service/processdata.service';
+import { ProjectService } from '../service/project.service';
 import { HTMLUtil } from '../utils/htmlutil';
-import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes';
-import { EDSU_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata';
-import { NamedStringTable, NamedStringIndex } from './../data/types';
-import { asString } from 'ol/color';
+import { EDSU_PSU, Stratum_PSU } from './../data/processdata';
+import { NamedStringIndex, NamedStringTable } from './../data/types';
+import { Color } from './Color';
+import { MapSymbol } from './maptypes';
 declare const Buffer;
 
 export class MapSetup {
@@ -62,8 +57,9 @@ export class MapSetup {
   static getPointStyle(fillColor: string, outlineColor: string, strokeWidth: number, symb: MapSymbol): Style {
     let symbFormatted: string = symb.shape,
       svgWidth: number = null,
-      svgHeight: number = null,
-      halfStrokeWidth: number = strokeWidth / 2;
+      svgHeight: number = null;
+    const halfStrokeWidth: number = strokeWidth / 2;
+
     switch (
       symb.shape // type-guard for algebraic type (discriminant union)
     ) {
@@ -72,36 +68,28 @@ export class MapSetup {
         svgWidth = symb.width + strokeWidth;
         svgHeight = symb.height + strokeWidth;
         break;
+
       case 'circle':
-        let cx: number = symb.radius + halfStrokeWidth,
+        const cx: number = symb.radius + halfStrokeWidth,
           cy: number = cx;
+
         symbFormatted += HTMLUtil.formatTagPropPx('cx', cx) + HTMLUtil.formatTagPropPx('cy', cy) + HTMLUtil.formatTagPropPx('r', symb.radius);
         svgWidth = symb.radius * 2 + strokeWidth;
         svgHeight = svgWidth;
         break;
     }
-    var svg = '<svg width="' + svgWidth + 'px" height="' + svgHeight + 'px" version="1.1" xmlns="http://www.w3.org/2000/svg">' + '<' + symbFormatted + HTMLUtil.formatTagProp('fill', fillColor) + HTMLUtil.formatTagPropPx('stroke-width', strokeWidth) + HTMLUtil.formatTagProp('stroke', outlineColor) + '/>' + '</svg>';
 
-    var style = new Style({
+    const svg = '<svg width="' + svgWidth + 'px" height="' + svgHeight + 'px" version="1.1" xmlns="http://www.w3.org/2000/svg">' + '<' + symbFormatted + HTMLUtil.formatTagProp('fill', fillColor) + HTMLUtil.formatTagPropPx('stroke-width', strokeWidth) + HTMLUtil.formatTagProp('stroke', outlineColor) + '/>' + '</svg>';
+
+    const style = new Style({
       image: new Icon({
         opacity: 1,
         src: 'data:image/svg+xml;utf8,' + svg,
         scale: 1.0,
       }),
     });
+
     return style;
-    /*return new Style({
-            image: new RegularShape({
-                fill: new Fill({ color: fillColor }),
-                stroke: new Stroke({
-                    color: MapSetup.darken(fillColor, 0.7),
-                    width: 1.2
-                }),
-                points: size,
-                radius: size,
-                angle: Math.PI / size
-            })
-        });*/
   }
   static getLineStyle(strokeColor: string, width: number) {
     return new Style({
@@ -112,33 +100,29 @@ export class MapSetup {
     });
   }
 
-  /* static getAcousticPointStyle(): Style {
-        return MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, 6);
-    }
-    static getAcousticPointStyleFocused(): Style {
-        return MapSetup.getPointStyleCircle(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5), MapSetup.POINT_OUTLINE_COLOR, 6);
-    }
-    static getAcousticPointStyleSelected(): Style {
-        return MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, 6);
-    }*/
-  /*static getStationPointStyle(): Style {
-        return MapSetup.getPointStyleRect(MapSetup.STATION_POINT_COLOR, MapSetup.POINT_OUTLINE_COLOR, 14);
-    }*/
   static getStyleCacheFunction(): StyleFunction {
     // This function lets the feature determine by callback the selection of style into the stylecache.
     return (feature: FeatureLike, resolution: number) => {
-      let l: Layer = feature.get('layer');
-      let styleCache: Style[] = feature.get('styleCache');
-      let styleSelection: number = feature.get('selection');
+      const l: Layer = feature.get('layer');
+
+      const styleCache: Style[] = feature.get('styleCache');
+
+      const styleSelection: number = feature.get('selection');
+
       return styleCache[styleSelection];
     };
   }
   static getEDSUPointStyleCache(layerIdx: number): Style[] {
-    let edsuRadius: number = 6; // px
-    let pointColor: string = MapSetup.DISTANCE_POINT_COLORS[layerIdx % MapSetup.DISTANCE_POINT_COLORS.length];
-    let outlineColor: string = 'rgb(0, 0, 0, 0.1)';
-    let focusColor: string = Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5);
-    let focusLineColor: string = Color.darken(focusColor, 0.5);
+    const edsuRadius: number = 6; // px
+
+    const pointColor: string = MapSetup.DISTANCE_POINT_COLORS[layerIdx % MapSetup.DISTANCE_POINT_COLORS.length];
+
+    const outlineColor: string = 'rgb(0, 0, 0, 0.1)';
+
+    const focusColor: string = Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5);
+
+    const focusLineColor: string = Color.darken(focusColor, 0.5);
+
     return [
       MapSetup.getPointStyleCircle(pointColor, outlineColor, edsuRadius), // 0: present
       MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_SELECTED_COLOR, outlineColor, edsuRadius), // 1: selected
@@ -150,13 +134,16 @@ export class MapSetup {
   static DISTANCE_POINT_COLORS: string[] = ['rgb(255,192,203)', 'rgb(196,96,101)', 'rgb(139,0,0)', 'rgb(188,59,0)', 'rgb(238,118,0)'];
 
   static getStationPointStyleCache(layerIdx: number): Style[] {
-    let ptCol = MapSetup.STATION_POINT_COLORS[layerIdx % MapSetup.STATION_POINT_COLORS.length];
-    let symSize: number = 14;
+    const ptCol = MapSetup.STATION_POINT_COLORS[layerIdx % MapSetup.STATION_POINT_COLORS.length];
+
+    const symSize: number = 14;
+
     return [MapSetup.getPointStyleRect(ptCol, MapSetup.POINT_OUTLINE_COLOR, symSize), MapSetup.getPointStyleRect(MapSetup.STATION_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize)];
   }
 
   static getEDSULineStyle(layerIdx: number): Style {
-    let ptCol = MapSetup.DISTANCE_POINT_COLORS[layerIdx % MapSetup.DISTANCE_POINT_COLORS.length];
+    const ptCol = MapSetup.DISTANCE_POINT_COLORS[layerIdx % MapSetup.DISTANCE_POINT_COLORS.length];
+
     return MapSetup.getLineStyle(Color.darken(ptCol, 0.9), 2);
   }
 
@@ -178,33 +165,41 @@ export class MapSetup {
     return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.15)', 'rgba(0, 0, 0, 0.3)', 1);
   }
   static getStratumNodeStyle(): Style {
-    let s: Style = MapSetup.getPointStyleRect('rgba(255, 0, 0, 0.7)', MapSetup.POINT_OUTLINE_COLOR, 6);
+    const s: Style = MapSetup.getPointStyleRect('rgba(255, 0, 0, 0.7)', MapSetup.POINT_OUTLINE_COLOR, 6);
+
     s.setGeometry(f => {
-      var coordinates: Coordinate[] = [].concat(...(<Point>f.getGeometry()).getCoordinates());
+      const coordinates: Coordinate[] = [].concat(...(<Point>f.getGeometry()).getCoordinates());
+
       return new MultiPoint(coordinates);
     });
+
     return s;
   }
   static getStratumSelectStyle(): Style {
     return MapSetup.getPolygonStyle('rgba(255, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 2);
   }
   static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, mapInteraction: MapInteraction) {
-    let m: Modify = new Modify({
+    const m: Modify = new Modify({
       features: select.getFeatures() /*,
                         deleteCondition: e => singleClick(e) && shiftKeyOnly(e)*/,
     });
+
     m.on('modifyend', async function (e) {
       // Add the features back to API.
       //console.log("> " + JSON.stringify(e.features.getArray()));
-      let fcloned: Feature[] = e.features.getArray().map(f => {
-        let f2: Feature = (f as Feature).clone();
+      const fcloned: Feature[] = e.features.getArray().map(f => {
+        const f2: Feature = (f as Feature).clone();
+
         f2.set('layer', null);
         f2.set('styleCache', null);
+
         return f2;
       });
+
       console.log('> ' + JSON.stringify(fcloned));
 
-      let s: string = new GeoJSON().writeFeatures(fcloned, { featureProjection: mapInteraction.getProj(), dataProjection: 'EPSG:4326' });
+      const s: string = new GeoJSON().writeFeatures(fcloned, { featureProjection: mapInteraction.getProj(), dataProjection: 'EPSG:4326' });
+
       /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:4326',
@@ -212,6 +207,7 @@ export class MapSetup {
       //console.log("> " + s);
       ps.handleAPI(await dataService.modifyStratum(s, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
     });
+
     return m;
   }
   static createStratumSelectInteraction() {
@@ -226,10 +222,11 @@ export class MapSetup {
     });
   }
   static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource, dataService: DataService, ps: ProjectService, proj: string, mapInteraction: MapInteraction) {
-    let d: Draw = new Draw({
+    const d: Draw = new Draw({
       source: source,
       type: 'Polygon',
     });
+
     d.on('drawend', async e => {
       // Add the features back to API.
       /*let s2 : Feature[] = (new GeoJSON).readFeatures(JSON.parse(s), {
@@ -243,8 +240,11 @@ export class MapSetup {
         disableClose: true,
         data: { stratum: '', mapInteraction: mapInteraction },
       });
-      let f: Feature = e.feature.clone(); // survive event e change after subdialog by cloning feature
-      let strataName: any = await dialogRef.afterClosed().toPromise();
+
+      const f: Feature = e.feature.clone(); // survive event e change after subdialog by cloning feature
+
+      const strataName: any = await dialogRef.afterClosed().toPromise();
+
       /*            let f2 : Feature = (new GeoJSON).readFeatures(JSON.parse(stratum), {
                             dataProjection: 'EPSG:4326',
                             featureProjection: proj
@@ -252,29 +252,33 @@ export class MapSetup {
       console.log('> ' + 'Strata name ' + strataName + ' with hex ' + MapSetup.toHex(strataName));
       if (typeof strataName == 'string') {
         // a valid stratum name has been entered
-        //f.setId(Math.max(...source.getFeatures().map(f2 => f2.getId() != null ? +f2.getId() : 0)) + 1);
         f.setProperties({ StratumName: strataName });
-        let stratum: string = new GeoJSON().writeFeatures([f], { featureProjection: proj, dataProjection: 'EPSG:4326' });
+        const stratum: string = new GeoJSON().writeFeatures([f], { featureProjection: proj, dataProjection: 'EPSG:4326' });
+
         console.log('> ' + stratum);
-        //source.getFeatures().map(f => f.getId())
-        //e.setId(33); // find the max id + 1
-        let res: ActiveProcessResult = ps.handleAPI(await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
+        const res: ActiveProcessResult = ps.handleAPI(await dataService.addStratum(stratum, ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise());
+
         console.log('> ' + 'res :' + JSON.stringify(res));
         ps.iaMode = 'stratum'; // trigger the gui
       }
+
       mapInteraction.resetInteraction();
     });
+
     return d;
   }
 
-  // hex helper in typescript
+  // Hex helper
   static toHex(str: string) {
-    var result = '';
-    for (var i = 0; i < str.length; i++) {
+    let result = '';
+
+    for (let i = 0; i < str.length; i++) {
       result += str.charCodeAt(i).toString(16);
     }
+
     return result;
   }
+
   /**
    * getGEOJSONLayerFromURL - create a GEOJSON layer
    * @param name
@@ -283,11 +287,12 @@ export class MapSetup {
    * @param selectable
    */
   static getGeoJSONLayerFromFeatureString(name: string, layerType: string, zIndex: number, feat: string, proj: string, style: Style[], selectable: boolean, layerOrder: number, infoTables: NamedStringTable[]): Layer {
-    var s: VectorSource = new VectorSource({
+    const s: VectorSource = new VectorSource({
       format: new GeoJSON(),
       useSpatialIndex: false,
     });
-    var v: Vector<any> = new Vector<any>({
+
+    const v: Vector<any> = new Vector<any>({
       source: s,
       style: MapSetup.getStyleCacheFunction(),
       zIndex: zIndex,
@@ -310,12 +315,12 @@ export class MapSetup {
       if (layerType == 'EDSU') {
         MapSetup.updateEDSUSelection(evt.feature, null);
       }
+
       if (layerType == 'stratum') {
         MapSetup.updateStratumSelection(evt.feature, null);
       }
+
       MapSetup.connectInfoProperties(evt.feature);
-      //evt.feature.set("selection", 0); // selection 0 by default.
-      //ft.feature.set("feature", ft); // set a reference to itsself
     });
     s.addFeatures(
       new GeoJSON().readFeatures(JSON.parse(feat), {
@@ -324,84 +329,107 @@ export class MapSetup {
       })
     );
 
-    // Create a feature->layer link
-    //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));
     return v;
   }
 
   /** Connects primary and secondary tables to a given feature */
   public static connectInfoProperties(feature: Feature) {
-    let l: Layer = <Layer>feature.get('layer');
-    let lt: string = <string>l.get('layerType');
+    const l: Layer = <Layer>feature.get('layer');
+
+    const lt: string = <string>l.get('layerType');
+
     let infoTables: NamedStringTable[] = <NamedStringTable[]>l.get('infoTables');
+
     let primaryKeyName: string = null;
+
     let secondaryKeyName: string = null;
+
     let primaryKeyValue: string = null;
+
     let primaryTable: NamedStringTable = null;
+
     let secondaryTable: NamedStringTable = null;
+
     switch (lt) {
       case 'station': {
         primaryKeyName = 'Station';
         secondaryKeyName = 'Haul';
         break;
       }
+
       case 'EDSU': {
         primaryKeyName = 'EDSU';
         break;
       }
+
       case 'stratum': {
         primaryKeyName = 'StratumName';
-        let stratumIndex: NamedStringIndex = {};
+        const stratumIndex: NamedStringIndex = {};
+
         stratumIndex[primaryKeyName] = feature.get(primaryKeyName);
         infoTables = [[stratumIndex]];
         break;
       }
     }
+
     if (primaryKeyName != null) {
       primaryKeyValue = feature.get(primaryKeyName);
     }
+
     primaryTable = infoTables.length > 0 ? infoTables[0] : null;
     secondaryTable = infoTables.length > 1 ? infoTables[1] : null;
     //Lookup primary key "Station": "2017102/4/2017/4174/2/160" into Station table
     if (primaryTable != null && primaryKeyName != null && primaryKeyValue != null) {
-      let primaryInfoLookup: NamedStringIndex = primaryTable.find(idx => idx[primaryKeyName] == primaryKeyValue);
+      const primaryInfoLookup: NamedStringIndex = primaryTable.find(idx => idx[primaryKeyName] == primaryKeyValue);
+
       feature.set('primaryInfo', primaryInfoLookup);
       //Lookup primary key "Station": "2017102/4/2017/4174/2/160" into Haul table
       if (secondaryTable != null) {
-        let secondaryTable: NamedStringTable = infoTables[1];
-        let secondaryInfoLookup: NamedStringIndex[] = secondaryTable.filter(idxs => idxs[primaryKeyName] == primaryKeyValue);
+        const secondaryTable: NamedStringTable = infoTables[1];
+
+        const secondaryInfoLookup: NamedStringIndex[] = secondaryTable.filter(idxs => idxs[primaryKeyName] == primaryKeyValue);
+
         feature.set('secondaryInfo', secondaryInfoLookup);
       }
     }
   }
 
   public static getGridLayer(proj, centerLongitude: number): Vector<any> {
-    var gridLines = {
+    const gridLines = {
       type: 'FeatureCollection',
       features: [],
     };
-    let style = new Style({
+
+    const style = new Style({
       stroke: new Stroke({
         color: 'rgb(223, 242, 255)',
         width: 1,
       }),
     });
-    let lines = [];
+
+    const lines = [];
+
     // Define the longitude 120 degrees to each side of the centerLongitude:
     for (let iy = -85; iy <= 85; iy += 5) {
-      let line = [];
+      const line = [];
+
       for (let ix = centerLongitude - 175; ix <= centerLongitude + 175; ix += 5) {
         line.push([ix, iy]);
       }
+
       lines.push(line);
     }
+
     for (let ix = centerLongitude - 175; ix <= centerLongitude + 175; ix += 5) {
-      let line = [];
+      const line = [];
+
       for (let iy = -85; iy <= 85; iy += 5) {
         line.push([ix, iy]);
       }
+
       lines.push(line);
     }
+
     lines.forEach(l =>
       gridLines.features.push({
         type: 'Feature',
@@ -411,23 +439,22 @@ export class MapSetup {
         },
       })
     );
-    //let feat: Feature[] = []
-    //feat.push(new Feature({ id: 'f1', geometry: new Point([1, 62]) }));
-    var s: VectorSource = new VectorSource({
+    const s: VectorSource = new VectorSource({
       format: new GeoJSON(),
       features: new GeoJSON().readFeatures(gridLines, {
         dataProjection: 'EPSG:4326',
         featureProjection: proj,
       }),
     });
-    var v: Vector<any> = new Vector({
+
+    const v: Vector<any> = new Vector({
       source: s,
       style: style,
       zIndex: 10,
     });
+
     s.on('addfeature', ft => {
       ft.feature.set('layer', v);
-      //ft.feature.set("feature", ft); // set a reference to itsself
     });
 
     // Set layer properties
@@ -435,10 +462,10 @@ export class MapSetup {
     v.set('name', 'grid');
     v.set('layerType', 'grid');
     v.set('style', style);
-    // Create a feature->layer link
-    //v.getSource().getFeatures().forEach(f => f.setProperties({ "layer": name }));
+
     return v;
   }
+
   static getMousePositionControl() {
     return new MousePosition({
       coordinateFormat: createStringXY(4),
@@ -450,62 +477,69 @@ export class MapSetup {
       placeholder: '&nbsp;',
     });
   }
+
   static updateEDSUSelection(f: Feature, selectedPSU) {
-    let edsuPsu: EDSU_PSU = f.get('edsupsu');
-    //let absent: boolean = edsuPsu == null /*error not mapped*/ || edsuPsu.PSU === "NA";
-    let selected: boolean = edsuPsu != null && edsuPsu.PSU != null && edsuPsu.PSU.length > 0 && edsuPsu.PSU !== 'NA'; //f.get("selected");
-    let focused: boolean = selected && selectedPSU != null && edsuPsu.PSU == selectedPSU;
-    let selection =
-      // absent != null && absent ? 3 :
-      focused != null && focused ? 2 : selected != null && selected ? 1 : 0;
+    const edsuPsu: EDSU_PSU = f.get('edsupsu');
+    const selected: boolean = edsuPsu?.PSU != null && edsuPsu.PSU.length > 0 && edsuPsu.PSU !== 'NA';
+    const focused: boolean = selected && selectedPSU != null && edsuPsu.PSU == selectedPSU;
+    const selection = focused != null && focused ? 2 : selected != null && selected ? 1 : 0;
+
     f.set('selection', selection); // Set the style selection.
   }
 
   static updateStratumSelection(f: Feature, selectedStratum) {
-    let stratumName = f.get('StratumName');
-    let focused: boolean = stratumName != null && stratumName.length != null && selectedStratum != null && stratumName == selectedStratum;
+    const stratumName = f.get('StratumName');
+
+    const focused: boolean = stratumName != null && stratumName.length != null && selectedStratum != null && stratumName == selectedStratum;
+
     f.set('selection', focused ? 1 : 0);
   }
 
   static isStationSelected(f: Feature, pds: ProcessDataService): boolean {
-    let secInfos: NamedStringIndex[] = f.get('secondaryInfo');
+    const secInfos: NamedStringIndex[] = f.get('secondaryInfo');
+
     let selected: boolean = false;
+
     if (secInfos != null && pds.bioticAssignmentData != null) {
       selected = secInfos.find(secInfo => pds.bioticAssignmentData.BioticAssignment.find(asg => secInfo['Haul'] == asg.Haul && pds.selectedPSU == asg.PSU) != null) != null;
     }
+
     return selected != null && selected;
   }
 
   static async selectStation(f: Feature, ps: ProjectService, pds: ProcessDataService, ds: DataService, on: boolean) {
-    let psu = pds.selectedPSU;
+    const psu = pds.selectedPSU;
+
     if (psu == null) {
       return; // not possible to select stratum when selected psu is null
     }
-    let sp: Stratum_PSU = pds.acousticPSU.Stratum_PSU.find(sp => sp.PSU == psu);
-    let stratum = sp == null ? null : sp.Stratum;
+
+    const sp: Stratum_PSU = pds.acousticPSU.Stratum_PSU.find(sp => sp.PSU == psu);
+
+    const stratum = sp == null ? null : sp.Stratum;
+
     if (stratum == null) {
       return; // no stratum associated with the selected psu.
     }
-    let secInfos: NamedStringIndex[] = f.get('secondaryInfo');
-    /*        let layers: string[] = pds.acousticLayerData != null ? pds.acousticLayerData.AcousticLayer.map(al => al.Layer) : null;
-        if(layers == null) {
-            console.log("> " + 'Missing acoustic layer definition when changing assignment');
-            return;
-        }*/
-    let hauls: string[] = secInfos.map(secInfo => secInfo['Haul']);
+
+    const secInfos: NamedStringIndex[] = f.get('secondaryInfo');
+
+    const hauls: string[] = secInfos.map(secInfo => secInfo['Haul']);
+
     console.log('> ' + 'selectStation: ' + on ? 'on' : 'off');
-    let res: ActiveProcessResult = ps.handleAPI(await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId, stratum, psu, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId, stratum, psu, hauls).toPromise()));
+    const res: ActiveProcessResult = ps.handleAPI(await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId, stratum, psu, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId, stratum, psu, hauls).toPromise()));
+
     // update the cache - NOTE: should we get the new assignments from backend on result?
-    //layers.forEach(layer =>
     hauls.forEach(haul => {
-      let idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Haul == haul && psu == asg.PSU);
+      const idx = pds.bioticAssignmentData.BioticAssignment.findIndex(asg => asg.Haul == haul && psu == asg.PSU);
+
       console.log('> ' + 'haul ' + haul + ' idx ' + idx);
       if (on) {
         if (idx < 0) {
           console.log('> ' + 'push assignment');
           pds.bioticAssignmentData.BioticAssignment.push({
-            PSU: pds.selectedPSU /*Layer: layer,*/,
-            Haul: haul /*, WeightingFactor: "1"*/,
+            PSU: pds.selectedPSU,
+            Haul: haul,
           });
         }
       } else {
@@ -515,7 +549,6 @@ export class MapSetup {
         }
       }
     });
-    // );
     MapSetup.updateStationSelection(f, pds);
   }
 

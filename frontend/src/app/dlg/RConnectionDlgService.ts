@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
 
@@ -33,6 +34,7 @@ export class RConnectionDlgService {
     } finally {
       this.isConnecting = false;
     }
+
     console.log('> ' + 'Posting rpath, response ' + res);
     this.display = false;
   }

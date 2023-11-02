@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { tap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+
 import { DataService } from '../../service/data.service';
 import { InstallRPackagesDlgService } from './InstallRPackagesDlgService';
 

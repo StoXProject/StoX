@@ -1,16 +1,14 @@
-import { Component, ElementRef, ViewChild, OnInit, Input } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material/menu';
-
-import { ProjectService } from '../../service/project.service';
-import { DataService } from '../../service/data.service';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatTabGroup, MatTabHeader } from '@angular/material/tabs';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-
-import { SubjectAction } from 'src/app/data/subjectaction';
-import { ContextMenu } from 'primeng/contextmenu';
-
+import { DomSanitizer } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/api';
+import { ContextMenu } from 'primeng/contextmenu';
 import { OutputElement } from 'src/app/data/outputelement';
+import { SubjectAction } from 'src/app/data/subjectaction';
+
+import { DataService } from '../../service/data.service';
+import { ProjectService } from '../../service/project.service';
+
 @Component({
   selector: 'output',
   templateUrl: './output.component.html',
@@ -21,21 +19,14 @@ export class OutputComponent implements OnInit {
 
   @ViewChild('outputTableGroup') outputTableGroup: MatTabGroup;
 
-  /*onContextMenu(event: MouseEvent, item: Object) {
-        event.preventDefault();
-        this.contextMenuPosition.x = event.clientX + 'px';
-        this.contextMenuPosition.y = event.clientY + 'px';
-        this.contextMenu.menuData = { 'item': item };
-        this.contextMenu.menu.focusFirstItem('mouse');
-        this.contextMenu.openMenu();
-    }*/
   async prepCm(oe: OutputElement) {
     // comment: add list of outputtablenames to runModel result.
-    let m: MenuItem[] = [];
+    const m: MenuItem[] = [];
+
     m.push({
       label: 'Close',
       icon: 'rib absa closeicon',
-      command: event => {
+      command: () => {
         this.closeElement(oe);
       },
     });
@@ -44,19 +35,20 @@ export class OutputComponent implements OnInit {
         {
           label: 'Close others',
           icon: 'rib absa emptyicon',
-          command: event => {
+          command: () => {
             this.closeOtherElements(oe);
           },
         },
         {
           label: 'Close all',
           icon: 'rib absa emptyicon',
-          command: event => {
+          command: () => {
             this.closeAllElements();
           },
         }
       );
     }
+
     this.cm.model = m;
   }
 
@@ -65,11 +57,13 @@ export class OutputComponent implements OnInit {
     event.stopPropagation();
     await this.prepCm(oe);
     this.cm.show(event);
+
     return false;
   }
 
   closeElement(oe) {
-    let idx = this.ps.outputElements.findIndex(e => e.element.elementName == oe.element.elementName);
+    const idx = this.ps.outputElements.findIndex(e => e.element.elementName == oe.element.elementName);
+
     this.ps.outputElements.splice(idx, 1);
     if (this.ps.outputElements.length > 0) {
       this.outputTableGroup.selectedIndex = Math.max(idx + 1, this.ps.outputElements.length - 1);
@@ -77,21 +71,26 @@ export class OutputComponent implements OnInit {
   }
 
   closeOtherElements(oe) {
-    let idx = this.ps.outputElements.findIndex(e => e.element.elementName == oe.element.elementName);
-    let l: number = this.ps.outputElements.length;
+    const idx = this.ps.outputElements.findIndex(e => e.element.elementName == oe.element.elementName);
+
+    const l: number = this.ps.outputElements.length;
+
     if (idx < l - 1) {
       this.ps.outputElements.splice(idx + 1, l - 1 - idx);
     }
+
     if (idx > 0) {
       this.ps.outputElements.splice(0, idx - 0);
     }
   }
 
   closeAllElements() {
-    let l: number = this.ps.outputElements.length;
+    const l: number = this.ps.outputElements.length;
+
     if (l > 0) {
       this.ps.outputElements.splice(0, l);
     }
+
     (this.outputTableGroup?._tabHeader as MatTabHeader).updatePagination();
   }
 
@@ -125,6 +124,7 @@ export class OutputComponent implements OnInit {
             this.refreshData(action.data);
             break;
           }
+
           case 'remove': {
             this.removeData(action.data);
             break;
@@ -139,6 +139,7 @@ export class OutputComponent implements OnInit {
   }
   getItemOutput(item) {
     console.log('> ' + JSON.stringify(item.outputjson));
+
     return item.outputjson;
   }
 

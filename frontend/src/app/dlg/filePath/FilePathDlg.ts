@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
-import { FilePathDlgService } from './FilePathDlgService';
-import { DataService } from '../../service/data.service';
+
 import { FilePath } from '../../data/FilePath';
-import { MessageService } from '../../message/MessageService';
-import { ProjectService } from '../../service/project.service';
 import { ProcessProperties } from '../../data/ProcessProperties';
+import { MessageService } from '../../message/MessageService';
+import { DataService } from '../../service/data.service';
+import { ProjectService } from '../../service/project.service';
+import { FilePathDlgService } from './FilePathDlgService';
 
 @Component({
   selector: 'FilePathDlg',
@@ -74,7 +74,8 @@ export class FilePathDlg implements OnInit {
   // }
 
   arePathsUnique() {
-    var tmpArr = [];
+    const tmpArr = [];
+
     for (let obj = 0; obj < this.service.paths.length; obj++) {
       if (tmpArr.indexOf(this.service.paths[obj].path) < 0) {
         tmpArr.push(this.service.paths[obj].path);
@@ -82,6 +83,7 @@ export class FilePathDlg implements OnInit {
         return false;
       }
     }
+
     return true;
   }
 
@@ -109,14 +111,14 @@ export class FilePathDlg implements OnInit {
   // }
 
   async edit(currentFilePath: FilePath) {
-    let options = { properties: ['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath };
+    const options = { properties: ['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath };
 
-    let filePath = await this.dataService.browsePath(options).toPromise();
+    const filePath = await this.dataService.browsePath(options).toPromise();
 
     // console.log("> " + "filePath : " + filePath);
 
     if (filePath != null) {
-      let paths = <string[]>JSON.parse(filePath);
+      const paths = <string[]>JSON.parse(filePath);
 
       //console.log("> " + "1st element : " + paths[0]);
 
@@ -129,7 +131,8 @@ export class FilePathDlg implements OnInit {
   }
 
   delete(currentFilePath: FilePath) {
-    let index: number = this.service.paths.findIndex(d => d === currentFilePath);
+    const index: number = this.service.paths.findIndex(d => d === currentFilePath);
+
     // console.log("> " + this.service.paths.findIndex(d => d === currentFilePath));
     this.service.paths.splice(index, 1);
     this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
@@ -141,17 +144,19 @@ export class FilePathDlg implements OnInit {
       if (this.service.paths[i].path == null) {
         this.msgService.setMessage('One or more file paths are empty!');
         this.msgService.showMessage();
+
         return;
       } else {
         // check file for existence
-        let trial1 = await this.dataService.fileExists(this.service.paths[i].path).toPromise();
+        const trial1 = await this.dataService.fileExists(this.service.paths[i].path).toPromise();
 
         if (trial1 != null && trial1 != 'true') {
-          let trial2 = await this.dataService.fileExists(this.ps.selectedProject.projectPath + '/' + this.service.paths[i].path).toPromise();
+          const trial2 = await this.dataService.fileExists(this.ps.selectedProject.projectPath + '/' + this.service.paths[i].path).toPromise();
 
           if (trial2 != null && trial2 != 'true') {
             this.msgService.setMessage('File ' + this.service.paths[i].path + ' does not exist');
             this.msgService.showMessage();
+
             return;
           }
         }
@@ -162,6 +167,7 @@ export class FilePathDlg implements OnInit {
     if (!this.arePathsUnique()) {
       this.msgService.setMessage('Paths to files are not unique!');
       this.msgService.showMessage();
+
       return;
     }
 
@@ -181,9 +187,11 @@ export class FilePathDlg implements OnInit {
             });
         } catch (error) {
           console.log('> ' + error.error);
-          var firstLine = error.error.split('\n', 1)[0];
+          const firstLine = error.error.split('\n', 1)[0];
+
           this.msgService.setMessage(firstLine);
           this.msgService.showMessage();
+
           return;
         }
       }

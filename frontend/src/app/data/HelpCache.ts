@@ -35,6 +35,7 @@ export class HelpCache {
     if (!this.isEmpty()) {
       return this.helpArray[this.currentIndex];
     }
+
     return null;
   }
 

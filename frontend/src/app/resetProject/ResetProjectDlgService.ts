@@ -1,8 +1,7 @@
-import { Project } from './../data/project';
-import { ProjectService } from './../service/project.service';
-import { DataService } from './../service/data.service';
 import { Injectable } from '@angular/core';
-import { MessageService } from './../message/MessageService';
+
+import { DataService } from './../service/data.service';
+import { ProjectService } from './../service/project.service';
 
 @Injectable()
 export class ResetProjectDlgService {
@@ -18,6 +17,7 @@ export class ResetProjectDlgService {
       if (this.ps.selectedProject != null && this.ps.selectedProject.projectPath != null) {
         this.ps.openProject(this.ps.selectedProject.projectPath, false, true, true);
       }
+
       return;
     }
 

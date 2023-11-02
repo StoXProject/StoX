@@ -1,14 +1,11 @@
-import { Injectable, RendererFactory2, Renderer2 } from '@angular/core';
-//import { Observable, of } from 'rxjs';
-import { Project } from '../data/project';
+import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+
 import { Process } from '../data/process';
-import { Model } from '../data/model';
-import { ProjectService } from '../service/project.service';
-import { DataService } from '../service/data.service';
-import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
-import { RunProcessesResult, ProcessTableResult } from './../data/runresult';
+import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
+import { RunProcessesResult } from './../data/runresult';
 
 @Injectable()
 /**
@@ -21,15 +18,11 @@ export class RunService {
     private rf: RendererFactory2
   ) {
     console.log('> ' + 'Initializing run service');
-    //this.iaMode = this.iaSubject.asObservable();
     this.ps.iaModeSubject.subscribe({
-      next: newVal => {
-        //      console.log("> " + newVal);
-      },
+      next: newVal => {},
     });
-    //this.iaSubject.next('stratum');
-    //this.reset();
-    let r: Renderer2 = rf.createRenderer(null, null);
+    const r: Renderer2 = rf.createRenderer(null, null);
+
     r.listen(document, 'document:keydown', evt => {
       console.log('> ' + evt);
       this.runToHere();
@@ -42,15 +35,18 @@ export class RunService {
     return this.canAddProcess() && this.ps.processes != null && this.ps.processes.length > 0;
   }
   run() {
-    let d = this.ps.activeProcess != null && this.ps.activeProcess.processDirty ? 1 : 0;
-    let idx: number = this.ps.getActiveProcessIdx() === null || this.ps.getActiveProcessIdx() - d == this.ps.processes.length - 1 ? 0 : this.ps.getActiveProcessIdx() - d + 1;
+    const d = this.ps.activeProcess != null && this.ps.activeProcess.processDirty ? 1 : 0;
+
+    const idx: number = this.ps.getActiveProcessIdx() === null || this.ps.getActiveProcessIdx() - d == this.ps.processes.length - 1 ? 0 : this.ps.getActiveProcessIdx() - d + 1;
+
     this.runProcessIdx(idx, this.ps.processes.length - 1);
     // If the active process is the last, use the first.
     // Run from next to the active to the last process
   }
 
   runFromHere() {
-    let idxFrom: number = this.ps.getSelectedProcessIdx();
+    const idxFrom: number = this.ps.getSelectedProcessIdx();
+
     this.runProcessIdx(idxFrom, this.ps.processes.length - 1);
   }
 
@@ -74,7 +70,8 @@ export class RunService {
   }
 
   runNext() {
-    let idx: number = this.getRunNextIdx();
+    const idx: number = this.getRunNextIdx();
+
     if (idx != null) {
       this.runProcessIdx(idx, idx);
     }
@@ -85,7 +82,9 @@ export class RunService {
     if (this.ps.processes.length == 0 || this.ps.getSelectedProcessIdx() == null) {
       return null;
     }
+
     let idx = 0;
+
     if (this.ps.getActiveProcessIdx() != null) {
       if (this.ps.getActiveProcessIdx() < this.ps.getSelectedProcessIdx()) {
         idx = this.ps.getActiveProcessIdx() + (this.ps.activeProcess.processDirty ? 0 : 1);
@@ -93,16 +92,13 @@ export class RunService {
         idx = this.ps.getSelectedProcessIdx();
       }
     }
+
     return this.firstProcessIdxRunnable(idx);
   }
 
-  /*hasFunctionalError() {
-        return this.ps.processes != null && this.ps.processes.length > 0 && 
-        this.hasFunctionalErrorUpTo(this.ps.processes.length - 1);
-    }*/
-
   hasFunctionalErrorUpTo(idx) {
-    let i = this.firstProcessIdxNotRunnable(idx, false, true);
+    const i = this.firstProcessIdxNotRunnable(idx, false, true);
+
     return i != null;
   }
 
@@ -120,6 +116,7 @@ export class RunService {
         return i;
       }
     }
+
     return null;
   }
 
@@ -129,6 +126,7 @@ export class RunService {
         return i;
       }
     }
+
     return null;
   }
 
@@ -137,30 +135,32 @@ export class RunService {
   }
 
   canRunThis(): boolean {
-    let idxFrom: number = this.getRunToHereIndexFrom();
-    let idxTo: number = this.getRunToHereIndexTo();
+    const idxFrom: number = this.getRunToHereIndexFrom();
+
+    const idxTo: number = this.getRunToHereIndexTo();
+
     return idxFrom != null && idxTo != null && idxFrom == idxTo && this.isProcessIdxRunnable(idxTo) && !this.hasFunctionalErrorUpTo(idxTo);
   }
 
   runToHere() {
-    let idxFrom: number = this.getRunToHereIndexFrom();
-    let idxTo: number = this.getRunToHereIndexTo();
+    const idxFrom: number = this.getRunToHereIndexFrom();
+
+    const idxTo: number = this.getRunToHereIndexTo();
+
     if (idxFrom != null && idxTo != null) {
       this.runProcessIdx(idxFrom, idxTo);
     }
     // If the active process is the last, use the first.
     // Run from the next to the active to this process
   }
+
   canReset(): boolean {
-    return (
-      this.ps.runningProcessId == null && (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null) && !this.ps.isResetting /* &&
-            this.ps.activeModelName != null && this.ps.selectedModel.modelName === this.ps.activeModelName*/
-    );
+    return this.ps.runningProcessId == null && (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null) && !this.ps.isResetting;
   }
+
   async reset() {
     this.ps.isResetting = true;
     this.ps.runningProcessId = null;
-    //   this.ps.activeModelName = null;
     this.ps.handleAPI(await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise());
     this.ps.runFailedProcessId = null;
     this.dataService.log.length = 0;
@@ -171,26 +171,30 @@ export class RunService {
   }
 
   async runProcessIdx(iFrom: number, iTo: number) {
-    //  this.ps.activeModelName = this.ps.selectedModel.modelName;
     this.ps.runFailedProcessId = null;
     // local cache of project, model and processes survives async environment if changed by user.
-    let projectPath: string = this.ps.selectedProject.projectPath;
-    let modelName: string = this.ps.selectedModel.modelName;
-    let processes: Process[] = this.ps.processes;
-    for (var i = iFrom; i <= iTo; i++) {
-      let p = processes[i];
+    const projectPath: string = this.ps.selectedProject.projectPath;
+
+    const modelName: string = this.ps.selectedModel.modelName;
+
+    const processes: Process[] = this.ps.processes;
+
+    for (let i = iFrom; i <= iTo; i++) {
+      const p = processes[i];
+
       if (!p.enabled) {
         continue;
       }
+
       if (p.functionInputError) {
         break;
       }
+
       this.ps.runningProcessId = p.processID;
       //console.log("> " + "Run process " + p.processName + " with id " + p.processID);
       this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, '> Running process ' + p.processName + ' of model ' + modelName + '...'));
       // this.dataService.logSubject.next('log-message');
-      // this.ps.iaMode = '';
-      let res: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise());
+      const res: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise());
 
       //console.log("> " + "run result: " + res);
       //await new Promise(resolve => setTimeout(resolve, 1200));
@@ -204,12 +208,15 @@ export class RunService {
           //if(this.ps.selectedProcess.processID == this.ps.activeProcessId) {
           this.ps.updateProcessProperties(); // process properties may change on the selected process
         }
-        let ia: string = res.interactiveMode;
+
+        const ia: string = res.interactiveMode;
+
         if (ia.length > 0) {
           this.ps.iaMode = ia;
         }
       }
     }
+
     this.ps.runningProcessId = null;
   }
   //runModel(idx) {
