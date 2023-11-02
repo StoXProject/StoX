@@ -1,22 +1,19 @@
 <mat-tab-group [@.disabled]="true" #outputTableGroup>
-    <mat-tab *ngFor="let item of ps.outputElements" label="{{item.element.elementFullName}}">
-        <ng-template mat-tab-label>
-            <div (contextmenu)="openCm($event, item)">{{item.element.elementFullName}}</div>
-        </ng-template>
-        <!--<div style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
+  <mat-tab *ngFor="let item of ps.outputElements" label="{{ item.element.elementFullName }}">
+    <ng-template mat-tab-label>
+      <div (contextmenu)="openCm($event, item)">{{ item.element.elementFullName }}</div>
+    </ng-template>
+    <!--<div style="user-select: text; height:inherit; width:inherit;  overflow:scroll;
         white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">
             {{getItemOutput(item)}}</div>-->
-            <ng-container [ngSwitch]="item.element.elementType">
-                <cdk-virtual-scroll-viewport *ngSwitchDefault itemSize="10" minBufferPx="600" maxBufferPx="600" style="user-select: text; height:inherit; width:inherit; overflow:auto;
-                 white-space:pre; font-family:'Courier New', Courier, monospace; --max-lines:100;">
-                     <div *cdkVirtualFor="let line of item.output">{{line}}</div>
-                </cdk-virtual-scroll-viewport>
-                <!--<ngx-json-viewer *ngSwitchCase="'geojson'" [json]="getItemOutput(item)" style="height:100%; width:100%;"></ngx-json-viewer>-->
-                <div [ngStyle]="{'overflow':'auto','width':'100%', 'height':'100%'}">   
-                    <img [hidden] = "item.output?.img == null" *ngSwitchCase="'plot'" [src]="bypassURL(item.output?.img)" 
-                        [ngStyle]="{'width':item.output?.width + 'cm', 'height':item.output?.height + 'cm', 'overflow': 'auto'}"/>
-                </div>
-            </ng-container>
-    </mat-tab>
-
+    <ng-container [ngSwitch]="item.element.elementType">
+      <cdk-virtual-scroll-viewport *ngSwitchDefault itemSize="10" minBufferPx="600" maxBufferPx="600" style="user-select: text; height: inherit; width: inherit; overflow: auto; white-space: pre; font-family: 'Courier New', Courier, monospace; --max-lines: 100">
+        <div *cdkVirtualFor="let line of item.output">{{ line }}</div>
+      </cdk-virtual-scroll-viewport>
+      <!--<ngx-json-viewer *ngSwitchCase="'geojson'" [json]="getItemOutput(item)" style="height:100%; width:100%;"></ngx-json-viewer>-->
+      <div [ngStyle]="{ overflow: 'auto', width: '100%', height: '100%' }">
+        <img [hidden]="item.output?.img === null || item.output?.img === undefined" *ngSwitchCase="'plot'" [src]="bypassURL(item.output?.img)" [ngStyle]="{ width: item.output?.width + 'cm', height: item.output?.height + 'cm', overflow: 'auto' }" />
+      </div>
+    </ng-container>
+  </mat-tab>
 </mat-tab-group>

@@ -1,76 +1,68 @@
-<p-dialog header="{{title}}" [(visible)]="service.display" [modal]="true" (onHide)="onHide()"
-[style]="{width: '800px', minWidth: '400px', maxHeight: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
-    <MessageDlg></MessageDlg>
-    <button mat-raised-button (click)="addRow()">Add</button> &nbsp;
-    <button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;
+<p-dialog header="{{title}}" [(visible)]="service.display" [modal]="true" (onHide)="onHide()" [style]="{width: '800px', minWidth: '400px', maxHeight: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
+  <MessageDlg></MessageDlg>
+  <button mat-raised-button (click)="addRow()">Add</button> &nbsp; <button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;
 
-    <div class="example-container mat-elevation-z8">
-        <mat-table #table [dataSource]="dataSource">
-      
-          <!--- Note that these columns can be defined in any order.
+  <div class="example-container mat-elevation-z8">
+    <mat-table #table [dataSource]="dataSource">
+      <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->
-      
-            <!-- Checkbox Column -->
-            <ng-container matColumnDef="select">
-            <mat-header-cell *matHeaderCellDef>
-                <!--<mat-checkbox (change)="$event ? masterToggle() : null"
+
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <mat-header-cell *matHeaderCellDef>
+          <!--<mat-checkbox (change)="$event ? masterToggle() : null"
                             [checked]="selection.hasValue() && isAllSelected()"
                             [indeterminate]="selection.hasValue() && !isAllSelected()">
                 </mat-checkbox>-->
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <mat-checkbox (click)="$event.stopPropagation()"
-                            (change)="$event ? selection.toggle(row) : null"
-                            [checked]="selection.isSelected(row)">
-                </mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"> </mat-checkbox>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container *ngFor="let column of displayedColumns">
+        <ng-container *ngIf="column !== 'select'">
+          <ng-container [matColumnDef]="column">
+            <mat-header-cell *matHeaderCellDef> {{column}} </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <ng-container *ngIf="possibleValues(column) !== null && possibleValues(column) !== undefined">
+                <mat-form-field floatLabel="never">
+                  <mat-select placeholder="" [(ngModel)]="element.getColumn(column).value" name="element.getColumn(column).value">
+                    <mat-option *ngFor="let oldName of possibleValues(column)" [value]="oldName"> {{oldName}} </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </ng-container>
+              <ng-container *ngIf="possibleValues(column) === null || possibleValues(column) === undefined">
+                <ng-container *ngIf="getType(column) === 'double' || getType(column) === 'numeric'">
+                  <mat-form-field floatLabel="never">
+                    <input matInput placeholder="" type="number" step="0.01" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value" />
+                  </mat-form-field>
+                </ng-container>
+                <ng-container *ngIf="getType(column) === 'integer'">
+                  <mat-form-field floatLabel="never">
+                    <input matInput placeholder="" type="number" step="1" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value" />
+                  </mat-form-field>
+                </ng-container>
+                <ng-container *ngIf="getType(column) === 'character'">
+                  <mat-form-field floatLabel="never">
+                    <input matInput placeholder="" type="text" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value" />
+                  </mat-form-field>
+                </ng-container>
+              </ng-container>
             </mat-cell>
-            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
 
-            <ng-container *ngFor="let column of displayedColumns">
-                <ng-container *ngIf="column != 'select'">
-                    <ng-container [matColumnDef]="column">
-                        <mat-header-cell *matHeaderCellDef> {{column}} </mat-header-cell>
-                        <mat-cell *matCellDef="let element">
-                            <ng-container *ngIf="possibleValues(column) != null">
-                                <mat-form-field floatLabel="never">
-                                    <mat-select placeholder = ""  [(ngModel)] = "element.getColumn(column).value" name = "element.getColumn(column).value">
-                                        <mat-option *ngFor = "let oldName of possibleValues(column)" [value] = "oldName">
-                                        {{oldName}}
-                                        </mat-option> 
-                                    </mat-select>
-                                </mat-form-field>
-                            </ng-container>
-                            <ng-container *ngIf="possibleValues(column) == null">
-                                <ng-container *ngIf="getType(column) == 'double' || getType(column) == 'numeric'">
-                                    <mat-form-field floatLabel="never">
-                                        <input matInput placeholder="" type="number" step="0.01" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value">
-                                    </mat-form-field>
-                                </ng-container>
-                                <ng-container *ngIf="getType(column) == 'integer'">
-                                    <mat-form-field floatLabel="never">
-                                        <input matInput placeholder="" type="number" step="1" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value">
-                                    </mat-form-field>
-                                </ng-container>
-                                <ng-container *ngIf="getType(column) == 'character'">
-                                    <mat-form-field floatLabel="never">
-                                        <input matInput placeholder="" type="text" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value">
-                                    </mat-form-field>
-                                </ng-container>                                    
-                            </ng-container> 
-                        </mat-cell>
-                    </ng-container>                        
-                </ng-container>                
-            </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
 
-          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        </mat-table>
-    </div>
-
-    <ng-template pTemplate="footer">
-        <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening"></mat-spinner> <!--class="spinner"--> 
-        <button type="button" pButton icon="pi pi-close" (click)="cancel()" label="Cancel"
-            class="p-button-secondary"></button>
-        <button type="button" pButton  (click)="apply()" label="Save"></button>
-    </ng-template>
+  <ng-template pTemplate="footer">
+    <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening"></mat-spinner>
+    <!--class="spinner"-->
+    <button type="button" pButton icon="pi pi-close" (click)="cancel()" label="Cancel" class="p-button-secondary"></button>
+    <button type="button" pButton (click)="apply()" label="Save"></button>
+  </ng-template>
 </p-dialog>

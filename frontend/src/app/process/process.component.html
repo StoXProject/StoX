@@ -3,7 +3,7 @@
     <div (contextmenu)="openCm($event, cm, process)" cdkDrag>
       <span [ngClass]="{ 'rib fa': true, processicon: process.enabled, inactiveprocessicon: !process.enabled, 'fa-spin': process === ps.getRunningProcess() }">
         <span *ngIf="process.hasProcessData" [ngClass]="{ absa: true, interactiveicon: process.enabled, inactiveinteractiveicon: !process.enabled }"></span>
-        <span *ngIf="process != ps.getRunningProcess() && process.canShowInMap" [ngClass]="{ absa: true, mapicon: process.enabled, inactivemapicon: !process.enabled }"></span>
+        <span *ngIf="process !== ps.getRunningProcess() && process.canShowInMap" [ngClass]="{ absa: true, mapicon: process.enabled, inactivemapicon: !process.enabled }"></span>
       </span>
       <span class="rib fa emptyicon">
         <span *ngIf="process === ps.getRunFailedProcess()" class="absa runstatusfailedicon"></span>

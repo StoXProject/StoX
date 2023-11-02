@@ -1,52 +1,47 @@
-<p-dialog header="{{title}}" [(visible)]="service.display" [modal]="true" (onHide)="onHide()"
-[style]="{width: '400px', minWidth: '400px', maxHeight: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
-    <MessageDlg></MessageDlg>
+<p-dialog header="{{title}}" [(visible)]="service.display" [modal]="true" (onHide)="onHide()" [style]="{width: '400px', minWidth: '400px', maxHeight: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
+  <MessageDlg></MessageDlg>
 
-    <button mat-raised-button (click)="addRow()">Add</button> &nbsp;
-    <!--<button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;-->
+  <button mat-raised-button (click)="addRow()">Add</button> &nbsp;
+  <!--<button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;-->
 
-    <div class="example-container mat-elevation-z8">
-        <mat-table #table [dataSource]="dataSource">
-      
-          <!--- Note that these columns can be defined in any order.
+  <div class="example-container mat-elevation-z8">
+    <mat-table #table [dataSource]="dataSource">
+      <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->
 
-            <ng-container matColumnDef="variableName">
-                <mat-header-cell *matHeaderCellDef> Variable Name </mat-header-cell>
-                <mat-cell *matCellDef="let element">                         
-                    <ng-container *ngIf="!isEmpty(service.possibleValues)">
-                        <mat-form-field floatLabel="never">
-                            <mat-select placeholder = ""  [(ngModel)] = "element.variableName" name = "element.variableName">
-                                <mat-option *ngFor = "let variable of service.possibleValues" [value] = "variable">
-                                {{variable}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </ng-container>
-                    <ng-container *ngIf="isEmpty(service.possibleValues)">
-                        <mat-form-field floatLabel="never">
-                            <input matInput placeholder="" type="text" [value]="element.variableName" [(ngModel)]="element.variableName">
-                        </mat-form-field>
-                    </ng-container>
-                </mat-cell>
-            </ng-container>                        
-                
-            <!-- Action Column -->
-            <ng-container matColumnDef="action">
-                <th mat-header-cell *matHeaderCellDef> Action </th>
-                <td mat-cell *matCellDef="let element" class="action-link">                
-                    <a (click)="delete(element)"><mat-icon aria-label="Delete">delete</mat-icon></a>  
-                </td>
-            </ng-container>
+      <ng-container matColumnDef="variableName">
+        <mat-header-cell *matHeaderCellDef> Variable Name </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <ng-container *ngIf="!isEmpty(service.possibleValues)">
+            <mat-form-field floatLabel="never">
+              <mat-select placeholder="" [(ngModel)]="element.variableName" name="element.variableName">
+                <mat-option *ngFor="let variable of service.possibleValues" [value]="variable"> {{variable}} </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+          <ng-container *ngIf="isEmpty(service.possibleValues)">
+            <mat-form-field floatLabel="never">
+              <input matInput placeholder="" type="text" [value]="element.variableName" [(ngModel)]="element.variableName" />
+            </mat-form-field>
+          </ng-container>
+        </mat-cell>
+      </ng-container>
 
-          <!--<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>-->
-          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        </mat-table>
-    </div>
+      <!-- Action Column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Action</th>
+        <td mat-cell *matCellDef="let element" class="action-link">
+          <a (click)="delete(element)"><mat-icon aria-label="Delete">delete</mat-icon></a>
+        </td>
+      </ng-container>
 
-    <ng-template pTemplate="footer">
-        <button type="button" pButton icon="pi pi-close" (click)="cancel()" label="Cancel"
-            class="p-button-secondary"></button>
-        <button type="button" pButton  (click)="apply()" label="Save"></button>
-    </ng-template>
+      <!--<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>-->
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button type="button" pButton icon="pi pi-close" (click)="cancel()" label="Cancel" class="p-button-secondary"></button>
+    <button type="button" pButton (click)="apply()" label="Save"></button>
+  </ng-template>
 </p-dialog>
