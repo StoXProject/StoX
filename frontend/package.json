@@ -6,8 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
-    "lint": "eslint ./**/*.ts  --fix && npm run lint:clean",
-    "lint:clean": "prettier --write \"**/*.ts\"",
+    "code:clean": "prettier --write \"**/*.{ts*,htm*}\"",
+    "code:check": "ng lint && prettier --check  \"**/*.{ts*,htm*}\"",
     "e2e": "ng e2e"
   },
   "private": true,
