@@ -1,5 +1,5 @@
 export class DefinedColumns {
-    /*
+  /*
     SpeciesCategory: string; 
     Alpha: number;
     Beta : number;
@@ -21,43 +21,43 @@ export class DefinedColumns {
     Value: string;
     NewValue: string;   */
 
-    columnValues: ColumnValue[] = [];
-    columnTypes: any;
+  columnValues: ColumnValue[] = [];
+  columnTypes: any;
 
-    getValue(columnName: string): any {
-        for(let i = 0; i< this.columnValues.length; i++) {
-            if(this.columnValues[i].columnName == columnName) {
-                return this.columnValues[i].value;
-            }
-        }
-        return null;
+  getValue(columnName: string): any {
+    for (let i = 0; i < this.columnValues.length; i++) {
+      if (this.columnValues[i].columnName == columnName) {
+        return this.columnValues[i].value;
+      }
     }
+    return null;
+  }
 
-    getColumn(columnName: string): ColumnValue {
-        for(let i = 0; i< this.columnValues.length; i++) {
-            if(this.columnValues[i].columnName == columnName) {
-                return this.columnValues[i]
-            }
-        }
-        return null;        
+  getColumn(columnName: string): ColumnValue {
+    for (let i = 0; i < this.columnValues.length; i++) {
+      if (this.columnValues[i].columnName == columnName) {
+        return this.columnValues[i];
+      }
     }
+    return null;
+  }
 }
 
 export class ColumnPossibleValues {
-    columnName: string;
-    possibleValues: string[];
+  columnName: string;
+  possibleValues: string[];
 }
 
 export class ColumnType {
-    columnName: string;
-    type: string;    
+  columnName: string;
+  type: string;
 }
 
 export class ColumnValue {
-    columnName: string;
-    value: any;
+  columnName: string;
+  value: any;
 }
 
 export class SelectedVariable {
-    variableName: string;
+  variableName: string;
 }

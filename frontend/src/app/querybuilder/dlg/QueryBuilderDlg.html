@@ -116,9 +116,9 @@
     </query-builder>
   </mat-card>
     
-  <p-footer>
+  <ng-template pTemplate="footer">
 		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel"
-			class="ui-button-secondary"></button>
+			class="p-button-secondary"></button>
 		<button type="button" pButton icon="pi pi-check" (click)="apply()" label="OK"></button>
-	</p-footer>
+	</ng-template>
 </p-dialog>

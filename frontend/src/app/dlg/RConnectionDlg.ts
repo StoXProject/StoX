@@ -7,9 +7,11 @@ import { RConnectionDlgService } from './RConnectionDlgService';
 @Component({
   selector: 'RConnectionDlg',
   templateUrl: './RConnectionDlg.html',
-  styleUrls: []
+  styleUrls: [],
 })
 export class RConnectionDlg {
-  constructor(private dataService: DataService, public service : RConnectionDlgService ) {
-  }
+  constructor(
+    private dataService: DataService,
+    public service: RConnectionDlgService
+  ) {}
 }

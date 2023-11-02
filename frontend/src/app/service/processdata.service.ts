@@ -5,129 +5,124 @@ import { ProjectService } from './project.service';
 import { AcousticPSU, AcousticLayerData, BioticAssignmentData, BioticAssignment } from './../data/processdata';
 import { Subject } from 'rxjs';
 
-@Injectable({
-    providedIn: 'root'
-})
-
+@Injectable()
 export class ProcessDataService {
-    private m_stratum: string[];
-    private m_acousticPSU: AcousticPSU;
-    private m_AcousticLayerData: AcousticLayerData;
-    private m_bioticAssignmentData: BioticAssignmentData;
-    private m_selectedStratum: string;
-    private m_selectedPSU: string;
-    private m_processDataSubject = new Subject<string>();
+  private m_stratum: string[];
+  private m_acousticPSU: AcousticPSU;
+  private m_AcousticLayerData: AcousticLayerData;
+  private m_bioticAssignmentData: BioticAssignmentData;
+  private m_selectedStratum: string;
+  private m_selectedPSU: string;
+  private m_processDataSubject = new Subject<string>();
 
-    constructor(private ds: DataService, private ps: ProjectService) {
-        console.log("> " + "Initializing processdata service")
-        this.ps.iaModeSubject.subscribe({
-            next: async (newVal) => {
-                switch (newVal) {
-                    case 'stratum': {
-                        console.log("> " + "Process data - listen on iamode=stratum")
-                        let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
-                            ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-                        this.stratum = v; // change this to v
-                        break;
-                    }
-                    case 'acousticPSU': {
-                        console.log("> " + "Process data - listen on iamode=acousticPSU")
-                        let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
-                            ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-                        this.acousticPSU = v;
-                        break;
-                    }
-                    case 'acousticLayer': {
-                        console.log("> " + "Process data - listen on iamode=acousticLayer")
-                        let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
-                            ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-                        this.acousticLayerData = v;
-                        break;
-                    }
-                    case 'bioticAssignment': {
-                        console.log("> " + "Process data - listen on iamode=bioticAssignment")
-                        let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath,
-                            ps.selectedModel.modelName, ps.activeProcessId).toPromise();
-                        this.bioticAssignmentData = v;
-                        break;
-                    }
-                    case 'none': {
-                        this.selectedStratum = null;
-                        this.selectedPSU = null;
-                        break;
-                    }
-                    case 'reset': {
-                        this.stratum = null;
-                        this.acousticPSU = null;
-                        this.acousticLayerData = null;
-                        this.bioticAssignmentData = null;
-                        this.selectedStratum = null;
-                        this.selectedPSU = null;
-                        break;
-                    }
-                }
-                //      console.log("> " + newVal);
-            }
-        });
-    }
-
-    get stratum(): string[] {
-        return this.m_stratum;
-    }
-
-    set stratum(val: string[]) {
-        if(val != null && !Array.isArray(val)) {
-            return; // ensure that object is an array
+  constructor(
+    private ds: DataService,
+    private ps: ProjectService
+  ) {
+    console.log('> ' + 'Initializing processdata service');
+    this.ps.iaModeSubject.subscribe({
+      next: async newVal => {
+        switch (newVal) {
+          case 'stratum': {
+            console.log('> ' + 'Process data - listen on iamode=stratum');
+            let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            this.stratum = v; // change this to v
+            break;
+          }
+          case 'acousticPSU': {
+            console.log('> ' + 'Process data - listen on iamode=acousticPSU');
+            let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            this.acousticPSU = v;
+            break;
+          }
+          case 'acousticLayer': {
+            console.log('> ' + 'Process data - listen on iamode=acousticLayer');
+            let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            this.acousticLayerData = v;
+            break;
+          }
+          case 'bioticAssignment': {
+            console.log('> ' + 'Process data - listen on iamode=bioticAssignment');
+            let v: any = await ds.getInteractiveData(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            this.bioticAssignmentData = v;
+            break;
+          }
+          case 'none': {
+            this.selectedStratum = null;
+            this.selectedPSU = null;
+            break;
+          }
+          case 'reset': {
+            this.stratum = null;
+            this.acousticPSU = null;
+            this.acousticLayerData = null;
+            this.bioticAssignmentData = null;
+            this.selectedStratum = null;
+            this.selectedPSU = null;
+            break;
+          }
         }
-        this.m_stratum = val;
-        this.m_processDataSubject.next("stratum");
-    }
+        //      console.log("> " + newVal);
+      },
+    });
+  }
 
-    get acousticPSU(): AcousticPSU {
-        return this.m_acousticPSU;
-    }
+  get stratum(): string[] {
+    return this.m_stratum;
+  }
 
-    set acousticPSU(val: AcousticPSU) {
-        this.m_acousticPSU = val;
-        this.m_processDataSubject.next("acousticPSU");
+  set stratum(val: string[]) {
+    if (val != null && !Array.isArray(val)) {
+      return; // ensure that object is an array
     }
+    this.m_stratum = val;
+    this.m_processDataSubject.next('stratum');
+  }
 
-    get acousticLayerData(): AcousticLayerData {
-        return this.m_AcousticLayerData;
-    }
+  get acousticPSU(): AcousticPSU {
+    return this.m_acousticPSU;
+  }
 
-    set acousticLayerData(val: AcousticLayerData) {
-        this.m_AcousticLayerData = val;
-        this.m_processDataSubject.next("acousticLayerData");
-    }
+  set acousticPSU(val: AcousticPSU) {
+    this.m_acousticPSU = val;
+    this.m_processDataSubject.next('acousticPSU');
+  }
 
-    get bioticAssignmentData(): BioticAssignmentData {
-        return this.m_bioticAssignmentData;
-    }
+  get acousticLayerData(): AcousticLayerData {
+    return this.m_AcousticLayerData;
+  }
 
-    set bioticAssignmentData(val: BioticAssignmentData) {
-        this.m_bioticAssignmentData = val;
-        this.m_processDataSubject.next("bioticAssignmentData");
-    }
+  set acousticLayerData(val: AcousticLayerData) {
+    this.m_AcousticLayerData = val;
+    this.m_processDataSubject.next('acousticLayerData');
+  }
 
-    get processDataSubject(): Subject<string> {
-        return this.m_processDataSubject;
-    }
+  get bioticAssignmentData(): BioticAssignmentData {
+    return this.m_bioticAssignmentData;
+  }
 
-    get selectedPSU(): string {
-        return this.m_selectedPSU;
-    }
-    set selectedPSU(val: string) {
-        this.m_selectedPSU = val;
-        this.m_processDataSubject.next("selectedPSU");
-    }
+  set bioticAssignmentData(val: BioticAssignmentData) {
+    this.m_bioticAssignmentData = val;
+    this.m_processDataSubject.next('bioticAssignmentData');
+  }
 
+  get processDataSubject(): Subject<string> {
+    return this.m_processDataSubject;
+  }
 
-    get selectedStratum(): string {
-        return this.m_selectedStratum;
-    }
-    set selectedStratum(val: string) {
-        this.m_selectedStratum = val;
-        this.m_processDataSubject.next("selectedStratum");
-    }
+  get selectedPSU(): string {
+    return this.m_selectedPSU;
+  }
+  set selectedPSU(val: string) {
+    this.m_selectedPSU = val;
+    this.m_processDataSubject.next('selectedPSU');
+  }
+
+  get selectedStratum(): string {
+    return this.m_selectedStratum;
+  }
+  set selectedStratum(val: string) {
+    this.m_selectedStratum = val;
+    this.m_processDataSubject.next('selectedStratum');
+  }
 }

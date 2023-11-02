@@ -1,4 +1,3 @@
-
 export class FilePath {
-    path: string;
+  path: string;
 }

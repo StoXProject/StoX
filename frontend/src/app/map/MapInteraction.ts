@@ -1,6 +1,5 @@
 interface MapInteraction {
-    getProj() : string;
-    resetInteraction() : void;
-    stratumExists(stratum : string) : boolean;
+  getProj(): string;
+  resetInteraction(): void;
+  stratumExists(stratum: string): boolean;
 }
-

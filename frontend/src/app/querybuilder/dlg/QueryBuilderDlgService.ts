@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
 
-@Injectable({
-    providedIn: 'root'
-  })
+@Injectable()
 export class QueryBuilderDlgService {
-    
-    constructor() {}
+  constructor() {}
 
-    display: boolean = false;
+  display: boolean = false;
 
-    showDialog() {
-        console.log("> " + "QueryBuilderDlgService showDialog");
-        this.display = true;
-    }
+  showDialog() {
+    console.log('> ' + 'QueryBuilderDlgService showDialog');
+    this.display = true;
+  }
 }

@@ -4,9 +4,7 @@ import { PropertyCategory } from '../../data/propertycategory';
 import { BehaviorSubject } from 'rxjs';
 import { FilePath } from '../../data/FilePath';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class FilePathDlgService {
   public display: boolean = false;
 
@@ -26,11 +24,11 @@ export class FilePathDlgService {
     return combined;
   }
   obj2FilePath(o: any): FilePath {
-    return <FilePath>{ path: typeof (o) == "string" ? o : JSON.stringify(o) };
+    return <FilePath>{ path: typeof o == 'string' ? o : JSON.stringify(o) };
   }
   async showDialog() {
     // parse currentPropertyItem and populate array paths and broadcast this to component
-    console.log("> " + "currentPropertyItem.value : " + this.currentPropertyItem.value);
+    console.log('> ' + 'currentPropertyItem.value : ' + this.currentPropertyItem.value);
 
     let o: any = JSON.parse(this.currentPropertyItem.value);
     // The propertyItem is an array, map each element to FilePath

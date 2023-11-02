@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 import { QueryBuilderComponent } from './module/query-builder.component';
 
@@ -15,33 +15,8 @@ import { QueryRemoveButtonDirective } from './module/query-remove-button.directi
 import { QueryEmptyWarningDirective } from './module/query-empty-warning.directive';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  declarations: [
-    QueryBuilderComponent,
-    QueryInputDirective,
-    QueryOperatorDirective,
-    QueryFieldDirective,
-    QueryEntityDirective,
-    QueryButtonGroupDirective,
-    QuerySwitchGroupDirective,
-    QueryRemoveButtonDirective,
-    QueryEmptyWarningDirective,
-    QueryArrowIconDirective
-  ],
-  exports: [
-    QueryBuilderComponent,
-    QueryInputDirective,
-    QueryOperatorDirective,
-    QueryFieldDirective,
-    QueryEntityDirective,
-    QueryButtonGroupDirective,
-    QuerySwitchGroupDirective,
-    QueryRemoveButtonDirective,
-    QueryEmptyWarningDirective,
-    QueryArrowIconDirective
-  ]
+  imports: [CommonModule, FormsModule],
+  declarations: [QueryBuilderComponent, QueryInputDirective, QueryOperatorDirective, QueryFieldDirective, QueryEntityDirective, QueryButtonGroupDirective, QuerySwitchGroupDirective, QueryRemoveButtonDirective, QueryEmptyWarningDirective, QueryArrowIconDirective],
+  exports: [QueryBuilderComponent, QueryInputDirective, QueryOperatorDirective, QueryFieldDirective, QueryEntityDirective, QueryButtonGroupDirective, QuerySwitchGroupDirective, QueryRemoveButtonDirective, QueryEmptyWarningDirective, QueryArrowIconDirective],
 })
-export class QueryBuilderModule { }
+export class QueryBuilderModule {}

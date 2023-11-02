@@ -1,9 +1,8 @@
-import { ProcessOutputElement } from "./runresult";
+import { ProcessOutputElement } from './runresult';
 
 export class OutputElement {
-    processId: string; 
-    element: ProcessOutputElement;
-    output?: any;  
-    outputjson?: any;  
-} 
- 
+  processId: string;
+  element: ProcessOutputElement;
+  output?: any;
+  outputjson?: any;
+}

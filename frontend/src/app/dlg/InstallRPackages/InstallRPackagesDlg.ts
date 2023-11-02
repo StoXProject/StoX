@@ -7,9 +7,11 @@ import { InstallRPackagesDlgService } from './InstallRPackagesDlgService';
 @Component({
   selector: 'InstallRPackagesDlg',
   templateUrl: './InstallRPackagesDlg.html',
-  styleUrls: []
+  styleUrls: [],
 })
 export class InstallRPackagesDlg {
-  constructor(private dataService: DataService, public service :InstallRPackagesDlgService ) {
-  }
+  constructor(
+    private dataService: DataService,
+    public service: InstallRPackagesDlgService
+  ) {}
 }
