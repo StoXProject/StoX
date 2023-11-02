@@ -6,10 +6,8 @@ import {
 import { Injectable } from '@angular/core';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import { HttpClient } from '@angular/common/http';
 
-import { fromLonLat, transform } from 'ol/proj';
-import { Observable, of } from 'rxjs';
+import { fromLonLat } from 'ol/proj';
 // import { data_json } from 'acoustic';
 // import SampleJson from './assets/acoustic.json';
 

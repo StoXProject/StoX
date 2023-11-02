@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AppComponentBase } from '../AppComponentBase';
-import { Injector, ElementRef } from '@angular/core';
+import { Injector } from '@angular/core';
 
 @Component({
   selector: 'app-file-upload',

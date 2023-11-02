@@ -4,7 +4,7 @@ import { ContextMenu } from 'primeng/contextmenu';
 import { ProcessDataService } from './../../service/processdata.service';
 import { ProjectService } from './../../service/project.service';
 import { DataService } from './../../service/data.service';
-import { AcousticPSU, Stratum, Stratum_PSU } from './../../data/processdata';
+import { Stratum_PSU } from './../../data/processdata';
 import { PSUResult, ActiveProcessResult } from './../../data/runresult';
 @Component({
   selector: 'app-stratumpsu',

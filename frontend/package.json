@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
-    "code:clean": "prettier --write \"**/*.{ts,html}\"",
+    "code:clean": "eslint \"**/*.{ts,html}\" --fix && prettier --write \"**/*.{ts,html}\"",
     "code:check": "ng lint && prettier --check  \"**/*.{ts,html}\"",
     "e2e": "ng e2e"
   },
@@ -58,6 +58,7 @@
     "@typescript-eslint/parser": "5.48.2",
     "check-peer-dependencies": "^4.1.0",
     "eslint": "^8.33.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "prettier": "^3.0.3",
     "typescript": "^4.9.5"
   }

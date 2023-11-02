@@ -1,7 +1,7 @@
 import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBuilderDlgService';
 import { DefinedColumnsService } from './../dlg/definedColumns/DefinedColumnsService';
 import { SelectedVariablesService } from './../dlg/selectedVariables/SelectedVariablesService';
-import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 //import { FormGroup, FormBuilder } from '@angular/forms';
 import { ProjectService } from '../service/project.service';
 import { PropertyItem } from '../data/propertyitem';
@@ -10,7 +10,6 @@ import { ProcessProperties } from '../data/ProcessProperties';
 import { DataService } from '../service/data.service';
 import { MessageService } from '../message/MessageService';
 import { FilePathDlgService } from '../dlg/filePath/FilePathDlgService';
-import { Accordion } from 'primeng/accordion';
 // import {MessageService} from 'primeng/api';
 
 @Component({

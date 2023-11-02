@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { RunService } from './run.service';
 import { DataService } from './data.service';
 import { ProjectService } from './project.service';
-import { AcousticPSU, AcousticLayerData, BioticAssignmentData, BioticAssignment } from './../data/processdata';
+import { AcousticPSU, AcousticLayerData, BioticAssignmentData } from './../data/processdata';
 import { Subject } from 'rxjs';
 
 @Injectable()

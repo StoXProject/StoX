@@ -1,9 +1,7 @@
-import { Component, ElementRef, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
 import { MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { FormControl } from '@angular/forms';
 import { ProjectService } from '../service/project.service';
 @Component({
   selector: 'app-autocomplete',

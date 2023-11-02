@@ -2,7 +2,6 @@ import { Component, ElementRef, ViewChild, OnInit, Input } from '@angular/core';
 
 import { DataService } from '../../service/data.service';
 import { ProjectService } from '../../service/project.service';
-import { UserLogType } from '../../enum/enums';
 import { ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 

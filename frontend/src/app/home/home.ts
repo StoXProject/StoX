@@ -1,25 +1,22 @@
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { ResetProjectDlgService } from './../resetProject/ResetProjectDlgService';
-import { ViewChild, Component, HostListener, OnInit, OnDestroy } from '@angular/core';
-import { tap } from 'rxjs/operators';
 // import { Observable, of } from 'rxjs';
 // import { DataService } from '../service/data.service';
-import { ProjectService } from '../service/project.service';
-import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
-import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
 import { InstallRPackagesDlgService } from '../dlg/InstallRPackages/InstallRPackagesDlgService';
+import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
+import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
+import { ProjectService } from '../service/project.service';
 // import { ExpressionBuilderDlgService } from '../expressionBuilder/ExpressionBuilderDlgService';
 // import { DefinedColumnsService } from '../dlg/definedColumns/DefinedColumnsService';
 // import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
-import { MenuItem } from 'primeng/api';
-import { DataService } from '../service/data.service';
-import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgService';
-import { MatTabGroup } from '@angular/material/tabs';
-import { PackageVersion } from './../data/PackageVersion';
-import { UserLogEntry } from '../data/userlogentry';
-import { UserLogType } from '../enum/enums';
-import { ContextMenu } from 'primeng/contextmenu';
 import { ChangeDetectorRef } from '@angular/core';
+import { MatTabGroup } from '@angular/material/tabs';
+import { MenuItem } from 'primeng/api';
+import { ContextMenu } from 'primeng/contextmenu';
+import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgService';
+import { DataService } from '../service/data.service';
+import { PackageVersion } from './../data/PackageVersion';
 
 @Component({
   selector: 'homeComponent',

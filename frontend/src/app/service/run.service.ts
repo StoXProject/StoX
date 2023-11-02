@@ -1,14 +1,11 @@
 import { Injectable, RendererFactory2, Renderer2 } from '@angular/core';
 //import { Observable, of } from 'rxjs';
-import { Project } from '../data/project';
 import { Process } from '../data/process';
-import { Model } from '../data/model';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
-import { Observable, Subject, of, interval, merge } from 'rxjs';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
-import { RunProcessesResult, ProcessTableResult } from './../data/runresult';
+import { RunProcessesResult } from './../data/runresult';
 
 @Injectable()
 /**

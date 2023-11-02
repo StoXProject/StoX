@@ -1,43 +1,31 @@
-import { Component, OnInit, AfterViewInit, HostListener, ElementRef, ViewChild, Input } from '@angular/core';
-import { defer, merge, Observable } from 'rxjs';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, Input } from '@angular/core';
 import OlMap from 'ol/Map';
-import OlXYZ from 'ol/source/XYZ';
 import Source from 'ol/source/Vector';
-import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
 //import Extent from 'ol/extent';
 import Overlay from 'ol/Overlay';
 import Feature from 'ol/Feature';
-import Point from 'ol/geom/Point';
 import { Geometry } from 'ol/geom';
 //import Projection from 'ol/proj';
 import TopoJSON from 'ol/format/TopoJSON';
-import GeoJSON from 'ol/format/GeoJSON';
 import { Vector, Layer } from 'ol/layer';
-import { DoCheck } from '@angular/core';
 
-import { clearAllProjections, fromLonLat, transform, transformExtent } from 'ol/proj';
+import { clearAllProjections, transform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import * as proj4x from 'proj4';
 
 //import { add as addProjection } from 'ol/proj/projection';
-import { Fill, Stroke, Style, RegularShape } from 'ol/style';
 
-import { click, singleClick, shiftKeyOnly, platformModifierKeyOnly } from 'ol/events/condition';
-import { Select, Draw, Modify, Snap } from 'ol/interaction';
+import { shiftKeyOnly, platformModifierKeyOnly } from 'ol/events/condition';
+import { Select, Draw, Modify } from 'ol/interaction';
 // TODO https://jira.imr.no/browse/STOX-690
 // import { ResizedEvent } from 'angular-resize-event';
-import { defaults as defaultControls } from 'ol/control';
-import MousePosition from 'ol/control/MousePosition';
-import { createStringXY } from 'ol/coordinate';
 
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
 
 import { ProcessDataService } from '../service/processdata.service';
-import { catchError, map, tap } from 'rxjs/operators';
 import { MapSetup } from './MapSetup';
-import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
 import { MatDialog } from '@angular/material/dialog';
 import { MapBrowserEvent } from 'ol';
@@ -45,9 +33,8 @@ import { EDSU_PSU, BioticAssignment } from '../data/processdata';
 import { ActiveProcessResult } from '../data/runresult';
 import { MapInfo } from '../data/MapInfo';
 import { NamedStringTable, NamedStringIndex } from '../data/types';
-import { applyTransform, coordinateRelationship, Extent, getCenter } from 'ol/extent';
 const proj4 = (proj4x as any).default;
-import { get as getProjection, getTransform } from 'ol/proj';
+import { get as getProjection } from 'ol/proj';
 import { Coordinate } from 'ol/coordinate';
 import { SubjectAction } from '../data/subjectaction';
 import { ContextMenu } from 'primeng/contextmenu';

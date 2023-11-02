@@ -1,16 +1,14 @@
-import { Component, ElementRef, ViewChild, OnInit, Renderer2, HostListener, DoCheck, AfterViewInit, Input } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, Renderer2, Input } from '@angular/core';
 import { Process } from '../data/process';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
 import { RunService } from '../service/run.service';
-import { ShortcutInput, ShortcutEventOutput, KeyboardShortcutsComponent } from 'ng-keyboard-shortcuts';
-import { ContextMenuModule, ContextMenu } from 'primeng/contextmenu';
+import { ShortcutInput, KeyboardShortcutsComponent } from 'ng-keyboard-shortcuts';
+import { ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
-import { Model } from '../data/model';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 //import { SelectItem, Listbox, MenuItemContent } from 'primeng/primeng';
-import { FormBuilder, FormControl, NgModel, FormGroup, Validators } from '@angular/forms';
 import { ProcessOutputElement, ProcessTableResult } from '../data/runresult';
 import { OutputElement } from '../data/outputelement';
 @Component({

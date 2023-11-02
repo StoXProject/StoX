@@ -4,7 +4,6 @@ import { DataService } from '../service/data.service';
 import { Template } from '../data/Template';
 import { MessageService } from '../message/MessageService';
 import { ProjectService } from '../service/project.service';
-import { Project } from '../data/project';
 
 @Component({
   selector: 'CreateProjectDialog',

@@ -1,15 +1,12 @@
-import { Injectable, SecurityContext } from '@angular/core';
-import { catchError, map, tap, mapTo } from 'rxjs/operators';
-import { Subject, Subscription, Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Project } from '../data/project';
 import { Process } from '../data/process';
 import { ActiveProcess } from '../data/runresult';
 import { Model } from '../data/model';
-import { PropertyCategory } from '../data/propertycategory';
 import { DataService } from './data.service';
-import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
+import { ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
 import { OutputElement as OutputElement } from '../data/outputelement';
-import { SavedResult, ActiveProcessResult, ProcessTableResult } from '../data/runresult';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { PackageVersion } from '../data/PackageVersion';

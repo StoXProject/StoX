@@ -1,10 +1,9 @@
-import { Component, ElementRef, ViewChild, OnInit, Input } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { Component, ViewChild, OnInit, Input } from '@angular/core';
 
 import { ProjectService } from '../../service/project.service';
 import { DataService } from '../../service/data.service';
 import { MatTabGroup, MatTabHeader } from '@angular/material/tabs';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { SubjectAction } from 'src/app/data/subjectaction';
 import { ContextMenu } from 'primeng/contextmenu';

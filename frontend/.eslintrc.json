@@ -18,6 +18,9 @@
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
+      "plugins": [
+        "unused-imports"
+      ],
       "rules": {
         "@angular-eslint/component-selector": [
           "error",
@@ -35,6 +38,7 @@
             "type": "attribute"
           }
         ],
+        "unused-imports/no-unused-imports-ts": "error",
         // DISABLE CURRENTLY NOT FOLLOWED RULES (TO BE REVISITED)
         "@angular-eslint/no-output-native": "off",
         "@angular-eslint/component-selector": "off",

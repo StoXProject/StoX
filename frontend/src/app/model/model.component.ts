@@ -1,8 +1,7 @@
-import { Component, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ProjectService } from '../service/project.service';
 import { DataService } from '../service/data.service';
 import { Model } from '../data/model';
-import { MenuItem } from 'primeng/api';
 @Component({
   selector: 'app-model',
   templateUrl: './model.component.html',

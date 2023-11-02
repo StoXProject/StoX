@@ -1,19 +1,16 @@
 import { Injectable } from '@angular/core';
 
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
-import { Observable, Subject, of, interval, merge } from 'rxjs';
-import { Template } from '../data/Template';
-import { catchError, map, tap, mapTo } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Observable, Subject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { UserLogEntry } from '../data/userlogentry';
 import { MapInfo } from '../data/MapInfo';
 import { UserLogType } from '../enum/enums';
 import { RunResult, RunProcessesResult, ProcessTableResult, PSUResult, ActiveProcessResult, ActiveProcess, ProcessOutputElement } from '../data/runresult';
-import { AcousticPSU } from '../data/processdata';
-import { RuleSet, QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
+import { RuleSet } from '../querybuilder/module/query-builder.interfaces';
 import { ProcessGeoJsonOutput, ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
 import { Process } from '../data/process';
 import { Project } from '../data/project';
-import { PackageVersion } from '../data/PackageVersion';
 
 @Injectable()
 export class DataService {

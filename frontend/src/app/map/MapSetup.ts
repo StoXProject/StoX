@@ -1,35 +1,30 @@
-import { Fill, Stroke, Style, RegularShape, Circle, Icon } from 'ol/style';
-import { StyleLike, StyleFunction } from 'ol/style/Style';
+import { Fill, Stroke, Style, Icon } from 'ol/style';
+import { StyleFunction } from 'ol/style/Style';
 import { FeatureLike } from 'ol/Feature';
 import { Coordinate } from 'ol/coordinate';
 import { Layer, Vector } from 'ol/layer';
-import BaseObject from 'ol/Object';
-import { Vector as VectorSource, UrlTile } from 'ol/source';
+import { Vector as VectorSource } from 'ol/source';
 import { GeoJSON } from 'ol/format';
 import { MultiPoint } from 'ol/geom';
 
-import { Button } from 'primeng/button';
 import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import { fromLonLat } from 'ol/proj';
 //import { rgb } from 'color-convert/conversions';
-import { click, singleClick, shiftKeyOnly } from 'ol/events/condition';
-import { Select, Draw, Modify, Snap } from 'ol/interaction';
+import { singleClick, shiftKeyOnly } from 'ol/events/condition';
+import { Select, Draw, Modify } from 'ol/interaction';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
 import { ProcessDataService } from '../service/processdata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { StratumNameDlgComponent } from '../dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { Color } from './Color';
-import { clone } from 'ol/extent';
-import { ProcessTableResult, ActiveProcessResult } from '../data/runresult';
+import { ActiveProcessResult } from '../data/runresult';
 import { HTMLUtil } from '../utils/htmlutil';
-import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes';
-import { EDSU_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata';
+import { MapSymbol } from './maptypes';
+import { EDSU_PSU, Stratum_PSU } from './../data/processdata';
 import { NamedStringTable, NamedStringIndex } from './../data/types';
-import { asString } from 'ol/color';
 declare const Buffer;
 
 export class MapSetup {
