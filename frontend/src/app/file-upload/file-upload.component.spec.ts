@@ -4,6 +4,7 @@ import { FileUploadComponent } from './file-upload.component';
 
 describe('FileUploadComponent', () => {
   let component: FileUploadComponent;
+
   let fixture: ComponentFixture<FileUploadComponent>;
 
   beforeEach(async(() => {

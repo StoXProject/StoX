@@ -1,13 +1,14 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
+import { PropertyCategory } from '../data/propertycategory';
+import { PropertyItem } from '../data/propertyitem';
+import { TableExpression } from '../data/tableexpression';
+import { MessageService } from '../message/MessageService';
+import { QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
+import { RuleSet } from '../querybuilder/module/query-builder.interfaces';
 import { DataService } from './../service/data.service';
 import { ProjectService } from './../service/project.service';
-import { Injectable } from '@angular/core';
-import { TableExpression } from '../data/tableexpression';
-import { QueryBuilderConfig } from '../querybuilder/module/query-builder.interfaces';
-import { BehaviorSubject } from 'rxjs';
-import { PropertyItem } from '../data/propertyitem';
-import { PropertyCategory } from '../data/propertycategory';
-import { RuleSet } from '../querybuilder/module/query-builder.interfaces';
-import { MessageService } from '../message/MessageService';
 
 @Injectable()
 export class ExpressionBuilderDlgService {
@@ -94,10 +95,12 @@ export class ExpressionBuilderDlgService {
   }
 
   combinedExpression(): string {
-    let combinedTable = {};
+    const combinedTable = {};
+
     this.tableExpressions.forEach(t => {
       combinedTable[t.tableName] = t.expression;
     });
+
     return JSON.stringify(combinedTable);
   }
 
@@ -105,13 +108,14 @@ export class ExpressionBuilderDlgService {
     this.display = true; // make the dialog modal and showing progress before loading dialog data from backend
     this.isOpening = true;
 
-    let allOptions = await this.dataService.getFilterOptionsAll(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, false).toPromise();
+    const allOptions = await this.dataService.getFilterOptionsAll(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, false).toPromise();
     //console.log("> " + "allOptions : " + JSON.stringify(allOptions));
 
     if (this.ps.isEmpty(allOptions)) {
       this.msgService.setMessage('Can not get filter options. See user log.');
       this.msgService.showMessage();
       this.display = false;
+
       return;
     }
 
@@ -124,8 +128,10 @@ export class ExpressionBuilderDlgService {
 
     this.tableExpressions = [];
     if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {
-      let o: any = JSON.parse(this.currentPropertyItem.value);
-      let keys = Object.keys(o);
+      const o: any = JSON.parse(this.currentPropertyItem.value);
+
+      const keys = Object.keys(o);
+
       keys.forEach(key => {
         console.log('> ' + key + '=>' + o[key]);
         this.tableExpressions.push({ tableName: key, expression: o[key] });

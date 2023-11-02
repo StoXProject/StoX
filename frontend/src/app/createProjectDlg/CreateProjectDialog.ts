@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { CreateProjectDialogService } from './create-project-dialog.service';
-import { DataService } from '../service/data.service';
+
 import { Template } from '../data/Template';
 import { MessageService } from '../message/MessageService';
+import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
+import { CreateProjectDialogService } from './create-project-dialog.service';
 
 @Component({
   selector: 'CreateProjectDialog',
@@ -36,7 +37,8 @@ export class CreateProjectDialog {
     console.log('> ' + 'browse');
     this.projectRootPath = await this.dataService.browse(this.projectRootPath).toPromise();
     this.projectRootPath = this.projectRootPath.replace(/\\/g, '/');
-    let status = <string>await this.dataService.updateProjectRootPath(this.projectRootPath).toPromise();
+    const status = <string>await this.dataService.updateProjectRootPath(this.projectRootPath).toPromise();
+
     console.log('> ' + status);
   }
 
@@ -45,14 +47,18 @@ export class CreateProjectDialog {
     if (!this.projectName) {
       this.msgService.setMessage('Project name is empty!');
       this.msgService.showMessage();
+
       return;
     }
+
     console.log('> ' + 'project : ' + this.projectName);
     if (!this.projectRootPath) {
       this.msgService.setMessage('Project folder is empty!');
       this.msgService.showMessage();
+
       return;
     }
+
     console.log('> ' + 'projectRootPath : ' + this.projectRootPath);
 
     /*if (!this.selectedTemplate) {
@@ -63,15 +69,18 @@ export class CreateProjectDialog {
         console.log("> " + "selectedTemplate : " + this.selectedTemplate ? this.selectedTemplate.name + " - " + this.selectedTemplate.description : 'none');
         */
     let absolutePath = this.projectRootPath + '/' + this.projectName;
+
     absolutePath = absolutePath.replace(/\\/g, '/');
     console.log('> ' + 'absolute path : ' + absolutePath);
     try {
       this.ps.activateProject(await this.dataService.createProject(absolutePath, /*this.selectedTemplate.name, */ this.ps.application).toPromise(), true);
     } catch (error) {
       console.log('> ' + error);
-      var firstLine = error;
+      const firstLine = error;
+
       this.msgService.setMessage(firstLine);
       this.msgService.showMessage();
+
       return;
     }
 

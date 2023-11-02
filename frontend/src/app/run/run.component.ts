@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+
 import { RunService } from '../service/run.service';
 
 @Component({
@@ -18,7 +19,7 @@ export class RunComponent implements OnInit {
     { cmd: 'runto', iclass: 'runtoicon' },
     { cmd: 'reset', iclass: 'reseticon' },
     { cmd: 'addprocess', iclass: 'addprocessicon' },
-    //    { cmd: "stop", iclass: "stopicon" }
+    // { cmd: "stop", iclass: "stopicon" }
   ];
 
   public getActionTooltip(cmd: string): string {

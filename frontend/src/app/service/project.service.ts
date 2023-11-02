@@ -1,23 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { Project } from '../data/project';
-import { Process } from '../data/process';
-import { ActiveProcess } from '../data/runresult';
-import { Model } from '../data/model';
-import { DataService } from './data.service';
-import { ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
-import { OutputElement as OutputElement } from '../data/outputelement';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
-import { PackageVersion } from '../data/PackageVersion';
+import { Subject } from 'rxjs';
+
 import { HelpCache } from '../data/HelpCache';
+import { Model } from '../data/model';
+import { OutputElement as OutputElement } from '../data/outputelement';
+import { PackageVersion } from '../data/PackageVersion';
+import { Process } from '../data/process';
+import { ProcessProperties, ProcessTableOutput } from '../data/ProcessProperties';
+import { Project } from '../data/project';
+import { ActiveProcess } from '../data/runresult';
 import { SubjectAction } from '../data/subjectaction';
 import { UserLogEntry } from '../data/userlogentry';
+import { MessageDlgComponent } from '../dlg/messageDlg/messageDlg.component';
 import { UserLogType } from '../enum/enums';
-
-//import { RunService } from '../service/run.service';
-//import { DomSanitizer } from '@angular/platform-browser';
-// import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DataService } from './data.service';
 
 @Injectable()
 export class ProjectService {
@@ -28,7 +25,6 @@ export class ProjectService {
 
   private m_projects: Project[] = [];
   private m_selectedProject: Project = null;
-  //private m_isSelectedProjectSaved = true;
   outputElements: OutputElement[] = [];
   public outputTableActivator: Subject<number> = new Subject<number>();
   public bottomViewActivator: Subject<number> = new Subject<number>();
@@ -40,7 +36,6 @@ export class ProjectService {
   private m_selectedProcessId: string;
   private m_processProperties: ProcessProperties = {};
   helpCache: HelpCache = new HelpCache();
-  //activeModelName: string = null; // the last run model
   private m_activeProcess: ActiveProcess = {}; // the last run-ok process
   runFailedProcessId: string = null; // the last run-failed process
   runningProcessId: string = null; // current running process
@@ -64,14 +59,6 @@ export class ProjectService {
   get application(): string {
     return this.m_Application;
   }
-
-  /*get busy() : boolean {
-    return this.m_busy;
-  }
-
-  set busy(busy : boolean) {
-    this.m_busy =  busy;
-  }*/
 
   get processes(): Process[] {
     return this.m_processes;
@@ -119,41 +106,35 @@ export class ProjectService {
     return this.m_projects;
   }
 
-  /*get isSelectedProjectSaved(): boolean {
-    return this.m_isSelectedProjectSaved;
-  }
-
-  set isSelectedProjectSaved(value: boolean) {
-    this.m_isSelectedProjectSaved = value;
-  }*/
-
   hasProject(project: Project): boolean {
-    var projectPath = project.projectPath;
+    const projectPath = project.projectPath;
+
     for (let i = 0; i < this.projects.length; i++) {
-      var currentProjectPath = this.projects[i].projectPath;
+      const currentProjectPath = this.projects[i].projectPath;
+
       if (currentProjectPath == projectPath) {
         return true;
       }
     }
+
     return false;
   }
   async save() {
     this.selectedProject.saved = (await this.dataService.saveProject(this.selectedProject.projectPath, this.application).toPromise()).saved;
     await this.dataService.updateActiveProjectSavedStatus(this.selectedProject.saved).toPromise();
-    // TODO: get save status on return
-    //this.isSelectedProjectSaved = await this.dataService.isSaved(this.selectedProject.projectPath).toPromise();
   }
 
   onSelectedProjectChanged(event) {
-    // if (event.value.projectName) {
-    // }
-
     console.log('> ' + 'selected project changed : ' + this.selectedProject.projectName);
 
     // the following is implemented in setSelctedProject
     // set selected model to 'Baseline'
     // get processes in 'Baseline' for selected project and show it on GUI
     // this.setSelectedModel("Baseline");
+  }
+
+  get selectedModel(): Model {
+    return this.m_selectedModel;
   }
 
   set selectedModel(model: Model) {
@@ -163,23 +144,18 @@ export class ProjectService {
   }
 
   async onModelSelected() {
-    //this.initializeProperties();
     if (this.selectedProject != null && this.selectedModel != null) {
       this.processes = await this.dataService.getProcessTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
       this.activeProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
       if (this.processes == null) {
         this.processes = [];
       }
-      /*if (this.selectedProcess == null && this.processes.length > 0) {
-      this.selectedProcess = this.processes[0];
-    }*/
     } else {
       this.processes = [];
     }
   }
 
   async removeSelectedProcess() {
-    //this.initializeProperties();
     if (this.selectedProject != null && this.selectedProcessId != null) {
       this.processSubject.next(SubjectAction.of('remove', this.selectedProcessId));
       this.handleAPI(await this.dataService.removeProcess(this.selectedProject.projectPath, this.selectedModel.modelName, this.selectedProcessId).toPromise());
@@ -200,10 +176,6 @@ export class ProjectService {
     }
   }
 
-  get selectedModel(): Model {
-    return this.m_selectedModel;
-  }
-
   public get selectedProject(): Project {
     return this.m_selectedProject;
   }
@@ -220,14 +192,18 @@ export class ProjectService {
 
     // Update active process id.
     if (this.selectedProject != null) {
-      let activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
-      let idx = activeProcess.processID == null ? null : this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
+      const activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+
+      const idx = activeProcess.processID == null ? null : this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
+
       if (idx != null) {
         for (let i: number = 0; i <= idx; i++) {
-          let p: Process = this.processes[i];
+          const p: Process = this.processes[i];
+
           this.activeProcessId = this.processes[i].processID;
           if ((p.canShowInMap && p.showInMap) || p.hasProcessData) {
-            let iaMode: string = await this.dataService.getInteractiveMode(this.selectedProject.projectPath, this.selectedModel.modelName, this.activeProcessId).toPromise();
+            const iaMode: string = await this.dataService.getInteractiveMode(this.selectedProject.projectPath, this.selectedModel.modelName, this.activeProcessId).toPromise();
+
             this.iaMode = iaMode;
           }
         }
@@ -305,7 +281,7 @@ export class ProjectService {
       this.appStatus = 'Initializing StoX';
       await this.checkRstoxFrameworkAvailability();
       this.m_Application = 'StoX ' + (await this.dataService.getStoxVersion().toPromise());
-      let projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
+      const projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
 
       console.log('> ' + 'Read projectpath:' + projectPath); // let activeProject: Project = <Project>JSON.parse(projectPath);
       // Read models and set selected to the first model
@@ -345,6 +321,7 @@ export class ProjectService {
       if (withStatus) {
         this.appStatus = 'Opening project ' + projectPath + '...';
       }
+
       await this.activateProject(await this.dataService.openProject(projectPath, doThrow, force).toPromise(), askSave);
     } finally {
       this.appStatus = null;
@@ -356,12 +333,15 @@ export class ProjectService {
     if (project != null && project.projectPath == 'NA') {
       project = null; // openProject returns NA when project is renamed or moved.
     }
+
     if (this.selectedProject != null) {
       let save: boolean = false;
+
       if (askSave) {
         if (!this.selectedProject.saved) {
           // #263 requires a save before close message
-          let res = await MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project before closing?');
+          const res = await MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project before closing?');
+
           switch (res) {
             case 'yes':
               save = true;
@@ -374,10 +354,12 @@ export class ProjectService {
           }
         }
       }
+
       if (project == null || project.projectPath != this.selectedProject.projectPath) {
         await this.dataService.closeProject(this.selectedProject.projectPath, save, this.application).toPromise();
       }
     }
+
     await this.dataService.updateActiveProject(project != null ? project.projectPath : '').toPromise();
     await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();
 
@@ -397,7 +379,7 @@ export class ProjectService {
     this.outputElements = []; // clear output tables
   }
 
-  /*
+  /***
   Returns:
     true: undefined, null, "", [], {}
     false: true, false, 1, 0, -1, "foo", [1, 2, 3], { foo: 1 }
@@ -412,21 +394,27 @@ export class ProjectService {
       (value.constructor === Object && Object.keys(value).length === 0)
     );
   }
+
   public getProcessIdx(process: Process): number {
     return this.processes != null ? this.processes.findIndex(p => p === process) : null;
   }
+
   public getProcessIdxById(id: string): number {
     return this.processes != null ? this.processes.findIndex(p => p.processID === id) : null;
   }
+
   public getProcessIdxByProcessesAndId(processes: Process[], id: string): number {
     return this.processes != null && id != null ? processes.findIndex(p => p.processID === id) : null;
   }
+
   public getActiveProcess(): Process {
     return this.getProcessById(this.activeProcessId);
   }
+
   public getRunFailedProcess(): Process {
     return this.getProcessById(this.runFailedProcessId);
   }
+
   public getRunningProcess(): Process {
     return this.getProcessById(this.runningProcessId);
   }
@@ -434,6 +422,7 @@ export class ProjectService {
   public get isResetting(): boolean {
     return this.m_isResetting;
   }
+
   public set isResetting(value: boolean) {
     this.m_isResetting = value;
   }
@@ -441,9 +430,11 @@ export class ProjectService {
   public getActiveProcessIdx(): number {
     return this.getProcessIdxByProcessesAndId(this.processes, this.activeProcessId);
   }
+
   public getSelectedProcessIdx(): number {
     return this.processes != null && this.selectedProcess != null ? this.getProcessIdxByProcessesAndId(this.processes, this.selectedProcessId) : null;
   }
+
   public getActiveProcessIdxByProcesses(processes: Process[]): number {
     return this.getProcessIdxByProcessesAndId(processes, this.activeProcessId);
   }
@@ -466,10 +457,12 @@ export class ProjectService {
   }*/
   get activeProcessId(): string {
     let res = this.m_activeProcess != null ? this.m_activeProcess.processID : null;
+
     if (res === 'NA') {
       // NA maps to null in gui
       res = null;
     }
+
     return res;
   }
 
@@ -496,24 +489,30 @@ export class ProjectService {
       if (res.processTable !== undefined) {
         this.processes = res.processTable;
       }
+
       if (res.saved !== undefined) {
         if (this.selectedProject.saved !== res.saved) {
           this.selectedProject.saved = res.saved;
           this.dataService.updateActiveProjectSavedStatus(this.selectedProject.saved).toPromise();
         }
       }
+
       if (res.activeProcess !== undefined) {
         this.activeProcess = res.activeProcess;
       }
+
       if (res.propertySheet !== undefined) {
         this.processProperties.propertySheet = res.propertySheet;
       }
+
       if (res.updateHelp !== undefined) {
         this.updateHelp();
       }
     }
+
     return res;
   }
+
   /**
    * A process is dirty if the process is active and the active process is dirty.
    * @param p
@@ -529,10 +528,12 @@ export class ProjectService {
       case 'geojson':
       case 'table': {
         let tableOutput: ProcessTableOutput = null;
+
         tableOutput = await this.dataService.getProcessTableOutput(this.selectedProject.projectPath, this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
         oe.output = tableOutput.data;
         break;
       }
+
       //case "geojson": {
       // getProcessGeoJsonOutput
       /*let output: ProcessGeoJsonOutput = await this.dataService.getProcessGeoJsonOutput(this.selectedProject.projectPath,
@@ -543,20 +544,15 @@ export class ProjectService {
       //}
       case 'plot':
         {
-          let path: string = await this.dataService.getProcessPlotOutput(this.selectedProject.projectPath, this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
-          let base64: any = JSON.parse(await this.dataService.readFileAsBase64(path).toPromise());
+          const path: string = await this.dataService.getProcessPlotOutput(this.selectedProject.projectPath, this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
+
+          const base64: any = JSON.parse(await this.dataService.readFileAsBase64(path).toPromise());
+
           oe.output = base64;
         }
+
         break;
     }
-  }
-
-  get appStatus(): string {
-    return this.m_appStatus;
-  }
-
-  get appStatusIsUpdating(): boolean {
-    return this.m_appStatusIsUpdating;
   }
 
   set appStatus(status: string) {
@@ -566,5 +562,13 @@ export class ProjectService {
       await new Promise(f => setTimeout(f, 500));
       this.m_appStatusIsUpdating = false;
     })();
+  }
+
+  get appStatus(): string {
+    return this.m_appStatus;
+  }
+
+  get appStatusIsUpdating(): boolean {
+    return this.m_appStatusIsUpdating;
   }
 }

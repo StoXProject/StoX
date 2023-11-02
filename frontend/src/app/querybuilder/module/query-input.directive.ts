@@ -13,6 +13,7 @@ export class QueryInputDirective {
     if (!value) {
       return;
     }
+
     this._type = value;
   }
   private _type: string;

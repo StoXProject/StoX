@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { DefinedColumns, ColumnPossibleValues, ColumnType, ColumnValue } from '../../data/DefinedColumns';
-import { PropertyItem } from '../../data/propertyitem';
+import { BehaviorSubject } from 'rxjs';
+
+import { ColumnPossibleValues, ColumnType, ColumnValue,DefinedColumns } from '../../data/DefinedColumns';
 import { PropertyCategory } from '../../data/propertycategory';
+import { PropertyItem } from '../../data/propertyitem';
 import { DataService } from '../../service/data.service';
 import { ProjectService } from '../../service/project.service';
-import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class DefinedColumnsService {
@@ -50,9 +51,11 @@ export class DefinedColumnsService {
   }
 
   combinedExpression(): string {
-    let combinedArray = [];
+    const combinedArray = [];
+
     this.definedColumnsData.forEach(t => {
-      let combinedObj = {};
+      const combinedObj = {};
+
       t.columnValues.forEach(cv => {
         combinedObj[cv.columnName] = cv.value;
       });
@@ -71,13 +74,16 @@ export class DefinedColumnsService {
     this.isOpening = true;
     // parse currentPropertyItem.value and populate definedColumnsData and send it to dialog
     if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {
-      let o: any[] = JSON.parse(this.currentPropertyItem.value);
+      const o: any[] = JSON.parse(this.currentPropertyItem.value);
 
       o.forEach(o1 => {
-        let keys = Object.keys(o1);
-        let dc = new DefinedColumns();
+        const keys = Object.keys(o1);
+
+        const dc = new DefinedColumns();
+
         keys.forEach(key => {
-          let cv = new ColumnValue();
+          const cv = new ColumnValue();
+
           cv.columnName = key;
           cv.value = o1[key];
           dc.columnValues.push(cv);
@@ -88,7 +94,7 @@ export class DefinedColumnsService {
       this.definedColumnsDataSource.next(this.definedColumnsData);
     }
 
-    let returnValue = <any>await this.dataService.getParameterTableInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, this.currentPropertyItem.format).toPromise();
+    const returnValue = <any>await this.dataService.getParameterTableInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, this.currentPropertyItem.format).toPromise();
 
     if (returnValue != null) {
       console.log('> ' + 'returnValue : ' + JSON.stringify(returnValue));
@@ -99,11 +105,13 @@ export class DefinedColumnsService {
       console.log('> ' + "returnValue['parameterTableColumnNames'] : " + returnValue['parameterTableColumnNames']);
       console.log('> ' + "returnValue['parameterTableVariableTypes'] : " + returnValue['parameterTableVariableTypes']);
 
-      let columns = returnValue['parameterTableColumnNames'];
+      const columns = returnValue['parameterTableColumnNames'];
+
       for (let i = 0; i < columns.length; i++) {
         console.log('> ' + columns[i]);
         this.displayedColumns.push(columns[i]);
-        let column = new ColumnPossibleValues();
+        const column = new ColumnPossibleValues();
+
         column.columnName = columns[i];
 
         if (returnValue['parameterTablePossibleValues'][i].length == 0) {
@@ -114,7 +122,8 @@ export class DefinedColumnsService {
 
         this.columnPossibleValues.push(column);
 
-        let colType = new ColumnType();
+        const colType = new ColumnType();
+
         colType.columnName = columns[i];
         colType.type = returnValue['parameterTableVariableTypes'][i];
         this.columnTypes.push(colType);
@@ -126,6 +135,7 @@ export class DefinedColumnsService {
 
       console.log('> ' + "returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
     }
+
     this.isOpening = false;
   }
 }

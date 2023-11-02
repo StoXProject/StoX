@@ -1,10 +1,11 @@
-import { ExpressionBuilderDlgService } from './../../expressionBuilder/ExpressionBuilderDlgService';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
+
+import { DataService } from '../../service/data.service';
 import { QueryBuilderConfig } from '../module/query-builder.interfaces';
 import { RuleSet } from '../module/query-builder.interfaces';
-import { Component, OnInit } from '@angular/core';
+import { ExpressionBuilderDlgService } from './../../expressionBuilder/ExpressionBuilderDlgService';
 import { QueryBuilderDlgService } from './QueryBuilderDlgService';
-import { DataService } from '../../service/data.service';
 
 @Component({
   selector: 'QueryBuilderDlg',
@@ -60,14 +61,6 @@ export class QueryBuilderDlg implements OnInit {
     }
   }
 
-  // switchModes(event: Event) {
-  //   this.currentConfig = (<HTMLInputElement>event.target).checked ? this.entityConfig : this.config;
-  // }
-
-  // changeDisabled(event: Event) {
-  //   (<HTMLInputElement>event.target).checked ? this.queryCtrl.disable() : this.queryCtrl.enable();
-  // }
-
   async apply() {
     console.log('> ' + 'current query : ' + JSON.stringify(this.query));
 
@@ -90,20 +83,20 @@ export class QueryBuilderDlg implements OnInit {
 
   adjustConfig(paramConfig: QueryBuilderConfig) {
     // console.log("> " + "adjusted config : ");
-    for (let key in paramConfig) {
-      let value = paramConfig[key];
+    for (const key in paramConfig) {
+      const value = paramConfig[key];
       // console.log("> " + "key : " + key + ", value : " + value);
 
-      for (let key2 in value) {
-        let value2 = value[key2];
+      for (const key2 in value) {
+        const value2 = value[key2];
         // console.log("> " + "key2 : " + key2 + ", value2 : " + value2);
 
-        for (let key3 in value2) {
-          let value3 = value2[key3];
+        for (const key3 in value2) {
+          const value3 = value2[key3];
           // console.log("> " + "key3 : " + key3 + ", value3 : " + value3);
 
           if (key3 == 'options') {
-            let optionsLength = value3.length;
+            const optionsLength = value3.length;
             // console.log("> " + "option length : " + optionsLength);
 
             if (optionsLength > 0) {

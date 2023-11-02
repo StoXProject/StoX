@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Project } from '../data/project';
-import { ProjectService } from '../service/project.service';
 import { MenuItem } from 'primeng/api';
-import { DataService } from '../service/data.service';
 import { ContextMenu } from 'primeng/contextmenu';
+
+import { Project } from '../data/project';
+import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
 
 @Component({
   selector: 'app-project',
@@ -22,7 +23,8 @@ export class ProjectComponent implements OnInit {
 
   async prepCm() {
     // comment: add list of outputtablenames to runModel result.
-    let m: MenuItem[] = [];
+    const m: MenuItem[] = [];
+
     if (this.ps.selectedProject != null) {
       m.push({
         label: 'Show in folder',
@@ -32,6 +34,7 @@ export class ProjectComponent implements OnInit {
         },
       });
     }
+
     this.cm.model = m;
   }
 
@@ -44,6 +47,7 @@ export class ProjectComponent implements OnInit {
     event.stopPropagation();
     await this.prepCm();
     cm.show(event);
+
     return false;
   }
 }

@@ -1,18 +1,17 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { QueryBuilderComponent } from './module/query-builder.component';
-
 import { QueryArrowIconDirective } from './module/query-arrow-icon.directive';
+import { QueryBuilderComponent } from './module/query-builder.component';
+import { QueryButtonGroupDirective } from './module/query-button-group.directive';
+import { QueryEmptyWarningDirective } from './module/query-empty-warning.directive';
+import { QueryEntityDirective } from './module/query-entity.directive';
 import { QueryFieldDirective } from './module/query-field.directive';
 import { QueryInputDirective } from './module/query-input.directive';
-import { QueryEntityDirective } from './module/query-entity.directive';
 import { QueryOperatorDirective } from './module/query-operator.directive';
-import { QueryButtonGroupDirective } from './module/query-button-group.directive';
-import { QuerySwitchGroupDirective } from './module/query-switch-group.directive';
 import { QueryRemoveButtonDirective } from './module/query-remove-button.directive';
-import { QueryEmptyWarningDirective } from './module/query-empty-warning.directive';
+import { QuerySwitchGroupDirective } from './module/query-switch-group.directive';
 
 @NgModule({
   imports: [CommonModule, FormsModule],
