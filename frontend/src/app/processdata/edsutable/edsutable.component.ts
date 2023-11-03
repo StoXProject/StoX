@@ -50,6 +50,7 @@ export class EdsutableComponent implements OnInit {
   }
 
   async onItemClick(item, shiftDown) {
+    // console.log('> ' + 'Item clicked: ' + item.EDSU + ' ' + item.PSU, this.ps.iaMode);
     switch (this.ps.iaMode) {
       case 'acousticPSU': {
         let prevClickIndex = this.lastClickedIndex; // handle range selection with respect to last clicked index
