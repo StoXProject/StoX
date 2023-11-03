@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
 import { QueryBuilderComponent } from './query-builder.component';
@@ -9,7 +9,7 @@ describe('QueryBuilderComponent', () => {
 
   let fixture: ComponentFixture<QueryBuilderComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [CommonModule, FormsModule],
       declarations: [QueryBuilderComponent],
