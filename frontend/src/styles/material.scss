@@ -1,26 +1,29 @@
 .mat-ink-bar {
   background-color: #c0c0c0 !important;
 }
+
 .mat-tab-header-pagination {
   background-color: lighten(#f0f0f0, 4%) !important;
 }
 .mat-mdc-input-element {
   border: none !important;
 }
-.mat-tab-links {
+.mat-mdc-tab-links {
   width: 100%;
 }
+
 .mat-tab-labels,
-.mat-tab-links,
+.mat-mdc-tab-links,
 .mat-mdc-tab-link,
-.mat-mdc-tab.mdc-tab {
+.mat-mdc-tab .mdc-tab {
   background-color: #e5e5e5 !important;
 }
 
 .mat-tab-label,
-.mat-tab-link,
 .mat-mdc-tab-link,
-.mat-mdc-tab.mdc-tab {
+.mat-mdc-tab-link,
+.mat-mdc-tab,
+.mdc-tab {
   padding: 0 10px !important;
   height: 1.2rem !important;
   line-height: 1.2rem !important;
@@ -33,24 +36,27 @@
   font-size: 0.75rem !important;
   font-weight: 600 !important;
 }
+
 .mat-tab-label-content {
   font-size: 0.75rem !important;
   font-weight: 600 !important;
 }
 
-.mat-tab-group {
+.mat-mdc-tab-group {
   height: 100%;
 }
 
-.mat-tab-body {
+.mat-mdc-tab-body {
   height: 100%;
   overflow: hidden !important;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
 .mat-tab-body-wrapper {
   height: 100%;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
 .mat-tab-body-content {
   overflow: hidden !important;
 }
@@ -67,27 +73,35 @@
 .mat-toolbar {
   padding: 3px 3px !important;
 }
+.mat-toolbar-button {
+  height: 20px;
+}
+
 .mdc-raised-button,
-.mdc-button-toggle-label-content {
+.mdc-button-toggle-label-content,
+.mat-button-toggle-label-content {
   padding: 0 0 !important;
+  line-height: 15px;
 }
 .mdc-button-toggle-label-content {
   line-height: 1.2rem !important;
 }
 
-.mat-select-panel {
+.mat-mdc-select-panel {
   min-width: fit-content !important;
 }
 
 .cdk-overlay-container {
   z-index: 20000 !important;
 }
-.mat-option {
+.mat-mdc-option {
   line-height: 18px !important;
   height: 18px !important;
 }
 
-mat-option.mat-option {
+/* TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version.*/
+.mat-option,
+.mat-mdc-option {
   position: relative;
   height: 18px !important;
   line-height: 18px !important;
@@ -100,33 +114,44 @@ mat-option.mat-option {
   width: 100%;
 }
 
-.mat-menu-item,
-.mat-list-item {
-  line-height: 1.2rem !important;
-  height: 1.2rem !important;
-  padding: 0 !important;
+.mat-mdc-list-item,
+.mdc-list-item {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
   font-size: 14px !important;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
 .mat-list-item-content,
-.mat-list-base {
+.mat-mdc-list-base {
   padding: 1px !important;
 }
-.mat-list-base {
+.mat-mdc-list-base {
   padding: 2px !important;
 }
 
-.mat-menu-item:focus {
+.mat-mdc-menu-item:focus {
   outline: none;
 }
 
-.mat-menu-panel,
+.mat-mdc-menu-panel,
 .mat-mdc-menu-panel {
   min-height: 0rem !important;
 }
 
-.mat-mdc-menu-content {
-  padding: 0.2rem !important;
+.mat-mdc-menu-item {
+  min-height: 24px;
+}
+
+.mat-mdc-menu-content,
+.mat-mdc-menu-content,
+.mat-mdc-menu-content .mat-mdc-menu-item .mdc-list-item__primary-text {
+  font-size: 12px;
+}
+
+.mat-mdc-menu-content .mat-mdc-menu-item {
+  font-size: 14px !important;
+  min-height: 20px;
 }
 
 .helpcontent h2 {
@@ -140,27 +165,26 @@ input.mat-mdc-input-element {
   margin-top: auto !important;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
 .mat-tab-label-active {
   background-color: #cce8ff !important;
-}
-
-.mat-form-field,
-.mat-mdc-form-field {
-  width: 100% !important;
 }
 
 // html {
 //   font-size: 75%;
 // }
 
-::ng-deep .mat-mdc-text-field-wrapper {
-  max-height: 20px;
+.mat-mdc-text-field-wrapper {
+  margin-top: 10px;
 }
 
-::ng-deep .mat-mdc-form-field {
-  max-height: 25px;
+.mat-mdc-form-field {
+  // width: 100% !important;
+  height: 56px;
+  font-size: 14px;
+  padding: 0px !important;
 }
 
-::ng-deep .mat-mdc-form-field-infix {
+.mat-mdc-form-field-infix {
   padding: 0 !important;
 }

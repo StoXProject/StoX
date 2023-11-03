@@ -56,7 +56,7 @@ export class HomeComponent {
     this.stoxVersion = await this.ds.getStoxVersion().toPromise() /*'2.9.17'*/;
     this.items = [];
     this.m_isDesktop = 'true' == (await this.ds.isdesktop().toPromise());
-    console.log('> ' + 'isdesktop=' + typeof this.m_isDesktop);
+    console.log('> ' + 'isdesktop=' + this.m_isDesktop);
   }
 
   ctxMenuShow(_e) {

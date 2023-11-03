@@ -11,12 +11,12 @@
     padding: 8px 24px 0;
   }
   
-  .mat-form-field {
+  .mat-mdc-form-field {
     font-size: 14px;
     width: 100%;
   }
   
-  .mat-table , .mat-mdc-table {
+  .mat-mdc-table , .mat-mdc-table {
     overflow: auto;
     max-height: 750px;
   }

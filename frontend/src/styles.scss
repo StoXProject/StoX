@@ -7,6 +7,10 @@
 @import './styles/material.scss';
 @import './styles/primeng.scss';
 
+html {
+  font-size: 14px;
+}
+
 .title {
   margin-top: 1rem;
   font-weight: bold;
@@ -41,6 +45,13 @@
   font-size: 1rem !important;
   text-align: center;
   width: 1rem;
+}
+
+#toolbar {
+  .mat-button-toggle-label-content {
+    height: 15px;
+    line-height: 1rem;
+  }
 }
 
 .ritc {
