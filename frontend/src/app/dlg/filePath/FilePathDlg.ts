@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { ErrorUtils } from 'src/app/utils/errorUtils';
 import { PathUtils } from 'src/app/utils/pathUtils';
@@ -15,7 +15,7 @@ import { FilePathDlgService } from './FilePathDlgService';
   templateUrl: './FilePathDlg.html',
   styleUrls: ['./FilePathDlg.css'],
 })
-export class FilePathDlg implements OnInit {
+export class FilePathDlg {
   dataSource: MatTableDataSource<FilePath> = new MatTableDataSource<FilePath>(this.service.paths);
   displayedColumns = ['path', 'action'];
   combinedPaths: string[] = [];
@@ -31,17 +31,29 @@ export class FilePathDlg implements OnInit {
     });
   }
 
-  async ngOnInit() {}
+  async addRow() {
+    const filePath = await this.openFileDialog(true);
+    if (filePath == null) {
+      return;
+    }
 
-  addRow() {
-    this.service.paths.push({ path: null });
+    const paths = <string[]>JSON.parse(filePath);
+    const convertedPaths = paths.map(PathUtils.ConvertBackslash);
+
+    //TODO: Add only unique paths
+    for (let i = 0; i < convertedPaths.length; i++) {
+      const path = convertedPaths[i];
+      if (!this.service.paths.some(p => p.path === path)) {
+        this.service.paths.push({ path: path });
+      }
+    }
+
     this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
     this.dataSource.filter = '';
   }
 
   async edit(currentFilePath: FilePath) {
-    const option = { properties: ['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath };
-    const filePath = await this.dataService.browsePath(option).toPromise();
+    const filePath = await this.openFileDialog(false);
 
     if (filePath == null) {
       return;
@@ -57,25 +69,6 @@ export class FilePathDlg implements OnInit {
     this.service.paths.splice(index, 1);
     this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
   }
-
-  setAndShowMessage(msg: string) {
-    this.msgService.setMessage(msg);
-    this.msgService.showMessage();
-  }
-
-  fileExists = async (path: string): Promise<boolean> => {
-    const testFullPath = await this.dataService.fileExists(path).toPromise();
-
-    if (testFullPath != null && testFullPath != 'true') {
-      const testRelativePath = await this.dataService.fileExists(this.ps.selectedProject.projectPath + '/' + path).toPromise();
-
-      if (testRelativePath != null && testRelativePath != 'true') {
-        return false;
-      }
-    }
-
-    return true;
-  };
 
   async apply() {
     // check that all paths are filled and files exist
@@ -149,4 +142,34 @@ export class FilePathDlg implements OnInit {
   onHide() {
     this.service.display = false;
   }
+
+  // Helpers
+  // ________________________________________________________________________
+
+  openFileDialog = async (multiSelect: boolean): Promise<string> => {
+    const title = 'Select file' + (multiSelect ? 's' : '');
+    const option = { properties: ['openFile', multiSelect ? 'multiSelections' : ''], title, defaultPath: this.ps.selectedProject.projectPath };
+    const filePath = await this.dataService.browsePath(option).toPromise();
+
+    return filePath;
+  };
+
+  setAndShowMessage(msg: string) {
+    this.msgService.setMessage(msg);
+    this.msgService.showMessage();
+  }
+
+  fileExists = async (path: string): Promise<boolean> => {
+    const testFullPath = await this.dataService.fileExists(path).toPromise();
+
+    if (testFullPath != null && testFullPath != 'true') {
+      const testRelativePath = await this.dataService.fileExists(this.ps.selectedProject.projectPath + '/' + path).toPromise();
+
+      if (testRelativePath != null && testRelativePath != 'true') {
+        return false;
+      }
+    }
+
+    return true;
+  };
 }
