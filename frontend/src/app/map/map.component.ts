@@ -599,8 +599,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
 
   onClick() {}
 
-  onResized(event: ResizeObserverEntry) {
-    console.log('resized');
+  onResized(_event: ResizeObserverEntry) {
     if (this.map != null) {
       this.map.updateSize();
     }

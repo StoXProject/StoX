@@ -10,6 +10,7 @@ import { ProjectService } from '../service/project.service';
 import { DefinedColumnsService } from './../dlg/definedColumns/DefinedColumnsService';
 import { SelectedVariablesService } from './../dlg/selectedVariables/SelectedVariablesService';
 import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBuilderDlgService';
+import { ErrorUtils } from '../utils/errorUtils';
 
 @Component({
   selector: 'app-parameter',
@@ -65,7 +66,7 @@ export class ParameterComponent implements OnInit {
           });
       } catch (error) {
         console.log('> ' + error.error);
-        const firstLine = error.error.split('\n', 1)[0];
+        const firstLine = ErrorUtils.GetFirstLine(error);
 
         this.msgService.setMessage(firstLine);
         this.msgService.showMessage();
