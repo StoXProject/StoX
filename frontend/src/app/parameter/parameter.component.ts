@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { ProcessProperties } from '../data/ProcessProperties';
 import { PropertyCategory } from '../data/propertycategory';
@@ -7,17 +7,17 @@ import { FilePathDlgService } from '../dlg/filePath/FilePathDlgService';
 import { MessageService } from '../message/MessageService';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
+import { ErrorUtils } from '../utils/errorUtils';
 import { DefinedColumnsService } from './../dlg/definedColumns/DefinedColumnsService';
 import { SelectedVariablesService } from './../dlg/selectedVariables/SelectedVariablesService';
 import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBuilderDlgService';
-import { ErrorUtils } from '../utils/errorUtils';
 
 @Component({
   selector: 'app-parameter',
   templateUrl: './parameter.component.html',
   styleUrls: ['./parameter.component.scss'],
 })
-export class ParameterComponent implements OnInit {
+export class ParameterComponent {
   cols = [
     { field: 'name', header: 'Name', width: '50%' },
     { field: 'value', header: 'Value', width: '50%' },
@@ -32,8 +32,6 @@ export class ParameterComponent implements OnInit {
     private filePathDlgService: FilePathDlgService,
     private selectedVariablesService: SelectedVariablesService
   ) {}
-
-  async ngOnInit() {}
 
   getMetParameterValueList(): any[] {
     return [{ name: false }, { name: true }];
