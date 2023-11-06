@@ -29,13 +29,13 @@ export class RConnectionDlgService {
     this.isConnecting = true;
     try {
       console.log('> ' + 'Setting R path...');
-      var res = <string>await this.dataService.setRPath(this.rpath).toPromise();
+      const res = <string>await this.dataService.setRPath(this.rpath).toPromise();
+      console.log('> ' + 'Posting rpath, response ' + res);
       await this.ps.checkRstoxFrameworkAvailability();
     } finally {
       this.isConnecting = false;
     }
 
-    console.log('> ' + 'Posting rpath, response ' + res);
     this.display = false;
   }
 

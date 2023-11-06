@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, ContentChild, ContentChildren, ElementRef,forwardRef, Input, OnChanges, OnInit, QueryList, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ContentChild, ContentChildren, ElementRef, forwardRef, Input, OnChanges, OnInit, QueryList, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator } from '@angular/forms';
 
 import { QueryArrowIconDirective } from './query-arrow-icon.directive';
-import { ArrowIconContext, ButtonGroupContext, EmptyWarningContext,Entity, EntityContext, Field, FieldContext, InputContext, LocalRuleMeta, OperatorContext, Option, QueryBuilderClassNames, QueryBuilderConfig, RemoveButtonContext, Rule, RuleSet, SwitchGroupContext } from './query-builder.interfaces';
+import { ArrowIconContext, ButtonGroupContext, EmptyWarningContext, Entity, EntityContext, Field, FieldContext, InputContext, LocalRuleMeta, OperatorContext, Option, QueryBuilderClassNames, QueryBuilderConfig, RemoveButtonContext, Rule, RuleSet, SwitchGroupContext } from './query-builder.interfaces';
 import { QueryButtonGroupDirective } from './query-button-group.directive';
 import { QueryEmptyWarningDirective } from './query-empty-warning.directive';
 import { QueryEntityDirective } from './query-entity.directive';

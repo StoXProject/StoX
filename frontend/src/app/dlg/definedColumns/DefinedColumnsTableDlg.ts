@@ -2,7 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { ColumnPossibleValues, ColumnType, ColumnValue,DefinedColumns } from '../../data/DefinedColumns';
+import { ColumnPossibleValues, ColumnType, ColumnValue, DefinedColumns } from '../../data/DefinedColumns';
 import { ProcessProperties } from '../../data/ProcessProperties';
 import { MessageService } from '../../message/MessageService';
 import { DataService } from '../../service/data.service';

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { ColumnPossibleValues, ColumnType, ColumnValue,DefinedColumns } from '../../data/DefinedColumns';
+import { ColumnPossibleValues, ColumnType, ColumnValue, DefinedColumns } from '../../data/DefinedColumns';
 import { PropertyCategory } from '../../data/propertycategory';
 import { PropertyItem } from '../../data/propertyitem';
 import { DataService } from '../../service/data.service';

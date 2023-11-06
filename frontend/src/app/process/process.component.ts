@@ -6,7 +6,7 @@ import { ContextMenu } from 'primeng/contextmenu';
 
 import { OutputElement } from '../data/outputelement';
 import { Process } from '../data/process';
-import { ProcessOutputElement, ProcessTableResult } from '../data/runresult';
+import { ProcessOutputElement } from '../data/runresult';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
 import { RunService } from '../service/run.service';

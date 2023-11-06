@@ -1,5 +1,5 @@
 import { Directive } from '@angular/core';
-import { Host, Input, OnInit,Optional, Self } from '@angular/core';
+import { Host, Input, OnInit, Optional, Self } from '@angular/core';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { _countGroupLabelsBeforeOption, _getOptionScrollPosition } from '@angular/material/core';
 
