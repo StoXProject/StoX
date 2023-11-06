@@ -1,16 +1,13 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MapBrowserEvent } from 'ol';
-//import { add as addProjection } from 'ol/proj/projection';
 import { platformModifierKeyOnly, shiftKeyOnly } from 'ol/events/condition';
 import Feature from 'ol/Feature';
-//import Projection from 'ol/proj';
 import TopoJSON from 'ol/format/TopoJSON';
 import { Geometry } from 'ol/geom';
 import { Draw, Modify, Select } from 'ol/interaction';
 import { Layer, Vector } from 'ol/layer';
 import OlMap from 'ol/Map';
-//import Extent from 'ol/extent';
 import Overlay from 'ol/Overlay';
 import { clearAllProjections, transform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
@@ -21,10 +18,7 @@ import * as proj4x from 'proj4';
 
 import { MapInfo } from '../data/MapInfo';
 import { BioticAssignment, EDSU_PSU } from '../data/processdata';
-import { ActiveProcessResult } from '../data/runresult';
 import { NamedStringIndex, NamedStringTable } from '../data/types';
-// TODO https://jira.imr.no/browse/STOX-690
-// import { ResizedEvent } from 'angular-resize-event';
 import { DataService } from '../service/data.service';
 import { ProcessDataService } from '../service/processdata.service';
 import { ProjectService } from '../service/project.service';
@@ -48,16 +42,9 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   @Input() cm: ContextMenu;
 
   map: OlMap;
-  // source: OlXYZ;
-  // toposource: VectorSource;
-  // layer: OlTileLayer;
   coastLine: Vector<any>;
   grid: Vector<any>;
   view: OlView;
-  /*stationLayer: Layer = null;
-  edsuPointLayer: Layer = null;
-  edsuLineLayer: Layer = null;
-  stratumLayer: Layer = null;*/
   layerMap: Map<string, Layer[]> = new Map();
   stratumSelect: Select;
   stratumModify: Modify;
@@ -86,23 +73,10 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     return this.pds.stratum.includes(stratum);
   }
 
-  /*@HostListener('window:keyup', ['$event'])
-  keyEvent(event: KeyboardEvent) {
-    console.log(event);
-    
-    // if (event.keyCode === KEY_CODE.RIGHT_ARROW) {
-    //   this.increment();
-    // }
-
-    // if (event.keyCode === KEY_CODE.LEFT_ARROW) {
-    //   this.decrement();
-    // }
-  }*/
   tools = [
     { tool: 'freemove', iclass: 'freemoveicon' },
     { tool: 'stratum-edit', iclass: 'editicon' },
-    { tool: 'stratum-add', iclass: 'addicon' } /*,
-    { tool: "stratum-delete", iclass: "deleteicon" }*/,
+    { tool: 'stratum-add', iclass: 'addicon' },
   ];
   projectionsMenu = [
     {
@@ -150,7 +124,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           this.map.getInteractions().extend([this.stratumDraw]);
         }
 
-        //console.log("add stratum");//this.map.getInteractions().extend([this.stratumSelect, this.stratumModify]);
         break;
       default:
     }
@@ -160,6 +133,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   get tool(): string {
     return this.m_Tool;
   }
+
   resetInteractions() {
     if (this.stratumDraw != null) {
       this.map.getInteractions().remove(this.stratumDraw);
@@ -245,26 +219,21 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     } else {
       center = this.map.getView()?.getCenter();
       if (center == null) {
-        center = this.mapInfo.origin; //getCenter(newProj.getExtent())
+        center = this.mapInfo.origin;
         console.log('Get view center from middle of projection extent: ' + center);
       } else {
         center = transform(center, this.proj, newProjCode);
-        //console.log("Transformed view center from previous projection: " + center);
       }
     }
 
     const newView = new OlView({
       projection: newProj,
-      center: center, //fromLonLat(center, newProjCode),//getCenter(newProjExtent || [0, 0, 0, 0]),
-      zoom: zoom, //,
-      //extent: newProjExtent || undefined
+      center: center,
+      zoom: zoom,
     });
 
     this.map.setView(newView);
-    //this.map.getLayers().forEach(l=>l.)
-    //this.map.getLayers().forEach(l=>this.map.removeLayer(l));
     this.map.removeLayer(this.grid);
-    // this.coastLine.getSource().getFeatures().forEach(f => f.getGeometry().transform(this.proj, newProjCode));
     if (this.proj != newProjCode) {
       console.log('Converting features from ' + this.proj + ' to ' + newProjCode);
       this.map.getLayers().forEach(l =>
@@ -274,7 +243,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       );
     }
 
-    const centerLongitude: number = 0; //this.mapInfo.origin[0]
+    const centerLongitude: number = 0;
 
     this.grid = MapSetup.getGridLayer(newProjCode, centerLongitude);
     this.map.addLayer(this.grid);
@@ -284,8 +253,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
 
   initProjections(origin: Coordinate) {
     clearAllProjections();
-    //  console.log("origin: " + origin)
-    //origin = [0,0]
     if (this.currentLAEAOrigin == null) {
       this.currentLAEAOrigin = origin;
     }
@@ -295,7 +262,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     this.currentLAEAOrigin = origin;
     proj4.defs('StoX_002_Geographical', '+proj=longlat +ellps=WGS84 +units=degrees +no_defs');
     register(proj4);
-    const StoX_001_LAEA = getProjection('StoX_001_LAEA');
+    // const StoX_001_LAEA = getProjection('StoX_001_LAEA');
     //StoX_001_LAEA.setExtent(transformExtent([-80, -70, +100, +80], 'EPSG:4326', 'StoX_001_LAEA'));
   }
 
@@ -303,46 +270,24 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
     this.mapInfo.zoom = this.map.getView().getZoom();
     this.mapInfo.origin = this.currentLAEAOrigin;
     this.mapInfo.projection = this.proj;
-    //console.log("MapInfo:" + JSON.stringify(this.mapInfo))
     await this.dataService.setMapInfo(this.mapInfo).toPromise();
   }
 
   async ngOnInit() {
     console.log('get mapinfo from backend');
-    this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise()); // {zoom:2.3, origin:[10,60], projection:''};
-    //console.log("MapInfo:" + JSON.stringify(this.mapInfo))
+    this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise());
 
     console.log('init projections');
     this.initProjections(this.mapInfo.origin);
 
-    /*var StoX_002_BarentsSea = getProjection('StoX_002_BarentsSea');
-    StoX_002_BarentsSea.setExtent(transformExtent([-100, -50, 100, 90], 'EPSG:4326', 'StoX_002_BarentsSea'));
-    
-    var StoX_003_WestAfrica = getProjection('StoX_003_WestAfrica');
-    StoX_003_WestAfrica.setExtent(transformExtent([-100, -70, 100, 70], 'EPSG:4326', 'StoX_003_WestAfrica'));
-    
-    var StoX_004_SouthPole = getProjection('StoX_004_SouthPole');
-    StoX_004_SouthPole.setExtent(transformExtent([-100, -90, 100, 0], 'EPSG:4326', 'StoX_004_SouthPole'));
-    
-    var StoX_005_SriLanka = getProjection('StoX_005_SriLanka');
-    StoX_005_SriLanka.setExtent(transformExtent([20, -70, 180, 70], 'EPSG:4326', 'StoX_005_SriLanka'));
-    
-    var StoX_006_Geographical = getProjection('StoX_006_Geographical');
-    StoX_006_Geographical.setExtent(transformExtent([-180, -90, 180, 90], 'EPSG:4326', 'StoX_006_Geographical'));
-    */
-
     console.log('Creating coastline');
     this.coastLine = new Vector({
       source: new Source({
-        //url: 'assets/landflate_verden.json',
         url: 'assets/landflate_verden_gap180.json',
-        //url: 'assets/World_polygons.json',
-        //url: 'assets/World_polygons_susbset.json',
 
         format: new TopoJSON({
           // don't want to render the full world polygon (stored as 'land' layer),
           // which repeats all countries
-          //layers: ['World_polygon'],
           layers: ['world'],
         }),
         overlaps: false,
@@ -351,21 +296,9 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       zIndex: 11,
     });
 
-    /*this.layer = new OlTileLayer({
-      source: this.source
-    });*/
-
-    /* this.view = new OlView({
-       //center: fromLonLat([170, 10], proj),
-       center: fromLonLat([1, 68], this.proj),
-       projection: this.proj,
-       zoom: 2,
-     });*/
     console.log('Creating map');
     this.map = new OlMap({
       target: 'map',
-      //layers: [this.grid, this.coastLine],
-      //  view: this.view,
       controls: [MapSetup.getMousePositionControl()],
     });
 
@@ -379,8 +312,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       this.map.addOverlay(this.overlay);
     }
 
-    //this.grid = MapSetup.getGridLayer(this.proj);
-    //this.map.addLayer(this.grid);
     this.map.addLayer(this.coastLine);
 
     this.setProjectionProj4(this.mapInfo.projection);
@@ -422,7 +353,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
                 const edsupsu: EDSU_PSU = this.pds.acousticPSU != null && this.pds.acousticPSU.EDSU_PSU != null ? this.pds.acousticPSU.EDSU_PSU.find(edsupsu => edsupsu.EDSU == edsu) : null;
 
                 // Connect EDSU_PSU to feature
-                if (this.pds.acousticPSU != null && this.pds.acousticPSU.EDSU_PSU != null && edsupsu == null) {
+                if (this.pds.acousticPSU?.EDSU_PSU != null && edsupsu == null) {
                   console.log('edsu ' + edsu + ' not mapped');
                 }
 
@@ -501,8 +432,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       }
     });
 
-    //var selected = [];
-
     this.map.on('singleclick', e => {
       const farr: Feature[] = [];
 
@@ -517,6 +446,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           farr.push(<Feature>f);
         }
       });
+
       // handle the top feature only.
       farr
         .sort((a: Feature, b: Feature) => (<Layer>a.get('layer')).getZIndex() - (<Layer>b.get('layer')).getZIndex())
@@ -534,7 +464,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           switch (this.ps.iaMode) {
             case 'acousticPSU': {
               // Controlling focus.
-              //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
               let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
 
               const clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
@@ -605,7 +534,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       this.openCm(evt);
     });
     this.map.getView().on('change:resolution', async _evt => {
-      //console.log("Resolution changed - write to backend")
       await this.updateMapInfoInBackend();
     });
   }
@@ -671,12 +599,12 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
 
   onClick() {}
 
-  // TODO https://jira.imr.no/browse/STOX-690
-  // onResized(event: ResizedEvent) {
-  //   if (this.map != null) {
-  //     this.map.updateSize();
-  //   }
-  // }
+  onResized(event: ResizeObserverEntry) {
+    console.log('resized');
+    if (this.map != null) {
+      this.map.updateSize();
+    }
+  }
 
   getTooltip(obj) {
     let res: string = '';

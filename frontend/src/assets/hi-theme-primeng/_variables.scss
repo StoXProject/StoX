@@ -358,8 +358,7 @@ $tableFooterCellBgColor: #ffffff;
 $tableFooterCellTextColor: $textColor;
 $tableFooterCellFontWeight: 700;
 $tableFooterCellBorder: 1px solid #c8c8c8;
-// TODO https://jira.imr.no/browse/STOX-690
-// $tableResizerHelperBgColor:$primaryColor;
+$tableResizerHelperBgColor: $primaryColor;
 
 //schedule
 $scheduleEventBgColor: $primaryDarkColor;

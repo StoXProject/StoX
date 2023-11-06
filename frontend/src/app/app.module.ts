@@ -1,8 +1,6 @@
 import { DragDropModule as MatDragDropModule } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { APP_BASE_HREF, HashLocationStrategy, LocationStrategy } from '@angular/common';
-// TODO https://jira.imr.no/browse/STOX-690
-// import { AngularResizeEventModule } from 'angular-resize-event';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -32,6 +30,7 @@ import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AngularSplitModule } from 'angular-split';
 import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
+import { NgxResizeObserverModule } from 'ngx-resize-observer';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -144,8 +143,7 @@ export class MaterialModule {}
     TabViewModule,
     NgbModule,
     AngularSplitModule.forRoot(),
-    // TODO https://jira.imr.no/browse/STOX-690
-    //AngularResizeEventModule,
+    NgxResizeObserverModule,
     HttpClientModule,
 
     AccordionModule,

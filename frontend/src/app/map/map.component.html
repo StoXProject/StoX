@@ -13,10 +13,7 @@
     </mat-button-toggle>
   </mat-toolbar>
 
-  <!--  
-// TODO https://jira.imr.no/browse/STOX-690
-<div id="map" (resized)="onResized($event)"> -->
-  <div id="map"></div>
+  <div id="map" (onResize)="onResized($event)"></div>
   <div id="mapstatus">
     <div id="mouse-position"></div>
   </div>
