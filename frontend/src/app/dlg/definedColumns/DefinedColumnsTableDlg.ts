@@ -1,6 +1,7 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { ErrorUtils } from 'src/app/utils/errorUtils';
 
 import { ColumnPossibleValues, ColumnType, ColumnValue, DefinedColumns } from '../../data/DefinedColumns';
 import { ProcessProperties } from '../../data/ProcessProperties';
@@ -220,7 +221,7 @@ export class DefinedColumnsTableDlg implements OnInit {
             });
         } catch (error) {
           console.log('> ' + error.error);
-          const firstLine = error.error.split('\n', 1)[0];
+          const firstLine = ErrorUtils.GetFirstLine(error);
 
           this.msgService.setMessage(firstLine);
           this.msgService.showMessage();

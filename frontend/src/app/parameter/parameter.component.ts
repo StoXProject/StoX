@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { ProcessProperties } from '../data/ProcessProperties';
 import { PropertyCategory } from '../data/propertycategory';
@@ -7,6 +7,8 @@ import { FilePathDlgService } from '../dlg/filePath/FilePathDlgService';
 import { MessageService } from '../message/MessageService';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
+import { ErrorUtils } from '../utils/errorUtils';
+import { PathUtils } from '../utils/pathUtils';
 import { DefinedColumnsService } from './../dlg/definedColumns/DefinedColumnsService';
 import { SelectedVariablesService } from './../dlg/selectedVariables/SelectedVariablesService';
 import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBuilderDlgService';
@@ -16,7 +18,7 @@ import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBu
   templateUrl: './parameter.component.html',
   styleUrls: ['./parameter.component.scss'],
 })
-export class ParameterComponent implements OnInit {
+export class ParameterComponent {
   cols = [
     { field: 'name', header: 'Name', width: '50%' },
     { field: 'value', header: 'Value', width: '50%' },
@@ -32,55 +34,55 @@ export class ParameterComponent implements OnInit {
     private selectedVariablesService: SelectedVariablesService
   ) {}
 
-  async ngOnInit() {}
-
   getMetParameterValueList(): any[] {
     return [{ name: false }, { name: true }];
   }
 
   onChanged(category: PropertyCategory, pi: PropertyItem) {
-    console.log('> ' + 'In group ' + category.groupName + ' parameter ' + pi.name + ' is changed to ' + pi.value);
-    // function name change sends first pi.value == undefined from autocomplete
+    let { value } = pi;
+    const { name, type } = pi;
+    const { groupName } = category;
+    console.log('> ' + 'In group ' + groupName + ' parameter ' + name + ' is changed to ' + value);
+    // function name change sends first value == undefined from autocomplete
 
-    if (pi.value == null) {
+    // send null as empty string.
+    if (value == null) {
       console.log('> ' + 'p.value==null');
-      pi.value = ''; // send null as empty string.
+      value = '';
     }
-
-    let val = pi.value;
 
     // Quote strings to let backend smoothly transform all values to its corresponding types(jsonlite::fromJSON removes the quotes)
-    if (pi.type == 'character' && (pi.format == 'none' || pi.value === '')) {
+    if (type == 'character' && (pi.format == 'none' || value === '')) {
       // single value string as json compatible
-      val = JSON.stringify(val);
+      value = JSON.stringify(value);
     }
 
-    if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
-      try {
-        this.dataService
-          .setProcessPropertyValue(category.groupName, pi.name, val, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
-          .toPromise()
-          .then((s: ProcessProperties) => {
-            this.ps.handleAPI(s);
-          });
-      } catch (error) {
-        console.log('> ' + error.error);
-        const firstLine = error.error.split('\n', 1)[0];
+    const notNull = this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null;
+    if (!notNull) {
+      return;
+    }
 
-        this.msgService.setMessage(firstLine);
-        this.msgService.showMessage();
+    try {
+      this.dataService
+        .setProcessPropertyValue(groupName, name, value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
+        .toPromise()
+        .then((s: ProcessProperties) => {
+          this.ps.handleAPI(s);
+        });
+    } catch (error) {
+      console.log('> ' + error.error);
+      const firstLine = ErrorUtils.GetFirstLine(error);
 
-        return;
-      }
+      this.setAndShowMessage(firstLine);
+
+      return;
     }
   }
 
   async filter(category: PropertyCategory, pi: PropertyItem) {
-    // set this pi as the current PropertyItem in ExpressionBuilderService
     this.exprBuilderService.currentPropertyItem = pi;
     this.exprBuilderService.currentPropertyCategory = category;
 
-    // run ExpressionBuilderService.showDialog() to show Expression builder dialog
     this.exprBuilderService.showDialog();
   }
 
@@ -97,8 +99,7 @@ export class ParameterComponent implements OnInit {
     console.log('> ' + 'returnValue : ' + JSON.stringify(returnValue));
 
     if (this.ps.isEmpty(returnValue)) {
-      this.msgService.setMessage('Empty object from backend. See user log.');
-      this.msgService.showMessage();
+      this.setAndShowMessage('Empty object from backend. See user log.');
       this.selectedVariablesService.returnValue = null;
 
       return;
@@ -112,25 +113,28 @@ export class ParameterComponent implements OnInit {
   }
 
   async filePath(category: PropertyCategory, pi: PropertyItem) {
-    // console.log("> " + "project path : " + this.ps.selectedProject.projectPath);
-
     let options = {};
 
-    if (pi.format == 'filePath') {
-      options = { properties: ['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath };
-    } else if (pi.format == 'filePaths') {
-      this.filePathDlgService.currentPropertyCategory = category;
-      this.filePathDlgService.currentPropertyItem = pi;
-      this.filePathDlgService.showDialog();
+    switch (pi.format) {
+      case 'filePath':
+        options = { properties: ['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath };
+        break;
 
-      return;
-    } else if (pi.format == 'directoryPath') {
-      options = { properties: ['openDirectory'], title: 'Select folder', defaultPath: this.ps.selectedProject.projectPath };
-    } else {
-      this.msgService.setMessage(pi.format + ' is not implemented!');
-      this.msgService.showMessage();
+      case 'filePaths':
+        this.filePathDlgService.currentPropertyCategory = category;
+        this.filePathDlgService.currentPropertyItem = pi;
+        this.filePathDlgService.showDialog();
 
-      return;
+        return;
+
+      case 'directoryPath':
+        options = { properties: ['openDirectory'], title: 'Select folder', defaultPath: this.ps.selectedProject.projectPath };
+        break;
+      default: {
+        this.setAndShowMessage(pi.format + ' is not implemented!');
+
+        return;
+      }
     }
 
     const filePath = await this.dataService.browsePath(options).toPromise();
@@ -139,15 +143,24 @@ export class ParameterComponent implements OnInit {
 
     if (filePath != null) {
       paths = <string[]>JSON.parse(filePath);
-      for (let i = 0; i < paths.length; i++) {
-        paths[i] = paths[i].replace(/\\/g, '/');
-      }
+      paths = paths.map(PathUtils.ConvertBackslash);
     }
 
-    if (JSON.stringify(paths) != pi.value) {
-      pi.value = JSON.stringify(paths);
+    const stringifiedPaths = JSON.stringify(paths);
+    const hasChanged = stringifiedPaths != pi.value;
+
+    if (hasChanged) {
+      pi.value = stringifiedPaths;
       // call setProcessPropertyValue
       this.onChanged(category, pi);
     }
   }
+
+  // Helpers
+  // _______________________________________________________________________________________
+
+  setAndShowMessage = (message: string) => {
+    this.msgService.setMessage(message);
+    this.msgService.showMessage();
+  };
 }

@@ -8,6 +8,7 @@ import { MessageService } from '../message/MessageService';
 import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
+import { ErrorUtils } from '../utils/errorUtils';
 import { ExpressionBuilderDlgService } from './ExpressionBuilderDlgService';
 
 @Component({
@@ -205,7 +206,7 @@ export class ExpressionBuilderDlg implements OnInit {
             });
         } catch (error) {
           console.log('> ' + error.error);
-          const firstLine = error.error.split('\n', 1)[0];
+          const firstLine = ErrorUtils.GetFirstLine(error);
 
           this.msgService.setMessage(firstLine);
           this.msgService.showMessage();

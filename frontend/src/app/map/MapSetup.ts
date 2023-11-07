@@ -95,7 +95,7 @@ export class MapSetup {
     return new Style({
       stroke: new Stroke({
         color: strokeColor,
-        width: width,
+        width,
       }),
     });
   }
@@ -214,7 +214,7 @@ export class MapSetup {
     return new Select({
       condition: singleClick,
       toggleCondition: shiftKeyOnly,
-      layers: function (layer) {
+      layers(layer) {
         return layer.get('layerType') == 'stratum';
       },
       style: [MapSetup.getStratumSelectStyle(), MapSetup.getStratumNodeStyle()],
@@ -223,7 +223,7 @@ export class MapSetup {
   }
   static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource, dataService: DataService, ps: ProjectService, proj: string, mapInteraction: MapInteraction) {
     const d: Draw = new Draw({
-      source: source,
+      source,
       type: 'Polygon',
     });
 
@@ -238,7 +238,7 @@ export class MapSetup {
       const dialogRef = dialog.open(StratumNameDlgComponent, {
         width: '250px',
         disableClose: true,
-        data: { stratum: '', mapInteraction: mapInteraction },
+        data: { stratum: '', mapInteraction },
       });
 
       const f: Feature = e.feature.clone(); // survive event e change after subdialog by cloning feature
@@ -295,7 +295,7 @@ export class MapSetup {
     const v: Vector<any> = new Vector<any>({
       source: s,
       style: MapSetup.getStyleCacheFunction(),
-      zIndex: zIndex,
+      zIndex,
     });
 
     // Set layer properties
@@ -449,7 +449,7 @@ export class MapSetup {
 
     const v: Vector<any> = new Vector({
       source: s,
-      style: style,
+      style,
       zIndex: 10,
     });
 

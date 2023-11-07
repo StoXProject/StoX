@@ -16,6 +16,9 @@ export class FilePathDlgService {
   public currentPropertyItem: PropertyItem = null;
   public currentPropertyCategory: PropertyCategory = null;
 
+  /**
+   * Combine all paths into one combined array of paths
+   */
   combinedPaths(): string[] {
     const combined: string[] = [];
 
@@ -25,9 +28,11 @@ export class FilePathDlgService {
 
     return combined;
   }
+
   obj2FilePath(o: any): FilePath {
     return <FilePath>{ path: typeof o == 'string' ? o : JSON.stringify(o) };
   }
+
   async showDialog() {
     // parse currentPropertyItem and populate array paths and broadcast this to component
     console.log('> ' + 'currentPropertyItem.value : ' + this.currentPropertyItem.value);

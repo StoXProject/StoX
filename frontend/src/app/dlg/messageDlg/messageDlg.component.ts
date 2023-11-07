@@ -30,7 +30,7 @@ export class MessageDlgComponent implements OnInit {
     const dialogRef = dialog.open(MessageDlgComponent, {
       width: '250px',
       disableClose: true,
-      data: { title: title, message: message, dlgType: dlgType },
+      data: { title, message, dlgType },
     });
 
     return await dialogRef.afterClosed().toPromise();

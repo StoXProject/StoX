@@ -75,7 +75,7 @@ export class DataService {
     return this.runFunctionThrowFramework(
       'createProject',
       {
-        projectPath: projectPath,
+        projectPath,
         ow: false,
         showWarnings: true, // DEBUGGING
         open: true,
@@ -91,8 +91,8 @@ export class DataService {
 
   getProcessTable(projectPath: string, modelName: string): Observable<Process[]> {
     return this.runFunction('getProcessTable', {
-      projectPath: projectPath,
-      modelName: modelName,
+      projectPath,
+      modelName,
     });
   }
 
@@ -100,9 +100,9 @@ export class DataService {
     return this.runFunctionThrowFramework(
       'openProject',
       {
-        projectPath: projectPath,
+        projectPath,
         showWarnings: true, // DEBUGGING
-        force: force,
+        force,
         reset: false,
         verbose: true,
       },
@@ -114,7 +114,7 @@ export class DataService {
     return this.runFunctionThrowFramework(
       'isSaved',
       {
-        projectPath: projectPath,
+        projectPath,
       },
       true
     );
@@ -124,7 +124,7 @@ export class DataService {
     return this.runFunctionThrowFramework(
       'saveProject',
       {
-        projectPath: projectPath,
+        projectPath,
         Application: application,
       },
       true
@@ -135,8 +135,8 @@ export class DataService {
     return this.runFunctionThrowFramework(
       'saveAsProject',
       {
-        projectPath: projectPath,
-        newProjectPath: newProjectPath,
+        projectPath,
+        newProjectPath,
         Application: application,
       },
       true
@@ -145,8 +145,8 @@ export class DataService {
 
   closeProject(projectPath: string, save: boolean, application: string): Observable<any> {
     return this.runFunction('closeProject', {
-      projectPath: projectPath,
-      save: save,
+      projectPath,
+      save,
       Application: application,
     });
   }
@@ -157,8 +157,8 @@ export class DataService {
 
   getActiveProcess(projectPath: string, modelName: string): Observable<ActiveProcess> {
     return this.runFunction('getActiveProcess', {
-      projectPath: projectPath,
-      modelName: modelName,
+      projectPath,
+      modelName,
     });
   }
 
@@ -168,37 +168,37 @@ export class DataService {
 
   isProject(projectPath: string): Observable<boolean> {
     return this.runFunction('isProject', {
-      projectPath: projectPath,
+      projectPath,
     });
   }
 
   isOpenProject(projectPath: string): Observable<boolean> {
     return this.runFunction('isOpenProject', {
-      projectPath: projectPath,
+      projectPath,
     });
   }
 
   setProcessPropertyValue(groupName: string, name: string, value: any, projectPath: string, modelName: string, processID: string): Observable<any> {
     return this.runFunction('setProcessPropertyValue', {
-      groupName: groupName,
-      name: name,
-      value: value,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      groupName,
+      name,
+      value,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   getObjectHelpAsHtml(packageName: string, objectName: string): Observable<string> {
     return this.runFunction('getObjectHelpAsHtml', {
-      packageName: packageName,
-      objectName: objectName,
+      packageName,
+      objectName,
     });
   }
 
   expression2list(expr: string): Observable<RuleSet> {
     return this.runFunction('expression2list', {
-      expr: expr,
+      expr,
     });
   }
 
@@ -210,19 +210,19 @@ export class DataService {
 
   getParameterTableInfo(projectPath: string, modelName: string, processID: string, format: string): Observable<any> {
     return this.runFunction('getParameterTableInfo', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
-      format: format,
+      projectPath,
+      modelName,
+      processID,
+      format,
     });
   }
 
   getParameterVectorInfo(projectPath: string, modelName: string, processID: string, format: string): Observable<any> {
     return this.runFunction('getParameterVectorInfo', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
-      format: format,
+      projectPath,
+      modelName,
+      processID,
+      format,
     });
   }
 
@@ -351,7 +351,7 @@ export class DataService {
     );
 
     // console.log("> " + "RstoxFramework::runFunction(package='" + pkg + "', what='" + what + "', args=" + JSON.stringify(args) + ")")
-    return <any>this.callR({ what: what, args: args, package: pkg }).pipe(
+    return <any>this.callR({ what, args, package: pkg }).pipe(
       map(res => {
         let r2: RunResult = null;
 
@@ -389,10 +389,10 @@ export class DataService {
 
   runProcesses(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<RunProcessesResult> {
     return this.runFunction('runProcesses', {
-      projectPath: projectPath,
-      modelName: modelName,
-      startProcess: startProcess,
-      endProcess: endProcess,
+      projectPath,
+      modelName,
+      startProcess,
+      endProcess,
       save: false,
       'msg.GUI': true,
     });
@@ -400,41 +400,41 @@ export class DataService {
 
   resetModel(projectPath: string, modelName: string): Observable<ProcessTableResult> {
     return this.runFunction('resetModel', {
-      projectPath: projectPath,
-      modelName: modelName,
+      projectPath,
+      modelName,
       returnProcessTable: true,
     });
   }
 
   runProcessFunc<R>(func: string, projectPath: string, modelName: string, processID: string): Observable<R> {
     return this.runFunction(func, {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   removeProcess(projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('removeProcess', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   duplicateProcess(projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('duplicateProcess', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   addProcess(projectPath: string, modelName: string, value: any): Observable<ProcessTableResult> {
     return this.runFunction('addProcess', {
-      projectPath: projectPath,
-      modelName: modelName,
-      value: value,
+      projectPath,
+      modelName,
+      value,
     });
   }
 
@@ -448,18 +448,18 @@ export class DataService {
 
   getProcessOutputFolder(projectPath: string, modelName: string, processID: string): Observable<string> {
     return this.runFunction('getProcessOutputFolder', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
       type: 'output',
     });
   }
 
   getFilterOptionsAll(projectPath: string, modelName: string, processID: string, includeNumeric: boolean): Observable<any> {
     return this.runFunction('getFilterOptionsAll', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
       'include.numeric': includeNumeric,
     });
   }
@@ -490,28 +490,28 @@ export class DataService {
 
   modifyStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('modifyStratum', {
-      stratum: stratum,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      stratum,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   addStratum(stratum: any, projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('addStratum', {
-      stratum: stratum,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      stratum,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   addAcousticPSU(stratum: string, projectPath: string, modelName: string, processID: string): Observable<PSUResult> {
     return this.runFunction('addAcousticPSU', {
       Stratum: stratum,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
@@ -520,9 +520,9 @@ export class DataService {
       Stratum: stratum,
       PSU: psu,
       Haul: haul,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
@@ -531,18 +531,18 @@ export class DataService {
       Stratum: stratum,
       PSU: psu,
       Haul: haul,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   getProcessTableOutput(projectPath: string, modelName: string, processID: string, tableName: string): Observable<ProcessTableOutput> {
     return this.runFunction('getProcessTableOutput', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
-      tableName: tableName,
+      projectPath,
+      modelName,
+      processID,
+      tableName,
       flatten: true,
       pretty: true,
       linesPerPage: 200000,
@@ -555,10 +555,10 @@ export class DataService {
 
   getProcessGeoJsonOutput(projectPath: string, modelName: string, processID: string, geoJsonName: string): Observable<ProcessGeoJsonOutput> {
     return this.runFunction('getProcessGeoJsonOutput', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
-      geoJsonName: geoJsonName,
+      projectPath,
+      modelName,
+      processID,
+      geoJsonName,
       pretty: true,
       splitGeoJson: false,
     });
@@ -566,10 +566,10 @@ export class DataService {
 
   getProcessPlotOutput(projectPath: string, modelName: string, processID: string, plotName: string): Observable<string> {
     return this.runFunction('getProcessPlotOutput', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
-      plotName: plotName,
+      projectPath,
+      modelName,
+      processID,
+      plotName,
     });
   }
 
@@ -577,45 +577,45 @@ export class DataService {
     return this.runFunction('addEDSU', {
       PSU: psu,
       EDSU: edsu,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   rearrangeProcesses(projectPath: string, modelName: string, processID: string, afterProcessID: string): Observable<ProcessTableResult> {
     return this.runFunction('rearrangeProcesses', {
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
-      afterProcessID: afterProcessID,
+      projectPath,
+      modelName,
+      processID,
+      afterProcessID,
     });
   }
 
   removeEDSU(edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('removeEDSU', {
       EDSU: edsu,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   removeStratum(stratumName: string, projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
     return this.runFunction('removeStratum', {
-      stratumName: stratumName,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      stratumName,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 
   removeAcousticPSU(PSU: string[], projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
     return this.runFunction('removeAcousticPSU', {
-      PSU: PSU,
-      projectPath: projectPath,
-      modelName: modelName,
-      processID: processID,
+      PSU,
+      projectPath,
+      modelName,
+      processID,
     });
   }
 

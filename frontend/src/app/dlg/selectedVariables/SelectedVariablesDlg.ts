@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { ErrorUtils } from 'src/app/utils/errorUtils';
 
 import { SelectedVariable } from '../../data/DefinedColumns';
 import { ProcessProperties } from '../../data/ProcessProperties';
 import { MessageService } from '../../message/MessageService';
 import { DataService } from '../../service/data.service';
 import { ProjectService } from '../../service/project.service';
-// import { SelectionModel } from '@angular/cdk/collections';
 import { SelectedVariablesService } from './SelectedVariablesService';
 
 @Component({
@@ -141,7 +141,7 @@ export class SelectedVariablesDlg implements OnInit {
             });
         } catch (error) {
           console.log('> ' + error.error);
-          const firstLine = error.error.split('\n', 1)[0];
+          const firstLine = ErrorUtils.GetFirstLine(error);
 
           this.msgService.setMessage(firstLine);
           this.msgService.showMessage();
