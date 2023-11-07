@@ -16,22 +16,22 @@
       ],
       "plugins": ["unused-imports", "simple-import-sort"],
       "rules": {
-        "@angular-eslint/component-selector": [
-          "error",
-          {
-            "prefix": "app",
-            "style": "kebab-case",
-            "type": "element"
-          }
-        ],
-        "@angular-eslint/directive-selector": [
-          "error",
-          {
-            "prefix": "app",
-            "style": "camelCase",
-            "type": "attribute"
-          }
-        ],
+        // "@angular-eslint/component-selector": [
+        //   "error",
+        //   {
+        //     "prefix": "app",
+        //     "style": "kebab-case",
+        //     "type": "element"
+        //   }
+        // ],
+        // "@angular-eslint/directive-selector": [
+        //   "error",
+        //   {
+        //     "prefix": "app",
+        //     "style": "camelCase",
+        //     "type": "attribute"
+        //   }
+        // ],
         "semi": [2, "always"],
         "unused-imports/no-unused-imports-ts": "error",
         "@typescript-eslint/no-explicit-any": "off",
@@ -55,6 +55,7 @@
           { "blankLine": "always", "prev": "function", "next": "*" },
           { "blankLine": "any", "prev": "function", "next": "function" }
         ],
+        "object-shorthand": ["warn"],
         // DISABLE CURRENTLY NOT FOLLOWED RULES (TO BE REVISITED)
         "@angular-eslint/no-output-native": "off",
         "@angular-eslint/component-selector": "off",

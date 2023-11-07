@@ -228,8 +228,8 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
 
     const newView = new OlView({
       projection: newProj,
-      center: center,
-      zoom: zoom,
+      center,
+      zoom,
     });
 
     this.map.setView(newView);

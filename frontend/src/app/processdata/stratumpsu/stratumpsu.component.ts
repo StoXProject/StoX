@@ -21,10 +21,10 @@ export class StratumpsuComponent implements OnInit {
   private static asNode(id: string, type: string, children: TreeNode[]): TreeNode {
     return {
       label: id,
-      data: { id: id, type: type },
+      data: { id, type },
       expandedIcon: 'rib absa ' + type + 'icon',
       collapsedIcon: 'rib absa ' + type + 'icon',
-      children: children,
+      children,
     };
   }
 

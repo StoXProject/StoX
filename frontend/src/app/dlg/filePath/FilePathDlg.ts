@@ -44,7 +44,7 @@ export class FilePathDlg {
     for (let i = 0; i < convertedPaths.length; i++) {
       const path = convertedPaths[i];
       if (!this.service.paths.some(p => p.path === path)) {
-        this.service.paths.push({ path: path });
+        this.service.paths.push({ path });
       }
     }
 
