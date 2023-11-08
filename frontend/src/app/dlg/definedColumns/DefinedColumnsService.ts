@@ -85,7 +85,9 @@ export class DefinedColumnsService {
           const cv = new ColumnValue();
 
           cv.columnName = key;
-          cv.value = o1[key];
+          // STOX-588 Always send 0 as text to backend, so it will not be converted to NULL
+          const value = o1[key];
+          cv.value = value == 0 ? `${value}` : value;
           dc.columnValues.push(cv);
         });
         this.definedColumnsData.push(dc);
