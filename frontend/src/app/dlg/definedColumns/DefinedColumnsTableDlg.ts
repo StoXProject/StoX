@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { ErrorUtils } from 'src/app/utils/errorUtils';
 
@@ -15,7 +15,7 @@ import { DefinedColumnsService } from './DefinedColumnsService';
   templateUrl: './DefinedColumnsTableDlg.html',
   styleUrls: ['./DefinedColumnsTableDlg.css'],
 })
-export class DefinedColumnsTableDlg implements OnInit {
+export class DefinedColumnsTableDlg {
   title: string = '';
   displayedColumns = ['select'];
   columnPossibleValues: ColumnPossibleValues[] = [];
@@ -53,8 +53,6 @@ export class DefinedColumnsTableDlg implements OnInit {
     });
   }
 
-  async ngOnInit() {}
-
   init() {
     this.title = '';
     this.displayedColumns = ['select'];
@@ -65,12 +63,10 @@ export class DefinedColumnsTableDlg implements OnInit {
   }
 
   addRow() {
-    // let obj = <DefinedColumns>{};
     const obj = new DefinedColumns();
 
     this.displayedColumns.forEach(key => {
       if (key != 'select') {
-        // obj[key] = null;
         const cv = new ColumnValue();
 
         cv.columnName = key;
@@ -78,17 +74,15 @@ export class DefinedColumnsTableDlg implements OnInit {
         obj.columnValues.push(cv);
       }
     });
+
     this.service.definedColumnsData.push(obj);
     this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
-    // this.dataSource.data.push(obj);
     this.dataSource.filter = '';
   }
 
   removeSelectedRows() {
     this.selection.selected.forEach(item => {
       const index: number = this.service.definedColumnsData.findIndex(d => d === item);
-
-      // console.log("> " + this.service.definedColumnsData.findIndex(d => d === item));
       this.service.definedColumnsData.splice(index, 1);
       this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
     });
@@ -98,7 +92,6 @@ export class DefinedColumnsTableDlg implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-
     const numRows = this.dataSource.data.length;
 
     return numSelected === numRows;
@@ -137,66 +130,16 @@ export class DefinedColumnsTableDlg implements OnInit {
     return null;
   }
 
-  // areOldNamesUnique() {
-  //     // var tmpArr = [];
-  //     // for(var obj in this.service.definedColumnsData) {
-  //     //   if(tmpArr.indexOf(this.service.definedColumnsData[obj].old) < 0){
-  //     //     tmpArr.push(this.service.definedColumnsData[obj].old);
-  //     //   } else {
-  //     //     return false; // Duplicate value for tableName found
-  //     //   }
-  //     // }
-  //     // return true; // No duplicate values found for tableName
-
-  //     let keyColumns = ['SpeciesCategory', 'NewSpeciesCategory', 'AcousticCategory', 'NewAcousticCategory'];
-
-  //     for(let i=0; i<this.service.definedColumnsData.length; i++) {
-  //         let result =
-  //         this.service.definedColumnsData.filter(
-  //             dcd => {
-  //                 // Object.keys(keyColumns).forEach(key => {dcd[key] == this.service.definedColumnsData[i][key]});
-  //                 let j=0;
-  //                 while(j<keyColumns.length) {
-  //                     let key = keyColumns[j];
-  //                     if(dcd[key] != this.service.definedColumnsData[i][key]) {
-  //                         return false;
-  //                     }
-  //                     j++;
-  //                 }
-  //                 return true;
-  //             }
-  //         );
-
-  //         if(result.length > 1) {
-  //             return false;
-  //         }
-  //     }
-
-  //     return true;
-  // }
-
   apply() {
     // validate input for null values in dialog and show messages if necessary
     // check if there is empty field in dialog
     for (let i = 0; i < this.service.definedColumnsData.length; i++) {
-      const blankFound = false;
-
       for (let j = 0; j < this.service.definedColumnsData[i].columnValues.length; j++) {
-        //if(this.service.definedColumnsData[i].columnValues[j].value == null) {
-        /*console.log("> " + "Field " + this.service.definedColumnsData[i].columnValues[j].columnName + " is null in row index : " + i);
-                    this.msgService.setMessage("One or more fields are empty!");
-                    this.msgService.showMessage();
-                    blankFound = true;*/
-        //}
-        // Treat empty string (empty field) as null:
+        // Treat empty string (empty field) as null
         if (this.service.definedColumnsData[i].columnValues[j].value == '') {
           this.service.definedColumnsData[i].columnValues[j].value = null;
         }
       }
-
-      /*if (blankFound) {
-                return;
-            }*/
     }
 
     // validate input for duplicate rows
@@ -211,10 +154,13 @@ export class DefinedColumnsTableDlg implements OnInit {
     if (this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
       this.service.currentPropertyItem.value = this.combinedExpression;
       // run set property value function
-      if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
+      const notNull = this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null;
+      if (notNull) {
         try {
+          const { groupName } = this.service.currentPropertyCategory;
+          const { name, value } = this.service.currentPropertyItem;
           this.dataService
-            .setProcessPropertyValue(this.service.currentPropertyCategory.groupName, this.service.currentPropertyItem.name, this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
+            .setProcessPropertyValue(groupName, name, value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
             .toPromise()
             .then((s: ProcessProperties) => {
               this.ps.handleAPI(s);
