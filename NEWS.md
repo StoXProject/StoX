@@ -1,3 +1,20 @@
+# StoX v3.6.3-9002 (2023-11-01)
+
+## Summary
+* Bla
+
+## Bug fixes
+* Bla
+
+## General changes
+* Blabla
+
+## Detailed changes
+* Bla
+
+
+
+
 # StoX v3.6.3-9001 (2023-10-15)
 
 ## Summary

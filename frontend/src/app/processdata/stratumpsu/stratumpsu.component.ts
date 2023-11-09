@@ -4,7 +4,7 @@ import { ContextMenu } from 'primeng/contextmenu';
 import { ProcessDataService } from './../../service/processdata.service'
 import { ProjectService } from './../../service/project.service'
 import { DataService } from './../../service/data.service'
-import { AcousticPSU, Stratum, Stratum_PSU } from './../../data/processdata'
+import { AcousticPSU, BioticPSU, Stratum, Stratum_PSU } from './../../data/processdata'
 import { PSUResult, ActiveProcessResult } from './../../data/runresult'
 @Component({
   selector: 'app-stratumpsu',
@@ -43,11 +43,24 @@ export class StratumpsuComponent implements OnInit {
           }
           break;
         }
+        case "bioticAssignmentData":
         case "acousticPSU": {
           // Connect Acoustic PSU to existing stratum TreeNodes:
           if (pds.acousticPSU != null && this.nodes != null) {
             this.nodes.forEach(n => {
               let psuNodes: TreeNode[] = pds.acousticPSU.Stratum_PSU
+                .filter((spsu: Stratum_PSU) => spsu.Stratum === n.data.id)
+                .map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, "psu", []));
+              n.children = psuNodes;
+            });
+          }
+          break;
+        }
+        case "bioticPSU": {
+          // Connect Biotic PSU to existing stratum TreeNodes:
+          if (pds.bioticPSU != null && this.nodes != null) {
+            this.nodes.forEach(n => {
+              let psuNodes: TreeNode[] = pds.bioticPSU.Stratum_PSU
                 .filter((spsu: Stratum_PSU) => spsu.Stratum === n.data.id)
                 .map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, "psu", []));
               n.children = psuNodes;
@@ -106,6 +119,18 @@ export class StratumpsuComponent implements OnInit {
             }
           });
         }
+        if(this.ps.iaMode == "bioticPSU") {
+          m.push(
+            {
+              label: 'Add PSU', icon: 'rib absa psuicon', command: async (event) => {
+              // psu a new psu node
+              let res: PSUResult = this.ps.handleAPI(await this.ds.addBioticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+              if (res.PSU != null && res.PSU.length > 0) {
+                node.children.push(StratumpsuComponent.asNode(res.PSU, "psu", []))
+              }
+            }
+          });
+        }
         if(this.ps.iaMode == "stratum") {
           m.push(
           {
@@ -129,6 +154,17 @@ export class StratumpsuComponent implements OnInit {
               this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeAcousticPSU(
                 [node.data.id], this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
               this.ps.iaMode = "acousticPSU"; // trigger the gui
+            }
+          });
+        }
+        if(this.ps.iaMode == "bioticPSU") {
+          m.push(
+          {
+            label: 'Delete', icon: 'rib absa deleteicon', command: async (event) => {
+              // Delete a psu node
+              this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeBioticPSU(
+                [node.data.id], this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+              this.ps.iaMode = "bioticPSU"; // trigger the gui
             }
           });
         }

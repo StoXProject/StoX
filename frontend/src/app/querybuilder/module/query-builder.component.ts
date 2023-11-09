@@ -665,7 +665,7 @@ export class QueryBuilderComponent implements OnInit, OnChanges, ControlValueAcc
   }
 
   getFieldContext(rule: Rule): FieldContext {
-    console.log("> " + "____________ getFieldContext: " + rule);
+    //console.log("> " + "____________ getFieldContext: " + rule);
     if (!this.fieldContextCache.has(rule)) {
       this.fieldContextCache.set(rule, {
         onChange: this.changeField.bind(this),

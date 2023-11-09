@@ -27,7 +27,7 @@ import { clone } from 'ol/extent';
 import { ProcessTableResult, ActiveProcessResult } from '../data/runresult';
 import { HTMLUtil } from '../utils/htmlutil'
 import { MapSymbol, RectangleSymbol, CircleSymbol } from './maptypes'
-import { EDSU_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata'
+import { EDSU_PSU, Station_PSU, Stratum_PSU, BioticAssignment, BioticAssignmentData, AcousticLayerData } from './../data/processdata'
 import { NamedStringTable, NamedStringIndex } from './../data/types'
 import { asString } from 'ol/color';
 declare const Buffer;
@@ -322,8 +322,12 @@ export class MapSetup {
             evt.feature.set("styleCache", style);
             //evt.feature.set("absent", false); // this property must be provided in geojson
             evt.feature.set("selection", 0);
+
             if (layerType == 'EDSU') {
                 MapSetup.updateEDSUSelection(evt.feature, null);
+            }
+            if (layerType == 'Station') {
+                MapSetup.updateStationSelection(evt.feature, null);
             }
             if(layerType == 'stratum') {
                 MapSetup.updateStratumSelection(evt.feature, null);
@@ -478,6 +482,17 @@ export class MapSetup {
                     selected != null && selected ? 1 : 0;
         f.set("selection", selection); // Set the style selection.
     }
+    static updateStationSelection(f: Feature, selectedPSU) {
+        let stationPsu: Station_PSU = f.get("stationpsu");
+        //let absent: boolean = stationPsu == null /*error not mapped*/ || stationPsu.PSU === "NA";  
+        let selected: boolean = stationPsu != null && stationPsu.PSU != null && stationPsu.PSU.length > 0 && stationPsu.PSU !== "NA";//f.get("selected");
+        let focused: boolean = selected && selectedPSU != null && stationPsu.PSU == selectedPSU;
+        let selection =
+           // absent != null && absent ? 3 :
+                focused != null && focused ? 2 :
+                    selected != null && selected ? 1 : 0;
+        f.set("selection", selection); // Set the style selection.
+    }
 
     static updateStratumSelection(f: Feature, selectedStratum) {
         let stratumName = f.get("StratumName");
@@ -495,7 +510,7 @@ export class MapSetup {
         return selected != null && selected;
     }
 
-    static async selectStation(f: Feature, ps: ProjectService, pds: ProcessDataService, ds: DataService,
+    static async selectAssignedStation(f: Feature, ps: ProjectService, pds: ProcessDataService, ds: DataService,
         on: boolean) {
         let psu = pds.selectedPSU;
         if (psu == null) {
@@ -513,7 +528,7 @@ export class MapSetup {
             return;
         }*/
         let hauls: string[] = secInfos.map(secInfo => secInfo["Haul"]);
-        console.log("> " + 'selectStation: ' + on ? 'on' : 'off');
+        console.log("> " + 'selectAssignedStation: ' + on ? 'on' : 'off');
         let res: ActiveProcessResult = ps.handleAPI(await (on ? ds.addHaulToAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
             stratum, psu, hauls).toPromise() : ds.removeHaulFromAssignment(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId,
                 stratum, psu, hauls).toPromise()));
@@ -538,10 +553,10 @@ export class MapSetup {
                 }
             })
        // );
-        MapSetup.updateStationSelection(f, pds);
+        MapSetup.updateAssignedStationSelection(f, pds);
     }
 
-    static updateStationSelection(f: Feature, pds: ProcessDataService) {
+    static updateAssignedStationSelection(f: Feature, pds: ProcessDataService) {
         f.set("selection", MapSetup.isStationSelected(f, pds) ? 1 : 0);
     }
 }

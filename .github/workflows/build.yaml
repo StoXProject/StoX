@@ -2,9 +2,11 @@ on:
   pull_request:
     branches:
       - master
+      - develop
   push:    
     branches:
       - master
+      - develop
 
 jobs:
   build:
@@ -96,6 +98,14 @@ jobs:
           echo "LAST_VERSION=${LAST_VERSION}" >> $GITHUB_ENV
           echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
+
+          if [[ ${PKGVER} == *-* ]]; 
+					then
+					  PRERELEASE=true
+					else
+					  PRERELEASE=false
+					fi
+          export PRERELEASE=$PRERELEASE >> $GITHUB_ENV
         shell: bash
 
       #- name: Renaming files for upload (Windows only)
@@ -123,7 +133,7 @@ jobs:
           path: dist/installers/${{ env.FULL_TAG }}*
 
       - name: Create release and upload files
-        if: github.event_name == 'push' && ( github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' )
+        if: github.event_name == 'push' && ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) )
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
@@ -131,3 +141,4 @@ jobs:
           name: StoX-v${{ env.FINAL_TAG }}
           artifacts: dist/installers/${{ env.FULL_TAG }}*
           token: ${{ secrets.GITHUB_TOKEN }}
+        

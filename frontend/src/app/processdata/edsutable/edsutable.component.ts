@@ -37,10 +37,23 @@ export class EdsutableComponent implements OnInit {
                 );
                 this.viewPort.checkViewportSize();
                 let nItems : number = this.viewPort.getViewportSize() / 18; // use this to calculate the 
-                console.log("> " + "Viewport size: " + nItems);
+                console.log("> " + "Viewport size (acoustic): " + nItems);
                 this.viewPort.scrollToIndex(indexOfLastValue - nItems / 2); 
               //console.log("> " + this.pds.acousticPSU.EDSU_PSU[indexOfLastValue]);
             }
+            /*case "bioticPSU": {
+              let selPSU = this.pds.selectedPSU;
+              var indexOfLastValue: number =
+                this.pds.bioticPSU.Station_PSU.reduce(
+                  (iLast: number, x, i, arr) => (x.PSU == selPSU ? i : iLast),
+                  undefined
+                );
+                this.viewPort.checkViewportSize();
+                let nItems : number = this.viewPort.getViewportSize() / 18; // use this to calculate the 
+                console.log("> " + "Viewport size (biotic): " + nItems);
+                this.viewPort.scrollToIndex(indexOfLastValue - nItems / 2); 
+              //console.log("> " + this.pds.bioticPSU.Station_PSU[indexOfLastValue]);
+            }*/
           }
         }
       }

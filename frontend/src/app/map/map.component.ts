@@ -40,7 +40,7 @@ import BaseObject from 'ol/Object';
 import VectorSource from 'ol/source/Vector';
 import { MatDialog } from '@angular/material/dialog';
 import { MapBrowserEvent } from 'ol';
-import { EDSU_PSU, BioticAssignment } from '../data/processdata';
+import { EDSU_PSU, Station_PSU, BioticAssignment } from '../data/processdata';
 import { ActiveProcessResult } from '../data/runresult';
 import { MapInfo } from '../data/MapInfo';
 import { NamedStringTable, NamedStringIndex } from '../data/types';
@@ -423,15 +423,35 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
             )
           break;
         }
+        case "bioticPSU": {
+          this.map.getLayers().getArray()
+            .filter(l => l.get("layerType") == "station")
+            .map(l => <VectorSource>(<Layer>l).getSource())
+            .forEach(s => s.getFeatures()
+              .forEach(f => {
+                let station: string = f.get("Station");
+                let stationpsu: Station_PSU = this.pds.bioticPSU != null && this.pds.bioticPSU.Station_PSU != null ? this.pds.bioticPSU.Station_PSU.find(stationpsu => stationpsu.Station == station) : null;
+                // Connect Station_PSU to feature
+                if (this.pds.bioticPSU != null && this.pds.bioticPSU.Station_PSU != null && stationpsu == null) {
+                  console.log("station " + station + " not mapped");
+                }
+                f.set("stationpsu", stationpsu);
+                // Get default any selection (not focused by user):
+                MapSetup.updateStationSelection(f, this.pds.selectedPSU);
+              })
+            )
+          break;
+        }
         case "bioticAssignmentData": {
-          this.updateStationSelection();
+          this.updateAssignedStationSelection();
           break;
         }
         case "changedEDSU":
+        case "changedStation":
         case "selectedPSU": {
           switch (this.ps.iaMode) {
             case "bioticAssignment": {
-              this.updateStationSelection();
+              this.updateAssignedStationSelection();
               // drop to EDSU selection to get EDSU focus change
             }
             case "acousticPSU": {
@@ -445,6 +465,17 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
                   }))
               break;
             }
+            case "bioticPSU": {
+              this.map.getLayers().getArray()
+                .filter(l => l.get("layerType") == "station")
+                .map(l => <VectorSource>(<Layer>l).getSource())
+                .forEach(s => s.getFeatures()
+                  .forEach(f => {
+                    // selected PSU.
+                    MapSetup.updateStationSelection(f, this.pds.selectedPSU);
+                  }))
+              break;
+            }
           }
           break;
         }
@@ -454,6 +485,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           switch (this.ps.iaMode) {
             case "stratum": 
             case "acousticPSU": 
+            case "bioticPSU": 
             case "bioticAssignment": {
               handleStratumSelection = true;
               break;
@@ -485,7 +517,9 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           return;
         }
         let layerType: string = l.get("layerType");
+        
         if (this.ps.iaMode == "acousticPSU" && layerType == "EDSU" ||
+          this.ps.iaMode == "bioticPSU" && layerType == "station" ||
           this.ps.iaMode == "bioticAssignment" && layerType == "station") {
           farr.push(<Feature>f);
         }
@@ -500,6 +534,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
           if (this.pds.selectedPSU == null) {
             return;
           }
+
           switch (this.ps.iaMode) {
             case "acousticPSU": {
               // Controlling focus.
@@ -544,10 +579,53 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
               //(<VectorSource>l.getSource()).changed();
               break;
             }
+            case "bioticPSU": {
+              // Controlling focus.
+              //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
+              let prevClickIndex = l.get("lastClickedIndex"); // handle range selection with respect to last clicked index
+              let clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
+              l.set("lastClickedIndex", clickedIndex);
+              if (!shiftKeyOnly(e) || prevClickIndex == null) {
+                prevClickIndex = clickedIndex;
+              }
+              let fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
+              let stationPsu1: Station_PSU = fi1.get("stationpsu");
+              if (stationPsu1 == null) {
+                console.log(fi1.get("Station") + " is missing station for " + fi1.get("Station") + " layer " + l.get("name"));
+              }
+              let psuToUse: string = stationPsu1.PSU;
+              if (prevClickIndex == clickedIndex) {
+                psuToUse = stationPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+              }
+              let iFirst = Math.min(prevClickIndex, clickedIndex);
+              let iLast = Math.max(prevClickIndex, clickedIndex);
+              let changedStations: string[] = [];
+              for (let idx: number = iFirst; idx <= iLast; idx++) {
+                let fi = (<VectorSource>l.getSource()).getFeatures()[idx];
+                let stationPsu: Station_PSU = fi.get("stationpsu");
+                if (stationPsu != null) {
+                  if (stationPsu.PSU != psuToUse) {
+                    changedStations.push(stationPsu.Station);
+                    stationPsu.PSU = psuToUse;
+                    MapSetup.updateStationSelection(fi, this.pds.selectedPSU);
+                  }
+                  //fi.changed();
+                }
+              }
+              if (changedStations.length > 0) {
+                let res: ActiveProcessResult = this.ps.handleAPI(psuToUse != null ? await this.dataService.addStation(psuToUse, changedStations,
+                  this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise() :
+                  await this.dataService.removeStation(changedStations, this.ps.selectedProject.projectPath,
+                    this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+              }
+              //l.changed();
+              //(<VectorSource>l.getSource()).changed();
+              break;
+			      }
             case "bioticAssignment": {
               let selected: boolean = MapSetup.isStationSelected(fe, this.pds);
-              MapSetup.selectStation(fe, this.ps, this.pds, this.dataService, !selected);
-              MapSetup.updateStationSelection(fe, this.pds);
+              MapSetup.selectAssignedStation(fe, this.ps, this.pds, this.dataService, !selected);
+              MapSetup.updateAssignedStationSelection(fe, this.pds);
               break;
             }
           };
@@ -618,6 +696,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
   async handleIaMode(iaMode: string, proj) {
     let layerName: string = this.ps.getActiveProcess() != null ? this.ps.getActiveProcess().processID + "-" + iaMode : null;
     this.resetInteractions();
+    
     switch (iaMode) {
       case "none": {
         this.resetLayersToProcess(this.ps.activeProcessId);
@@ -730,7 +809,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
    *  Iterate features in station layer and update the selection state based on assignments
    *  according to biotic assignment data.
    */
-  private updateStationSelection() {
+  private updateAssignedStationSelection() {
     let bioticAssignments: BioticAssignment[] = [];
     if (this.ps.iaMode == "bioticAssignment" && this.pds.bioticAssignmentData != null && this.pds.selectedPSU != null) {
       bioticAssignments = this.pds.bioticAssignmentData.BioticAssignment.filter(ba => ba.PSU == this.pds.selectedPSU);
@@ -741,7 +820,7 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       .forEach(s => s.getFeatures()
         .forEach(f => {
           // selected PSU.
-          MapSetup.updateStationSelection(f, this.pds);
+          MapSetup.updateAssignedStationSelection(f, this.pds);
         }))
   }
 

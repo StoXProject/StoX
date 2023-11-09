@@ -29,7 +29,8 @@
                     <td pResizableColumn [ngSwitch]="propertyItem.type">
                         <!-- character -->
                         <div *ngSwitchCase="'character'">
-                            <div *ngIf="propertyItem.possibleValues.length > 0">
+                            <!-- If possible values are given but not vector, do autocomlpetion -->
+                            <div *ngIf="propertyItem.possibleValues.length > 0 && propertyItem.formatClass != 'vector'">
                                 <app-autocomplete  class="ellipsiscolumn" [items]="propertyItem.possibleValues" 
                                     [selectedItem]="propertyItem.value"
                                     (complete)="propertyItem.value = $event.selectedItem; onChanged(category, propertyItem)"
@@ -43,7 +44,7 @@
                                 </select>-->
                             </div>
 
-                            <div *ngIf="propertyItem.possibleValues.length == 0">
+                            <div *ngIf="propertyItem.possibleValues.length == 0 || propertyItem.formatClass === 'vector'">
                                 <ng-container [ngSwitch]="true">
                                     <ng-container *ngSwitchCase="propertyItem.format === 'filterExpressionList'">
                                         <input style="width:calc(100% - 22px);" type="text" pInputText
