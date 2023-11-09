@@ -3,31 +3,10 @@
 
   <button mat-raised-button (click)="addRow()">Add</button> &nbsp;
 
-  <!--
-        <button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;
-    <button mat-raised-button [disabled]="!isOnlyOneSelected()" (click)="buildExpression()">Expression</button>
-    -->
-
   <div class="example-container mat-elevation-z8">
     <mat-table #table [dataSource]="dataSource">
       <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->
-
-      <!-- Checkbox Column -->
-      <!--<ng-container matColumnDef="select">
-            <mat-header-cell *matHeaderCellDef>
-                <mat-checkbox (change)="$event ? masterToggle() : null"
-                            [checked]="selection.hasValue() && isAllSelected()"
-                            [indeterminate]="selection.hasValue() && !isAllSelected()">
-                </mat-checkbox>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <mat-checkbox (click)="$event.stopPropagation()"
-                            (change)="$event ? selection.toggle(row) : null"
-                            [checked]="selection.isSelected(row)">
-                </mat-checkbox>
-            </mat-cell>
-            </ng-container>-->
 
       <!-- tableName Column -->
       <ng-container matColumnDef="tableName">
@@ -60,14 +39,12 @@
         </td>
       </ng-container>
 
-      <!--<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>-->
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
   </div>
 
   <ng-template pTemplate="footer">
     <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening"></mat-spinner>
-    <!--class="spinner"-->
     <button type="button" pButton icon="pi pi-close" (click)="cancel()" label="Cancel" class="p-button-secondary"></button>
     <button type="button" pButton (click)="apply()" label="Save"></button>
   </ng-template>
