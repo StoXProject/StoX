@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { ErrorUtils } from 'src/app/utils/errorUtils';
+import { ValidationUtils } from 'src/app/utils/validationUtils';
 
 import { ColumnPossibleValues, ColumnType, ColumnValue, DefinedColumns } from '../../data/DefinedColumns';
 import { ProcessProperties } from '../../data/ProcessProperties';
@@ -60,6 +61,40 @@ export class DefinedColumnsTableDlg {
     this.columnTypes = [];
     this.service.definedColumnsData = [];
     this.dataSource = new MatTableDataSource<DefinedColumns>(this.service.definedColumnsData);
+  }
+
+  allowNumberLikeString(value: string, colName: string, inputRef: any, previousValue: string) {
+    const cleaned = ValidationUtils.CleanInputWhileWritingANumber(value);
+
+    const cleanedPreviousValue = ValidationUtils.CleanInputWhileWritingANumber(`${previousValue}` ?? '');
+
+    // Update HTML input field
+    inputRef.value = cleaned == value ? value : cleanedPreviousValue;
+
+    setTimeout(() => {
+      // Manually reset binding model
+      for (let i = 0; i < this.service.definedColumnsData[0].columnValues.length; i++) {
+        if (this.service.definedColumnsData[0].columnValues[i].columnName == colName) {
+          this.service.definedColumnsData[0].columnValues[i].value = cleaned == value ? value : cleanedPreviousValue;
+        }
+      }
+    }, 1);
+  }
+
+  allowOnlyProperNumberString(colName: string, inputRef: any) {
+    if (ValidationUtils.CleanInputWholeNumberString(inputRef.value)) {
+      return;
+    }
+
+    // Reset HTML input field for good measure
+    inputRef.value = '';
+
+    // Manually reset binding model, because this triggers after input change is lost in Angular
+    for (let i = 0; i < this.service.definedColumnsData[0].columnValues.length; i++) {
+      if (this.service.definedColumnsData[0].columnValues[i].columnName == colName) {
+        this.service.definedColumnsData[0].columnValues[i].value = '';
+      }
+    }
   }
 
   addRow() {
