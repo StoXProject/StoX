@@ -30,12 +30,12 @@
               <ng-container *ngIf="possibleValues(column) === null || possibleValues(column) === undefined">
                 <ng-container *ngIf="getType(column) === 'double' || getType(column) === 'numeric'">
                   <mat-form-field floatLabel="never">
-                    <input matInput placeholder="" type="text" step="0.01" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value" />
+                    <input matInput #inputRef placeholder="" type="text" (ngModelChange)="allowNumberLikeString($event, column, inputRef,element.getColumn(column).value)" (focusout)="allowOnlyProperNumberString(column, inputRef)" [(ngModel)]="element.getColumn(column).value" />
                   </mat-form-field>
                 </ng-container>
                 <ng-container *ngIf="getType(column) === 'integer'">
                   <mat-form-field floatLabel="never">
-                    <input matInput placeholder="" type="text" step="1" [value]="element.getColumn(column).value" [(ngModel)]="element.getColumn(column).value" />
+                    <input matInput #inputRef placeholder="" type="text" (ngModelChange)="allowNumberLikeString($event, column, inputRef,element.getColumn(column).value)" (focusout)="allowOnlyProperNumberString(column, inputRef)" [(ngModel)]="element.getColumn(column).value" />
                   </mat-form-field>
                 </ng-container>
                 <ng-container *ngIf="getType(column) === 'character'">
