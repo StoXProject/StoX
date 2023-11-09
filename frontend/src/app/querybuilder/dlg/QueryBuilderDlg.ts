@@ -46,10 +46,9 @@ export class QueryBuilderDlg implements OnInit {
       });
 
       this.exprBuilderService.currentConfig.subscribe(config => {
-        console.log('> ' + 'currentConfig : ' + JSON.stringify(config));
+        console.log('> ' + 'currentConfig : ', config);
         this.adjustConfig(config);
         this.currentConfig = config;
-        // console.log("> " + "currentConfig : " + JSON.stringify(this.currentConfig));
       });
 
       this.exprBuilderService.currentQuery.subscribe(query => {
@@ -65,7 +64,6 @@ export class QueryBuilderDlg implements OnInit {
     console.log('> ' + 'current query : ' + JSON.stringify(this.query));
 
     // a call to dataservice to get R expression for this.query
-    // convert this.query to rExpression
     let rExpression = <string>await this.dataService.json2expression(this.query).toPromise();
 
     console.log('> ' + "rExpression : '" + rExpression + "'");

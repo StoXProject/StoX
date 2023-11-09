@@ -95,15 +95,26 @@ export class ExpressionBuilderDlgService {
       const { modelName } = selectedModel;
       const { tableName } = this.currentTableExpression;
 
-      const fields = await this.dataService.getFilterOptionsOneTable(projectPath, modelName, selectedProcessId, tableName, false).toPromise();
+      const { fields } = await this.dataService.getFilterOptionsOneTable(projectPath, modelName, selectedProcessId, tableName, false).toPromise();
 
-      // TESTING: Old way
-      // console.log('> ' + 'this.config : ', fields);
-      // const allOptions = await this.dataService.getFilterOptionsAll(projectPath, modelName, selectedProcessId, false).toPromise();
-      // const asd = allOptions.allFields[tableName];
-      // console.log('asd', asd, 'tablename', tableName, 'allOptions', allOptions);
+      // getAllFilterOptionsOneTable returner objektet fields med options i ny format
+      // {name: [name1, name2....], value: [value1, value2, ....]}
+      // istedet for
+      // [{name, value},{name, value},{name, value}]
 
-      this.config = <QueryBuilderConfig>fields;
+      Object.keys(fields).forEach(fieldName => {
+        const field = fields[fieldName];
+        if (field.options != null) {
+          const allOptions = Array.isArray(field.options.name) ? field.options.name : [field.options.names];
+          const allValues = Array.isArray(field.options.value) ? field.options.value : [field.options.value];
+
+          field.options = allOptions.map((name, index) => {
+            return { name, value: allValues[index] };
+          });
+        }
+      });
+
+      this.config = <QueryBuilderConfig>{ fields };
       const notNullOrEmpty = this.currentTableExpression.expression != null && this.currentTableExpression.expression.trim() != '';
 
       if (notNullOrEmpty) {
