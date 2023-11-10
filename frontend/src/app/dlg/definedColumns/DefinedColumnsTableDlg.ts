@@ -64,37 +64,39 @@ export class DefinedColumnsTableDlg {
   }
 
   allowNumberLikeString(value: string, colName: string, inputRef: any, previousValue: string) {
-    const cleaned = ValidationUtils.CleanInputWhileWritingANumber(value);
+    const newInputIsValid = ValidationUtils.TestInputWhileWritingANumber(value);
+    const previousValueWasValid = ValidationUtils.TestInputWhileWritingANumber(`${previousValue}` ?? '');
 
-    const cleanedPreviousValue = ValidationUtils.CleanInputWhileWritingANumber(`${previousValue}` ?? '');
-
+    const setValue = newInputIsValid ? value : previousValueWasValid ? previousValue : '';
     // Update HTML input field
-    inputRef.value = cleaned == value ? value : cleanedPreviousValue;
+    inputRef.value = setValue;
 
     setTimeout(() => {
       // Manually reset binding model
       for (let i = 0; i < this.service.definedColumnsData[0].columnValues.length; i++) {
         if (this.service.definedColumnsData[0].columnValues[i].columnName == colName) {
-          this.service.definedColumnsData[0].columnValues[i].value = cleaned == value ? value : cleanedPreviousValue;
+          this.service.definedColumnsData[0].columnValues[i].value = setValue;
         }
       }
     }, 1);
   }
 
   allowOnlyProperNumberString(colName: string, inputRef: any) {
-    if (ValidationUtils.CleanInputWholeNumberString(inputRef.value)) {
+    if (ValidationUtils.TestInputWholeNumberString(inputRef.value)) {
       return;
     }
 
     // Reset HTML input field for good measure
     inputRef.value = '';
 
-    // Manually reset binding model, because this triggers after input change is lost in Angular
-    for (let i = 0; i < this.service.definedColumnsData[0].columnValues.length; i++) {
-      if (this.service.definedColumnsData[0].columnValues[i].columnName == colName) {
-        this.service.definedColumnsData[0].columnValues[i].value = '';
+    setTimeout(() => {
+      // Manually reset binding model, because this triggers after input change is lost in Angular
+      for (let i = 0; i < this.service.definedColumnsData[0].columnValues.length; i++) {
+        if (this.service.definedColumnsData[0].columnValues[i].columnName == colName) {
+          this.service.definedColumnsData[0].columnValues[i].value = '';
+        }
       }
-    }
+    }, 1);
   }
 
   addRow() {
