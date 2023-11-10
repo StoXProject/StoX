@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { ProcessProperties } from '../data/ProcessProperties';
 import { TableExpression } from '../data/tableexpression';
-// import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from '../message/MessageService';
 import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
 import { DataService } from '../service/data.service';
@@ -16,12 +15,11 @@ import { ExpressionBuilderDlgService } from './ExpressionBuilderDlgService';
   templateUrl: './ExpressionBuilderDlg.html',
   styleUrls: ['./ExpressionBuilderDlg.css'],
 })
-export class ExpressionBuilderDlg implements OnInit {
+export class ExpressionBuilderDlg {
   combinedExpression: string = '';
 
   displayedColumns = ['tableName', 'expression', 'action'];
   dataSource: MatTableDataSource<TableExpression>;
-  // selection = new SelectionModel<TableExpression>(true, []);
 
   constructor(
     public service: ExpressionBuilderDlgService,
@@ -33,111 +31,20 @@ export class ExpressionBuilderDlg implements OnInit {
     this.service.currentTableExpressionsObservable.subscribe(tes => (this.dataSource = new MatTableDataSource<TableExpression>(tes)));
   }
 
-  async ngOnInit() {}
-
-  // deleteRecordAtIndex(index) {
-  //     this.tableExpressions.splice(index, 1);
-  // }
-
-  // addRecord() {
-  //     this.tableExpressions.push({tableName: this.tableName, expression: this.expression});
-  // }
-
   addRow() {
     this.service.tableExpressions.push({ tableName: null, expression: null });
     this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
     this.dataSource.filter = '';
   }
 
-  // removeSelectedRows() {
-  //     this.selection.selected.forEach(item => {
-  //       let index: number = this.service.tableExpressions.findIndex(d => d === item);
-  //       console.log("> " + this.service.tableExpressions.findIndex(d => d === item));
-  //       this.service.tableExpressions.splice(index,1);
-  //       this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
-  //     });
-  //     this.selection = new SelectionModel<TableExpression>(true, []);
-  // }
-
-  /** Whether the number of selected elements matches the total number of rows. */
-  // isAllSelected() {
-  //     const numSelected = this.selection.selected.length;
-  //     const numRows = this.dataSource.data.length;
-  //     return numSelected === numRows;
-  // }
-
-  // atLeastOneSelected() {
-  //     return this.selection.selected.length > 0;
-  // }
-
-  // isOnlyOneSelected() {
-  //     return this.selection.selected.length === 1;
-  // }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  // masterToggle() {
-  // this.isAllSelected() ?
-  //     this.selection.clear() :
-  //     this.dataSource.data.forEach(row => this.selection.select(row));
-  // }
-
-  areTableNamesUnique() {
-    const tmpArr = [];
-
-    for (const obj in this.service.tableExpressions) {
-      if (tmpArr.indexOf(this.service.tableExpressions[obj].tableName) < 0) {
-        tmpArr.push(this.service.tableExpressions[obj].tableName);
-      } else {
-        return false; // Duplicate value for tableName found
-      }
-    }
-
-    return true; // No duplicate values found for tableName
-  }
-
-  // Replacing this with Styling mat-select-panel:  min-width:fit-content
-  /*short(param: string): string {
-        if(param.length > 43) {
-            let i = param.indexOf('/');
-            return param.substr(0, 27) + "..." + param.substr(i+1);
-        } else {
-            return param;
-        }
-    }*/
-
-  // buildExpression() {
-
-  //     // check if current table name is given in the current row
-  //     let currentTableExpression: TableExpression;
-  //     currentTableExpression = this.selection.selected[0];
-
-  //     if(currentTableExpression != null && currentTableExpression.tableName == null) {
-  //         this.msgService.setMessage("Table name is not given in the selected row!");
-  //         this.msgService.showMessage();
-  //         return;
-  //     }
-
-  //     console.log("> " + "current table name : " + currentTableExpression.tableName);
-
-  //     this.service.setCurrentTableExpression(currentTableExpression);
-
-  //     this.service.updateQueryBuilderConfig();
-
-  //     // let the user get a new page of QueryBuilderDlg shown on screen
-  //     // show query builder
-  //     this.quBuilderService.showDialog();
-
-  // }
 
   onTableNameChange(tableExpression: TableExpression) {
-    // console.log("> " + "tableName changed => expression = null");
     tableExpression.expression = null;
   }
 
   edit(tableExpression: TableExpression) {
     if (tableExpression != null && tableExpression.tableName == null) {
-      this.msgService.setMessage('Table name is not given in the selected row!');
-      this.msgService.showMessage();
+      this.setAndShowMessage('Table name is not given in the selected row!');
 
       return;
     }
@@ -145,17 +52,14 @@ export class ExpressionBuilderDlg implements OnInit {
     console.log('> ' + 'current table name : ' + tableExpression.tableName);
 
     this.service.setCurrentTableExpression(tableExpression);
-
     this.service.updateQueryBuilderConfig();
 
-    // show query builder
     this.quBuilderService.showDialog();
   }
 
   delete(tableExpression: TableExpression) {
     const index: number = this.service.tableExpressions.findIndex(d => d === tableExpression);
 
-    //console.log("> " + this.service.tableExpressions.findIndex(d => d === tableExpression));
     this.service.tableExpressions.splice(index, 1);
     this.dataSource = new MatTableDataSource<TableExpression>(this.service.tableExpressions);
   }
@@ -166,53 +70,49 @@ export class ExpressionBuilderDlg implements OnInit {
     // check if there is empty field in dialog
     for (let i = 0; i < this.service.tableExpressions.length; i++) {
       if (this.service.tableExpressions[i].tableName == null || this.service.tableExpressions[i].expression == null) {
-        // show the message that one or more fields are empty
-        this.msgService.setMessage('One or more fields are empty!');
-        this.msgService.showMessage();
+        this.setAndShowMessage('One or more fields are empty!');
 
         return;
       }
     }
 
-    // check for uniqueness of tableName in array
     if (!this.areTableNamesUnique()) {
-      this.msgService.setMessage('Table or file names are not unique!');
-      this.msgService.showMessage();
+      this.setAndShowMessage('Table or file names are not unique!');
 
       return;
     }
 
-    // combine all expressions in array tableExpressions into combinedExpression
     this.combinedExpression = this.service.combinedExpression();
-
-    // let temporary = "";
-    // if(this.combinedExpression != null) {
-    //     temporary = "[" + this.combinedExpression +"]";
-    // }
 
     console.log('> ' + 'this.combinedExpression : ' + this.combinedExpression);
     console.log('> ' + 'this.service.currentPropertyItem.value : ' + this.service.currentPropertyItem.value);
 
-    if (this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression) {
-      this.service.currentPropertyItem.value = this.combinedExpression;
+    const notNullAndUpdated = this.combinedExpression != null && this.service.currentPropertyItem.value != this.combinedExpression;
+    if (!notNullAndUpdated) {
+      this.onHide();
 
-      if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
-        try {
-          this.dataService
-            .setProcessPropertyValue(this.service.currentPropertyCategory.groupName, this.service.currentPropertyItem.name, this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
-            .toPromise()
-            .then((s: ProcessProperties) => {
-              this.ps.handleAPI(s);
-            });
-        } catch (error) {
-          console.log('> ' + error.error);
-          const firstLine = ErrorUtils.GetFirstLine(error);
+      return;
+    }
 
-          this.msgService.setMessage(firstLine);
-          this.msgService.showMessage();
+    this.service.currentPropertyItem.value = this.combinedExpression;
 
-          return;
-        }
+    if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
+      try {
+        const { groupName } = this.service.currentPropertyCategory;
+        const { name, value } = this.service.currentPropertyItem;
+        this.dataService
+          .setProcessPropertyValue(groupName, name, value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId)
+          .toPromise()
+          .then((s: ProcessProperties) => {
+            this.ps.handleAPI(s);
+          });
+      } catch (error) {
+        console.log('> ' + error.error);
+        const firstLine = ErrorUtils.GetFirstLine(error);
+
+        this.setAndShowMessage(firstLine);
+
+        return;
       }
     }
 
@@ -229,8 +129,29 @@ export class ExpressionBuilderDlg implements OnInit {
   }
 
   onHide() {
-    // this.selection.clear();
     this.service.display = false;
     this.init();
+  }
+
+  // Helpers
+  //_________________________________________
+  setAndShowMessage(msg: string) {
+    this.msgService.setMessage(msg);
+    this.msgService.showMessage();
+  }
+
+  areTableNamesUnique() {
+    const tmpArr = [];
+
+    for (const obj in this.service.tableExpressions) {
+      const tableName = this.service.tableExpressions[obj].tableName;
+      if (tmpArr.indexOf(tableName) >= 0) {
+        return false; // Duplicate value for tableName found
+      }
+
+      tmpArr.push(tableName);
+    }
+
+    return true; // No duplicate values found for tableName
   }
 }

@@ -464,6 +464,24 @@ export class DataService {
     });
   }
 
+  getFilterTableNames(projectPath: string, modelName: string, processID: string): Observable<string[]> {
+    return this.runFunction('getFilterTableNames', {
+      projectPath,
+      modelName,
+      processID,
+    });
+  }
+
+  getFilterOptionsOneTable(projectPath: string, modelName: string, processID: string, tableName: string, includeNumeric: boolean): Observable<any> {
+    return this.runFunction('getFilterOptionsOneTable', {
+      projectPath,
+      modelName,
+      processID,
+      tableName,
+      'include.numeric': includeNumeric,
+    });
+  }
+
   /*getFilterOptions(projectPath: string, modelName: string, processID: string, tableName: string, fieldName: string, includeNumeric: Boolean): Observable<any> {
     return this.runFunction('getFilterOptions', {
       "projectPath": projectPath,
