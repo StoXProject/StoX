@@ -410,7 +410,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
                 .map(l => <VectorSource>(<Layer>l).getSource())
                 .forEach(s =>
                   s.getFeatures().forEach(f => {
-                    // selected PSU.
                     MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
                   })
                 );
@@ -425,7 +424,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
                 .map(l => <VectorSource>(<Layer>l).getSource())
                 .forEach(s =>
                   s.getFeatures().forEach(f => {
-                    // selected PSU.
                     MapSetup.updateStationSelection(f, this.pds.selectedPSU);
                   })
                 );
@@ -440,7 +438,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
                 .map(l => <VectorSource>(<Layer>l).getSource())
                 .forEach(s =>
                   s.getFeatures().forEach(f => {
-                    // selected PSU.
                     MapSetup.updateStationSelection(f, this.pds.selectedPSU);
                   })
                 );
@@ -476,7 +473,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
               .map(l => <VectorSource>(<Layer>l).getSource())
               .forEach(s =>
                 s.getFeatures().forEach(f => {
-                  // selected PSU.
                   MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
                 })
               );
@@ -786,7 +782,6 @@ export class MapComponent implements OnInit, AfterViewInit, MapInteraction {
       .map(l => <VectorSource>(<Layer>l).getSource())
       .forEach(s =>
         s.getFeatures().forEach(f => {
-          // selected PSU.
           MapSetup.updateStationSelection(f, this.pds);
         })
       );
