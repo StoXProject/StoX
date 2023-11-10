@@ -1,0 +1,228 @@
+.p-accordion {
+  .p-accordion-header {
+    background-color: rgb(213, 213, 213) !important;
+    color: black !important;
+    a {
+      text-decoration: none;
+      font-size: $fontSize !important;
+      background-color: rgb(213, 213, 213) !important;
+      color: black !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+    span {
+      color: black !important;
+    }
+  }
+  .p-accordion-content {
+    padding: 0 !important;
+    font-size: $fontSize !important;
+    border: none !important;
+  }
+}
+
+.p-listbox {
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: content-box !important;
+  border: none !important;
+  .p-listbox-list-wrapper {
+    width: 100% !important;
+    height: 100% !important;
+    .p-listbox-list {
+      width: 100% !important;
+      height: 100% !important;
+      overflow-y: auto !important;
+    }
+  }
+}
+.p-listbox-item {
+  padding-left: 0.4rem !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  padding-right: 0 !important;
+  width: 100% !important;
+  font-size: 0.75rem !important;
+  color: black !important;
+  user-select: none;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.p-dialog .p-dialog-header {
+  padding: 0.5rem;
+}
+
+.p-listbox-item:focus,
+.p-menuitem-link,
+.p-treenode-content:focus {
+  outline: none !important; // prevent webkit :focus outline.
+  box-shadow: none !important; // add by primeng
+  white-space: nowrap;
+}
+
+.p-menuitem-icon {
+  margin-left: 0.2em;
+}
+
+// tabview
+.p-tabmenu {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  border: 1px solid #d3d4d4 !important;
+  user-select: none !important;
+  color: black !important;
+
+  .p-tabmenu-nav {
+    background-color: rgb(240, 240, 240) !important;
+    color: rgb(0, 0, 0) !important;
+    white-space: nowrap;
+    border: none !important;
+    overflow: hidden;
+    line-height: 0;
+    padding: 1px !important;
+    .p-tabmenuitem {
+      padding: 0 !important;
+      margin: 0 !important;
+      color: rgb(0, 0, 0) !important;
+      border: 1px solid #d3d4d4 !important;
+      background-color: rgb(240, 240, 240) !important;
+      display: inline-block;
+      float: none;
+      line-height: 1rem;
+      .p-menuitem-link {
+        padding: 0.1em 0.4em !important;
+        margin: 0 !important;
+        color: black !important;
+        .p-menuitem-text {
+          color: black !important;
+          font-weight: 600;
+          font-size: 0.75rem;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}
+.p-tree {
+  border: none !important;
+  margin: 1px !important;
+  padding: 0 !important;
+  height: 100% !important;
+  width: inherit !important;
+}
+
+.p-treenode-label,
+.p-treenode,
+.p-tree-container {
+  padding: 0 !important;
+}
+
+.p-treenode-content:focus {
+  outline: none;
+}
+.p-contextmenu .p-menuitem-link {
+  padding: 0 20px 0 0 !important ;
+  text-decoration: none !important;
+  .p-menuitem-text {
+    font-size: 0.75rem;
+  }
+}
+.p-menu {
+  width: unset;
+  .p-menuitem-link {
+    padding: 2px 2px 2px 2px !important;
+  }
+  .p-menuitem-text {
+    white-space: nowrap;
+  }
+}
+
+.p-submenu-list {
+  width: unset !important;
+  bottom: unset !important;
+  white-space: nowrap !important;
+  left: 100% !important;
+}
+
+.p-toolbar {
+  padding: 1px !important;
+  background-color: rgb(240, 240, 240) !important;
+  border: 1px solid #d3d4d4 !important;
+  vertical-align: middle;
+  line-height: 0;
+  white-space: nowrap;
+  overflow: hidden;
+
+  button {
+    border: 1px solid darken(#f0f0f0, 20%);
+    vertical-align: middle !important;
+    display: inline !important;
+    float: none;
+    margin-right: 2px;
+    padding: 1px 1px;
+  }
+}
+
+.p-tooltip {
+  overflow-wrap: break-word;
+}
+
+button:focus,
+input:focus {
+  outline: none !important;
+}
+.p-tabview {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  user-select: none !important;
+
+  .p-tabview-title {
+    font-size: 0.75rem;
+  }
+  .p-tabview-nav {
+    background-color: rgb(240, 240, 240) !important;
+    height: 1.5rem;
+    border: 1px solid #d3d4d4 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-bottom: 0px !important;
+    li {
+      display: inline;
+      float: none;
+    }
+  }
+
+  .p-tabview-panel {
+    width: inherit;
+    height: 100%;
+  }
+  .p-tabview-panels {
+    padding: 0px !important;
+    width: 100% !important;
+    height: calc(100% - 1.5rem);
+    .p-tabview-panel {
+      .p-toolbar {
+        padding: 0px;
+        background-color: $menuColor;
+        border: none;
+        height: 1.5rem;
+        button {
+          height: 1.35rem;
+          width: 1.35rem;
+          padding: 0rem;
+          margin-bottom: 0.8rem;
+          vertical-align: center;
+          img {
+            vertical-align: center;
+          }
+        }
+      }
+    }
+  }
+}

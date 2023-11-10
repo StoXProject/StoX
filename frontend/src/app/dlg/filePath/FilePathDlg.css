@@ -1,31 +1,36 @@
-
 .example-container {
-    display: flex;
-    flex-direction: column;
-    min-width: 300px;
-    max-height: 400px;
-    overflow: auto;
-  }
-  
-  .example-header {
-    min-height: 64px;
-    padding: 8px 24px 0;
-  }
-  
-  .mat-form-field {
-    font-size: 14px;
-    width: 100%;
-  }
-  
-  .mat-table {
-    overflow: auto;
-    max-height: 750px;
-  }
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  max-height: 400px;
+  overflow: auto;
+}
 
-  .mat-column-select {
-    flex: 0 0 75px;
-  }
+.example-header {
+  min-height: 64px;
+  padding: 8px 24px 0;
+}
 
-  .action-link {
-    cursor: pointer;
-  }
+.mat-mdc-text-field-wrapper {
+  height: 35px;
+  padding-top: 5px;
+}
+
+.mat-mdc-form-field {
+  font-size: 12px;
+  width: 100%;
+}
+
+.mat-mdc-table,
+.mat-mdc-table {
+  overflow: auto;
+  max-height: 750px;
+}
+
+.mat-column-select {
+  flex: 0 0 75px;
+}
+
+.action-link {
+  cursor: pointer;
+}

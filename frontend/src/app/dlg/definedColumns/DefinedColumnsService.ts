@@ -1,134 +1,143 @@
 import { Injectable } from '@angular/core';
-import { DefinedColumns, ColumnPossibleValues, ColumnType, ColumnValue } from '../../data/DefinedColumns';
-import { PropertyItem } from '../../data/propertyitem';
-import { PropertyCategory } from '../../data/propertycategory';
-import { DataService } from '../../service/data.service';
-import { ProjectService } from '../../service/project.service';
 import { BehaviorSubject } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+import { ColumnPossibleValues, ColumnType, ColumnValue, DefinedColumns } from '../../data/DefinedColumns';
+import { PropertyCategory } from '../../data/propertycategory';
+import { PropertyItem } from '../../data/propertyitem';
+import { DataService } from '../../service/data.service';
+import { ProjectService } from '../../service/project.service';
+
+@Injectable()
 export class DefinedColumnsService {
-    
-    constructor(private ps: ProjectService, private dataService: DataService) {}
+  constructor(
+    private ps: ProjectService,
+    private dataService: DataService
+  ) {}
 
-    public display: boolean = false;
-    public isOpening: boolean = false;
+  public display: boolean = false;
+  public isOpening: boolean = false;
 
-    public oldNames: string[] = [];
+  public oldNames: string[] = [];
 
-    currentPropertyItem: PropertyItem = null;
-    currentPropertyCategory: PropertyCategory = null;
+  currentPropertyItem: PropertyItem = null;
+  currentPropertyCategory: PropertyCategory = null;
 
-    public definedColumnsData: DefinedColumns [] = [];
-    private definedColumnsDataSource = new BehaviorSubject(this.definedColumnsData);
-    definedColumnsDataObservable = this.definedColumnsDataSource.asObservable();
+  public definedColumnsData: DefinedColumns[] = [];
+  private definedColumnsDataSource = new BehaviorSubject(this.definedColumnsData);
+  definedColumnsDataObservable = this.definedColumnsDataSource.asObservable();
 
-    public title: string = "";
-    private currentTitleSource = new BehaviorSubject(this.title);
-    titleObservable = this.currentTitleSource.asObservable();
+  public title: string = '';
+  private currentTitleSource = new BehaviorSubject(this.title);
+  titleObservable = this.currentTitleSource.asObservable();
 
-    public displayedColumns = ['select'];
-    private displayedColumnsSource = new BehaviorSubject(this.displayedColumns);
-    displayedColumnsObservable = this.displayedColumnsSource.asObservable();
+  public displayedColumns = ['select'];
+  private displayedColumnsSource = new BehaviorSubject(this.displayedColumns);
+  displayedColumnsObservable = this.displayedColumnsSource.asObservable();
 
-    columnPossibleValues: ColumnPossibleValues[] = [];
-    private columnPossibleValuesSource = new BehaviorSubject(this.columnPossibleValues);
-    columnPossibleValuesObservable = this.columnPossibleValuesSource.asObservable();
+  columnPossibleValues: ColumnPossibleValues[] = [];
+  private columnPossibleValuesSource = new BehaviorSubject(this.columnPossibleValues);
+  columnPossibleValuesObservable = this.columnPossibleValuesSource.asObservable();
 
-    columnTypes: ColumnType[] = [];
-    private columnTypesSource = new BehaviorSubject(this.columnTypes);
-    columnTypesObservable = this.columnTypesSource.asObservable();
+  columnTypes: ColumnType[] = [];
+  private columnTypesSource = new BehaviorSubject(this.columnTypes);
+  columnTypesObservable = this.columnTypesSource.asObservable();
 
-    init() {
-      this.definedColumnsData = [];
-      this.title = "";
-      this.columnPossibleValues = [];
-      this.columnTypes = [];
-      this.displayedColumns = ['select'];    
-    }
+  init() {
+    this.definedColumnsData = [];
+    this.title = '';
+    this.columnPossibleValues = [];
+    this.columnTypes = [];
+    this.displayedColumns = ['select'];
+  }
 
-    combinedExpression(): string {
+  combinedExpression(): string {
+    const combinedArray = [];
 
-      let combinedArray = [];
-      this.definedColumnsData.forEach( 
-        t => {
-          let combinedObj = {};
-          t.columnValues.forEach(cv => {
-            combinedObj[cv.columnName] = cv.value;
-          });
-          combinedArray.push(combinedObj);
-        }
-      );      
+    this.definedColumnsData.forEach(t => {
+      const combinedObj = {};
 
-      console.log("> " + "combinedArray : " + JSON.stringify(combinedArray));
+      t.columnValues.forEach(cv => {
+        combinedObj[cv.columnName] = cv.value;
+      });
+      combinedArray.push(combinedObj);
+    });
 
-      return JSON.stringify(combinedArray);
-    }
+    console.log('> ' + 'combinedArray : ' + JSON.stringify(combinedArray));
 
-    async showDialog() {
-      this.init();
+    return JSON.stringify(combinedArray);
+  }
 
-      this.display = true;
-      this.isOpening = true;
-      // parse currentPropertyItem.value and populate definedColumnsData and send it to dialog
-      if(this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != "") {
-        let o: any[] = JSON.parse(this.currentPropertyItem.value);
+  async showDialog() {
+    this.init();
 
-        o.forEach(o1 => {
-          let keys = Object.keys(o1);
-          let dc = new DefinedColumns();
-          keys.forEach(key => {
-            let cv = new ColumnValue();
-            cv.columnName = key;
-            cv.value = o1[key];
-            dc.columnValues.push(cv);
-          });
-          this.definedColumnsData.push(dc);
+    this.display = true;
+    this.isOpening = true;
+    // parse currentPropertyItem.value and populate definedColumnsData and send it to dialog
+    if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {
+      const o: any[] = JSON.parse(this.currentPropertyItem.value);
+
+      o.forEach(o1 => {
+        const keys = Object.keys(o1);
+
+        const dc = new DefinedColumns();
+
+        keys.forEach(key => {
+          const cv = new ColumnValue();
+
+          cv.columnName = key;
+          // STOX-588 Always send 0 as text to backend, so it will not be converted to NULL
+          const value = o1[key];
+          cv.value = value == 0 ? `${value}` : value;
+          dc.columnValues.push(cv);
         });
+        this.definedColumnsData.push(dc);
+      });
 
-        this.definedColumnsDataSource.next(this.definedColumnsData);
-      }
+      this.definedColumnsDataSource.next(this.definedColumnsData);
+    }
 
-      let returnValue  = <any> await this.dataService.getParameterTableInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, this.currentPropertyItem.format).toPromise();
-      
-      if(returnValue != null) {
-        console.log("> " + "returnValue : " + JSON.stringify(returnValue));
+    const returnValue = <any>await this.dataService.getParameterTableInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, this.currentPropertyItem.format).toPromise();
 
-        console.log("> " + "returnValue['parameterTableTitle'] : " + returnValue['parameterTableTitle']);
-        this.title = returnValue['parameterTableTitle'];
-        this.currentTitleSource.next(this.title);
-        console.log("> " + "returnValue['parameterTableColumnNames'] : " + returnValue['parameterTableColumnNames']);
-        console.log("> " + "returnValue['parameterTableVariableTypes'] : " + returnValue['parameterTableVariableTypes']);
-        
-        let columns = returnValue['parameterTableColumnNames'];
-        for(let i = 0; i < columns.length; i++) {
-          console.log("> " + columns[i]);
-          this.displayedColumns.push(columns[i]);
-          let column = new ColumnPossibleValues(); 
-          column.columnName =  columns[i];
-          
-          if(returnValue['parameterTablePossibleValues'][i].length == 0) {
-            column.possibleValues = null;
-          } else {
-            column.possibleValues = returnValue['parameterTablePossibleValues'][i];
-          }
+    if (returnValue != null) {
+      console.log('> ' + 'returnValue : ' + JSON.stringify(returnValue));
 
-          this.columnPossibleValues.push(column);
+      console.log('> ' + "returnValue['parameterTableTitle'] : " + returnValue['parameterTableTitle']);
+      this.title = returnValue['parameterTableTitle'];
+      this.currentTitleSource.next(this.title);
+      console.log('> ' + "returnValue['parameterTableColumnNames'] : " + returnValue['parameterTableColumnNames']);
+      console.log('> ' + "returnValue['parameterTableVariableTypes'] : " + returnValue['parameterTableVariableTypes']);
 
-          let colType = new ColumnType();
-          colType.columnName = columns[i];
-          colType.type = returnValue['parameterTableVariableTypes'][i];
-          this.columnTypes.push(colType);
+      const columns = returnValue['parameterTableColumnNames'];
+
+      for (let i = 0; i < columns.length; i++) {
+        console.log('> ' + columns[i]);
+        this.displayedColumns.push(columns[i]);
+        const column = new ColumnPossibleValues();
+
+        column.columnName = columns[i];
+
+        if (returnValue['parameterTablePossibleValues'][i].length == 0) {
+          column.possibleValues = null;
+        } else {
+          column.possibleValues = returnValue['parameterTablePossibleValues'][i];
         }
 
-        this.displayedColumnsSource.next(this.displayedColumns);
-        this.columnPossibleValuesSource.next(this.columnPossibleValues);
-        this.columnTypesSource.next(this.columnTypes);
-        
-        console.log("> " + "returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
+        this.columnPossibleValues.push(column);
+
+        const colType = new ColumnType();
+
+        colType.columnName = columns[i];
+        colType.type = returnValue['parameterTableVariableTypes'][i];
+        this.columnTypes.push(colType);
       }
-      this.isOpening = false;
+
+      this.displayedColumnsSource.next(this.displayedColumns);
+      this.columnPossibleValuesSource.next(this.columnPossibleValues);
+      this.columnTypesSource.next(this.columnTypes);
+
+      console.log('> ' + "returnValue['parameterTablePossibleValues'] : " + JSON.stringify(returnValue['parameterTablePossibleValues']));
     }
+
+    this.isOpening = false;
+  }
 }

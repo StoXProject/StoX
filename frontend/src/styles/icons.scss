@@ -1,0 +1,170 @@
+@mixin icon_content($content, $fontSize, $color, $shadow: false) {
+  font-family: 'FontAwesome';
+  content: $content;
+  font-size: $fontSize !important;
+  line-height: 1rem;
+  color: $color;
+  @if ($shadow) {
+    text-shadow: 0.2px 0.2px 0.2px #000000;
+  }
+}
+
+.processicon:before {
+  @include icon_content('\f013', 1rem, rgb(145, 173, 131), true);
+  left: 0px;
+  top: 0px;
+  position: relative;
+}
+
+.addprocessicon:before {
+  @include icon_content('\f013', 1rem, rgb(145, 173, 131), true);
+}
+
+.addprocessicon:after {
+  @include icon_content('\f067', 0.6rem, rgb(83, 39, 88), true);
+  top: 20%;
+  left: 80%;
+}
+
+.inactiveprocessicon:before {
+  @include icon_content('\f013', 1rem, rgb(218, 219, 217), true);
+  left: 0px;
+  top: 0px;
+  position: relative;
+}
+
+.stratumicon:before {
+  @include icon_content('\f00a', 1rem, rgb(145, 173, 131), true);
+}
+
+.psuicon:before {
+  @include icon_content('\f03a', 1rem, rgb(145, 173, 131), true);
+}
+
+.interactiveicon:after {
+  @include icon_content('\f111', 0.34rem, rgb(77, 94, 69));
+}
+
+.inactiveinteractiveicon:after {
+  @include icon_content('\f111', 0.34rem, rgb(161, 161, 161));
+}
+
+.mapicon:after {
+  @include icon_content('\f0ac', 0.5rem, rgb(21, 40, 216));
+  top: 20%;
+  left: 20%;
+}
+
+.inactivemapicon:after {
+  @include icon_content('\f0ac', 0.5rem, rgb(95, 96, 104));
+  top: 20%;
+  left: 20%;
+}
+
+.globeicon:after {
+  @include icon_content('\f0ac', 0.9rem, rgb(21, 40, 216));
+  top: 10%;
+  left: 50%;
+}
+
+.runicon:before {
+  @include icon_content('\f111', 1rem, rgb(33, 122, 196));
+  -webkit-text-fill-color: transparent;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
+  background: -o-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
+  background-clip: text;
+  top: 0%;
+  left: 0%;
+  position: relative;
+}
+
+.runicon:after {
+  @include icon_content('\f0da', 0.8rem, rgb(255, 255, 255), false);
+  left: 55%;
+}
+.runnexticon:before {
+  @include icon_content('\f064', 1rem, rgb(33, 122, 196)); // 051?
+}
+.runnexticon:after {
+  @include icon_content('\f013', 0.3rem, rgb(33, 122, 196)); // 051?
+  top: 80%;
+}
+.runfromhereicon:before {
+  @include icon_content('\f08b', 1rem, rgb(33, 122, 196));
+}
+.foldericon:before {
+  @include icon_content('\f07b', 1.2rem, rgb(232, 199, 102));
+}
+.previewicon:before {
+  @include icon_content('\f06e', 1.2rem, rgb(11, 11, 68));
+}
+
+.fileicon:before {
+  @include icon_content('\f016', 1rem, rgb(128, 128, 133));
+}
+
+.originicon:before {
+  @include icon_content('\f2dd', 1rem, rgb(245, 141, 57));
+}
+
+.runtoicon:before {
+  @include icon_content('\f090', 1rem, rgb(33, 122, 196));
+}
+
+.runthisicon:before {
+  @include icon_content('\f061', 0.8rem, rgb(33, 122, 196));
+}
+
+.reseticon:before {
+  @include icon_content('\f04d', 0.7rem, rgb(33, 122, 196));
+}
+
+.stopicon:before {
+  @include icon_content('\f111', 0.7rem, rgb(231, 18, 28));
+}
+
+.emptyicon:before {
+  @include icon_content('\f0c8', 1rem, rgb(33, 122, 196, 0));
+}
+.runstatusokicon:after {
+  @include icon_content('\f0c8', 0.4rem, rgb(63, 72, 204), true);
+  top: 72%;
+}
+.runstatusfailedicon:after {
+  @include icon_content('\f0c8', 0.4rem, rgb(173, 8, 8), true);
+  top: 72%;
+}
+.runstatusmodifiedicon:after {
+  @include icon_content('\f0c8', 0.4rem, rgb(134, 139, 209), true);
+  top: 72%;
+}
+.functioninputerroricon:after {
+  @include icon_content('\f0c8', 0.4rem, rgb(252, 165, 116), true);
+  top: 28%;
+}
+.editicon:before {
+  @include icon_content('\f040', 0.7rem, rgb(19, 40, 58));
+}
+.freemoveicon:before {
+  @include icon_content('\f0b2', 0.7rem, rgb(19, 40, 58));
+}
+
+.addicon:before {
+  @include icon_content('\f067', 0.8rem, rgb(129, 133, 194), true);
+}
+
+.deleteicon:before {
+  @include icon_content('\f00d', 1.2rem, rgb(153, 35, 35), true);
+}
+
+.duplicate:before {
+  @include icon_content('\f24d', 1.2rem, rgb(19, 40, 58), true);
+}
+
+.closeicon:before {
+  @include icon_content('\f00d', 1.2rem, rgb(153, 35, 35), true);
+}
+
+.saveicon:before {
+  @include icon_content('\f0c7', 1rem, rgb(1, 1, 2), true);
+}

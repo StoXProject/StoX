@@ -1,73 +1,66 @@
-import { ResetProjectDlgService } from './../resetProject/ResetProjectDlgService';
-import { ViewChild, Component, HostListener, OnInit, OnDestroy } from '@angular/core';
-import { tap } from 'rxjs/operators';
-// import { Observable, of } from 'rxjs';
-// import { DataService } from '../service/data.service';
-import { ProjectService } from '../service/project.service';
-import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
-import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
-import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
-import { InstallRPackagesDlgService } from '../dlg/InstallRPackages/InstallRPackagesDlgService';
-// import { ExpressionBuilderDlgService } from '../expressionBuilder/ExpressionBuilderDlgService';
-// import { DefinedColumnsService } from '../dlg/definedColumns/DefinedColumnsService';
-// import { QueryBuilderDlgService } from '../querybuilder/dlg/QueryBuilderDlgService';
-import { MenuItem } from 'primeng/api';
-import { DataService } from '../service/data.service';
-import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgService';
+import { Component, HostListener, ViewChild } from '@angular/core';
+import { ChangeDetectorRef } from '@angular/core';
 import { MatTabGroup } from '@angular/material/tabs';
+import { MenuItem } from 'primeng/api';
+import { ContextMenu } from 'primeng/contextmenu';
+
+import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
+import { InstallRPackagesDlgService } from '../dlg/InstallRPackages/InstallRPackagesDlgService';
+import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
+import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
+import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgService';
+import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
 import { PackageVersion } from './../data/PackageVersion';
-import { UserLogEntry } from '../data/userlogentry';
-import { UserLogType } from '../enum/enums';
-import { ContextMenu } from 'primeng';
+import { ResetProjectDlgService } from './../resetProject/ResetProjectDlgService';
 
 @Component({
   selector: 'homeComponent',
   templateUrl: './home.html',
-  styleUrls: ['./home.scss']
+  styleUrls: ['./home.scss'],
 })
-
-export class HomeComponent /*implements OnInit, OnDestroy*/ {
-  @ViewChild("bottomTabGroup") bottomTabGroup: MatTabGroup;
-  @ViewChild("cm") cm: ContextMenu;
+export class HomeComponent {
+  @ViewChild('bottomTabGroup') bottomTabGroup: MatTabGroup;
+  @ViewChild('cm') cm: ContextMenu;
 
   title = 'StoX';
   stoxVersion: string;
-  constructor(private rConnectionDlgService: RConnectionDlgService,
+  constructor(
+    private rConnectionDlgService: RConnectionDlgService,
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
     public ps: ProjectService,
     private saveProjectAsService: SaveAsProjectDlgService,
     private resetProjectService: ResetProjectDlgService,
     private installRPackagesDlgService: InstallRPackagesDlgService,
-    private ds: DataService
+    private ds: DataService,
+    private cd: ChangeDetectorRef
   ) {
-    ps.bottomViewActivator.subscribe({ next: (idx) => { this.bottomTabGroup.selectedIndex = idx; } })
-    // document.addEventListener('touchstart', function(){}, {passive: false});
+    ps.bottomViewActivator.subscribe({
+      next: idx => {
+        this.bottomTabGroup.selectedIndex = idx;
+      },
+    });
   }
   items?: MenuItem[];
-  m_isDesktop: boolean = true;
-  /*async ngOnDestroy() {
-    await this.ds.resetProject(this.ps.selectedProject.projectPath, false, false).toPromise();
-  }*/
+  m_isDesktop = true;
   @HostListener('window:beforeunload', ['$event'])
-  async unloadHandler(event: any) {
-  }
+  async unloadHandler(_event: any) {}
 
   getPropertiesHdr() {
-    return "Properties" + (this.ps.selectedProcess != null ? (" - " + this.ps.selectedProcess.processName) : '');
+    return 'Properties' + (this.ps.selectedProcess != null ? ' - ' + this.ps.selectedProcess.processName : '');
   }
 
   async ngOnInit() {
-    console.log("> " + "Home init")
-    this.stoxVersion = await this.ds.getStoxVersion().toPromise()/*'2.9.17'*/;
-    this.items = [/*{
-      label: 'R connection...', command: e => this.rConnectionDlgService.showDialog()
-    }*/];
-    //if (this.ps.rAvailable) {
-    //this.items.push(...[]);
-    this.m_isDesktop = "true" == await this.ds.isdesktop().toPromise();
-    console.log("> " + "isdesktop=" + typeof (this.m_isDesktop))
-    //   }
+    console.log('> ' + 'Home init');
+    this.stoxVersion = await this.ds.getStoxVersion().toPromise() /*'2.9.17'*/;
+    this.items = [];
+    this.m_isDesktop = 'true' == (await this.ds.isdesktop().toPromise());
+    console.log('> ' + 'isdesktop=' + this.m_isDesktop);
+  }
+
+  ctxMenuShow(_e) {
+    this.cd.detectChanges(); // Trigger change detection manually
   }
 
   createNewProject() {
@@ -84,7 +77,7 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
     this.ps.save();
   }
   saveProjectAs() {
-    this.saveProjectAsService.show()
+    this.saveProjectAsService.show();
   }
   resetProject() {
     this.resetProjectService.checkSaved();
@@ -96,18 +89,23 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   isProjectSelected(): boolean {
     return this.ps.selectedProject != null;
   }
+
   isSaved(): boolean {
-    return !this.isProjectSelected() || this.ps.selectedProject.saved
+    return !this.isProjectSelected() || this.ps.selectedProject.saved;
   }
+
   async stoxHome() {
     await this.ds.stoxHome().toPromise();
   }
+
   async toggleDevTools() {
     await this.ds.toggleDevTools().toPromise();
   }
+
   isDesktop(): boolean {
     return this.m_isDesktop;
   }
+
   async exit() {
     await this.ds.exit().toPromise();
   }
@@ -115,57 +113,58 @@ export class HomeComponent /*implements OnInit, OnDestroy*/ {
   async installRstoxFramework() {
     this.installRPackagesDlgService.showDialog();
   }
-  
+
   getStoXVersionColor() {
-    return this.ps.isOfficialStoXVersion ? "black" : "rgb(255,30,78)"; 
-}
+    return this.ps.isOfficialStoXVersion ? 'black' : 'rgb(255,30,78)';
+  }
 
   getPackageColorMain(packages: PackageVersion[]) {
     let maxStatus = 0;
-    
-    if(packages) {
+
+    if (packages) {
       maxStatus = 0;
-      // Loop through the packages: 
-      for(let i = 0; i< packages.length; i++) {
+      // Loop through the packages:
+      for (let i = 0; i < packages.length; i++) {
         // If the package does not exist, return status 3:
-        if(packages[i] == null) {
+        if (packages[i] == null) {
           maxStatus = 3;
         }
         // Otherwise get the status as maxStatus if larger:
-        else if(packages[i].status > maxStatus) {
+        else if (packages[i].status > maxStatus) {
           maxStatus = packages[i].status;
         }
       }
-    }
-    else {
+    } else {
       maxStatus = 3;
     }
-    
+
     return maxStatus > 1 ? 'grey' : maxStatus == 1 ? 'rgb(255,30,78)' : 'black';
   }
-
 
   getPackageColor(pkg: PackageVersion) {
     return pkg == null || pkg.status > 1 ? 'grey' : pkg.status == 1 ? 'rgb(255,30,78)' : 'black';
   }
 
   getMainPackageDescr() {
-    return " / " + this.getPackageDescr(this.ps.rstoxPackages != null ? this.ps.rstoxPackages[0] : null, false);
+    return ' / ' + this.getPackageDescr(this.ps.rstoxPackages != null ? this.ps.rstoxPackages[0] : null, false);
   }
-  getPackageDescr(pkg: PackageVersion, withVersion : boolean = true) {
+
+  getPackageDescr(pkg: PackageVersion, withVersion: boolean = true) {
     //console.log("> " + "getPackageDescr:" + pkg)
-    return pkg == null ? "Loading..." : pkg.packageName + (withVersion ? " " + pkg.version : "");
+    return pkg == null ? 'Loading...' : pkg.packageName + (withVersion ? ' ' + pkg.version : '');
   }
 
   myFunction() {
-    var popup = document.getElementById("myPopup");
-    popup.classList.toggle("show");
+    const popup = document.getElementById('myPopup');
+    popup.classList.toggle('show');
   }
+
   @HostListener('document:mousedown', ['$event'])
   onMouseDown(event) {
-    var popup = document.getElementById("myPopup");
-    if (popup.classList.contains("show") && !event.target.classList.contains("popup")) {
-      popup.classList.remove("show");
+    const popup = document.getElementById('myPopup');
+
+    if (popup.classList.contains('show') && !event.target.classList.contains('popup')) {
+      popup.classList.remove('show');
       event.preventDefault();
     }
   }

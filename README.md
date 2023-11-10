@@ -70,17 +70,17 @@ Click on "Tools" > "Install Rstox packages" in the menu. This will install the r
 
 Note that on Linux it may be required to install C++ libraries and other resources that are needed by the Rstox packages and their dependencies. The following commands may be sufficient to avoid errors in the "Install Rstox packages":
 
-* Used in the pakcage "units":
+* Used in the package "units":
 sudo apt-get install -y libudunits2-dev
-* Used in the pakcage "jsonvalidate" used by "RstoxFramework":
+* Used in the package "jsonvalidate" used by "RstoxFramework":
 sudo apt-get install -y libcurl4-openssl-dev
-* Used in the pakcage "xml2":
+* Used in the package "xml2":
 sudo apt-get install -y libxml2-dev
-* Used in the pakcage "xslt" used by "RstoxData":
+* Used in the package "xslt" used by "RstoxData":
 sudo apt-get install -y libxslt1-dev
-* Used in the pakcage "rgdal":
-sudo aptitude install libgdal-dev
-* Used in the pakcage "sf": 
+* Used in the package "rgdal":
+sudo apt-get install libgdal-dev
+* Used in the package "sf": 
 sudo apt-get install -y libproj-dev
 
 If problems still occur, try debugging by loacting and running in R the commands that (1) source the Vesions.R file and (2) call the installOfficialRstoxPackagesWithDependencies() function, found in the log file located in the folder "stox" in your system temp folder (/tmp/stox), but with quiet = FALSE. See the following example:

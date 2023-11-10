@@ -1,202 +1,175 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
-import { FilePathDlgService } from './FilePathDlgService';
-import { DataService } from '../../service/data.service';
+import { ErrorUtils } from 'src/app/utils/errorUtils';
+import { PathUtils } from 'src/app/utils/pathUtils';
+
 import { FilePath } from '../../data/FilePath';
-import { MessageService } from '../../message/MessageService';
-import { ProjectService } from '../../service/project.service';
 import { ProcessProperties } from '../../data/ProcessProperties';
+import { MessageService } from '../../message/MessageService';
+import { DataService } from '../../service/data.service';
+import { ProjectService } from '../../service/project.service';
+import { FilePathDlgService } from './FilePathDlgService';
 
 @Component({
-    selector: 'FilePathDlg',
-    templateUrl: './FilePathDlg.html',
-    styleUrls: ['./FilePathDlg.css']
-  })
-export class FilePathDlg  implements OnInit { 
+  selector: 'FilePathDlg',
+  templateUrl: './FilePathDlg.html',
+  styleUrls: ['./FilePathDlg.css'],
+})
+export class FilePathDlg {
+  dataSource: MatTableDataSource<FilePath> = new MatTableDataSource<FilePath>(this.service.paths);
+  displayedColumns = ['path', 'action'];
+  combinedPaths: string[] = [];
 
-    dataSource: MatTableDataSource<FilePath> = new MatTableDataSource<FilePath>(this.service.paths);
-    // selection = new SelectionModel<FilePath>(true, []);
+  constructor(
+    public service: FilePathDlgService,
+    private dataService: DataService,
+    private msgService: MessageService,
+    private ps: ProjectService
+  ) {
+    service.pathDataObservable.subscribe(paths => {
+      this.dataSource = new MatTableDataSource<FilePath>(paths);
+    });
+  }
 
-    displayedColumns = ['path', 'action'];
+  async addRow() {
+    const filePath = await this.openFileDialog(true);
+    if (filePath == null) {
+      return;
+    }
 
-    combinedPaths: string[] = [];
+    const paths = <string[]>JSON.parse(filePath);
+    const convertedPaths = paths.map(PathUtils.ConvertBackslash);
 
-    constructor(public service: FilePathDlgService, private dataService: DataService,
-        private msgService: MessageService, private ps: ProjectService) {
-        service.pathDataObservable.subscribe(paths => {
-            this.dataSource = new MatTableDataSource<FilePath>(paths);
+    //TODO: Add only unique paths
+    for (let i = 0; i < convertedPaths.length; i++) {
+      const path = convertedPaths[i];
+      if (!this.service.paths.some(p => p.path === path)) {
+        this.service.paths.push({ path });
+      }
+    }
+
+    this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
+    this.dataSource.filter = '';
+  }
+
+  async edit(currentFilePath: FilePath) {
+    const filePath = await this.openFileDialog(false);
+
+    if (filePath == null) {
+      return;
+    }
+
+    const paths = <string[]>JSON.parse(filePath);
+    const path = PathUtils.ConvertBackslash(paths[0]);
+    currentFilePath.path = path;
+  }
+
+  delete(currentFilePath: FilePath) {
+    const index: number = this.service.paths.findIndex(d => d === currentFilePath);
+    this.service.paths.splice(index, 1);
+    this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
+  }
+
+  async apply() {
+    // check that all paths are filled and files exist
+    for (let i = 0; i < this.service.paths.length; i++) {
+      const { path } = this.service.paths[i];
+      if (path == null) {
+        this.setAndShowMessage('One or more file paths are empty!');
+
+        return;
+      }
+
+      if (!(await this.fileExists(path))) {
+        this.setAndShowMessage('File ' + path + ' does not exist');
+
+        return;
+      }
+    }
+
+    if (!PathUtils.ArePathsUnique(this.service.paths)) {
+      this.setAndShowMessage('Paths to files are not unique!');
+
+      return;
+    }
+
+    this.combinedPaths = this.service.combinedPaths();
+
+    const stringifiedPaths = JSON.stringify(this.combinedPaths);
+    const hasChanged = stringifiedPaths != this.service.currentPropertyItem.value;
+
+    if (!hasChanged) {
+      this.onHide();
+
+      return;
+    }
+
+    this.service.currentPropertyItem.value = stringifiedPaths;
+
+    const notNull = this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null;
+    if (!notNull) {
+      this.onHide();
+
+      return;
+    }
+
+    try {
+      const { groupName } = this.service.currentPropertyCategory;
+      const { name, value } = this.service.currentPropertyItem;
+      const { selectedProject, selectedProcessId, selectedModel } = this.ps;
+      this.dataService
+        .setProcessPropertyValue(groupName, name, value, selectedProject.projectPath, selectedModel.modelName, selectedProcessId)
+        .toPromise()
+        .then((s: ProcessProperties) => {
+          this.ps.handleAPI(s);
         });
+    } catch (error) {
+      console.log('> ' + error.error);
+      const firstLine = ErrorUtils.GetFirstLine(error);
+
+      this.setAndShowMessage(firstLine);
+
+      return;
     }
 
-    async ngOnInit() {
+    this.onHide();
+  }
+
+  cancel() {
+    this.onHide();
+  }
+
+  onHide() {
+    this.service.display = false;
+  }
+
+  // Helpers
+  // ________________________________________________________________________
+
+  openFileDialog = async (multiSelect: boolean): Promise<string> => {
+    const title = 'Select file' + (multiSelect ? 's' : '');
+    const option = { properties: ['openFile', multiSelect ? 'multiSelections' : ''], title, defaultPath: this.ps.selectedProject.projectPath };
+    const filePath = await this.dataService.browsePath(option).toPromise();
+
+    return filePath;
+  };
+
+  setAndShowMessage(msg: string) {
+    this.msgService.setMessage(msg);
+    this.msgService.showMessage();
+  }
+
+  fileExists = async (path: string): Promise<boolean> => {
+    const testFullPath = await this.dataService.fileExists(path).toPromise();
+
+    if (testFullPath != null && testFullPath != 'true') {
+      const testRelativePath = await this.dataService.fileExists(this.ps.selectedProject.projectPath + '/' + path).toPromise();
+
+      if (testRelativePath != null && testRelativePath != 'true') {
+        return false;
+      }
     }
 
-    addRow() {
-        this.service.paths.push({path: null});
-        this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
-        // this.dataSource.data.push({path: null});
-        this.dataSource.filter = "";
-    }    
-
-    // removeSelectedRows() {
-    //     this.selection.selected.forEach(item => {
-    //       let index: number = this.service.paths.findIndex(d => d === item);
-    //       console.log("> " + "index to remove : " + index);
-    //       this.service.paths.splice(index, 1);
-    //       this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
-    //     });
-    //     this.selection = new SelectionModel<FilePath>(true, []);
-    // }   
-
-    /** Whether the number of selected elements matches the total number of rows. */
-    // isAllSelected() {
-    //     const numSelected = this.selection.selected.length;
-    //     const numRows = this.dataSource.data.length;
-    //     return numSelected === numRows;
-    // }
-
-    // atLeastOneSelected() {
-    //     return this.selection.selected.length > 0;
-    // }
-
-    // isOnlyOneSelected() {
-    //     return this.selection.selected.length === 1;
-    // }
-
-    /** Selects all rows if they are not all selected; otherwise clear selection. */
-    // masterToggle() {
-    // this.isAllSelected() ?
-    //     this.selection.clear() :
-    //     this.dataSource.data.forEach(row => this.selection.select(row));
-    // }
-
-    arePathsUnique() {
-        var tmpArr = [];
-        for(let obj = 0; obj < this.service.paths.length; obj++) {
-          if(tmpArr.indexOf(this.service.paths[obj].path) < 0){ 
-            tmpArr.push(this.service.paths[obj].path);
-          } else {
-            return false;
-          }
-        }
-        return true;
-    }  
-     
-    // async buildFilePath() {
-    //     let currentFilePath: FilePath;
-    //     currentFilePath = this.selection.selected[0];
-
-    //     let options = {properties:['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath};
-
-    //     let filePath = await this.dataService.browsePath(options).toPromise();
-
-    //     // console.log("> " + "filePath : " + filePath);
-
-    //     if(filePath != null) {
-    //         let paths = <string[]>JSON.parse(filePath);
-
-    //         //console.log("> " + "1st element : " + paths[0]);
-
-    //         paths[0] = paths[0].replace(/\\/g, "/"); // convert backslash to forward
-            
-    //         //console.log("> " + "1st element : " + paths[0]);
-
-    //         currentFilePath.path = paths[0];
-    //     }
-    // }
-
-    async edit(currentFilePath: FilePath) {
-        let options = {properties:['openFile'], title: 'Select file', defaultPath: this.ps.selectedProject.projectPath};
-
-        let filePath = await this.dataService.browsePath(options).toPromise();
-
-        // console.log("> " + "filePath : " + filePath);
-
-        if(filePath != null) {
-            let paths = <string[]>JSON.parse(filePath);
-
-            //console.log("> " + "1st element : " + paths[0]);
-
-            paths[0] = paths[0].replace(/\\/g, "/"); // convert backslash to forward
-            
-            //console.log("> " + "1st element : " + paths[0]);
-
-            currentFilePath.path = paths[0];
-        }
-    }
-
-    delete(currentFilePath: FilePath) {
-        let index: number = this.service.paths.findIndex(d => d === currentFilePath);
-        // console.log("> " + this.service.paths.findIndex(d => d === currentFilePath));
-        this.service.paths.splice(index,1);
-        this.dataSource = new MatTableDataSource<FilePath>(this.service.paths);
-    }    
-
-    async apply() { 
-        // check that all paths are filled and files exist
-        for(let i=0; i< this.service.paths.length; i++) {
-            if(this.service.paths[i].path == null) {
-                this.msgService.setMessage("One or more file paths are empty!");
-                this.msgService.showMessage();
-                return;
-            } else {
-                // check file for existence
-                let trial1 = await this.dataService.fileExists(this.service.paths[i].path).toPromise();
-
-                if(trial1 != null && trial1 != "true") {
-                    let trial2 = await this.dataService.fileExists(this.ps.selectedProject.projectPath + "/" + this.service.paths[i].path).toPromise();
-
-                    if(trial2 != null && trial2 != "true") {
-                        this.msgService.setMessage("File " + this.service.paths[i].path + " does not exist");
-                        this.msgService.showMessage();
-                        return;
-                    }
-                }
-            }
-        }
-
-        // check that all paths are unique
-        if(!this.arePathsUnique()) {
-            this.msgService.setMessage("Paths to files are not unique!");
-            this.msgService.showMessage();
-            return;
-        }        
-
-        // combine all paths into one combined array of paths
-        this.combinedPaths = this.service.combinedPaths();
-
-        if(JSON.stringify(this.combinedPaths) != this.service.currentPropertyItem.value) {
-
-            this.service.currentPropertyItem.value = JSON.stringify(this.combinedPaths);
-
-            if (this.ps.selectedProject != null && this.ps.selectedProcessId != null && this.ps.selectedModel != null) {
-              try {
-                this.dataService.setProcessPropertyValue(this.service.currentPropertyCategory.groupName, this.service.currentPropertyItem.name, 
-                    this.service.currentPropertyItem.value, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, 
-                  this.ps.selectedProcessId)
-                  .toPromise().then((s: ProcessProperties) => {
-                      this.ps.handleAPI(s);
-                  });
-              } catch (error) {
-                console.log("> " + error.error);
-                var firstLine = error.error.split('\n', 1)[0];
-                this.msgService.setMessage(firstLine);
-                this.msgService.showMessage();
-                return;
-              }
-            }
-        }
-
-        this.onHide();
-    }  
-
-    cancel() {
-        this.onHide();
-    }
-
-    onHide() {
-        // this.selection.clear();
-        this.service.display = false;
-    }    
+    return true;
+  };
 }

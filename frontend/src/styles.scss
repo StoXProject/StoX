@@ -1,326 +1,57 @@
-/* You can add global styles to this file, and also import other style files */
-/* You can add global styles to this file, and also import other style files */
-@import "assets/hi-theme-primeng/hi-primeng.scss";
-@import "material-icons/iconfont/material-icons.css";
-//@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-//@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
-//@import '~@angular/material/prebuilt-themes/purple-green.css';
+@import 'assets/hi-theme-primeng/hi-primeng.scss';
+@import 'material-icons/iconfont/material-icons.css';
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
 
-//@import "~ag-grid-community/dist/styles/ag-grid.css";
-//@import "~ag-grid-community/dist/styles/ag-theme-balham.css";
+@import './styles/variables.scss';
+@import './styles/icons.scss';
+@import './styles/material.scss';
+@import './styles/primeng.scss';
 
-$fontSize: 0.8rem;
-$menuColor: rgb(240, 240, 240);
+html {
+  font-size: 14px;
+}
 
 .title {
   margin-top: 1rem;
   font-weight: bold;
 }
 
-$available: #83ca5d;
-$missing: #ff7d7d;
-$waiting: #f9d457;
-$unknown: #ad75cc;
-$nodata: #acacac;
+// .ngx-contextmenu {
+//   background-color: rgb(242, 242, 242);
+//   ul {
+//     padding: 0;
+//     margin: 0;
+//     li:not(.divider) {
+//       background-color: rgb(242, 242, 242);
+//       padding: 0.05rem;
+//       margin: 0;
+//       a {
+//         margin-left: 33px;
+//         color: black;
+//       }
+//       a:hover {
+//         text-decoration: none;
+//       }
+//     }
+//     li:hover:not(.divider) {
+//       background-color: rgb(145, 201, 247);
+//     }
+//   }
+// }
 
-.ui-accordion {
-  .ui-accordion-header {
-    background-color: rgb(213, 213, 213) !important;
-    color: black !important;
-    a {
-      text-decoration: none;
-      font-size: $fontSize !important;
-      background-color: rgb(213, 213, 213) !important;
-      color: black !important;
-      padding: 0 !important;
-      border: none !important;
-    }
-    span {
-      color: black !important;
-    }
-  }
-  .ui-accordion-content {
-    padding: 0 !important;
-    font-size: $fontSize !important;
-    border: none !important;
-  }
-}
-
-.ui-listbox {
-  padding: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  box-sizing: content-box !important;
-  border: none !important;
-  .ui-listbox-list-wrapper {
-    width: 100% !important;
-    height: 100% !important;
-    .ui-listbox-list {
-      width: 100% !important;
-      height: 100% !important;
-      overflow-y: auto !important;
-    }
-  }
-}
-.ui-listbox-item {
-  padding-left: 0.4rem !important;
-  padding-top: 2px !important;
-  padding-bottom: 2px !important;
-  padding-right: 0 !important;
-  width: 100% !important;
-  font-size: 0.75rem !important;
-  color: black !important;
-  user-select: none;
-  line-height: 1.1;
-  white-space: nowrap;
-}
-
-.ui-listbox-item:focus,
-.ui-menuitem-link,
-.ui-treenode-content:focus {
-  outline: none !important; // prevent webkit :focus outline.
-  box-shadow: none !important; // add by primeng
-  white-space: nowrap;
-}
-
-.ui-menuitem-icon {
-  margin-left: 0.2em;
-}
-
-// tabview
-.ui-tabmenu {
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 100% !important;
-  //height: 100% !important;
-  //box-sizing: content-box;
-  border: 1px solid #d3d4d4 !important;
-  user-select: none !important;
-  color: black !important;
-  //display: inline-block;
-
-  .ui-tabmenu-nav {
-    background-color: rgb(240, 240, 240) !important;
-    //height: 1.5rem;
-    // inline/nowrap
-    color: rgb(0, 0, 0) !important;
-    white-space: nowrap;
-    border: none !important;
-    overflow: hidden;
-    line-height: 0;
-    padding: 1px !important;
-    .ui-tabmenuitem {
-      padding: 0 !important;
-      margin: 0 !important;
-      // border: none !important;
-      color: rgb(0, 0, 0) !important;
-      border: 1px solid #d3d4d4 !important;
-      background-color: rgb(240, 240, 240) !important;
-      display: inline-block;
-      float: none;
-      line-height: 1rem;
-      .ui-menuitem-link {
-        padding: 0.1em 0.4em !important;
-        margin: 0 !important;
-        color: black !important;
-        .ui-menuitem-text {
-          color: black !important;
-          font-weight: 600;
-          font-size: 0.75rem;
-          white-space: nowrap;
-        }
-      }
-    }
-  }
-}
-.ui-tree {
-  border: none !important;
-  margin: 1px !important;
-  padding: 0 !important;
-  height: 100% !important;
-  width: inherit !important;
-  //overflow-y: scroll;
-}
-.ui-treenode-label,
-.ui-treenode,
-.ui-tree-container {
-  padding: 0 !important;
-}
-
-.ui-treenode-content:focus {
-  outline: none;
-}
-.ui-contextmenu .ui-menuitem-link {
-  padding: 0 20px 0 0 !important ;
-  text-decoration: none !important;
-  .ui-menuitem-text {
-    font-size: 0.75rem;
-  }
-}
-.ui-menu {
-  width: unset;
-  .ui-menuitem-link {
-    padding: 2px 2px 2px 2px !important;
-  }
-  .ui-menuitem-text {
-    white-space: nowrap;
-  }
-}
-//.ui-menuitem-link {
-//white-space: nowrap !important;
-//display: inline-block !important;
-//}
-.ui-submenu-list {
-  //padding: 0 20px 0 0 !important ;
-  width: unset !important;
-  bottom: unset !important;
-  white-space: nowrap !important;
-  //height:unset !important;
-  //top:-250% !important;
-  left: 100% !important;
-}
-
-.ui-toolbar {
-  padding: 1px !important;
-  background-color: rgb(240, 240, 240) !important;
-  border: 1px solid #d3d4d4 !important;
-  vertical-align: middle;
-  line-height: 0;
-  //height: 25px;
-  // padding-left: 10px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  button {
-    border: 1px solid darken(#f0f0f0, 20%);
-    vertical-align: middle !important;
-    display: inline !important;
-    float: none;
-    margin-right: 2px;
-    padding: 1px 1px;
-  }
-}
-
-.ui-tooltip  {
-  //left: auto!important;
-  overflow-wrap: break-word;
-}
-
-button:focus,
-input:focus {
-  outline: none !important;
-}
-.ui-tabview {
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  //box-sizing: content-box;
-  border: none !important;
-  user-select: none !important;
-
-  .ui-tabview-title {
-    font-size: 0.75rem;
-  }
-  .ui-tabview-nav {
-    background-color: rgb(240, 240, 240) !important;
-    height: 1.5rem;
-    border: 1px solid #d3d4d4 !important;
-    // inline/nowrap
-    white-space: nowrap;
-    overflow: hidden;
-    margin-bottom: 0px !important;
-    li {
-      display: inline;
-      float: none;
-    }
-  }
-
-  .ui-tabview-panel {
-    //padding: 0;
-    width: inherit;
-    height: 100%;
-  }
-  .ui-tabview-panels {
-    padding: 0px !important;
-    width: 100% !important;
-    //display: table-cell !important;
-    //border: 1px solid rgb(137, 140, 149);
-    //box-sizing: content-box;
-    height: calc(100% - 1.5rem);
-    //width: 100%;
-    //overflow-y: scroll;
-    .ui-tabview-panel {
-      //padding: 0;
-      //height:100%;
-      //border: none;
-      //overflow: scroll;
-      .ui-toolbar {
-        padding: 0px;
-        background-color: $menuColor;
-        border: none;
-        height: 1.5rem;
-        button {
-          height: 1.35rem;
-          width: 1.35rem;
-          padding: 0rem;
-          margin-bottom: 0.8rem;
-          vertical-align: center;
-          //border:none;
-          img {
-            vertical-align: center;
-          }
-        }
-      }
-    }
-  }
-}
-
-.ngx-contextmenu {
-  background-color: rgb(242, 242, 242);
-  ul {
-    padding: 0;
-    margin: 0;
-    li:not(.divider) {
-      background-color: rgb(242, 242, 242);
-      padding: 0.05rem;
-      margin: 0;
-      a {
-        margin-left: 33px;
-        color: black;
-      }
-      a:hover {
-        text-decoration: none;
-      }
-    }
-    li:hover:not(.divider) {
-      background-color: rgb(145, 201, 247);
-    }
-  }
-}
-
-/*.ui-listbox-item {
-    padding: .1em  !important;
-    margin: 0 !important;
-    //background-color: white !important;
-}
-.ui-listbox .ui-listbox-list-wrapper {
-    overflow-y:scroll  !important;
-    overflow-x:auto  !important;
-    height: 100% !important;
-}*/
-
-//.ui-widget, .ui-widget .ui-widget {    font-size: $fontSize !important;}
-
-.as-split-area {
-  overflow-y: hidden !important;
-}
 .rib {
   position: relative;
   display: inline-block;
   font-size: 1rem !important;
   text-align: center;
   width: 1rem;
+}
+
+#toolbar {
+  .mat-button-toggle-label-content {
+    height: 15px;
+    line-height: 1rem;
+  }
 }
 
 .ritc {
@@ -340,380 +71,26 @@ input:focus {
   transform: translate(-50%, -50%); // needle pinned at the center of the overlay symbol
 }
 
-@mixin icon_content($content, $fontSize, $color, $shadow: false) {
-  font-family: "FontAwesome";
-  content: $content;
-  font-size: $fontSize !important;
-  line-height: 1rem;
-  color: $color;
-  @if ($shadow) {
-    text-shadow: 0.2px 0.2px 0.2px #000000;
-  }
-}
-
-.processicon:before {
-  @include icon_content("\f013", 1rem, rgb(145, 173, 131), true);
-  left: 0px;
-  top: 0px;
-  position: relative;
-}
-
-.addprocessicon:before {
-  @include icon_content("\f013", 1rem, rgb(145, 173, 131), true);
-}
-
-.addprocessicon:after {
-  @include icon_content("\f067", 0.6rem, rgb(83, 39, 88), true);
-  top: 20%;
-  left: 80%;
-}
-
-.inactiveprocessicon:before {
-  @include icon_content("\f013", 1rem, rgb(218, 219, 217), true);
-  left: 0px;
-  top: 0px;
-  position: relative;
-}
-
-
-.stratumicon:before {
-  @include icon_content("\f00a", 1rem, rgb(145, 173, 131), true);
-}
-
-.psuicon:before {
-  @include icon_content("\f03a", 1rem, rgb(145, 173, 131), true);
-}
-
-.interactiveicon:after {
-  @include icon_content("\f111", 0.34rem, rgb(77, 94, 69));
-}
-
-.inactiveinteractiveicon:after {
-  @include icon_content("\f111", 0.34rem, rgb(161, 161, 161));
-}
-
-.mapicon:after {
-  @include icon_content("\f0ac", 0.5rem, rgb(21, 40, 216));
-  top: 20%;
-  left: 20%;
-}
-
-.inactivemapicon:after {
-  @include icon_content("\f0ac", 0.5rem, rgb(95, 96, 104));
-  top: 20%;
-  left: 20%;
-}
-
-.globeicon:after {
-  @include icon_content("\f0ac", 0.9rem, rgb(21, 40, 216));
-  top: 10%;
-  left: 50%;
-}
-
-.runicon:before {
-  @include icon_content("\f111", 1rem, rgb(33, 122, 196));
-  -webkit-text-fill-color: transparent;
-  background: -webkit-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
-  background: -o-gradient(linear, left top, left bottom, from(rgb(33, 122, 196)), to(rgb(15, 50, 80)));
-  background-clip: text;
-  top: 0%;
-  left: 0%;
-  //transform: translate(-50%,  -50%); // needle pinned at the center of the overlay symbol
-  position: relative;
-}
-
-.runicon:after {
-  @include icon_content("\f0da", 0.8rem, rgb(255, 255, 255), false);
-  left: 55%;
-}
-.runnexticon:before {
-  @include icon_content("\f064", 1rem, rgb(33, 122, 196)); // 051?
-}
-.runnexticon:after {
-  @include icon_content("\f013", 0.3rem, rgb(33, 122, 196)); // 051?
-  top: 80%;
-}
-.runfromhereicon:before {
-  @include icon_content("\f08b", 1rem, rgb(33, 122, 196));
-}
-.foldericon:before {
-  @include icon_content("\f07b", 1.2rem, rgb(232, 199, 102));
-}
-.previewicon:before {
-  @include icon_content("\f06e", 1.2rem, rgb(11, 11, 68));
-}
-
-.fileicon:before {
-  @include icon_content("\f016", 1.0rem, rgb(128, 128, 133));
-}
-
-.originicon:before {
-  @include icon_content("\f2dd", 1.0rem, rgb(245, 141, 57));
-}
-
-
-.runtoicon:before {
-  @include icon_content("\f090", 1rem, rgb(33, 122, 196));
-}
-
-.runthisicon:before {
-  @include icon_content("\f061", 0.8rem, rgb(33, 122, 196));
-}
-
-.reseticon:before {
-  @include icon_content("\f04d", 0.7rem, rgb(33, 122, 196));
-}
-
-.stopicon:before {
-  @include icon_content("\f111", 0.7rem, rgb(231, 18, 28));
-}
-
-.emptyicon:before {
-  @include icon_content("\f0c8", 1rem, rgb(33, 122, 196, 0));
-}
-.runstatusokicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(63, 72, 204), true);
-  top: 72%;
-}
-.runstatusfailedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(173, 8, 8), true);
-  top: 72%;
-}
-.runstatusmodifiedicon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(134, 139, 209), true);
-  top: 72%;
-}
-.functioninputerroricon:after {
-  @include icon_content("\f0c8", 0.4rem, rgb(252, 165, 116), true);
-  top: 28%;
-}
-.editicon:before {
-  @include icon_content("\f040", 0.7rem, rgb(19, 40, 58));
-}
-.freemoveicon:before {
-  @include icon_content("\f0b2", 0.7rem, rgb(19, 40, 58));
-}
-
-.addicon:before {
-  @include icon_content("\f067", 0.8rem, rgb(129, 133, 194), true);
-}
-
-.deleteicon:before {
-  @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
-}
-
-.duplicate:before {
-  @include icon_content("\f24d", 1.2rem, rgb(19, 40, 58), true);
-}
-
-.closeicon:before {
-  @include icon_content("\f00d", 1.2rem, rgb(153, 35, 35), true);
-}
-
-.saveicon:before {
-  @include icon_content("\f0c7", 1rem, rgb(1, 1, 2), true);
-}
-
 .blink {
   animation: blink 500ms infinite steps(1);
 }
-// <!--Set the needle point in the middle of the symbol (translate(x, y), then its easier to relate to main symbol-->
-// <style>
-// .rib {
-//   position:relative;
-//   display:inline-block;
-// }
-// .absa:after {
-// position:absolute;
-// top:50%;
-// left:50%;
-// transform: translate(-50%, -50%);
-// }
-// .sy1:before {
-//   content:"1";
-// }
-// .ov2:after {
-//   content:"2";
-// }
-// .ov3:after {
-//   content:"3";
-// }
-// </style>
-// <!--normal flow of inline blocks with encapsulated symbol stacking. Flag in and out symbols and overlays, either on same span using one before and one after, but also for nested spans with symbol and multiple overlays-->
-// <span class="rib sy1"></span>
-// <span class="rib sy1 absa ov2"></span>
-// <span class="rib sy1">
-//    <span class="absa ov3"></span>
-// </span>
-// <span class="rib sy1 absa ov2">
-//    <span class="absa ov3"></span>
-// </span>
-// <span class="rib sy1">
-//    <span class="absa ov2"></span>
-//    <span class="absa ov3"></span>
-// </span>
+
 .bg-primary {
   background-color: #9cc6f0 !important;
 }
+
 .navbar {
   border-bottom: #9cc6f0 !important;
+}
+
+/* Angular Split */
+
+.as-split-area {
+  overflow-y: hidden !important;
 }
 
 .as-split-gutter-icon {
   background-color: #e9f3fc !important;
   border: 1px solid lighten(#e9f3fc, 4%);
   box-shadow: 1px 1px darken(#e9f3fc, 10%);
-}
-
-.mat-ink-bar {
-  background-color: #c0c0c0 !important;
-}
-.mat-tab-header-pagination {
-  background-color: lighten(#f0f0f0, 4%) !important;
-}
-.mat-input-element {
-  border: none !important;
-}
-.mat-tab-links {
-  width: 100%;
-}
-.mat-tab-labels,
-.mat-tab-links {
-  background-color: #e5e5e5 !important;
-}
-.mat-tab-label,
-.mat-tab-link {
-  padding: 0 10px !important;
-  height: 1.2rem !important;
-  line-height: 1.2rem !important;
-  opacity: 1 !important;
-  color: black !important;
-  background-color: #f0f0f0 !important;
-  min-width: auto !important;
-  border: 1px solid darken(#f0f0f0, 4%);
-  //box-shadow: 1px 1px darken(#f0f0f0, 10%);
-  text-decoration: none !important;
-  font-size: 0.75rem !important;
-  font-weight: 600 !important;
-}
-.mat-tab-label-content {
-  font-size: 0.75rem !important;
-  font-weight: 600 !important;
-}
-
-.mat-tab-group {
-  height: 100%;
-}
-
-.mat-tab-body {
-  height: 100%;
-  overflow: hidden !important;
-}
-
-.mat-tab-body-wrapper {
-  height: 100%;
-}
-
-.mat-tab-body-content {
-  overflow: hidden !important;
-}/*
-.mat-tab-body {
-  overflow-y: hidden !important;
-}*/
-/*
-.mat-tab-body {
-  height: 100% !important;
-}
-.mat-tab-body-content {
-  height: 100% !important;
-  line-height: 1.2rem !important;
-  overflow: hidden !important;
-}*/
-
-.mat-button {
-  font-size: 12px !important;
-  padding: 0px 6px !important;
-}
-
-.mat-button-base {
-  line-height: 1.3rem !important;
-  min-width: 0px !important;
-}
-.mat-toolbar {
-  padding: 3px 3px !important;
-}
-.mat-raised-button,
-.mat-button-toggle-label-content {
-  padding: 0 0 !important;
-}
-.mat-button-toggle-label-content {
-  line-height: 1.2rem !important;
-}
-
-.mat-select-panel {
-  min-width: fit-content !important;
-}
-
-.cdk-overlay-container {
-  z-index: 20000 !important;
-}
-.mat-option {
-  line-height: 18px !important;
-  height: 18px !important;
-}
-
-mat-option.mat-option {
-  position: relative;
-  height: 18px !important;
-  line-height: 18px !important;
-  max-height: 18px !important;
-}
-
-.ellipsiscolumn {
-  text-overflow: ellipsis;
-  overflow-x: hidden;
-  width: 100%;
-}
-
-.mat-menu-item,
-.mat-list-item {
-  line-height: 1.2rem !important;
-  height: 1.2rem !important;
-  padding: 0 !important;
-  font-size: 14px !important; 
-}
-
-.mat-list-item-content, .mat-list-base {
-  padding: 1px !important; 
-}
-.mat-list-base {
-  padding: 2px !important;
-}
-
-
-.mat-menu-item:focus {
-  outline: none;
-}
-
-.mat-menu-panel {
-  min-height: 0rem !important;
-}
-
-.mat-menu-content {
-  padding: 0.2rem !important;
-}
-
-.helpcontent h2 {
-  font-size: 1.5rem !important;
-}
-.helpcontent h3 {
-  font-size: 1.25rem !important;
-}
-
-input.mat-input-element {
-  margin-top: auto !important;
-}
-
-.mat-tab-label-active {
-  background-color: #cce8ff !important;
 }
