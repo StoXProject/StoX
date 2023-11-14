@@ -1,29 +1,42 @@
 export class ValidationUtils {
-  public static CleanInputWhileWritingANumber(input: string, allowNA: boolean = false) {
+  public static TestInputWhileWritingANumber(input: string, allowNA: boolean = false) {
     if (allowNA && (input.toUpperCase() === 'NA' || input.toUpperCase() === 'N')) {
       return 'NA';
     }
 
-    // Define the regex pattern for all possible parts of a valid number while typing
-    const validNumberPatternOnPartsOfWholeNumberString = /^(-)|(?:(?:\d+[\.,]\d*)|(?:\.\d+)|(?:\d+))(?:[eE])?([+-]?\d+)?$/;
+    const startString = '^';
+    const startingWithMinusOrPlus = '[-+]?';
+    const numbersWithOptionalDecimal = '[0-9]*[.]?[0-9]*';
+    const exponent = '[eE]?';
+    const exponentSign = '[+-]?';
+    const exponentNumbers = '[0-9]*';
+    const endString = '$';
 
-    // Split input into parts that are valid and invalid
-    const parts = input.split(/([+-]{0,1}?[\d.eE-]+)/).filter(Boolean);
+    const validNumberPatternOnPartsOfWholeNumberString = startString + startingWithMinusOrPlus + numbersWithOptionalDecimal + exponent + exponentSign + exponentNumbers + endString;
 
-    // Rebuild the string with only valid parts
-    let cleanedInput = parts.map(part => (validNumberPatternOnPartsOfWholeNumberString.test(part) ? part : '')).join('');
-
-    // Test the entire rebuilt string to ensure it's a valid number overall
-    if (!validNumberPatternOnPartsOfWholeNumberString.test(cleanedInput)) {
-      cleanedInput = ''; // If overall input isn't valid, return an empty string
-    }
-
-    return cleanedInput;
+    return new RegExp(validNumberPatternOnPartsOfWholeNumberString).test(input);
   }
 
-  public static CleanInputWholeNumberString(input) {
-    const validNumberPatternOnWholeNumberString = /^[+-]{0,1}?(?:(?:\d+\.\d*)|(?:\.\d+)|(?:\d+))(?:[eE][+-]?\d+)?$/g;
+  public static TestInputWholeNumberString(input, allowNA: boolean = false) {
+    if (allowNA && input.toUpperCase() === 'NA') {
+      return true;
+    }
 
-    return validNumberPatternOnWholeNumberString.test(input);
+    const startString = '^';
+    const startingWithMinusOrPlus = '[-+]?';
+    const numbersWithoutDecimal = '[0-9]+';
+    const numbersWithDecimal = '[0-9]+[.][0-9]+';
+    const exponent = '[eE]';
+    const exponentSign = '[+-]?';
+    const exponentNumbers = '[0-9]';
+    const endString = '$';
+
+    const numberPart = '((' + numbersWithoutDecimal + ')|(' + numbersWithDecimal + '))';
+
+    const exponentPart = '(' + exponent + exponentSign + exponentNumbers + ')?';
+
+    const validNumberPatternOnWholeNumberString = startString + startingWithMinusOrPlus + numberPart + exponentPart + endString;
+
+    return new RegExp(validNumberPatternOnWholeNumberString).test(input);
   }
 }
