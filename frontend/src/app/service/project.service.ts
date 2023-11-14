@@ -328,6 +328,23 @@ export class ProjectService {
     }
   }
 
+  async openProjectAsTemplate(projectPath: string, projectNewPath: string, doThrow: boolean, force: boolean, askSave: boolean, withStatus = true) {
+    // the following should open the project and make it selected in the GUI
+    try {
+      if (withStatus) {
+        this.appStatus = 'Opening project ' + projectPath + ' as template and storing in' + projectNewPath;
+      }
+
+      await this.activateProject(await this.dataService.openProjectAsTemplate(projectPath, doThrow, force).toPromise(), askSave);
+      
+      await this.dataService.updateActiveProject(projectNewPath).toPromise();
+      //await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();
+
+    } finally {
+      this.appStatus = null;
+    }
+  }
+
   /*Activate project in gui - at the moment only one project is listed*/
   async activateProject(project: Project, askSave: boolean) {
     if (project != null && project.projectPath == 'NA') {
