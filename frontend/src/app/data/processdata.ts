@@ -7,6 +7,10 @@ export class EDSU_PSU {
   PSU: string;
   EDSU: string;
 }
+export class Station_PSU {
+  PSU: string;
+  Station: string;
+}
 export class Stratum {
   Stratum: string;
 }
@@ -14,6 +18,12 @@ export class Stratum {
 export class AcousticPSU {
   Stratum_PSU: Stratum_PSU[];
   EDSU_PSU: EDSU_PSU[];
+  Stratum: Stratum[];
+}
+
+export class BioticPSU {
+  Stratum_PSU: Stratum_PSU[];
+  Station_PSU: Station_PSU[];
   Stratum: Stratum[];
 }
 

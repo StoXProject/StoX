@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MenuItem, TreeNode } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
 
@@ -13,7 +13,7 @@ import { ProjectService } from './../../service/project.service';
   templateUrl: './stratumpsu.component.html',
   styleUrls: ['./stratumpsu.component.scss'],
 })
-export class StratumpsuComponent implements OnInit {
+export class StratumpsuComponent {
   @Input() cm: ContextMenu;
   nodes: TreeNode[];
   m_selectedNode: TreeNode;
@@ -49,12 +49,25 @@ export class StratumpsuComponent implements OnInit {
           break;
         }
 
+        case 'bioticAssignmentData':
         case 'acousticPSU': {
           // Connect Acoustic PSU to existing stratum TreeNodes:
           if (pds.acousticPSU != null && this.nodes != null) {
             this.nodes.forEach(n => {
               const psuNodes: TreeNode[] = pds.acousticPSU.Stratum_PSU.filter((spsu: Stratum_PSU) => spsu.Stratum === n.data.id).map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, 'psu', []));
 
+              n.children = psuNodes;
+            });
+          }
+
+          break;
+        }
+
+        case 'bioticPSU': {
+          // Connect Biotic PSU to existing stratum TreeNodes:
+          if (pds.bioticPSU != null && this.nodes != null) {
+            this.nodes.forEach(n => {
+              const psuNodes: TreeNode[] = pds.bioticPSU.Stratum_PSU.filter((spsu: Stratum_PSU) => spsu.Stratum === n.data.id).map((spsu: Stratum_PSU) => StratumpsuComponent.asNode(spsu.PSU, 'psu', []));
               n.children = psuNodes;
             });
           }
@@ -76,20 +89,18 @@ export class StratumpsuComponent implements OnInit {
       }
 
       case 'psu': {
-        this.pds.selectedStratum = val.parent.data.id;
         this.pds.selectedPSU = val.data.id;
+        this.pds.selectedStratum = val.parent.data.id;
         break;
       }
     }
 
-    console.log('> ' + 'selected node' + val.data.id);
+    console.log('> ' + 'selected node', val.data);
   }
 
   get selectedNode(): TreeNode {
     return this.m_selectedNode;
   }
-
-  ngOnInit() {}
 
   async prepCm(node: TreeNode) {
     // comment: add list of outputtablenames to runModel result.
@@ -112,14 +123,26 @@ export class StratumpsuComponent implements OnInit {
           });
         }
 
+        if (this.ps.iaMode == 'bioticPSU') {
+          m.push({
+            label: 'Add PSU',
+            icon: 'rib absa psuicon',
+            command: async event => {
+              // psu a new psu node
+              const res: PSUResult = this.ps.handleAPI(await this.ds.addBioticPSU(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+              if (res.PSU != null && res.PSU.length > 0) {
+                node.children.push(StratumpsuComponent.asNode(res.PSU, 'psu', []));
+              }
+            },
+          });
+        }
+
         if (this.ps.iaMode == 'stratum') {
           m.push({
             label: 'Delete',
             icon: 'rib absa deleteicon',
             command: async event => {
-              // Delete stratum
-              const res: ActiveProcessResult = this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeStratum(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
-
+              this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeStratum(node.data.id, this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
               this.ps.iaMode = 'stratum'; // trigger the gui
             },
           });
@@ -134,9 +157,19 @@ export class StratumpsuComponent implements OnInit {
             label: 'Delete',
             icon: 'rib absa deleteicon',
             command: async event => {
-              // Delete a psu node
               this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeAcousticPSU([node.data.id], this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
               this.ps.iaMode = 'acousticPSU'; // trigger the gui
+            },
+          });
+        }
+
+        if (this.ps.iaMode == 'bioticPSU') {
+          m.push({
+            label: 'Delete',
+            icon: 'rib absa deleteicon',
+            command: async event => {
+              this.ps.handleAPI(<ActiveProcessResult>await this.ds.removeBioticPSU([node.data.id], this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.activeProcessId).toPromise());
+              this.ps.iaMode = 'bioticPSU'; // trigger the gui
             },
           });
         }
@@ -150,7 +183,6 @@ export class StratumpsuComponent implements OnInit {
 
   async openCm(event, node: TreeNode) {
     this.selectedNode = node;
-    //console.log("> " + "selecting process " + process.processID + " in contextmenu handler");
     event.preventDefault();
     event.stopPropagation();
     await this.prepCm(node);

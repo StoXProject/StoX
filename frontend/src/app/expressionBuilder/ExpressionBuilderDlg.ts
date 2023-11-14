@@ -37,7 +37,6 @@ export class ExpressionBuilderDlg {
     this.dataSource.filter = '';
   }
 
-
   onTableNameChange(tableExpression: TableExpression) {
     tableExpression.expression = null;
 

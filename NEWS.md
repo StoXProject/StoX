@@ -1,3 +1,20 @@
+# StoX v3.6.3-9002 (2023-11-01)
+
+## Summary
+* Bla
+
+## Bug fixes
+* Bla
+
+## General changes
+* Blabla
+
+## Detailed changes
+* Bla
+
+
+
+
 # StoX v3.6.3-9001 (2023-10-15)
 
 ## Summary
@@ -130,11 +147,10 @@
 * Corrected warning for more NASC in B than in P.
 * Corrected warninig for non-supported NMDEhcosounder format from >= 1.4 to >= 1.1.
 
-
 # StoX v3.7.0-9001 (2023-02-27)
 
 ## Summary
-* The StoX version 3.6.0-9001 is a pre-release before StoX 3.7.0, schduled in April 2023. 
+* The StoX version 3.7.0-9001 is a pre-release before StoX 3.7.0, schduled in April 2023. 
 
 ## General changes
 * Removed the StoX XML from https://acoustic.ices.dk/submissions.
@@ -146,7 +162,7 @@
 * Changed RegroupLengthICESDatras() to regroup lengths both in the HL and the CA table, and also to support recalculating both HLNoAtLngt and CANoAtLngt. Also added the parameters ResolutionTableVariables and ResolutionTable to support specices specific (or other variables) regrouping.
 * Changed HaulNo to use the serialnumber and not the station variable of NMDBiotic >= 3 in ICESDatras().
 * Improved error message when there are missing LogOrigin or LogOrigin2.
-* Changed the error "The BaselineSeedTable must contain Seed for the processes..." to ignore ImputeSuperIndividuals proecsses with Regressio method (no seed required).
+* Changed the error "The BaselineSeedTable must contain Seed for the processes..." to ignore ImputeSuperIndividuals proecsses with Regression method (no seed required).
 * Corrected warning " There are more than one 'serialnumber' ..." to end with "More than one serialnumber for the following cruise/station (of the fishstation table of the BioticData):" instead of "Duplicated serialnumber for the following cruise/station (of the fishstation table of the BioticData):".
 * Corrected warning for more NASC in B than in P.
 * Corrected warninig for non-supported NMDEhcosounder format from >= 1.4 to >= 1.1.

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { AcousticLayerData, AcousticPSU, BioticAssignmentData } from './../data/processdata';
+import { AcousticLayerData, AcousticPSU, BioticAssignmentData, BioticPSU } from './../data/processdata';
 import { DataService } from './data.service';
 import { ProjectService } from './project.service';
 
@@ -9,6 +9,7 @@ import { ProjectService } from './project.service';
 export class ProcessDataService {
   private m_stratum: string[];
   private m_acousticPSU: AcousticPSU;
+  private m_bioticPSU: BioticPSU;
   private m_AcousticLayerData: AcousticLayerData;
   private m_bioticAssignmentData: BioticAssignmentData;
   private m_selectedStratum: string;
@@ -39,6 +40,13 @@ export class ProcessDataService {
             break;
           }
 
+          case 'bioticPSU': {
+            console.log('> ' + 'Process data - listen on iamode=bioticPSU');
+            const v: any = await ds.getInteractiveData(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
+            this.bioticPSU = v;
+            break;
+          }
+
           case 'acousticLayer': {
             console.log('> ' + 'Process data - listen on iamode=acousticLayer');
             const v: any = await ds.getInteractiveData(ps.selectedProject.projectPath, ps.selectedModel.modelName, ps.activeProcessId).toPromise();
@@ -64,6 +72,7 @@ export class ProcessDataService {
           case 'reset': {
             this.stratum = null;
             this.acousticPSU = null;
+            this.bioticPSU = null;
             this.acousticLayerData = null;
             this.bioticAssignmentData = null;
             this.selectedStratum = null;
@@ -96,6 +105,15 @@ export class ProcessDataService {
   set acousticPSU(val: AcousticPSU) {
     this.m_acousticPSU = val;
     this.m_processDataSubject.next('acousticPSU');
+  }
+
+  get bioticPSU(): BioticPSU {
+    return this.m_bioticPSU;
+  }
+
+  set bioticPSU(val: BioticPSU) {
+    this.m_bioticPSU = val;
+    this.m_processDataSubject.next('bioticPSU');
   }
 
   get acousticLayerData(): AcousticLayerData {

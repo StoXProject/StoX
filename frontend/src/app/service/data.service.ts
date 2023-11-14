@@ -524,20 +524,87 @@ export class DataService {
     });
   }
 
-  addAcousticPSU(stratum: string, projectPath: string, modelName: string, processID: string): Observable<PSUResult> {
+  // Acoustic PSU:
+  addAcousticPSU(Stratum: string, projectPath: string, modelName: string, processID: string): Observable<PSUResult> {
     return this.runFunction('addAcousticPSU', {
-      Stratum: stratum,
+      Stratum,
       projectPath,
       modelName,
       processID,
     });
   }
 
-  addHaulToAssignment(projectPath: string, modelName: string, processID: string, stratum: string, psu: string, haul: string[]): Observable<ActiveProcessResult> {
+  removeAcousticPSU(PSU: string[], projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
+    return this.runFunction('removeAcousticPSU', {
+      PSU,
+      projectPath,
+      modelName,
+      processID,
+    });
+  }
+
+  addEDSU(PSU: string, EDSU: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
+    return this.runFunction('addEDSU', {
+      PSU,
+      EDSU,
+      projectPath,
+      modelName,
+      processID,
+    });
+  }
+
+  removeEDSU(EDSU: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
+    return this.runFunction('removeEDSU', {
+      EDSU,
+      projectPath,
+      modelName,
+      processID,
+    });
+  }
+
+  addBioticPSU(Stratum: string, projectPath: string, modelName: string, processID: string): Observable<PSUResult> {
+    return this.runFunction('addBioticPSU', {
+      Stratum,
+      projectPath,
+      modelName,
+      processID,
+    });
+  }
+
+  removeBioticPSU(PSU: string[], projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
+    return this.runFunction('removeBioticPSU', {
+      PSU,
+      projectPath,
+      modelName,
+      processID,
+    });
+  }
+
+  addStation(PSU: string, Station: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
+    return this.runFunction('addStation', {
+      PSU,
+      Station,
+      projectPath,
+      modelName,
+      processID,
+    });
+  }
+
+  removeStation(Station: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
+    return this.runFunction('removeStation', {
+      Station,
+      projectPath,
+      modelName,
+      processID,
+    });
+  }
+
+  // Biotic assignment:
+  addHaulToAssignment(projectPath: string, modelName: string, processID: string, Stratum: string, PSU: string, Haul: string[]): Observable<ActiveProcessResult> {
     return this.runFunction('addHaulToAssignment', {
-      Stratum: stratum,
-      PSU: psu,
-      Haul: haul,
+      Stratum,
+      PSU,
+      Haul,
       projectPath,
       modelName,
       processID,
@@ -591,16 +658,6 @@ export class DataService {
     });
   }
 
-  addEDSU(psu: string, edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
-    return this.runFunction('addEDSU', {
-      PSU: psu,
-      EDSU: edsu,
-      projectPath,
-      modelName,
-      processID,
-    });
-  }
-
   rearrangeProcesses(projectPath: string, modelName: string, processID: string, afterProcessID: string): Observable<ProcessTableResult> {
     return this.runFunction('rearrangeProcesses', {
       projectPath,
@@ -610,27 +667,9 @@ export class DataService {
     });
   }
 
-  removeEDSU(edsu: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
-    return this.runFunction('removeEDSU', {
-      EDSU: edsu,
-      projectPath,
-      modelName,
-      processID,
-    });
-  }
-
   removeStratum(stratumName: string, projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
     return this.runFunction('removeStratum', {
       stratumName,
-      projectPath,
-      modelName,
-      processID,
-    });
-  }
-
-  removeAcousticPSU(PSU: string[], projectPath: string, modelName: string, processID: string): Observable<ActiveProcessResult> {
-    return this.runFunction('removeAcousticPSU', {
-      PSU,
       projectPath,
       modelName,
       processID,
