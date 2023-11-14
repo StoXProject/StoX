@@ -139,8 +139,8 @@ export class MapSetup {
 
     return [
       MapSetup.getPointStyleRect(pointColor, MapSetup.POINT_OUTLINE_COLOR, symSize), // Not selected (previous station layer color)
-      MapSetup.getPointStyleRect(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5), MapSetup.POINT_OUTLINE_COLOR, symSize), // Used PSU
-      MapSetup.getPointStyleRect(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.3), MapSetup.POINT_OUTLINE_COLOR, symSize), // Selected PSU
+      MapSetup.getPointStyleRect(MapSetup.DISTANCE_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize), // Used PSU
+      MapSetup.getPointStyleRect(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5), MapSetup.POINT_OUTLINE_COLOR, symSize), // Selected PSU
     ];
   }
 
