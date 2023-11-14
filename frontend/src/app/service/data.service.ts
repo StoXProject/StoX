@@ -143,15 +143,16 @@ export class DataService {
     );
   }
 
-  openProjectAsTemplate(projectPath: string, dothrow: boolean, force: boolean): Observable<Project> {
+  openProjectAsTemplate(projectPath: string, newProjectPath: string, dothrow: boolean, force: boolean): Observable<Project> {
     return this.runFunctionThrowFramework(
       'openProjectAsTemplate',
       {
         projectPath,
-        showWarnings: true, // DEBUGGING
-        force,
-        reset: false,
-        verbose: true,
+        newProjectPath,
+        //showWarnings: true, // DEBUGGING
+        //force,
+        //reset: false,
+        //verbose: true,
       },
       dothrow
     );

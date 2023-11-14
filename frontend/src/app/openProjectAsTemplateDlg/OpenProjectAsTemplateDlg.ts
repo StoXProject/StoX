@@ -53,7 +53,7 @@ export class OpenProjectAsTemplateDlg {
     let message: string = '';
     let hasError: boolean = false;
 
-    console.log('> ' + 'start apply');
+    console.log('> ' + 'start apply OpenProjectAsTemplate');
     if (!this.service.projectPath) {
         hasError = true;
         message += 'Project folder is empty!\n';
@@ -79,8 +79,13 @@ export class OpenProjectAsTemplateDlg {
 
     console.log('> ' + 'projectPath : ' + this.service.projectPath);
     console.log('> ' + 'projectNewPath : ' + this.projectNewPath);
+    console.log('> ' + 'projectName : ' + this.projectName);
     this.service.projectPath = this.service.projectPath.replace(/\\/g, '/');
     console.log('> ' + 'converted projectPath : ' + this.service.projectPath);
+
+    const absolutePath = this.projectNewPath + '/' + this.projectName;
+    console.log('> ' + 'absolute path : ' + absolutePath);
+
     try {
       const isProject: boolean = await this.dataService.isProject(this.service.projectPath).toPromise();
 
@@ -93,7 +98,7 @@ export class OpenProjectAsTemplateDlg {
 
       this.service.isOpening = true;
       
-      await this.ps.openProjectAsTemplate(this.service.projectPath, this.projectNewPath, true, true, true);
+      await this.ps.openProjectAsTemplate(this.service.projectPath, absolutePath, true, true, true);
       this.service.isOpening = false;
     } catch (error) {
       console.log('> ' + error);

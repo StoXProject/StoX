@@ -335,9 +335,9 @@ export class ProjectService {
         this.appStatus = 'Opening project ' + projectPath + ' as template and storing in' + projectNewPath;
       }
 
-      await this.activateProject(await this.dataService.openProjectAsTemplate(projectPath, doThrow, force).toPromise(), askSave);
+      await this.activateProject(await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow, force).toPromise(), askSave);
       
-      await this.dataService.updateActiveProject(projectNewPath).toPromise();
+      //await this.dataService.updateActiveProject(projectNewPath).toPromise();
       //await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();
 
     } finally {
