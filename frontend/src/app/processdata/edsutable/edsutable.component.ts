@@ -36,19 +36,17 @@ export class EdsutableComponent implements OnInit {
               this.viewPort.scrollToIndex(indexOfLastValue - nItems / 2);
               //console.log("> " + this.pds.acousticPSU.EDSU_PSU[indexOfLastValue]);
             }
-            /*case "bioticPSU": {
-              let selPSU = this.pds.selectedPSU;
-              var indexOfLastValue: number =
-                this.pds.bioticPSU.Station_PSU.reduce(
-                  (iLast: number, x, i, arr) => (x.PSU == selPSU ? i : iLast),
-                  undefined
-                );
-                this.viewPort.checkViewportSize();
-                let nItems : number = this.viewPort.getViewportSize() / 18; // use this to calculate the 
-                console.log("> " + "Viewport size (biotic): " + nItems);
-                this.viewPort.scrollToIndex(indexOfLastValue - nItems / 2); 
-              //console.log("> " + this.pds.bioticPSU.Station_PSU[indexOfLastValue]);
-            }*/
+
+            // case 'bioticPSU': {
+            //   const selPSU = this.pds.selectedPSU;
+            //   console.log('ngOnInit bioticPSU', this.pds.bioticPSU, selPSU);
+            //   const indexOfLastValue: number = this.pds.bioticPSU.Station_PSU.reduce((iLast: number, x, i, arr) => (x.PSU == selPSU ? i : iLast), undefined);
+            //   this.viewPort.checkViewportSize();
+            //   const nItems: number = this.viewPort.getViewportSize() / 18; // use this to calculate the
+            //   console.log('> ' + 'Viewport size (biotic): ', nItems);
+            //   this.viewPort.scrollToIndex(indexOfLastValue - nItems / 2);
+            //   console.log('> ', this.pds.bioticPSU.Station_PSU[indexOfLastValue]);
+            // }
           }
         }
       }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MenuItem, TreeNode } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
 
@@ -13,7 +13,7 @@ import { ProjectService } from './../../service/project.service';
   templateUrl: './stratumpsu.component.html',
   styleUrls: ['./stratumpsu.component.scss'],
 })
-export class StratumpsuComponent implements OnInit {
+export class StratumpsuComponent {
   @Input() cm: ContextMenu;
   nodes: TreeNode[];
   m_selectedNode: TreeNode;
@@ -89,20 +89,18 @@ export class StratumpsuComponent implements OnInit {
       }
 
       case 'psu': {
-        this.pds.selectedStratum = val.parent.data.id;
         this.pds.selectedPSU = val.data.id;
+        this.pds.selectedStratum = val.parent.data.id;
         break;
       }
     }
 
-    console.log('> ' + 'selected node' + val.data.id);
+    console.log('> ' + 'selected node', val.data);
   }
 
   get selectedNode(): TreeNode {
     return this.m_selectedNode;
   }
-
-  ngOnInit() {}
 
   async prepCm(node: TreeNode) {
     // comment: add list of outputtablenames to runModel result.

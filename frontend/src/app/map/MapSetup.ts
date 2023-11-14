@@ -50,9 +50,11 @@ export class MapSetup {
   static getPointStyleRect(fillColor: string, outlineColor: string, size: number): Style {
     return MapSetup.getPointStyle(fillColor, outlineColor, 1, { shape: 'rect', width: size, height: size });
   }
+
   static getPointStyleCircle(fillColor: string, outlineColor: string, size: number): Style {
     return MapSetup.getPointStyle(fillColor, outlineColor, 1, { shape: 'circle', radius: size });
   }
+
   static getPointStyle(fillColor: string, outlineColor: string, strokeWidth: number, symb: MapSymbol): Style {
     let symbFormatted: string = symb.shape,
       svgWidth: number = null,
@@ -90,6 +92,7 @@ export class MapSetup {
 
     return style;
   }
+
   static getLineStyle(strokeColor: string, width: number) {
     return new Style({
       stroke: new Stroke({
@@ -99,11 +102,9 @@ export class MapSetup {
     });
   }
 
+  // This function lets the feature determine by callback the selection of style into the stylecache.
   static getStyleCacheFunction(): StyleFunction {
-    // This function lets the feature determine by callback the selection of style into the stylecache.
     return (feature: FeatureLike, resolution: number) => {
-      const l: Layer = feature.get('layer');
-
       const styleCache: Style[] = feature.get('styleCache');
 
       const styleSelection: number = feature.get('selection');
@@ -111,6 +112,7 @@ export class MapSetup {
       return styleCache[styleSelection];
     };
   }
+
   static getEDSUPointStyleCache(layerIdx: number): Style[] {
     const edsuRadius: number = 6; // px
 
@@ -120,8 +122,6 @@ export class MapSetup {
 
     const focusColor: string = Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5);
 
-    const focusLineColor: string = Color.darken(focusColor, 0.5);
-
     return [
       MapSetup.getPointStyleCircle(pointColor, outlineColor, edsuRadius), // 0: present
       MapSetup.getPointStyleCircle(MapSetup.DISTANCE_POINT_SELECTED_COLOR, outlineColor, edsuRadius), // 1: selected
@@ -129,15 +129,19 @@ export class MapSetup {
       MapSetup.getPointStyleCircle(MapSetup.DISTANCE_ABSENT_POINT_COLOR, outlineColor, edsuRadius), // 3 : absent
     ];
   }
+
   static STATION_POINT_COLORS: string[] = ['rgb(92,172,238)', 'rgb(78,96,188)', 'rgb(88,0,139)', 'rgb(169,10,186)', 'rgb(199,21,90)'];
   static DISTANCE_POINT_COLORS: string[] = ['rgb(255,192,203)', 'rgb(196,96,101)', 'rgb(139,0,0)', 'rgb(188,59,0)', 'rgb(238,118,0)'];
 
   static getStationPointStyleCache(layerIdx: number): Style[] {
-    const ptCol = MapSetup.STATION_POINT_COLORS[layerIdx % MapSetup.STATION_POINT_COLORS.length];
-
+    const pointColor = MapSetup.STATION_POINT_COLORS[layerIdx % MapSetup.STATION_POINT_COLORS.length];
     const symSize: number = 14;
 
-    return [MapSetup.getPointStyleRect(ptCol, MapSetup.POINT_OUTLINE_COLOR, symSize), MapSetup.getPointStyleRect(MapSetup.STATION_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize)];
+    return [
+      MapSetup.getPointStyleRect(pointColor, MapSetup.POINT_OUTLINE_COLOR, symSize), // Not selected (previous station layer color)
+      MapSetup.getPointStyleRect(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5), MapSetup.POINT_OUTLINE_COLOR, symSize), // Used PSU
+      MapSetup.getPointStyleRect(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.3), MapSetup.POINT_OUTLINE_COLOR, symSize), // Selected PSU
+    ];
   }
 
   static getEDSULineStyle(layerIdx: number): Style {
@@ -157,12 +161,15 @@ export class MapSetup {
       }),
     });
   }
+
   static getStratumStyle(): Style {
     return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.05)', 'rgba(0, 0, 0, 0.2)', 1);
   }
+
   static getFocusedStratumStyle(): Style {
     return MapSetup.getPolygonStyle('rgba(0, 0, 0, 0.15)', 'rgba(0, 0, 0, 0.3)', 1);
   }
+
   static getStratumNodeStyle(): Style {
     const s: Style = MapSetup.getPointStyleRect('rgba(255, 0, 0, 0.7)', MapSetup.POINT_OUTLINE_COLOR, 6);
 
@@ -174,9 +181,11 @@ export class MapSetup {
 
     return s;
   }
+
   static getStratumSelectStyle(): Style {
     return MapSetup.getPolygonStyle('rgba(255, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 2);
   }
+
   static createStratumModifyInteraction(select: Select, dataService: DataService, ps: ProjectService, mapInteraction: MapInteraction) {
     const m: Modify = new Modify({
       features: select.getFeatures() /*,
@@ -209,6 +218,7 @@ export class MapSetup {
 
     return m;
   }
+
   static createStratumSelectInteraction() {
     return new Select({
       condition: singleClick,
@@ -220,6 +230,7 @@ export class MapSetup {
       multi: false,
     });
   }
+
   static createStratumDrawInteraction(dialog: MatDialog, source: VectorSource, dataService: DataService, ps: ProjectService, proj: string, mapInteraction: MapInteraction) {
     const d: Draw = new Draw({
       source,
@@ -297,6 +308,7 @@ export class MapSetup {
       zIndex,
     });
 
+    console.log('layertype', layerType);
     // Set layer properties
     v.set('selectable', selectable);
     v.set('name', name);
@@ -316,7 +328,7 @@ export class MapSetup {
         MapSetup.updateEDSUSelection(evt.feature, null);
       }
 
-      if (layerType == 'Station') {
+      if (layerType == 'station') {
         MapSetup.updateStationSelection(evt.feature, null);
       }
 
@@ -488,17 +500,22 @@ export class MapSetup {
     const focused: boolean = selected && selectedPSU != null && edsuPsu.PSU == selectedPSU;
     const selection = focused != null && focused ? 2 : selected != null && selected ? 1 : 0;
 
-    f.set('selection', selection); // Set the style selection.
+    f.set('selection', selection); // Set the style selection
   }
+
   static updateStationSelection(f: Feature, selectedPSU) {
     const stationPsu: Station_PSU = f.get('stationpsu');
-    //let absent: boolean = stationPsu == null /*error not mapped*/ || stationPsu.PSU === "NA";
-    const selected: boolean = stationPsu != null && stationPsu.PSU != null && stationPsu.PSU.length > 0 && stationPsu.PSU !== 'NA'; //f.get("selected");
+    const selected: boolean = stationPsu?.PSU != null && stationPsu.PSU.length > 0 && stationPsu.PSU !== 'NA';
     const focused: boolean = selected && selectedPSU != null && stationPsu.PSU == selectedPSU;
-    const selection =
-      // absent != null && absent ? 3 :
-      focused != null && focused ? 2 : selected != null && selected ? 1 : 0;
-    f.set('selection', selection); // Set the style selection.
+    const selection = focused != null && focused ? 2 : selected != null && selected ? 1 : 0;
+
+    // console.log('> ' + 'updateStationSelection: ', stationPsu, selection);
+
+    // Update style for station layer
+    // 0: not selected by any PSU
+    // 1: selected by some PSU
+    // 2: selected by selected PSU
+    f.set('selection', selection);
   }
 
   static updateStratumSelection(f: Feature, selectedStratum) {
