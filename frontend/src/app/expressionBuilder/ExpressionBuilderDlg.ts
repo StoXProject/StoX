@@ -40,6 +40,11 @@ export class ExpressionBuilderDlg {
 
   onTableNameChange(tableExpression: TableExpression) {
     tableExpression.expression = null;
+
+    const duplicateTableName = this.getDuplicateTableName();
+    if(duplicateTableName != null) {
+      this.setAndShowMessage('Table name ' + duplicateTableName + " is a duplicate!");
+    }
   }
 
   edit(tableExpression: TableExpression) {
@@ -48,6 +53,13 @@ export class ExpressionBuilderDlg {
 
       return;
     }
+
+    const duplicateTableName = this.getDuplicateTableName();
+    if(duplicateTableName != null) {
+      this.setAndShowMessage('Table name ' + duplicateTableName + " is a duplicate!");
+
+      return;
+    }    
 
     console.log('> ' + 'current table name : ' + tableExpression.tableName);
 
@@ -146,12 +158,27 @@ export class ExpressionBuilderDlg {
     for (const obj in this.service.tableExpressions) {
       const tableName = this.service.tableExpressions[obj].tableName;
       if (tmpArr.indexOf(tableName) >= 0) {
-        return false; // Duplicate value for tableName found
+        return false; // Duplicate value in tableName found
       }
 
       tmpArr.push(tableName);
     }
 
-    return true; // No duplicate values found for tableName
+    return true; // No duplicate values found in tableName
   }
+
+  getDuplicateTableName() {
+    const tmpArr = [];
+
+    for (const obj in this.service.tableExpressions) {
+      const tableName = this.service.tableExpressions[obj].tableName;
+      if (tmpArr.indexOf(tableName) >= 0) {
+        return tableName; // Duplicate value in tableName found
+      }
+
+      tmpArr.push(tableName);
+    }
+
+    return null; // No duplicate values found in tableName
+  }  
 }

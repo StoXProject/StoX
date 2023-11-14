@@ -569,7 +569,7 @@ async function createClient() {
     logInfo("Connecting to " + "localhost" + ":" + 6312 + " try " + i);
     serverStarted = false;
     await new Promise((resolve) => {
-      client = new net.createConnection(6312, "localhost")
+      client = new net.createConnection(6312, "127.0.0.1")
         .on("connect", function () {
           serverStarted = true;
           logInfo("Connected in try " + i);
