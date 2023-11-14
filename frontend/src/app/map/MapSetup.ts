@@ -308,7 +308,6 @@ export class MapSetup {
       zIndex,
     });
 
-    console.log('layertype', layerType);
     // Set layer properties
     v.set('selectable', selectable);
     v.set('name', name);
