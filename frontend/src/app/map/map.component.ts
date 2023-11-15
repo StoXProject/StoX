@@ -213,11 +213,6 @@ export class MapComponent implements OnInit, MapInteraction {
    *  according to biotic assignment data.
    */
   private updateAssignedStationSelection() {
-    let bioticAssignments: BioticAssignment[] = [];
-    if (this.ps.iaMode == 'bioticAssignment' && this.pds.bioticAssignmentData != null && this.pds.selectedPSU != null) {
-      bioticAssignments = this.pds.bioticAssignmentData.BioticAssignment.filter(ba => ba.PSU == this.pds.selectedPSU);
-    }
-
     this.map
       .getLayers()
       .getArray()
@@ -225,7 +220,7 @@ export class MapComponent implements OnInit, MapInteraction {
       .map(l => <VectorSource>(<Layer>l).getSource())
       .forEach(s =>
         s.getFeatures().forEach(f => {
-          MapSetup.updateStationSelection(f, this.pds);
+          MapSetup.updateAssignedStationSelection(f, this.pds);
         })
       );
   }
@@ -476,7 +471,7 @@ export class MapComponent implements OnInit, MapInteraction {
 
                 f.set('stationpsu', stationPsu);
                 // Get default any selection (not focused by user):
-                MapSetup.updateStationSelection(f, this.pds.selectedPSU);
+                MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
               })
             );
           break;
@@ -518,7 +513,7 @@ export class MapComponent implements OnInit, MapInteraction {
                 .map(l => <VectorSource>(<Layer>l).getSource())
                 .forEach(s =>
                   s.getFeatures().forEach(f => {
-                    MapSetup.updateStationSelection(f, this.pds.selectedPSU);
+                    MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
                   })
                 );
               break;
@@ -681,7 +676,7 @@ export class MapComponent implements OnInit, MapInteraction {
                   if (stationPsu.PSU != psuToUse) {
                     changedStations.push(stationPsu.Station);
                     stationPsu.PSU = psuToUse;
-                    MapSetup.updateStationSelection(fi, this.pds.selectedPSU);
+                    MapSetup.updateStationSelection(fi, this.pds.selectedPSU, this.ps.iaMode);
                   }
                 }
               }
