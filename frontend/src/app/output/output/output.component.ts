@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { MatTabGroup, MatTabHeader } from '@angular/material/tabs';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/api';
@@ -14,13 +14,43 @@ import { ProjectService } from '../../service/project.service';
   templateUrl: './output.component.html',
   styleUrls: ['./output.component.scss'],
 })
-export class OutputComponent implements OnInit {
+export class OutputComponent {
   @Input() cm: ContextMenu;
 
   @ViewChild('outputTableGroup') outputTableGroup: MatTabGroup;
 
+  constructor(
+    public ps: ProjectService,
+    public ds: DataService,
+    private sanitizer: DomSanitizer
+  ) {
+    ps.outputTableActivator.subscribe({
+      next: idx => {
+        this.outputTableGroup.selectedIndex = idx;
+      },
+    });
+    this.ps.processSubject.subscribe({
+      next: (action: SubjectAction) => {
+        switch (action.action) {
+          case 'activate': {
+            this.refreshData(action.data);
+            break;
+          }
+
+          case 'remove': {
+            this.removeData(action.data);
+            break;
+          }
+        }
+      },
+    });
+  }
+
   async prepCm(oe: OutputElement) {
-    // comment: add list of outputtablenames to runModel result.
+    this.cm.model = this.getMenuItems(oe);
+  }
+
+  getMenuItems = (oe): MenuItem[] => {
     const m: MenuItem[] = [];
 
     m.push({
@@ -30,6 +60,7 @@ export class OutputComponent implements OnInit {
         this.closeElement(oe);
       },
     });
+
     if (this.ps.outputElements.length > 1) {
       m.push(
         {
@@ -49,8 +80,8 @@ export class OutputComponent implements OnInit {
       );
     }
 
-    this.cm.model = m;
-  }
+    return m;
+  };
 
   async openCm(event: MouseEvent, oe: OutputElement) {
     event.preventDefault();
@@ -106,37 +137,6 @@ export class OutputComponent implements OnInit {
     this.ps.outputElements = this.ps.outputElements.filter(t => t.processId !== processId);
   }
 
-  constructor(
-    public ps: ProjectService,
-    public ds: DataService,
-    private sanitizer: DomSanitizer
-  ) {
-    ps.outputTableActivator.subscribe({
-      next: idx => {
-        this.outputTableGroup.selectedIndex = idx;
-      },
-    });
-    this.ps.processSubject.subscribe({
-      next: (action: SubjectAction) => {
-        switch (action.action) {
-          case 'activate': {
-            //console.log("> " + "ActiveProcessId: " + action.data);
-            this.refreshData(action.data);
-            break;
-          }
-
-          case 'remove': {
-            this.removeData(action.data);
-            break;
-          }
-        }
-      },
-    });
-  }
-  ngOnInit() {}
-  private getLines(s: string[]): string {
-    return s.join('\n');
-  }
   getItemOutput(item) {
     console.log('> ' + JSON.stringify(item.outputjson));
 
