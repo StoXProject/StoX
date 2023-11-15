@@ -143,16 +143,12 @@ export class DataService {
     );
   }
 
-  openProjectAsTemplate(projectPath: string, newProjectPath: string, dothrow: boolean, force: boolean): Observable<Project> {
+  openProjectAsTemplate(projectPath: string, newProjectPath: string, dothrow: boolean): Observable<Project> {
     return this.runFunctionThrowFramework(
       'openProjectAsTemplate',
       {
         projectPath,
         newProjectPath,
-        //showWarnings: true, // DEBUGGING
-        //force,
-        //reset: false,
-        //verbose: true,
       },
       dothrow
     );
@@ -436,7 +432,6 @@ export class DataService {
       processID,
     });
   }
-
 
   duplicateProcess(projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('duplicateProcess', {

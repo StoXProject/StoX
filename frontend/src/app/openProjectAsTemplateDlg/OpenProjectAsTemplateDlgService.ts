@@ -13,8 +13,6 @@ export class OpenProjectAsTemplateDlgService {
   projectNewPath: string = null;
 
   async showDialog() {
-    //this.projectPath = <string>await this.dataService.getProjectRootPath().toPromise();
-    
     this.display = true;
   }
 }
