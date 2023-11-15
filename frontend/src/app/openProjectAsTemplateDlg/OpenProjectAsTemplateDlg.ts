@@ -11,9 +11,6 @@ import { OpenProjectAsTemplateDlgService } from './OpenProjectAsTemplateDlgServi
   styleUrls: [],
 })
 export class OpenProjectAsTemplateDlg {
-
-  projectNewPath: string;
-  projectName: string;
     
   constructor(
     public service: OpenProjectAsTemplateDlgService,
@@ -24,11 +21,11 @@ export class OpenProjectAsTemplateDlg {
 
   async ngOnInit() {
 
-    this.projectNewPath = <string>await this.dataService.getProjectRootPath().toPromise();
+    //this.projectNewPath = <string>await this.dataService.getProjectRootPath().toPromise();
   }
 
   async browse() {
-    console.log('> ' + 'Browse ' + this.service.projectPath);
+    console.log('> ' + 'Browse ');
     if (this.service.projectPath == null || this.service.projectPath.trim() == '') {
       if (this.ps.selectedProject != null && this.ps.selectedProject.projectPath != null) {
         this.service.projectPath = this.ps.selectedProject.projectPath.substring(0, this.ps.selectedProject.projectPath.lastIndexOf('/'));
@@ -53,7 +50,8 @@ export class OpenProjectAsTemplateDlg {
     let message: string = '';
     let hasError: boolean = false;
 
-    console.log('> ' + 'start apply OpenProjectAsTemplate');
+    console.log('> ' + 'start apply OpenProjectAsTemplate ');
+
     if (!this.service.projectPath) {
         hasError = true;
         message += 'Project folder is empty!\n';
@@ -61,12 +59,12 @@ export class OpenProjectAsTemplateDlg {
       return;
     }
 
-    if(!this.projectNewPath) {
+    if(!this.service.projectNewPath) {
         hasError = true;
         message += 'New project folder is empty!\n';
     }
 
-    if(!this.projectName) {
+    if(!this.service.projectName) {
 
         message += 'Projectname is empty!\n';
         hasError = true;
@@ -75,15 +73,17 @@ export class OpenProjectAsTemplateDlg {
     if(hasError){
         this.msgService.setMessage(message);
         this.msgService.showMessage();
+
+        return;
     }
 
     console.log('> ' + 'projectPath : ' + this.service.projectPath);
-    console.log('> ' + 'projectNewPath : ' + this.projectNewPath);
-    console.log('> ' + 'projectName : ' + this.projectName);
+    console.log('> ' + 'projectNewPath : ' + this.service.projectNewPath);
+    console.log('> ' + 'projectName : ' + this.service.projectName);
     this.service.projectPath = this.service.projectPath.replace(/\\/g, '/');
     console.log('> ' + 'converted projectPath : ' + this.service.projectPath);
 
-    const absolutePath = this.projectNewPath + '/' + this.projectName;
+    const absolutePath = this.service.projectNewPath + '/' + this.service.projectName;
     console.log('> ' + 'absolute path : ' + absolutePath);
 
     try {
@@ -99,6 +99,8 @@ export class OpenProjectAsTemplateDlg {
       this.service.isOpening = true;
       
       await this.ps.openProjectAsTemplate(this.service.projectPath, absolutePath, true, true, true);
+
+
       this.service.isOpening = false;
     } catch (error) {
       console.log('> ' + error);
