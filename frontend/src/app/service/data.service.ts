@@ -143,6 +143,17 @@ export class DataService {
     );
   }
 
+  openProjectAsTemplate(projectPath: string, newProjectPath: string, dothrow: boolean): Observable<Project> {
+    return this.runFunctionThrowFramework(
+      'openProjectAsTemplate',
+      {
+        projectPath,
+        newProjectPath,
+      },
+      dothrow
+    );
+  }
+
   closeProject(projectPath: string, save: boolean, application: string): Observable<any> {
     return this.runFunction('closeProject', {
       projectPath,
