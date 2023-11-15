@@ -455,6 +455,10 @@ export class DataService {
     });
   }
 
+  /**
+   * Get all possible FilterOptions for all tables in a process
+   * Try to use getFilterTableNames and then getFilterOptionsOneTable instead to improve performance
+   */
   getFilterOptionsAll(projectPath: string, modelName: string, processID: string, includeNumeric: boolean): Observable<any> {
     return this.runFunction('getFilterOptionsAll', {
       projectPath,
