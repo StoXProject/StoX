@@ -413,6 +413,21 @@ export class MapComponent implements OnInit, MapInteraction {
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this);
   }
 
+  private handleProcessAction(action: SubjectAction): void {
+    switch (action.action) {
+      case 'remove': {
+        console.log('remove process - handle in map, id: ' + action.data);
+        this.removeLayersByProcessId(action.data);
+        break;
+      }
+
+      case 'activate': {
+        // TODO: implement interactive mode handling and remove iamodesubject
+        break;
+      }
+    }
+  }
+
   async ngOnInit() {
 
     await this.getMapInfo();
@@ -431,23 +446,12 @@ export class MapComponent implements OnInit, MapInteraction {
 
     this.initializeStratumInteractions();
 
-    //
     this.ps.processSubject.subscribe({
       next: (action: SubjectAction) => {
-        switch (action.action) {
-          case 'remove': {
-            console.log('remove process - handle in map, id: ' + action.data);
-            this.removeLayersByProcessId(action.data);
-            break;
-          }
-
-          case 'activate': {
-            // TODO: implement interactive mode handling and remove iamodesubject
-            break;
-          }
-        }
+        this.handleProcessAction(action);
       },
     });
+    
     this.ps.iaModeSubject.subscribe(iaMode => {
       this.handleIaMode(iaMode, this.proj);
     });
