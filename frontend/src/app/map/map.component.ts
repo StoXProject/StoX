@@ -626,6 +626,60 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
+  private async handleBioticPSUClickEvent(l: Layer, e: MapBrowserEvent<any>, fe: Feature<Geometry>){
+    // Controlling focus.
+    //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
+    let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
+    const clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
+    l.set('lastClickedIndex', clickedIndex);
+    if (!shiftKeyOnly(e) || prevClickIndex == null) {
+      prevClickIndex = clickedIndex;
+    }
+
+    const fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
+    const stationPsu1: Station_PSU = fi1.get('stationpsu');
+    if (stationPsu1 == null) {
+      console.log(fi1.get('Station') + ' is missing station for ' + fi1.get('Station') + ' layer ' + l.get('name'));
+    }
+
+    let psuToUse: string = stationPsu1.PSU;
+    if (prevClickIndex == clickedIndex) {
+      psuToUse = stationPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+    }
+
+    const iFirst = Math.min(prevClickIndex, clickedIndex);
+    const iLast = Math.max(prevClickIndex, clickedIndex);
+    const changedStations: string[] = [];
+    for (let idx: number = iFirst; idx <= iLast; idx++) {
+      const fi = (<VectorSource>l.getSource()).getFeatures()[idx];
+      const stationPsu: Station_PSU = fi.get('stationpsu');
+      if (stationPsu != null) {
+        if (stationPsu.PSU != psuToUse) {
+          changedStations.push(stationPsu.Station);
+          stationPsu.PSU = psuToUse;
+          MapSetup.updateStationSelection(fi, this.pds.selectedPSU, this.ps.iaMode);
+        }
+      }
+    }
+
+    if (changedStations.length > 0) {
+      const { selectedProject, selectedModel, activeProcessId } = this.ps;
+      const { projectPath } = selectedProject;
+      const { modelName } = selectedModel;
+      const addOrRemoveOb = psuToUse != null ? this.dataService.addStation(psuToUse, changedStations, projectPath, modelName, activeProcessId) : this.dataService.removeStation(changedStations, projectPath, modelName, activeProcessId);
+      this.ps.handleAPI(await addOrRemoveOb.toPromise());
+    }
+  }
+
+  private handleBioticAssignment(fe: Feature<Geometry>){
+
+    const selected: boolean = MapSetup.isStationSelected(fe, this.pds);
+
+    MapSetup.selectAssignedStation(fe, this.ps, this.pds, this.dataService, !selected);
+    MapSetup.updateAssignedStationSelection(fe, this.pds);
+
+  }
+
   async ngOnInit() {
 
     await this.getMapInfo();
@@ -697,57 +751,12 @@ export class MapComponent implements OnInit, MapInteraction {
             }
 
             case 'bioticPSU': {
-              // Controlling focus.
-              //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
-              let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
-              const clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
-              l.set('lastClickedIndex', clickedIndex);
-              if (!shiftKeyOnly(e) || prevClickIndex == null) {
-                prevClickIndex = clickedIndex;
-              }
-
-              const fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
-              const stationPsu1: Station_PSU = fi1.get('stationpsu');
-              if (stationPsu1 == null) {
-                console.log(fi1.get('Station') + ' is missing station for ' + fi1.get('Station') + ' layer ' + l.get('name'));
-              }
-
-              let psuToUse: string = stationPsu1.PSU;
-              if (prevClickIndex == clickedIndex) {
-                psuToUse = stationPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
-              }
-
-              const iFirst = Math.min(prevClickIndex, clickedIndex);
-              const iLast = Math.max(prevClickIndex, clickedIndex);
-              const changedStations: string[] = [];
-              for (let idx: number = iFirst; idx <= iLast; idx++) {
-                const fi = (<VectorSource>l.getSource()).getFeatures()[idx];
-                const stationPsu: Station_PSU = fi.get('stationpsu');
-                if (stationPsu != null) {
-                  if (stationPsu.PSU != psuToUse) {
-                    changedStations.push(stationPsu.Station);
-                    stationPsu.PSU = psuToUse;
-                    MapSetup.updateStationSelection(fi, this.pds.selectedPSU, this.ps.iaMode);
-                  }
-                }
-              }
-
-              if (changedStations.length > 0) {
-                const { selectedProject, selectedModel, activeProcessId } = this.ps;
-                const { projectPath } = selectedProject;
-                const { modelName } = selectedModel;
-                const addOrRemoveOb = psuToUse != null ? this.dataService.addStation(psuToUse, changedStations, projectPath, modelName, activeProcessId) : this.dataService.removeStation(changedStations, projectPath, modelName, activeProcessId);
-                this.ps.handleAPI(await addOrRemoveOb.toPromise());
-              }
-
+              this.handleBioticPSUClickEvent(l, e, fe);
               break;
             }
 
             case 'bioticAssignment': {
-              const selected: boolean = MapSetup.isStationSelected(fe, this.pds);
-
-              MapSetup.selectAssignedStation(fe, this.ps, this.pds, this.dataService, !selected);
-              MapSetup.updateAssignedStationSelection(fe, this.pds);
+              this.handleBioticAssignment(fe);
               break;
             }
           }
