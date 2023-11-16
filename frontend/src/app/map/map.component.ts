@@ -362,7 +362,7 @@ export class MapComponent implements OnInit, MapInteraction {
   // Init
   // ________________________________________________________________________________________________________________________________________________________
 
-  private async getMapInfoFromBackend() {
+  private async getMapInfo() {
     console.log('Fetching map info from backend');
     try {
         const mapInfoString = await this.dataService.getMapInfo().toPromise();
@@ -390,19 +390,14 @@ export class MapComponent implements OnInit, MapInteraction {
     });
   }
 
-  async ngOnInit() {
-
-    await this.getMapInfoFromBackend();
-    this.initProjections(this.mapInfo.origin);
-    this.createCoastLine();
-
-    console.log('Creating map');
+  private createMap() {
     this.map = new OlMap({
       target: 'map',
       controls: [MapSetup.getMousePositionControl()],
     });
+  }
 
-    console.log('Create overlay ' + this.map);
+  private createOverlay() {
     this.overlay = new Overlay({
       element: this.tooltip.nativeElement,
       offset: [10, 0],
@@ -411,13 +406,32 @@ export class MapComponent implements OnInit, MapInteraction {
     if (this.map != null) {
       this.map.addOverlay(this.overlay);
     }
+  }
+
+  private initializeStratumInteractions() {
+    this.stratumSelect = MapSetup.createStratumSelectInteraction();
+    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this);
+  }
+
+  async ngOnInit() {
+
+    await this.getMapInfo();
+    this.initProjections(this.mapInfo.origin);
+    this.createCoastLine();
+
+    console.log('Creating map');
+    this.createMap();
+
+    console.log('Create overlay');
+    this.createOverlay();
 
     this.map.addLayer(this.coastLine);
 
     this.setProjectionProj4(this.mapInfo.projection);
-    this.stratumSelect = MapSetup.createStratumSelectInteraction();
-    this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this);
 
+    this.initializeStratumInteractions();
+
+    //
     this.ps.processSubject.subscribe({
       next: (action: SubjectAction) => {
         switch (action.action) {
