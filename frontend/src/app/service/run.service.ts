@@ -154,6 +154,7 @@ export class RunService {
   async runProcessIdx(fromIndex: number, toIndex: number) {
     // Reset properties
     this.ps.runFailedProcessId = null;
+    let purgeStopFile = true;
 
     // local cache of project, model and processes survives async environment if changed by user.
     const { projectPath } = this.ps.selectedProject;
@@ -175,7 +176,8 @@ export class RunService {
       this.ps.runningProcessId = processID;
 
       this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, '> Running process ' + processName + ' of model ' + modelName + '...'));
-      const { activeProcess, interactiveMode }: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise());
+      const { activeProcess, interactiveMode }: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1, purgeStopFile).toPromise());
+      purgeStopFile = false; // only purge stop file on first process
 
       // ask backend for new active process id
       if (activeProcess === undefined) {

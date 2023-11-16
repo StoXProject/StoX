@@ -906,7 +906,7 @@ function setupServer() {
   });
 
   server.post("/stopR", async (req: any, res: any) => {
-    logInfo(">>> Stopping R processes by creating stopfiles");
+    logInfo("Stopping R processes by creating stopfiles");
 
     const stopFileNames = [
       "Stop",
@@ -918,11 +918,16 @@ function setupServer() {
     const statusDir = "/process/projectSession/status/";
 
     stopFileNames.forEach((stopFileName) => {
-      const stopFile = properties.projectRootPath + statusDir + stopFileName;
-      fs.writeFileSync(stopFile, "stop", {
-        encoding: "utf-8",
-        flag: "w",
-      });
+      const stopFile =
+        properties.activeProject + statusDir + stopFileName + ".txt";
+      try {
+        fs.writeFileSync(stopFile, "stop", {
+          encoding: "utf-8",
+          flag: "w",
+        });
+      } catch (err) {
+        logInfo("Error writing stop file " + err);
+      }
     });
   });
 

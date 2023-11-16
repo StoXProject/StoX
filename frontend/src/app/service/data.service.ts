@@ -398,7 +398,7 @@ export class DataService {
     );
   }
 
-  runProcesses(projectPath: string, modelName: string, startProcess: number, endProcess: number): Observable<RunProcessesResult> {
+  runProcesses(projectPath: string, modelName: string, startProcess: number, endProcess: number, purgeStopFile = false): Observable<RunProcessesResult> {
     return this.runFunction('runProcesses', {
       projectPath,
       modelName,
@@ -406,6 +406,7 @@ export class DataService {
       endProcess,
       save: false,
       'msg.GUI': true,
+      prugeStopFile: purgeStopFile, // Spelling error in backend
     });
   }
 
@@ -539,7 +540,8 @@ export class DataService {
     });
   }
 
-  // Acoustic PSU:
+  // Acoustic PSU
+  // ____________________________________________________________________________________________________________________________________________________________________________________
   addAcousticPSU(Stratum: string, projectPath: string, modelName: string, processID: string): Observable<PSUResult> {
     return this.runFunction('addAcousticPSU', {
       Stratum,
@@ -558,6 +560,8 @@ export class DataService {
     });
   }
 
+  // EDSU
+  // ____________________________________________________________________________________________________________________________________________________________________________________
   addEDSU(PSU: string, EDSU: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('addEDSU', {
       PSU,
@@ -577,6 +581,8 @@ export class DataService {
     });
   }
 
+  // Biotic PSU
+  // ____________________________________________________________________________________________________________________________________________________________________________________
   addBioticPSU(Stratum: string, projectPath: string, modelName: string, processID: string): Observable<PSUResult> {
     return this.runFunction('addBioticPSU', {
       Stratum,
@@ -595,6 +601,8 @@ export class DataService {
     });
   }
 
+  // Station
+  // ____________________________________________________________________________________________________________________________________________________________________________________
   addStation(PSU: string, Station: string[], projectPath: string, modelName: string, processID: string): Observable<ProcessTableResult> {
     return this.runFunction('addStation', {
       PSU,
@@ -614,7 +622,8 @@ export class DataService {
     });
   }
 
-  // Biotic assignment:
+  // Biotic Assignment
+  // ____________________________________________________________________________________________________________________________________________________________________________________
   addHaulToAssignment(projectPath: string, modelName: string, processID: string, Stratum: string, PSU: string, Haul: string[]): Observable<ActiveProcessResult> {
     return this.runFunction('addHaulToAssignment', {
       Stratum,
