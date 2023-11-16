@@ -1,7 +1,4 @@
-//import { start } from "repl";
-//import { platform } from "os";
 import { Utils, UtilsConstants } from "./utils/util";
-//import { resolve } from "path";
 
 import path from "path";
 //handle setupevents as quickly as possible
@@ -31,8 +28,6 @@ var isClosing = false;
 
 const net = require("net");
 let client: any = null;
-
-let useOpenCPU: boolean = false;
 
 var properties: any = null;
 var activeProjectSaved: boolean = true;
@@ -111,9 +106,7 @@ app.on("quit", function () {
 });
 
 function logInfo(str: string) {
-  if (log != null) {
-    log.info(str);
-  }
+  log?.info(str);
   console.log("> " + str);
 }
 
@@ -164,8 +157,6 @@ function createWindow() {
   if (mainWindow == null) {
     return;
   }
-  // mainWindow.setMenu(null);
-  //createMenu();
   Menu.setApplicationMenu(null);
 
   // and load the index.html of the app.
@@ -189,6 +180,7 @@ function createWindow() {
     child_process = null;
   });
 }
+
 function showElectronMessageBox(
   title: string,
   message: string,
@@ -249,93 +241,6 @@ async function onClosed(e: any) {
 }
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-
-const createMenu = function createMenu() {
-  // Read app properties file from disc here.
-  logInfo("ev:ready");
-
-  const template = [
-    // { role: 'appMenu' }
-    ...(process.platform === "darwin"
-      ? [
-          {
-            label: app.name,
-            submenu: [
-              { role: "about" },
-              { type: "separator" },
-              { role: "services" },
-              { type: "separator" },
-              { role: "hide" },
-              { role: "hideothers" },
-              { role: "unhide" },
-              { type: "separator" },
-              { role: "quit" },
-            ],
-          },
-        ]
-      : []),
-    // { role: 'fileMenu' }
-    {
-      label: "File",
-      submenu: [{ role: "quit" }],
-    },
-    {
-      label: "Edit",
-      submenu: [
-        /*{ label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-        { type: "separator" },*/
-        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-        {
-          label: "Select All",
-          accelerator: "CmdOrCtrl+A",
-          selector: "selectAll:",
-        },
-      ],
-    },
-    // { role: 'editMenu' }
-
-    // { role: 'viewMenu' }
-    {
-      label: "View",
-      submenu: [
-        { role: "reload" },
-        { role: "forcereload" },
-        { role: "toggledevtools" },
-        { type: "separator" },
-        { role: "resetzoom" },
-        { role: "zoomin" },
-        { role: "zoomout" },
-        { type: "separator" },
-        { role: "togglefullscreen" },
-      ],
-    },
-    // { role: 'windowMenu' }
-    {
-      label: "Window",
-      submenu: [{ role: "minimize" }, { role: "zoom" }, ...[{ role: "close" }]],
-    },
-    {
-      role: "help",
-      submenu: [
-        {
-          label: "StoX home",
-          click: async () => {
-            const { shell } = require("electron");
-            await shell.openExternal(
-              "http://www.imr.no/forskning/prosjekter/stox/"
-            );
-          },
-        },
-      ],
-    },
-  ];
-
-  const menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
-};
 
 function rScriptBin() {
   return (
@@ -542,7 +447,7 @@ async function getVersionStringOfPackage(packageName: string) {
  */
 async function createClient() {
   while (callr_evaluate.length > 0) {
-    // pause when client is busy.
+    // pause while client is busy
     await new Promise((r) =>
       setTimeout(() => {
         r(null);
@@ -557,6 +462,8 @@ async function createClient() {
   }
 
   logInfo("Create client socket");
+  const localhost = "127.0.0.1";
+  const port = 6312;
   client = null;
 
   for (let i = 1; i <= 10000; i++) {
@@ -565,10 +472,11 @@ async function createClient() {
         r(null);
       }, 400 /*ms*/)
     ); // createConnection synchr. takes however 1 sec.
-    logInfo("Connecting to " + "localhost" + ":" + 6312 + " try " + i);
+
+    logInfo("Connecting to " + localhost + ":" + port + " try " + i);
     serverStarted = false;
     await new Promise((resolve) => {
-      client = new net.createConnection(6312, "127.0.0.1")
+      client = new net.createConnection(port, localhost)
         .on("connect", function () {
           serverStarted = true;
           logInfo("Connected in try " + i);
@@ -849,6 +757,7 @@ function setupServer() {
         }, 50 /*ms*/)
       );
     }
+
     if (client == null || !rAvailable) {
       res.send({
         value: null,
@@ -860,6 +769,7 @@ function setupServer() {
       });
       return;
     }
+
     if (versionRstoxFramework == "") {
       res.send({
         value: null,
@@ -871,6 +781,7 @@ function setupServer() {
       });
       return;
     }
+
     if (loadStatusRstoxFramework != "") {
       res.send({
         value: null,
@@ -884,6 +795,7 @@ function setupServer() {
       });
       return;
     }
+
     // console.log("> " + "cmd: \"" + s.replace(/"/g, '\\"') + "\"");
     //logInfo(req.body);
     // this is a timout for a specific route for node express server.
@@ -961,6 +873,7 @@ function setupServer() {
           '", quiet = TRUE, toJSON = TRUE)';
         logInfo(cmd);
         let res = ((await callR(cmd)) as any).result;
+
         // Build a string naming the packages that were installed, or an error message:
         if (res.startsWith("Error")) {
           s = res;
@@ -972,6 +885,7 @@ function setupServer() {
         await checkLoadStatusRstoxFramework();
         logInfo(s);
       }
+
       res.send(s);
     } finally {
       rPackagesIsInstalling = false;
@@ -984,12 +898,14 @@ function setupServer() {
       version: string;
       status: number;
     }[] = [];
+
     if (serverStarted) {
       // logInfo("iterating through officialRstoxPackages " + officialRstoxPackages);
       let officialsRFTmpFile = Utils.getTempResFileName(
         UtilsConstants.RES_SERVER_OFFICIALRSTOXFRAMEWORKVERSIONS,
         "stox"
       );
+
       let packagesStatus = officialRstoxPackages.map(async (s) => {
         let elms: string[] = s.split("_");
         // Determine status of each official package
@@ -1061,6 +977,7 @@ function setupServer() {
   server.post("/browsePath", function (req: any, res: any) {
     logInfo("select a file/folder path(s)");
     let options: any = JSON.parse(req.body);
+
     if (Object.keys(options).length) {
       let defPath = resolveDefaultPath(options.defaultPath); // correct slashes in default path
       logInfo("default folder " + defPath);
@@ -1097,8 +1014,6 @@ function setupServer() {
     openExplorer(path, (err: any) => {
       if (err) {
         console.log("> " + err);
-      } else {
-        //Do Something
       }
     });
   });
@@ -1153,10 +1068,6 @@ function setupServer() {
     // logInfo("check if r is available");
     res.send(rAvailable);
   });
-  /*server.get('/rstoxFrameworkAvailable', async (req: any, res: any) => {
-    //logInfo("check if rstoxframework is available");
-    res.send(rAvailable && versionRstoxFramework != "");
-  });*/
 
   server.post("/makeDirectory", function (req: any, res: any) {
     logInfo("make directory");
