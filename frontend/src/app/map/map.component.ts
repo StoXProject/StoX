@@ -377,7 +377,8 @@ export class MapComponent implements OnInit, MapInteraction {
     console.log('Creating coastline');
     this.coastLine = new Vector({
       source: new Source({
-        url: 'assets/landflate_verden_gap180.json',
+        //url: 'assets/landflate_verden_gap180.json',
+        url: 'assets/topology_fine.json',
         format: new TopoJSON({
           // don't want to render the full world polygon (stored as 'land' layer),
           // which repeats all countries
