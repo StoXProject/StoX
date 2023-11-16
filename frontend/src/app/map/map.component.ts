@@ -573,6 +573,59 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
+  private async handleAcousticPSUClickEvent(l: Layer, e: MapBrowserEvent<any>, fe: Feature<Geometry>) {
+
+    // Controlling focus.
+    let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
+
+    const clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
+
+    l.set('lastClickedIndex', clickedIndex);
+    if (!shiftKeyOnly(e) || prevClickIndex == null) {
+      prevClickIndex = clickedIndex;
+    }
+
+    const fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
+
+    const edsuPsu1: EDSU_PSU = fi1.get('edsupsu');
+
+    if (edsuPsu1 == null) {
+      console.log(fi1.get('EDSU') + ' is missing edsu  for ' + fi1.get('EDSU') + ' layer ' + l.get('name'));
+    }
+
+    let psuToUse: string = edsuPsu1.PSU;
+
+    if (prevClickIndex == clickedIndex) {
+      psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+    }
+
+    const iFirst = Math.min(prevClickIndex, clickedIndex);
+    const iLast = Math.max(prevClickIndex, clickedIndex);
+    const changedEDSUs: string[] = [];
+
+    for (let idx: number = iFirst; idx <= iLast; idx++) {
+      const fi = (<VectorSource>l.getSource()).getFeatures()[idx];
+
+      const edsuPsu: EDSU_PSU = fi.get('edsupsu');
+
+      if (edsuPsu != null) {
+        if (edsuPsu.PSU != psuToUse) {
+          changedEDSUs.push(edsuPsu.EDSU);
+          edsuPsu.PSU = psuToUse;
+          MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
+        }
+      }
+    }
+
+    if (changedEDSUs.length > 0) {
+      const { selectedProject, selectedModel, activeProcessId } = this.ps;
+      const { projectPath } = selectedProject;
+      const { modelName } = selectedModel;
+      const addOrRemoveOb = psuToUse != null ? this.dataService.addEDSU(psuToUse, changedEDSUs, projectPath, modelName, activeProcessId) : this.dataService.removeEDSU(changedEDSUs, projectPath, modelName, activeProcessId);
+      this.ps.handleAPI(await addOrRemoveOb.toPromise());
+    }
+  }
+
   async ngOnInit() {
 
     await this.getMapInfo();
@@ -639,56 +692,7 @@ export class MapComponent implements OnInit, MapInteraction {
 
           switch (this.ps.iaMode) {
             case 'acousticPSU': {
-              // Controlling focus.
-              let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
-
-              const clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
-
-              l.set('lastClickedIndex', clickedIndex);
-              if (!shiftKeyOnly(e) || prevClickIndex == null) {
-                prevClickIndex = clickedIndex;
-              }
-
-              const fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
-
-              const edsuPsu1: EDSU_PSU = fi1.get('edsupsu');
-
-              if (edsuPsu1 == null) {
-                console.log(fi1.get('EDSU') + ' is missing edsu  for ' + fi1.get('EDSU') + ' layer ' + l.get('name'));
-              }
-
-              let psuToUse: string = edsuPsu1.PSU;
-
-              if (prevClickIndex == clickedIndex) {
-                psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
-              }
-
-              const iFirst = Math.min(prevClickIndex, clickedIndex);
-              const iLast = Math.max(prevClickIndex, clickedIndex);
-              const changedEDSUs: string[] = [];
-
-              for (let idx: number = iFirst; idx <= iLast; idx++) {
-                const fi = (<VectorSource>l.getSource()).getFeatures()[idx];
-
-                const edsuPsu: EDSU_PSU = fi.get('edsupsu');
-
-                if (edsuPsu != null) {
-                  if (edsuPsu.PSU != psuToUse) {
-                    changedEDSUs.push(edsuPsu.EDSU);
-                    edsuPsu.PSU = psuToUse;
-                    MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
-                  }
-                }
-              }
-
-              if (changedEDSUs.length > 0) {
-                const { selectedProject, selectedModel, activeProcessId } = this.ps;
-                const { projectPath } = selectedProject;
-                const { modelName } = selectedModel;
-                const addOrRemoveOb = psuToUse != null ? this.dataService.addEDSU(psuToUse, changedEDSUs, projectPath, modelName, activeProcessId) : this.dataService.removeEDSU(changedEDSUs, projectPath, modelName, activeProcessId);
-                this.ps.handleAPI(await addOrRemoveOb.toPromise());
-              }
-
+              this.handleAcousticPSUClickEvent(l, e, fe);
               break;
             }
 
