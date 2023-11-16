@@ -362,18 +362,22 @@ export class MapComponent implements OnInit, MapInteraction {
   // Init
   // ________________________________________________________________________________________________________________________________________________________
 
-  async ngOnInit() {
-    console.log('get mapinfo from backend');
-    this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise());
+  private async getMapInfoFromBackend() {
+    console.log('Fetching map info from backend');
+    try {
+        const mapInfoString = await this.dataService.getMapInfo().toPromise();
+        this.mapInfo = JSON.parse(mapInfoString);
+    } catch (error) {
+        console.error('Error fetching map info:', error);
+        //TODO
+    }
+  }
 
-    console.log('init projections');
-    this.initProjections(this.mapInfo.origin);
-
+  private createCoastLine() {
     console.log('Creating coastline');
     this.coastLine = new Vector({
       source: new Source({
         url: 'assets/landflate_verden_gap180.json',
-
         format: new TopoJSON({
           // don't want to render the full world polygon (stored as 'land' layer),
           // which repeats all countries
@@ -384,6 +388,13 @@ export class MapComponent implements OnInit, MapInteraction {
       style: MapSetup.getMapStyle(),
       zIndex: 11,
     });
+  }
+
+  async ngOnInit() {
+
+    await this.getMapInfoFromBackend();
+    this.initProjections(this.mapInfo.origin);
+    this.createCoastLine();
 
     console.log('Creating map');
     this.map = new OlMap({
