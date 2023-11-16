@@ -17,7 +17,7 @@ import OlView from 'ol/View';
 import * as proj4x from 'proj4';
 
 import { MapInfo } from '../data/MapInfo';
-import { BioticAssignment, EDSU_PSU, Station_PSU } from '../data/processdata';
+import { EDSU_PSU, Station_PSU } from '../data/processdata';
 import { NamedStringIndex, NamedStringTable } from '../data/types';
 import { DataService } from '../service/data.service';
 import { ProcessDataService } from '../service/processdata.service';

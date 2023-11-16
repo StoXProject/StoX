@@ -41,8 +41,8 @@ export class ExpressionBuilderDlg {
     tableExpression.expression = null;
 
     const duplicateTableName = this.getDuplicateTableName();
-    if(duplicateTableName != null) {
-      this.setAndShowMessage('Table name ' + duplicateTableName + " is a duplicate!");
+    if (duplicateTableName != null) {
+      this.setAndShowMessage('Table name ' + duplicateTableName + ' is a duplicate!');
     }
   }
 
@@ -54,11 +54,11 @@ export class ExpressionBuilderDlg {
     }
 
     const duplicateTableName = this.getDuplicateTableName();
-    if(duplicateTableName != null) {
-      this.setAndShowMessage('Table name ' + duplicateTableName + " is a duplicate!");
+    if (duplicateTableName != null) {
+      this.setAndShowMessage('Table name ' + duplicateTableName + ' is a duplicate!');
 
       return;
-    }    
+    }
 
     console.log('> ' + 'current table name : ' + tableExpression.tableName);
 
@@ -179,5 +179,5 @@ export class ExpressionBuilderDlg {
     }
 
     return null; // No duplicate values found in tableName
-  }  
+  }
 }
