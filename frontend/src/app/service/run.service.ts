@@ -253,6 +253,10 @@ export class RunService {
     this.ps.addProcess();
   }
 
+  stop() {
+    this.ps.stopR();
+  }
+
   // Documentation ?
   // _________________________________________________________________________________________________________
   //runModel(idx) {

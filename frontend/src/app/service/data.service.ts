@@ -745,6 +745,10 @@ export class DataService {
     return this.postLocalNode('isdesktop', {});
   }
 
+  stopR(): Observable<any> {
+    return this.postLocalNode('stopR', {});
+  }
+
   exit(): Observable<any> {
     return this.postLocalNode('exit', {});
   }

@@ -19,7 +19,7 @@ export class RunComponent implements OnInit {
     { cmd: 'runto', iclass: 'runtoicon' },
     { cmd: 'reset', iclass: 'reseticon' },
     { cmd: 'addprocess', iclass: 'addprocessicon' },
-    // { cmd: "stop", iclass: "stopicon" }
+    { cmd: 'stop', iclass: 'stopicon' },
   ];
 
   public getActionTooltip(cmd: string): string {
@@ -55,7 +55,7 @@ export class RunComponent implements OnInit {
       case 'reset':
         return this.runService.canReset();
       case 'stop':
-        return true;
+        return this.runService.canStop();
       case 'addprocess':
         return this.runService.canAddProcess();
       default:
@@ -70,7 +70,7 @@ export class RunComponent implements OnInit {
       case 'reset':
         return this.runService.reset();
       case 'stop':
-        return null;
+        return this.runService.stop();
       case 'runnext':
         return this.runService.runNext();
       case 'runfromhere':

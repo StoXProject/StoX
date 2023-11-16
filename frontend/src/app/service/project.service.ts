@@ -538,6 +538,10 @@ export class ProjectService {
     return res;
   }
 
+  stopR() {
+    this.dataService.stopR().toPromise();
+  }
+
   /**
    * A process is dirty if the process is active and the active process is dirty.
    * @param p
