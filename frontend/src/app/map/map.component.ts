@@ -680,6 +680,58 @@ export class MapComponent implements OnInit, MapInteraction {
 
   }
 
+  private getClickableFeatures(pixel: number[], e: MapBrowserEvent<any>): Feature[] {
+    const farr: Feature[] = [];
+
+      this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
+        if (l == null || f == null) {
+          return;
+        }
+
+        const layerType: string = l.get('layerType');
+
+        const { iaMode } = this.ps;
+        if ((iaMode == 'acousticPSU' && layerType == 'EDSU') || (layerType == 'station' && (iaMode == 'bioticPSU' || iaMode == 'bioticAssignment'))) {
+          farr.push(<Feature>f);
+        }
+      });
+
+      const sortByZIndex = (a: Feature, b: Feature) => (<Layer>a.get('layer')).getZIndex() - (<Layer>b.get('layer')).getZIndex();
+
+      farr
+      .sort(sortByZIndex)
+      .slice(0, 1)
+      .forEach(async f => {
+        const l: Layer = <Layer>f.get('layer');
+
+        console.log('Z index: ' + l.getZIndex());
+        const fe: Feature = <Feature>f;
+
+        if (this.pds.selectedPSU == null) {
+          return;
+        }
+
+        switch (this.ps.iaMode) {
+          case 'acousticPSU': {
+            this.handleAcousticPSUClickEvent(l, e, fe);
+            break;
+          }
+
+          case 'bioticPSU': {
+            this.handleBioticPSUClickEvent(l, e, fe);
+            break;
+          }
+
+          case 'bioticAssignment': {
+            this.handleBioticAssignment(fe);
+            break;
+          }
+        }
+      });
+
+    return farr;
+  }
+
   async ngOnInit() {
 
     await this.getMapInfo();
@@ -713,54 +765,8 @@ export class MapComponent implements OnInit, MapInteraction {
     });
 
     this.map.on('singleclick', e => {
-      const farr: Feature[] = [];
+      this.getClickableFeatures(e.pixel, e);
 
-      this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
-        if (l == null || f == null) {
-          return;
-        }
-
-        const layerType: string = l.get('layerType');
-
-        const { iaMode } = this.ps;
-        if ((iaMode == 'acousticPSU' && layerType == 'EDSU') || (layerType == 'station' && (iaMode == 'bioticPSU' || iaMode == 'bioticAssignment'))) {
-          farr.push(<Feature>f);
-        }
-      });
-
-      const sortByZIndex = (a: Feature, b: Feature) => (<Layer>a.get('layer')).getZIndex() - (<Layer>b.get('layer')).getZIndex();
-
-      // handle the top feature only.
-      farr
-        .sort(sortByZIndex)
-        .slice(0, 1)
-        .forEach(async f => {
-          const l: Layer = <Layer>f.get('layer');
-
-          console.log('Z index: ' + l.getZIndex());
-          const fe: Feature = <Feature>f;
-
-          if (this.pds.selectedPSU == null) {
-            return;
-          }
-
-          switch (this.ps.iaMode) {
-            case 'acousticPSU': {
-              this.handleAcousticPSUClickEvent(l, e, fe);
-              break;
-            }
-
-            case 'bioticPSU': {
-              this.handleBioticPSUClickEvent(l, e, fe);
-              break;
-            }
-
-            case 'bioticAssignment': {
-              this.handleBioticAssignment(fe);
-              break;
-            }
-          }
-        });
     });
 
     // Event handlers
