@@ -511,6 +511,37 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
+  private handleSelectedStratum(){
+    // Remove the check for iamode to update selected when always changed
+    let handleStratumSelection: boolean = false;
+
+    switch (this.ps.iaMode) {
+      case 'stratum':
+      case 'acousticPSU':
+      case 'bioticPSU':
+      case 'bioticAssignment': {
+        handleStratumSelection = true;
+        break;
+      }
+
+      default:
+        handleStratumSelection = this.pds.selectedStratum == null;
+    }
+
+    if (handleStratumSelection) {
+      this.map
+        .getLayers()
+        .getArray()
+        .filter(l => l.get('layerType') == 'stratum')
+        .map(l => <VectorSource>(<Layer>l).getSource())
+        .forEach(s =>
+          s.getFeatures().forEach(f => {
+            MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
+          })
+        );
+    }
+  }
+
   async ngOnInit() {
 
     await this.getMapInfo();
@@ -564,34 +595,7 @@ export class MapComponent implements OnInit, MapInteraction {
         }
 
         case 'selectedStratum': {
-          // Remove the check for iamode to update selected when always changed
-          let handleStratumSelection: boolean = false;
-
-          switch (this.ps.iaMode) {
-            case 'stratum':
-            case 'acousticPSU':
-            case 'bioticPSU':
-            case 'bioticAssignment': {
-              handleStratumSelection = true;
-              break;
-            }
-
-            default:
-              handleStratumSelection = this.pds.selectedStratum == null;
-          }
-
-          if (handleStratumSelection) {
-            this.map
-              .getLayers()
-              .getArray()
-              .filter(l => l.get('layerType') == 'stratum')
-              .map(l => <VectorSource>(<Layer>l).getSource())
-              .forEach(s =>
-                s.getFeatures().forEach(f => {
-                  MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
-                })
-              );
-          }
+          this.handleSelectedStratum();
 
           break;
         }
