@@ -56,7 +56,7 @@
     <span style="margin-left: 10px; display: inline-block; font-size: 0.7rem; font-weight: bold; vertical-align: middle" [style.color]="getStoXVersionColor()">{{stoxVersion}}</span>
     <span style="font-size: 0.7rem; font-weight: bold" [style.color]="getPackageColorMain(ps.rstoxPackages)">{{getMainPackageDescr()}} </span>
     <mat-list class="popuptext mat-elevation-z4" id="myPopup">
-      <mat-list-item *ngFor="let pkg of ps.rstoxPackages" style="font-size: 0.7rem !important; font-weight: bold !important" [style.color]="getPackageColor(pkg)">{{getPackageDescr(pkg)}}</mat-list-item>
+      <mat-list-item *ngFor="let pkg of ps.rstoxPackages"><span style="font-size: 0.8rem !important; font-weight: bold !important" [style.color]="getPackageColor(pkg)">{{getPackageDescr(pkg)}}</span></mat-list-item>
     </mat-list>
   </div>
 </div>
