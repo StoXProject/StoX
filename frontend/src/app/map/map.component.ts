@@ -451,6 +451,29 @@ export class MapComponent implements OnInit, MapInteraction {
     );
   }
 
+  private handleBioticPSU(evt: string): void {
+    this.map
+    .getLayers()
+    .getArray()
+    .filter(l => l.get('layerType') == 'station')
+    .map(l => <VectorSource>(<Layer>l).getSource())
+    .forEach(s =>
+      s.getFeatures().forEach(f => {
+        const station: string = f.get('Station');
+        const stationPsu: Station_PSU = this.pds.bioticPSU?.Station_PSU?.find(stationPsu => stationPsu.Station == station);
+
+        // Connect Station_PSU to feature
+        if (stationPsu == null) {
+          console.log('station ' + station + ' not mapped');
+        }
+
+        f.set('stationpsu', stationPsu);
+        // Get default any selection (not focused by user):
+        MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
+      })
+    );
+  }
+
   async ngOnInit() {
 
     await this.getMapInfo();
@@ -487,26 +510,7 @@ export class MapComponent implements OnInit, MapInteraction {
         }
 
         case 'bioticPSU': {
-          this.map
-            .getLayers()
-            .getArray()
-            .filter(l => l.get('layerType') == 'station')
-            .map(l => <VectorSource>(<Layer>l).getSource())
-            .forEach(s =>
-              s.getFeatures().forEach(f => {
-                const station: string = f.get('Station');
-                const stationPsu: Station_PSU = this.pds.bioticPSU?.Station_PSU?.find(stationPsu => stationPsu.Station == station);
-
-                // Connect Station_PSU to feature
-                if (stationPsu == null) {
-                  console.log('station ' + station + ' not mapped');
-                }
-
-                f.set('stationpsu', stationPsu);
-                // Get default any selection (not focused by user):
-                MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
-              })
-            );
+          this.handleBioticPSU(evt);
           break;
         }
 
