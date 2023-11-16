@@ -542,6 +542,37 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
+  private processDataEventHandler(evt: string): void {
+    switch (evt) {
+      case 'acousticPSU': {
+        this.handleAcousticPSU();
+        break;
+      }
+
+      case 'bioticPSU': {
+        this.handleBioticPSU(evt);
+        break;
+      }
+
+      case 'bioticAssignmentData': {
+        this.updateAssignedStationSelection();
+        break;
+      }
+
+      case 'changedEDSU':
+      case 'changedStation':
+      case 'selectedPSU': {
+        this.handleSelectedPSU(evt);
+        break;
+      }
+
+      case 'selectedStratum': {
+        this.handleSelectedStratum();
+        break;
+      }
+    }
+  }
+
   async ngOnInit() {
 
     await this.getMapInfo();
@@ -571,35 +602,7 @@ export class MapComponent implements OnInit, MapInteraction {
     });
 
     this.pds.processDataSubject.subscribe(async evt => {
-      switch (evt) {
-        case 'acousticPSU': {
-          this.handleAcousticPSU();
-          break;
-        }
-
-        case 'bioticPSU': {
-          this.handleBioticPSU(evt);
-          break;
-        }
-
-        case 'bioticAssignmentData': {
-          this.updateAssignedStationSelection();
-          break;
-        }
-
-        case 'changedEDSU':
-        case 'changedStation':
-        case 'selectedPSU': {
-          this.handleSelectedPSU(evt);
-          break;
-        }
-
-        case 'selectedStratum': {
-          this.handleSelectedStratum();
-
-          break;
-        }
-      }
+      this.processDataEventHandler(evt);
     });
 
     this.map.on('singleclick', e => {
