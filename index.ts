@@ -733,7 +733,7 @@ async function evaluate(client: any, cmd: string) {
     //console.log("> " + "write cmd hex: " + s);
     await client.write(s); // may lead to throttling on the server side, but the server uses length info to get the string
   });
-  
+
   // Total buffered preallocated before throttling, to avoid dynamic allocation time loss
   let buf = Buffer.alloc(nResp);
   let bufLen = 0;
@@ -902,6 +902,32 @@ function setupServer() {
     //logInfo('call R result ' + JSON.stringify(s));
     // res.type('text/plain');
     res.send(s.result);
+  });
+
+  server.post("/stopR", async (req: any, res: any) => {
+    logInfo("Stopping R processes by creating stopfiles");
+
+    const stopFileNames = [
+      "Stop",
+      "reportStop",
+      "baselineStop",
+      "analysisStop",
+    ];
+
+    const statusDir = "/process/projectSession/status/";
+
+    stopFileNames.forEach((stopFileName) => {
+      const stopFile =
+        properties.activeProject + statusDir + stopFileName + ".txt";
+      try {
+        fs.writeFileSync(stopFile, "stop", {
+          encoding: "utf-8",
+          flag: "w",
+        });
+      } catch (err) {
+        logInfo("Error writing stop file " + err);
+      }
+    });
   });
 
   server.post("/installRstoxFramework", async (req: any, res: any) => {

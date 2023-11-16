@@ -1,6 +1,5 @@
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 
-import { Process } from '../data/process';
 import { UserLogEntry } from '../data/userlogentry';
 import { UserLogType } from '../enum/enums';
 import { DataService } from '../service/data.service';
@@ -28,20 +27,65 @@ export class RunService {
       this.runToHere();
     });
   }
+
+  // CAN
+  // ____________________________________________________________________________________________________________________________________________________________________________________
+
   canAddProcess(): boolean {
     return this.ps.selectedProject != null && this.ps.selectedModel != null && this.ps.getRunningProcess() == null && !this.ps.isResetting;
   }
+
   canRun(): boolean {
     return this.canAddProcess() && this.ps.processes != null && this.ps.processes.length > 0;
   }
+
+  canRunNext(): boolean {
+    return this.canRun() && this.getRunNextIdx() != null && this.isProcessIdxRunnable(this.getRunNextIdx());
+  }
+
+  canRunFromHere(): boolean {
+    const something1 = this.ps.getActiveProcessIdx() != null && this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1;
+    const something2 = this.ps.getActiveProcessIdx() != null ? this.ps.getActiveProcessIdx() + 1 : 0;
+    const something3 = this.ps.getSelectedProcessIdx() == this.firstProcessIdxRunnable(something2) || something1;
+
+    return this.canRun() && this.ps.getSelectedProcessIdx() != null && this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) && something3;
+  }
+
+  canRunToHere(): boolean {
+    return this.canRun() && this.ps.getSelectedProcessIdx() != null && this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx());
+  }
+
+  canRunThis(): boolean {
+    const idxFrom: number = this.getRunToHereIndexFrom();
+    const idxTo: number = this.getRunToHereIndexTo();
+
+    return idxFrom != null && idxTo != null && idxFrom == idxTo && this.isProcessIdxRunnable(idxTo) && !this.hasFunctionalErrorUpTo(idxTo);
+  }
+
+  canReset(): boolean {
+    return this.ps.runningProcessId == null && (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null) && !this.ps.isResetting;
+  }
+
+  canStop(): boolean {
+    return this.ps.runningProcessId != null && !this.ps.isResetting;
+  }
+
+  isProcessIdxRunnable(idx, checkDisable: boolean = true, checkFunctionInputError: boolean = true) {
+    return idx != null && idx >= 0 && idx <= this.ps.processes.length - 1 && !(checkDisable && !this.ps.processes[idx].enabled) && !(checkFunctionInputError && this.ps.processes[idx].functionInputError);
+  }
+
+  // RUN
+  // ____________________________________________________________________________________________________________________________________________________________________________________
+  /**
+   * If the active process is the last, use the first.
+   * Run from next to the active to the last process
+   */
   run() {
     const d = this.ps.activeProcess != null && this.ps.activeProcess.processDirty ? 1 : 0;
 
     const idx: number = this.ps.getActiveProcessIdx() === null || this.ps.getActiveProcessIdx() - d == this.ps.processes.length - 1 ? 0 : this.ps.getActiveProcessIdx() - d + 1;
 
     this.runProcessIdx(idx, this.ps.processes.length - 1);
-    // If the active process is the last, use the first.
-    // Run from next to the active to the last process
   }
 
   runFromHere() {
@@ -50,34 +94,113 @@ export class RunService {
     this.runProcessIdx(idxFrom, this.ps.processes.length - 1);
   }
 
+  /**
+   * Run from this to this process
+   * */
   runThisIdx(processIdx: number) {
-    // Run from this to this process
     this.runProcessIdx(processIdx, processIdx);
   }
+
+  /**
+   * Run from this to this process
+   * */
   runThis() {
-    // Run from this to this process
     this.runThisIdx(this.ps.getSelectedProcessIdx());
   }
+
   getRunNextIdx(): number {
     return this.ps.processes.length == 0 || this.ps.getActiveProcessIdx() === null || this.ps.getActiveProcessIdx() < this.ps.processes.length - 1 ? this.ps.getActiveProcessIdx() + (this.ps.activeProcess.processDirty ? 0 : 1) : null;
   }
-  canRunNext(): boolean {
-    return this.canRun() && this.getRunNextIdx() != null && this.isProcessIdxRunnable(this.getRunNextIdx());
-  }
 
-  canRunFromHere(): boolean {
-    return this.canRun() && this.ps.getSelectedProcessIdx() != null && this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) && (this.ps.getSelectedProcessIdx() == this.firstProcessIdxRunnable(this.ps.getActiveProcessIdx() != null ? this.ps.getActiveProcessIdx() + 1 : 0) || (this.ps.getActiveProcessIdx() != null && this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1));
-  }
-
+  /**
+   * Run from the next to the next process.
+   * */
   runNext() {
     const idx: number = this.getRunNextIdx();
 
-    if (idx != null) {
-      this.runProcessIdx(idx, idx);
+    if (idx == null) {
+      return;
     }
-    // Run from the next to the next process.
+
+    this.runProcessIdx(idx, idx);
   }
 
+  /**
+   * If the active process is the last, use the first.
+   * Run from the next to the active to this process
+   */
+  runToHere(): void {
+    const from: number = this.getRunToHereIndexFrom();
+    const to: number = this.getRunToHereIndexTo();
+
+    if (from == null || to == null) {
+      return;
+    }
+
+    this.runProcessIdx(from, to);
+  }
+  async reset(): Promise<void> {
+    this.ps.isResetting = true;
+    this.ps.runningProcessId = null;
+    this.ps.handleAPI(await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise());
+    this.ps.runFailedProcessId = null;
+    this.dataService.log.length = 0;
+    this.dataService.logSubject.next('log-reset');
+    this.ps.iaMode = 'reset'; // reset interactive mode set to reset
+    this.ps.isResetting = false;
+    // Reset in backend
+  }
+
+  async runProcessIdx(fromIndex: number, toIndex: number) {
+    // Reset properties
+    this.ps.runFailedProcessId = null;
+    let purgeStopFile = true;
+
+    // local cache of project, model and processes survives async environment if changed by user.
+    const { projectPath } = this.ps.selectedProject;
+    const { modelName } = this.ps.selectedModel;
+    const { processes } = this.ps;
+
+    for (let i = fromIndex; i <= toIndex; i++) {
+      const process = processes[i];
+      const { enabled, functionInputError, processID, processName } = process;
+
+      if (!enabled) {
+        continue;
+      }
+
+      if (functionInputError) {
+        break;
+      }
+
+      this.ps.runningProcessId = processID;
+
+      this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, '> Running process ' + processName + ' of model ' + modelName + '...'));
+      const { activeProcess, interactiveMode }: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1, purgeStopFile).toPromise());
+      purgeStopFile = false; // only purge stop file on first process
+
+      // ask backend for new active process id
+      if (activeProcess === undefined) {
+        // getting empty object {} when interrupted by error
+        this.ps.runFailedProcessId = processID;
+        break;
+      }
+
+      if (this.ps.activeProcess.propertyDirty && this.ps.selectedProcess != null && this.ps.selectedProcess.processID == this.ps.activeProcessId) {
+        // process properties may change on the selected process
+        this.ps.updateProcessProperties();
+      }
+
+      if (interactiveMode.length > 0) {
+        this.ps.iaMode = interactiveMode;
+      }
+    }
+
+    this.ps.runningProcessId = null;
+  }
+
+  // GET
+  // ____________________________________________________________________________________________________________________________________________________________________________________
   getRunToHereIndexFrom(): number {
     if (this.ps.processes.length == 0 || this.ps.getSelectedProcessIdx() == null) {
       return null;
@@ -96,18 +219,16 @@ export class RunService {
     return this.firstProcessIdxRunnable(idx);
   }
 
-  hasFunctionalErrorUpTo(idx) {
-    const i = this.firstProcessIdxNotRunnable(idx, false, true);
-
-    return i != null;
-  }
-
   getRunToHereIndexTo(): number {
     return this.ps.getSelectedProcessIdx() != null ? this.ps.getSelectedProcessIdx() : null;
   }
 
-  canRunToHere(): boolean {
-    return this.canRun() && this.ps.getSelectedProcessIdx() != null && this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx());
+  // OTHER
+  // ____________________________________________________________________________________________________________________________________________________________________________________
+  hasFunctionalErrorUpTo(idx) {
+    const i = this.firstProcessIdxNotRunnable(idx, false, true);
+
+    return i != null;
   }
 
   firstProcessIdxNotRunnable(idx, checkDisable: boolean = true, checkFunctionInputError: boolean = true) {
@@ -120,7 +241,7 @@ export class RunService {
     return null;
   }
 
-  firstProcessIdxRunnable(idx, checkDisable: boolean = true, checkFunctionInputError: boolean = true) {
+  firstProcessIdxRunnable(idx, checkDisable: boolean = true, checkFunctionInputError: boolean = true): number | null {
     for (let i = idx; i < this.ps.processes.length; i++) {
       if (this.isProcessIdxRunnable(i, checkDisable, checkFunctionInputError)) {
         return i;
@@ -130,95 +251,16 @@ export class RunService {
     return null;
   }
 
-  isProcessIdxRunnable(idx, checkDisable: boolean = true, checkFunctionInputError: boolean = true) {
-    return idx != null && idx >= 0 && idx <= this.ps.processes.length - 1 && !(checkDisable && !this.ps.processes[idx].enabled) && !(checkFunctionInputError && this.ps.processes[idx].functionInputError);
+  addProcess() {
+    this.ps.addProcess();
   }
 
-  canRunThis(): boolean {
-    const idxFrom: number = this.getRunToHereIndexFrom();
-
-    const idxTo: number = this.getRunToHereIndexTo();
-
-    return idxFrom != null && idxTo != null && idxFrom == idxTo && this.isProcessIdxRunnable(idxTo) && !this.hasFunctionalErrorUpTo(idxTo);
+  stop() {
+    this.ps.stopR();
   }
 
-  runToHere() {
-    const idxFrom: number = this.getRunToHereIndexFrom();
-
-    const idxTo: number = this.getRunToHereIndexTo();
-
-    if (idxFrom != null && idxTo != null) {
-      this.runProcessIdx(idxFrom, idxTo);
-    }
-    // If the active process is the last, use the first.
-    // Run from the next to the active to this process
-  }
-
-  canReset(): boolean {
-    return this.ps.runningProcessId == null && (this.ps.activeProcessId != null || this.ps.runFailedProcessId != null) && !this.ps.isResetting;
-  }
-
-  async reset() {
-    this.ps.isResetting = true;
-    this.ps.runningProcessId = null;
-    this.ps.handleAPI(await this.dataService.resetModel(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName).toPromise());
-    this.ps.runFailedProcessId = null;
-    this.dataService.log.length = 0;
-    this.dataService.logSubject.next('log-reset');
-    this.ps.iaMode = 'reset'; // reset interactive mode set to reset
-    this.ps.isResetting = false;
-    // Reset in backend
-  }
-
-  async runProcessIdx(iFrom: number, iTo: number) {
-    this.ps.runFailedProcessId = null;
-    // local cache of project, model and processes survives async environment if changed by user.
-    const projectPath: string = this.ps.selectedProject.projectPath;
-
-    const modelName: string = this.ps.selectedModel.modelName;
-
-    const processes: Process[] = this.ps.processes;
-
-    for (let i = iFrom; i <= iTo; i++) {
-      const p = processes[i];
-
-      if (!p.enabled) {
-        continue;
-      }
-
-      if (p.functionInputError) {
-        break;
-      }
-
-      this.ps.runningProcessId = p.processID;
-      //console.log("> " + "Run process " + p.processName + " with id " + p.processID);
-      this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, '> Running process ' + p.processName + ' of model ' + modelName + '...'));
-      // this.dataService.logSubject.next('log-message');
-      const res: RunProcessesResult = this.ps.handleAPI(await this.dataService.runProcesses(projectPath, modelName, i + 1, i + 1).toPromise());
-
-      //console.log("> " + "run result: " + res);
-      //await new Promise(resolve => setTimeout(resolve, 1200));
-      // ask backend for new active process id
-      if (res.activeProcess === undefined) {
-        // getting empty object {} when interrupted by error
-        this.ps.runFailedProcessId = p.processID;
-        break;
-      } else {
-        if (this.ps.activeProcess.propertyDirty && this.ps.selectedProcess != null && this.ps.selectedProcess.processID == this.ps.activeProcessId) {
-          //if(this.ps.selectedProcess.processID == this.ps.activeProcessId) {
-          this.ps.updateProcessProperties(); // process properties may change on the selected process
-        }
-
-        const ia: string = res.interactiveMode;
-
-        if (ia.length > 0) {
-          this.ps.iaMode = ia;
-        }
-      }
-    }
-
-    this.ps.runningProcessId = null;
-  }
+  // Documentation ?
+  // _________________________________________________________________________________________________________
   //runModel(idx) {
 
   // call rstox active model and active project and process idx
@@ -237,8 +279,4 @@ export class RunService {
   // call rstox active model and active project and process idx
   // update activeProcessId from rstox
   //}
-
-  addProcess() {
-    this.ps.addProcess();
-  }
 }
