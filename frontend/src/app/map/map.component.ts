@@ -428,6 +428,29 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
+  private handleAcousticPSU(){
+    this.map
+    .getLayers()
+    .getArray()
+    .filter(l => l.get('layerType') == 'EDSU')
+    .map(l => <VectorSource>(<Layer>l).getSource())
+    .forEach(s => 
+      s.getFeatures().forEach(f => {
+        const edsu: string = f.get('EDSU');
+        const edsuPsu: EDSU_PSU = this.pds.acousticPSU?.EDSU_PSU?.find(edsuPsu => edsuPsu.EDSU == edsu);
+
+        // Connect EDSU_PSU to feature
+        if (edsuPsu == null) {
+          console.log('edsu ' + edsu + ' not mapped');
+        }
+
+        f.set('edsupsu', edsuPsu);
+        // Get default any selection (not focused by user):
+        MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+      })
+    );
+  }
+
   async ngOnInit() {
 
     await this.getMapInfo();
@@ -451,7 +474,7 @@ export class MapComponent implements OnInit, MapInteraction {
         this.handleProcessAction(action);
       },
     });
-    
+
     this.ps.iaModeSubject.subscribe(iaMode => {
       this.handleIaMode(iaMode, this.proj);
     });
@@ -459,26 +482,7 @@ export class MapComponent implements OnInit, MapInteraction {
     this.pds.processDataSubject.subscribe(async evt => {
       switch (evt) {
         case 'acousticPSU': {
-          this.map
-            .getLayers()
-            .getArray()
-            .filter(l => l.get('layerType') == 'EDSU')
-            .map(l => <VectorSource>(<Layer>l).getSource())
-            .forEach(s =>
-              s.getFeatures().forEach(f => {
-                const edsu: string = f.get('EDSU');
-                const edsuPsu: EDSU_PSU = this.pds.acousticPSU?.EDSU_PSU?.find(edsuPsu => edsuPsu.EDSU == edsu);
-
-                // Connect EDSU_PSU to feature
-                if (edsuPsu == null) {
-                  console.log('edsu ' + edsu + ' not mapped');
-                }
-
-                f.set('edsupsu', edsuPsu);
-                // Get default any selection (not focused by user):
-                MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-              })
-            );
+          this.handleAcousticPSU();
           break;
         }
 
