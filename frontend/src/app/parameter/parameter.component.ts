@@ -11,6 +11,7 @@ import { ErrorUtils } from '../utils/errorUtils';
 import { PathUtils } from '../utils/pathUtils';
 import { DefinedColumnsService } from './../dlg/definedColumns/DefinedColumnsService';
 import { SelectedVariablesService } from './../dlg/selectedVariables/SelectedVariablesService';
+import { SingleVariableService } from './../dlg/singleVariable/SingleVariableService';
 import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBuilderDlgService';
 
 @Component({
@@ -31,7 +32,8 @@ export class ParameterComponent {
     private exprBuilderService: ExpressionBuilderDlgService,
     private definedColumnsService: DefinedColumnsService,
     private filePathDlgService: FilePathDlgService,
-    private selectedVariablesService: SelectedVariablesService
+    private selectedVariablesService: SelectedVariablesService,
+    private singleVariableService: SingleVariableService
   ) {}
 
   getMetParameterValueList(): any[] {
@@ -111,6 +113,26 @@ export class ParameterComponent {
 
     this.selectedVariablesService.showDialog();
   }
+
+  async definedSingle(category: PropertyCategory, pi: PropertyItem) {
+    // TODO: method not yet implemented in R
+    const returnValue = <any>await this.dataService.getParameterVectorInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, pi.format).toPromise();
+
+    console.log('> ' + 'returnValue : ' + JSON.stringify(returnValue));
+
+    if (this.ps.isEmpty(returnValue)) {
+      this.setAndShowMessage('Empty object from backend. See user log.');
+      this.singleVariableService.returnValue = null;
+
+      return;
+    }
+
+    this.singleVariableService.currentPropertyCategory = category;
+    this.singleVariableService.currentPropertyItem = pi;
+    this.singleVariableService.returnValue = returnValue;
+
+    this.singleVariableService.showDialog();
+  }  
 
   async filePath(category: PropertyCategory, pi: PropertyItem) {
     let options = {};

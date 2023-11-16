@@ -67,6 +67,8 @@ import { RConnectionDlg } from './dlg/RConnectionDlg';
 import { RConnectionDlgService } from './dlg/RConnectionDlgService';
 import { SelectedVariablesDlg } from './dlg/selectedVariables/SelectedVariablesDlg';
 import { SelectedVariablesService } from './dlg/selectedVariables/SelectedVariablesService';
+import { SingleVariableDlg } from './dlg/singleVariable/SingleVariableDlg';
+import { SingleVariableService } from './dlg/singleVariable/SingleVariableService';
 import { StratumNameDlgComponent } from './dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
 import { ExpressionBuilderDlgService } from './expressionBuilder/ExpressionBuilderDlgService';
@@ -178,7 +180,7 @@ export class MaterialModule {}
     QueryBuilderModule,
     TooltipModule,
   ],
-  declarations: [HomeComponent, RConnectionDlg, InstallRPackagesDlg, CreateProjectDialog, OpenProjectDlg, BusydlgComponent, ExpressionBuilderDlg, QueryBuilderDlg, DefinedColumnsTableDlg, SelectedVariablesDlg, FilePathDlg, SaveAsProjectDlg, ResetProjectDlg, MessageDlg, FileUploadComponent, ProjectComponent, MapComponent, StratumpsuComponent, EdsutableComponent, ProcessComponent, ParameterComponent, StatusbarComponent, ModelComponent, RunComponent, UserLogComponent, OutputComponent, HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent, MessageDlgComponent, AutocompleteComponent, TooltipDirective, DirectiveAccessor],
+  declarations: [HomeComponent, RConnectionDlg, InstallRPackagesDlg, CreateProjectDialog, OpenProjectDlg, BusydlgComponent, ExpressionBuilderDlg, QueryBuilderDlg, DefinedColumnsTableDlg, SelectedVariablesDlg, SingleVariableDlg, FilePathDlg, SaveAsProjectDlg, ResetProjectDlg, MessageDlg, FileUploadComponent, ProjectComponent, MapComponent, StratumpsuComponent, EdsutableComponent, ProcessComponent, ParameterComponent, StatusbarComponent, ModelComponent, RunComponent, UserLogComponent, OutputComponent, HelpComponent, HelpContentHandler, SanitizeHtmlPipe, StratumNameDlgComponent, MessageDlgComponent, AutocompleteComponent, TooltipDirective, DirectiveAccessor],
   bootstrap: [HomeComponent],
   providers: [
     { provide: APP_BASE_HREF, useValue: '/' },
@@ -189,6 +191,7 @@ export class MaterialModule {}
     FilePathDlgService,
     InstallRPackagesDlgService,
     SelectedVariablesService,
+    SingleVariableService,
     ExpressionBuilderDlgService,
     MessageService, // NOT PRIMENG MESSAGE SERVICE
     OpenProjectDlgService,
