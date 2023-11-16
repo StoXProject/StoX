@@ -95,7 +95,10 @@ export class ExpressionBuilderDlgService {
       const { modelName } = selectedModel;
       const { tableName } = this.currentTableExpression;
 
+      this.isOpening = true;
+
       const { fields } = await this.dataService.getFilterOptionsOneTable(projectPath, modelName, selectedProcessId, tableName, true).toPromise();
+      this.isOpening = false;
 
       this.config = <QueryBuilderConfig>{ fields };
       const notNullOrEmpty = this.currentTableExpression.expression != null && this.currentTableExpression.expression.trim() != '';
