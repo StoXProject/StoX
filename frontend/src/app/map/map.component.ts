@@ -474,6 +474,43 @@ export class MapComponent implements OnInit, MapInteraction {
     );
   }
 
+  private handleSelectedPSU(evt: string): void {
+    switch (this.ps.iaMode) {
+      case 'bioticAssignment': {
+        // drop to EDSU selection to get EDSU focus change
+        this.updateAssignedStationSelection();
+      }
+
+      case 'acousticPSU': {
+        this.map
+          .getLayers()
+          .getArray()
+          .filter(l => l.get('layerType') == 'EDSU')
+          .map(l => <VectorSource>(<Layer>l).getSource())
+          .forEach(s =>
+            s.getFeatures().forEach(f => {
+              MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+            })
+          );
+        break;
+      }
+
+      case 'bioticPSU': {
+        this.map
+          .getLayers()
+          .getArray()
+          .filter(l => l.get('layerType') == 'station')
+          .map(l => <VectorSource>(<Layer>l).getSource())
+          .forEach(s =>
+            s.getFeatures().forEach(f => {
+              MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
+            })
+          );
+        break;
+      }
+    }
+  }
+
   async ngOnInit() {
 
     await this.getMapInfo();
@@ -522,41 +559,7 @@ export class MapComponent implements OnInit, MapInteraction {
         case 'changedEDSU':
         case 'changedStation':
         case 'selectedPSU': {
-          switch (this.ps.iaMode) {
-            case 'bioticAssignment': {
-              // drop to EDSU selection to get EDSU focus change
-              this.updateAssignedStationSelection();
-            }
-
-            case 'acousticPSU': {
-              this.map
-                .getLayers()
-                .getArray()
-                .filter(l => l.get('layerType') == 'EDSU')
-                .map(l => <VectorSource>(<Layer>l).getSource())
-                .forEach(s =>
-                  s.getFeatures().forEach(f => {
-                    MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-                  })
-                );
-              break;
-            }
-
-            case 'bioticPSU': {
-              this.map
-                .getLayers()
-                .getArray()
-                .filter(l => l.get('layerType') == 'station')
-                .map(l => <VectorSource>(<Layer>l).getSource())
-                .forEach(s =>
-                  s.getFeatures().forEach(f => {
-                    MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
-                  })
-                );
-              break;
-            }
-          }
-
+          this.handleSelectedPSU(evt);
           break;
         }
 
