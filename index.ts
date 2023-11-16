@@ -526,7 +526,6 @@ async function getPackageStatus(
     '", "' +
     officialsRFTmpFile +
     '")';
-  //logInfo(cmd)
   RstoxPackageStatus = await (callR(cmd) as any);
   return RstoxPackageStatus;
 }

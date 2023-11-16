@@ -487,13 +487,13 @@ export class DataService {
     });
   }
 
-  getFilterOptionsOneTable(projectPath: string, modelName: string, processID: string, tableName: string, includeNumeric: boolean): Observable<any> {
+  getFilterOptionsOneTable(projectPath: string, modelName: string, processID: string, tableName: string, includeNumericInteger: boolean): Observable<any> {
     return this.runFunction('getFilterOptionsOneTable', {
       projectPath,
       modelName,
       processID,
       tableName,
-      'include.numeric': includeNumeric,
+      'include.numericInteger': includeNumericInteger,
     });
   }
 
