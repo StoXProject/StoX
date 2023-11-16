@@ -44,11 +44,29 @@ export class RunService {
   }
 
   canRunFromHere(): boolean {
-    const something1 = this.ps.getActiveProcessIdx() != null && this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1;
-    const something2 = this.ps.getActiveProcessIdx() != null ? this.ps.getActiveProcessIdx() + 1 : 0;
-    const something3 = this.ps.getSelectedProcessIdx() == this.firstProcessIdxRunnable(something2) || something1;
 
-    return this.canRun() && this.ps.getSelectedProcessIdx() != null && this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) && something3;
+    const isProcessActive = this.ps.getActiveProcessIdx() != null;
+    const isProcessSelected = this.ps.getSelectedProcessIdx() != null;
+
+    const isSelectedProcessBeforeOrEqualToActive = isProcessSelected && this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1;
+
+    const nextProcessIndex = isProcessActive ? this.ps.getActiveProcessIdx() + 1 : 0;
+
+    const isFirstProcessRunnable = this.ps.getSelectedProcessIdx() == this.firstProcessIdxRunnable(nextProcessIndex);
+
+    const isValidRunCondition = isProcessSelected && 
+    this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && 
+    !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) && 
+    (isSelectedProcessBeforeOrEqualToActive || isFirstProcessRunnable);
+
+
+    //const something1 = this.ps.getActiveProcessIdx() != null && this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1;
+    //const something2 = this.ps.getActiveProcessIdx() != null ? this.ps.getActiveProcessIdx() + 1 : 0;
+    //const something3 = this.ps.getSelectedProcessIdx() == this.firstProcessIdxRunnable(something2) || something1;
+
+    return this.canRun() && isValidRunCondition;
+
+    //return this.canRun() && this.ps.getSelectedProcessIdx() != null && this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) && something3;
   }
 
   canRunToHere(): boolean {
