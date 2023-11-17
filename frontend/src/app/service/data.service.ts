@@ -754,8 +754,8 @@ export class DataService {
     return this.postLocalNode('isdesktop', {});
   }
 
-  stopR(): Observable<any> {
-    return this.postLocalNode('stopR', {});
+  stopR({ modelName }: { modelName: string }): Observable<any> {
+    return this.postLocalNode('stopR', { modelName });
   }
 
   exit(): Observable<any> {

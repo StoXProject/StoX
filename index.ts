@@ -817,29 +817,22 @@ function setupServer() {
   });
 
   server.post("/stopR", async (req: any, res: any) => {
-    logInfo("Stopping R processes by creating stopfiles");
+    const { modelName } = JSON.parse(req.body);
+    logInfo("Stopping R process by creating stopfile for model: " + modelName);
 
-    const stopFileNames = [
-      "Stop",
-      "reportStop",
-      "baselineStop",
-      "analysisStop",
-    ];
-
+    const stopFileName = (modelName ?? "") + "Stop";
     const statusDir = "/process/projectSession/status/";
 
-    stopFileNames.forEach((stopFileName) => {
-      const stopFile =
-        properties.activeProject + statusDir + stopFileName + ".txt";
-      try {
-        fs.writeFileSync(stopFile, "stop", {
-          encoding: "utf-8",
-          flag: "w",
-        });
-      } catch (err) {
-        logInfo("Error writing stop file " + err);
-      }
-    });
+    const stopFile =
+      properties.activeProject + statusDir + stopFileName + ".txt";
+    try {
+      fs.writeFileSync(stopFile, "stop", {
+        encoding: "utf-8",
+        flag: "w",
+      });
+    } catch (err) {
+      logInfo("Error writing stop file " + err);
+    }
   });
 
   server.post("/installRstoxFramework", async (req: any, res: any) => {
