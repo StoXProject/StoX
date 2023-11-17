@@ -237,6 +237,15 @@ export class DataService {
     });
   }
 
+  getParameterSingleInfo(projectPath: string, modelName: string, processID: string, format: string): Observable<any> {
+    return this.runFunction('getParameterSingleInfo', {
+      projectPath,
+      modelName,
+      processID,
+      format,
+    });
+  }
+
   static readonly LOCALHOST: string = 'localhost';
   static readonly NODE_PORT: number = 3000;
   static readonly OCPU_PORT: number = 5307;

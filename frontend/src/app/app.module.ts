@@ -67,6 +67,8 @@ import { RConnectionDlg } from './dlg/RConnectionDlg';
 import { RConnectionDlgService } from './dlg/RConnectionDlgService';
 import { SelectedVariablesDlg } from './dlg/selectedVariables/SelectedVariablesDlg';
 import { SelectedVariablesService } from './dlg/selectedVariables/SelectedVariablesService';
+import { SingleVariableDlg } from './dlg/singleVariable/SingleVariableDlg';
+import { SingleVariableService } from './dlg/singleVariable/SingleVariableService';
 import { StratumNameDlgComponent } from './dlg/stratum-name-dlg/stratum-name-dlg.component';
 import { ExpressionBuilderDlg } from './expressionBuilder/ExpressionBuilderDlg';
 import { ExpressionBuilderDlgService } from './expressionBuilder/ExpressionBuilderDlgService';
@@ -192,6 +194,7 @@ export class MaterialModule {}
     QueryBuilderDlg,
     DefinedColumnsTableDlg,
     SelectedVariablesDlg,
+    SingleVariableDlg,
     FilePathDlg,
     SaveAsProjectDlg,
     ResetProjectDlg,
@@ -227,6 +230,7 @@ export class MaterialModule {}
     FilePathDlgService,
     InstallRPackagesDlgService,
     SelectedVariablesService,
+    SingleVariableService,
     ExpressionBuilderDlgService,
     MessageService, // NOT PRIMENG MESSAGE SERVICE
     OpenProjectAsTemplateDlgService,

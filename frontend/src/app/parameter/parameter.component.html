@@ -55,6 +55,10 @@
                       <input style="width: calc(100% - 22px)" type="text" pInputText [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
                       <button style="width: 22px" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined" (click)="definedVector(category, propertyItem)"></button>
                     </ng-container>
+                    <ng-container *ngSwitchCase="propertyItem.formatClass === 'single'">
+                      <input style="width: calc(100% - 22px)" type="text" pInputText [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
+                      <button style="width: 22px" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined" (click)="definedSingle(category, propertyItem)"></button>
+                    </ng-container>                    
                     <ng-container *ngSwitchDefault>
                       <input matInput type="text" value="{{ propertyItem.value }}" spellcheck="false" [disabled]="ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" class="ellipsiscolumn" />
                     </ng-container>
