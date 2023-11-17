@@ -115,8 +115,8 @@ export class ParameterComponent {
   }
 
   async definedSingle(category: PropertyCategory, pi: PropertyItem) {
-    // TODO: method not yet implemented in R
-    const returnValue = <any>await this.dataService.getParameterVectorInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, pi.format).toPromise();
+    // TODO: to test a new method implemented in R 
+    const returnValue = <any>await this.dataService.getParameterSingleInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, pi.format).toPromise();
 
     console.log('> ' + 'returnValue : ' + JSON.stringify(returnValue));
 
