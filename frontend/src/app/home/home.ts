@@ -7,6 +7,7 @@ import { ContextMenu } from 'primeng/contextmenu';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
 import { InstallRPackagesDlgService } from '../dlg/InstallRPackages/InstallRPackagesDlgService';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
+import { OpenProjectAsTemplateDlgService } from '../openProjectAsTemplateDlg/OpenProjectAsTemplateDlgService';
 import { OpenProjectDlgService } from '../openProjectDlg/OpenProjectDlgService';
 import { SaveAsProjectDlgService } from '../saveAsProject/SaveAsProjectDlgService';
 import { DataService } from '../service/data.service';
@@ -29,6 +30,7 @@ export class HomeComponent {
     private rConnectionDlgService: RConnectionDlgService,
     private createProjectDialogService: CreateProjectDialogService,
     private openProjectDlgService: OpenProjectDlgService,
+    private openProjectAsTemplateDlgService: OpenProjectAsTemplateDlgService,
     public ps: ProjectService,
     private saveProjectAsService: SaveAsProjectDlgService,
     private resetProjectService: ResetProjectDlgService,
@@ -69,6 +71,9 @@ export class HomeComponent {
 
   openProject() {
     this.openProjectDlgService.showDialog();
+  }
+  openProjectAsTemplate() {
+    this.openProjectAsTemplateDlgService.showDialog();
   }
   closeProject() {
     this.ps.activateProject(null, true);

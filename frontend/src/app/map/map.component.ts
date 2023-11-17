@@ -17,7 +17,7 @@ import OlView from 'ol/View';
 import * as proj4x from 'proj4';
 
 import { MapInfo } from '../data/MapInfo';
-import { BioticAssignment, EDSU_PSU, Station_PSU } from '../data/processdata';
+import { EDSU_PSU, Station_PSU } from '../data/processdata';
 import { NamedStringIndex, NamedStringTable } from '../data/types';
 import { DataService } from '../service/data.service';
 import { ProcessDataService } from '../service/processdata.service';
@@ -213,11 +213,6 @@ export class MapComponent implements OnInit, MapInteraction {
    *  according to biotic assignment data.
    */
   private updateAssignedStationSelection() {
-    let bioticAssignments: BioticAssignment[] = [];
-    if (this.ps.iaMode == 'bioticAssignment' && this.pds.bioticAssignmentData != null && this.pds.selectedPSU != null) {
-      bioticAssignments = this.pds.bioticAssignmentData.BioticAssignment.filter(ba => ba.PSU == this.pds.selectedPSU);
-    }
-
     this.map
       .getLayers()
       .getArray()
@@ -225,7 +220,7 @@ export class MapComponent implements OnInit, MapInteraction {
       .map(l => <VectorSource>(<Layer>l).getSource())
       .forEach(s =>
         s.getFeatures().forEach(f => {
-          MapSetup.updateStationSelection(f, this.pds);
+          MapSetup.updateAssignedStationSelection(f, this.pds);
         })
       );
   }
@@ -367,18 +362,22 @@ export class MapComponent implements OnInit, MapInteraction {
   // Init
   // ________________________________________________________________________________________________________________________________________________________
 
-  async ngOnInit() {
-    console.log('get mapinfo from backend');
-    this.mapInfo = JSON.parse(<string>await this.dataService.getMapInfo().toPromise());
+  private async getMapInfo() {
+    console.log('Fetching map info from backend');
+    try {
+        const mapInfoString = await this.dataService.getMapInfo().toPromise();
+        this.mapInfo = JSON.parse(mapInfoString);
+    } catch (error) {
+        console.error('Error fetching map info:', error);
+        //TODO
+    }
+  }
 
-    console.log('init projections');
-    this.initProjections(this.mapInfo.origin);
-
+  private createCoastLine() {
     console.log('Creating coastline');
     this.coastLine = new Vector({
       source: new Source({
         url: 'assets/landflate_verden_gap180.json',
-
         format: new TopoJSON({
           // don't want to render the full world polygon (stored as 'land' layer),
           // which repeats all countries
@@ -389,14 +388,16 @@ export class MapComponent implements OnInit, MapInteraction {
       style: MapSetup.getMapStyle(),
       zIndex: 11,
     });
+  }
 
-    console.log('Creating map');
+  private createMap() {
     this.map = new OlMap({
       target: 'map',
       controls: [MapSetup.getMousePositionControl()],
     });
+  }
 
-    console.log('Create overlay ' + this.map);
+  private createOverlay() {
     this.overlay = new Overlay({
       element: this.tooltip.nativeElement,
       offset: [10, 0],
@@ -405,166 +406,282 @@ export class MapComponent implements OnInit, MapInteraction {
     if (this.map != null) {
       this.map.addOverlay(this.overlay);
     }
+  }
 
-    this.map.addLayer(this.coastLine);
-
-    this.setProjectionProj4(this.mapInfo.projection);
+  private initializeStratumInteractions() {
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this);
+  }
 
-    this.ps.processSubject.subscribe({
-      next: (action: SubjectAction) => {
-        switch (action.action) {
-          case 'remove': {
-            console.log('remove process - handle in map, id: ' + action.data);
-            this.removeLayersByProcessId(action.data);
-            break;
-          }
+  private handleProcessAction(action: SubjectAction): void {
+    switch (action.action) {
+      case 'remove': {
+        console.log('remove process - handle in map, id: ' + action.data);
+        this.removeLayersByProcessId(action.data);
+        break;
+      }
 
-          case 'activate': {
-            // TODO: implement interactive mode handling and remove iamodesubject
-            break;
-          }
-        }
-      },
-    });
-    this.ps.iaModeSubject.subscribe(iaMode => {
-      this.handleIaMode(iaMode, this.proj);
-    });
+      case 'activate': {
+        // TODO: implement interactive mode handling and remove iamodesubject
+        break;
+      }
+    }
+  }
 
-    this.pds.processDataSubject.subscribe(async evt => {
-      switch (evt) {
-        case 'acousticPSU': {
-          this.map
-            .getLayers()
-            .getArray()
-            .filter(l => l.get('layerType') == 'EDSU')
-            .map(l => <VectorSource>(<Layer>l).getSource())
-            .forEach(s =>
-              s.getFeatures().forEach(f => {
-                const edsu: string = f.get('EDSU');
-                const edsuPsu: EDSU_PSU = this.pds.acousticPSU?.EDSU_PSU?.find(edsuPsu => edsuPsu.EDSU == edsu);
+  private handleAcousticPSU(){
+    this.map
+    .getLayers()
+    .getArray()
+    .filter(l => l.get('layerType') == 'EDSU')
+    .map(l => <VectorSource>(<Layer>l).getSource())
+    .forEach(s => 
+      s.getFeatures().forEach(f => {
+        const edsu: string = f.get('EDSU');
+        const edsuPsu: EDSU_PSU = this.pds.acousticPSU?.EDSU_PSU?.find(edsuPsu => edsuPsu.EDSU == edsu);
 
-                // Connect EDSU_PSU to feature
-                if (edsuPsu == null) {
-                  console.log('edsu ' + edsu + ' not mapped');
-                }
-
-                f.set('edsupsu', edsuPsu);
-                // Get default any selection (not focused by user):
-                MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-              })
-            );
-          break;
+        // Connect EDSU_PSU to feature
+        if (edsuPsu == null) {
+          console.log('edsu ' + edsu + ' not mapped');
         }
 
-        case 'bioticPSU': {
-          this.map
-            .getLayers()
-            .getArray()
-            .filter(l => l.get('layerType') == 'station')
-            .map(l => <VectorSource>(<Layer>l).getSource())
-            .forEach(s =>
-              s.getFeatures().forEach(f => {
-                const station: string = f.get('Station');
-                const stationPsu: Station_PSU = this.pds.bioticPSU?.Station_PSU?.find(stationPsu => stationPsu.Station == station);
+        f.set('edsupsu', edsuPsu);
+        // Get default any selection (not focused by user):
+        MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+      })
+    );
+  }
 
-                // Connect Station_PSU to feature
-                if (stationPsu == null) {
-                  console.log('station ' + station + ' not mapped');
-                }
+  private handleBioticPSU(evt: string): void {
+    this.map
+    .getLayers()
+    .getArray()
+    .filter(l => l.get('layerType') == 'station')
+    .map(l => <VectorSource>(<Layer>l).getSource())
+    .forEach(s =>
+      s.getFeatures().forEach(f => {
+        const station: string = f.get('Station');
+        const stationPsu: Station_PSU = this.pds.bioticPSU?.Station_PSU?.find(stationPsu => stationPsu.Station == station);
 
-                f.set('stationpsu', stationPsu);
-                // Get default any selection (not focused by user):
-                MapSetup.updateStationSelection(f, this.pds.selectedPSU);
-              })
-            );
-          break;
+        // Connect Station_PSU to feature
+        if (stationPsu == null) {
+          console.log('station ' + station + ' not mapped');
         }
 
-        case 'bioticAssignmentData': {
-          this.updateAssignedStationSelection();
-          break;
-        }
+        f.set('stationpsu', stationPsu);
+        // Get default any selection (not focused by user):
+        MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
+      })
+    );
+  }
 
-        case 'changedEDSU':
-        case 'changedStation':
-        case 'selectedPSU': {
-          switch (this.ps.iaMode) {
-            case 'bioticAssignment': {
-              // drop to EDSU selection to get EDSU focus change
-              this.updateAssignedStationSelection();
-            }
+  private handleSelectedPSU(evt: string): void {
+    switch (this.ps.iaMode) {
+      case 'bioticAssignment': {
+        // drop to EDSU selection to get EDSU focus change
+        this.updateAssignedStationSelection();
+      }
 
-            case 'acousticPSU': {
-              this.map
-                .getLayers()
-                .getArray()
-                .filter(l => l.get('layerType') == 'EDSU')
-                .map(l => <VectorSource>(<Layer>l).getSource())
-                .forEach(s =>
-                  s.getFeatures().forEach(f => {
-                    MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-                  })
-                );
-              break;
-            }
+      case 'acousticPSU': {
+        this.map
+          .getLayers()
+          .getArray()
+          .filter(l => l.get('layerType') == 'EDSU')
+          .map(l => <VectorSource>(<Layer>l).getSource())
+          .forEach(s =>
+            s.getFeatures().forEach(f => {
+              MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+            })
+          );
+        break;
+      }
 
-            case 'bioticPSU': {
-              this.map
-                .getLayers()
-                .getArray()
-                .filter(l => l.get('layerType') == 'station')
-                .map(l => <VectorSource>(<Layer>l).getSource())
-                .forEach(s =>
-                  s.getFeatures().forEach(f => {
-                    MapSetup.updateStationSelection(f, this.pds.selectedPSU);
-                  })
-                );
-              break;
-            }
-          }
+      case 'bioticPSU': {
+        this.map
+          .getLayers()
+          .getArray()
+          .filter(l => l.get('layerType') == 'station')
+          .map(l => <VectorSource>(<Layer>l).getSource())
+          .forEach(s =>
+            s.getFeatures().forEach(f => {
+              MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
+            })
+          );
+        break;
+      }
+    }
+  }
 
-          break;
-        }
+  private handleSelectedStratum(){
+    // Remove the check for iamode to update selected when always changed
+    let handleStratumSelection: boolean = false;
 
-        case 'selectedStratum': {
-          // Remove the check for iamode to update selected when always changed
-          let handleStratumSelection: boolean = false;
+    switch (this.ps.iaMode) {
+      case 'stratum':
+      case 'acousticPSU':
+      case 'bioticPSU':
+      case 'bioticAssignment': {
+        handleStratumSelection = true;
+        break;
+      }
 
-          switch (this.ps.iaMode) {
-            case 'stratum':
-            case 'acousticPSU':
-            case 'bioticPSU':
-            case 'bioticAssignment': {
-              handleStratumSelection = true;
-              break;
-            }
+      default:
+        handleStratumSelection = this.pds.selectedStratum == null;
+    }
 
-            default:
-              handleStratumSelection = this.pds.selectedStratum == null;
-          }
+    if (handleStratumSelection) {
+      this.map
+        .getLayers()
+        .getArray()
+        .filter(l => l.get('layerType') == 'stratum')
+        .map(l => <VectorSource>(<Layer>l).getSource())
+        .forEach(s =>
+          s.getFeatures().forEach(f => {
+            MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
+          })
+        );
+    }
+  }
 
-          if (handleStratumSelection) {
-            this.map
-              .getLayers()
-              .getArray()
-              .filter(l => l.get('layerType') == 'stratum')
-              .map(l => <VectorSource>(<Layer>l).getSource())
-              .forEach(s =>
-                s.getFeatures().forEach(f => {
-                  MapSetup.updateStratumSelection(f, this.pds.selectedStratum);
-                })
-              );
-          }
+  private processDataEventHandler(evt: string): void {
+    switch (evt) {
+      case 'acousticPSU': {
+        this.handleAcousticPSU();
+        break;
+      }
 
-          break;
+      case 'bioticPSU': {
+        this.handleBioticPSU(evt);
+        break;
+      }
+
+      case 'bioticAssignmentData': {
+        this.updateAssignedStationSelection();
+        break;
+      }
+
+      case 'changedEDSU':
+      case 'changedStation':
+      case 'selectedPSU': {
+        this.handleSelectedPSU(evt);
+        break;
+      }
+
+      case 'selectedStratum': {
+        this.handleSelectedStratum();
+        break;
+      }
+    }
+  }
+
+  private async handleAcousticPSUClickEvent(l: Layer, e: MapBrowserEvent<any>, fe: Feature<Geometry>) {
+
+    // Controlling focus.
+    let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
+
+    const clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
+
+    l.set('lastClickedIndex', clickedIndex);
+    if (!shiftKeyOnly(e) || prevClickIndex == null) {
+      prevClickIndex = clickedIndex;
+    }
+
+    const fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
+
+    const edsuPsu1: EDSU_PSU = fi1.get('edsupsu');
+
+    if (edsuPsu1 == null) {
+      console.log(fi1.get('EDSU') + ' is missing edsu  for ' + fi1.get('EDSU') + ' layer ' + l.get('name'));
+    }
+
+    let psuToUse: string = edsuPsu1.PSU;
+
+    if (prevClickIndex == clickedIndex) {
+      psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+    }
+
+    const iFirst = Math.min(prevClickIndex, clickedIndex);
+    const iLast = Math.max(prevClickIndex, clickedIndex);
+    const changedEDSUs: string[] = [];
+
+    for (let idx: number = iFirst; idx <= iLast; idx++) {
+      const fi = (<VectorSource>l.getSource()).getFeatures()[idx];
+
+      const edsuPsu: EDSU_PSU = fi.get('edsupsu');
+
+      if (edsuPsu != null) {
+        if (edsuPsu.PSU != psuToUse) {
+          changedEDSUs.push(edsuPsu.EDSU);
+          edsuPsu.PSU = psuToUse;
+          MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
         }
       }
-    });
+    }
 
-    this.map.on('singleclick', e => {
-      const farr: Feature[] = [];
+    if (changedEDSUs.length > 0) {
+      const { selectedProject, selectedModel, activeProcessId } = this.ps;
+      const { projectPath } = selectedProject;
+      const { modelName } = selectedModel;
+      const addOrRemoveOb = psuToUse != null ? this.dataService.addEDSU(psuToUse, changedEDSUs, projectPath, modelName, activeProcessId) : this.dataService.removeEDSU(changedEDSUs, projectPath, modelName, activeProcessId);
+      this.ps.handleAPI(await addOrRemoveOb.toPromise());
+    }
+  }
+
+  private async handleBioticPSUClickEvent(l: Layer, e: MapBrowserEvent<any>, fe: Feature<Geometry>){
+    // Controlling focus.
+    //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
+    let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
+    const clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
+    l.set('lastClickedIndex', clickedIndex);
+    if (!shiftKeyOnly(e) || prevClickIndex == null) {
+      prevClickIndex = clickedIndex;
+    }
+
+    const fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
+    const stationPsu1: Station_PSU = fi1.get('stationpsu');
+    if (stationPsu1 == null) {
+      console.log(fi1.get('Station') + ' is missing station for ' + fi1.get('Station') + ' layer ' + l.get('name'));
+    }
+
+    let psuToUse: string = stationPsu1.PSU;
+    if (prevClickIndex == clickedIndex) {
+      psuToUse = stationPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
+    }
+
+    const iFirst = Math.min(prevClickIndex, clickedIndex);
+    const iLast = Math.max(prevClickIndex, clickedIndex);
+    const changedStations: string[] = [];
+    for (let idx: number = iFirst; idx <= iLast; idx++) {
+      const fi = (<VectorSource>l.getSource()).getFeatures()[idx];
+      const stationPsu: Station_PSU = fi.get('stationpsu');
+      if (stationPsu != null) {
+        if (stationPsu.PSU != psuToUse) {
+          changedStations.push(stationPsu.Station);
+          stationPsu.PSU = psuToUse;
+          MapSetup.updateStationSelection(fi, this.pds.selectedPSU, this.ps.iaMode);
+        }
+      }
+    }
+
+    if (changedStations.length > 0) {
+      const { selectedProject, selectedModel, activeProcessId } = this.ps;
+      const { projectPath } = selectedProject;
+      const { modelName } = selectedModel;
+      const addOrRemoveOb = psuToUse != null ? this.dataService.addStation(psuToUse, changedStations, projectPath, modelName, activeProcessId) : this.dataService.removeStation(changedStations, projectPath, modelName, activeProcessId);
+      this.ps.handleAPI(await addOrRemoveOb.toPromise());
+    }
+  }
+
+  private handleBioticAssignment(fe: Feature<Geometry>){
+
+    const selected: boolean = MapSetup.isStationSelected(fe, this.pds);
+
+    MapSetup.selectAssignedStation(fe, this.ps, this.pds, this.dataService, !selected);
+    MapSetup.updateAssignedStationSelection(fe, this.pds);
+
+  }
+
+  private getClickableFeatures(pixel: number[], e: MapBrowserEvent<any>): Feature[] {
+    const farr: Feature[] = [];
 
       this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
         if (l == null || f == null) {
@@ -581,131 +698,75 @@ export class MapComponent implements OnInit, MapInteraction {
 
       const sortByZIndex = (a: Feature, b: Feature) => (<Layer>a.get('layer')).getZIndex() - (<Layer>b.get('layer')).getZIndex();
 
-      // handle the top feature only.
       farr
-        .sort(sortByZIndex)
-        .slice(0, 1)
-        .forEach(async f => {
-          const l: Layer = <Layer>f.get('layer');
+      .sort(sortByZIndex)
+      .slice(0, 1)
+      .forEach(async f => {
+        const l: Layer = <Layer>f.get('layer');
 
-          console.log('Z index: ' + l.getZIndex());
-          const fe: Feature = <Feature>f;
+        console.log('Z index: ' + l.getZIndex());
+        const fe: Feature = <Feature>f;
 
-          if (this.pds.selectedPSU == null) {
-            return;
+        if (this.pds.selectedPSU == null) {
+          return;
+        }
+
+        switch (this.ps.iaMode) {
+          case 'acousticPSU': {
+            this.handleAcousticPSUClickEvent(l, e, fe);
+            break;
           }
 
-          switch (this.ps.iaMode) {
-            case 'acousticPSU': {
-              // Controlling focus.
-              let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
-
-              const clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
-
-              l.set('lastClickedIndex', clickedIndex);
-              if (!shiftKeyOnly(e) || prevClickIndex == null) {
-                prevClickIndex = clickedIndex;
-              }
-
-              const fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
-
-              const edsuPsu1: EDSU_PSU = fi1.get('edsupsu');
-
-              if (edsuPsu1 == null) {
-                console.log(fi1.get('EDSU') + ' is missing edsu  for ' + fi1.get('EDSU') + ' layer ' + l.get('name'));
-              }
-
-              let psuToUse: string = edsuPsu1.PSU;
-
-              if (prevClickIndex == clickedIndex) {
-                psuToUse = edsuPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
-              }
-
-              const iFirst = Math.min(prevClickIndex, clickedIndex);
-              const iLast = Math.max(prevClickIndex, clickedIndex);
-              const changedEDSUs: string[] = [];
-
-              for (let idx: number = iFirst; idx <= iLast; idx++) {
-                const fi = (<VectorSource>l.getSource()).getFeatures()[idx];
-
-                const edsuPsu: EDSU_PSU = fi.get('edsupsu');
-
-                if (edsuPsu != null) {
-                  if (edsuPsu.PSU != psuToUse) {
-                    changedEDSUs.push(edsuPsu.EDSU);
-                    edsuPsu.PSU = psuToUse;
-                    MapSetup.updateEDSUSelection(fi, this.pds.selectedPSU);
-                  }
-                }
-              }
-
-              if (changedEDSUs.length > 0) {
-                const { selectedProject, selectedModel, activeProcessId } = this.ps;
-                const { projectPath } = selectedProject;
-                const { modelName } = selectedModel;
-                const addOrRemoveOb = psuToUse != null ? this.dataService.addEDSU(psuToUse, changedEDSUs, projectPath, modelName, activeProcessId) : this.dataService.removeEDSU(changedEDSUs, projectPath, modelName, activeProcessId);
-                this.ps.handleAPI(await addOrRemoveOb.toPromise());
-              }
-
-              break;
-            }
-
-            case 'bioticPSU': {
-              // Controlling focus.
-              //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
-              let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
-              const clickedIndex = (<VectorSource>l.getSource()).getFeatures().findIndex(fe1 => fe1 === fe);
-              l.set('lastClickedIndex', clickedIndex);
-              if (!shiftKeyOnly(e) || prevClickIndex == null) {
-                prevClickIndex = clickedIndex;
-              }
-
-              const fi1 = (<VectorSource>l.getSource()).getFeatures()[prevClickIndex];
-              const stationPsu1: Station_PSU = fi1.get('stationpsu');
-              if (stationPsu1 == null) {
-                console.log(fi1.get('Station') + ' is missing station for ' + fi1.get('Station') + ' layer ' + l.get('name'));
-              }
-
-              let psuToUse: string = stationPsu1.PSU;
-              if (prevClickIndex == clickedIndex) {
-                psuToUse = stationPsu1.PSU != this.pds.selectedPSU ? this.pds.selectedPSU : null;
-              }
-
-              const iFirst = Math.min(prevClickIndex, clickedIndex);
-              const iLast = Math.max(prevClickIndex, clickedIndex);
-              const changedStations: string[] = [];
-              for (let idx: number = iFirst; idx <= iLast; idx++) {
-                const fi = (<VectorSource>l.getSource()).getFeatures()[idx];
-                const stationPsu: Station_PSU = fi.get('stationpsu');
-                if (stationPsu != null) {
-                  if (stationPsu.PSU != psuToUse) {
-                    changedStations.push(stationPsu.Station);
-                    stationPsu.PSU = psuToUse;
-                    MapSetup.updateStationSelection(fi, this.pds.selectedPSU);
-                  }
-                }
-              }
-
-              if (changedStations.length > 0) {
-                const { selectedProject, selectedModel, activeProcessId } = this.ps;
-                const { projectPath } = selectedProject;
-                const { modelName } = selectedModel;
-                const addOrRemoveOb = psuToUse != null ? this.dataService.addStation(psuToUse, changedStations, projectPath, modelName, activeProcessId) : this.dataService.removeStation(changedStations, projectPath, modelName, activeProcessId);
-                this.ps.handleAPI(await addOrRemoveOb.toPromise());
-              }
-
-              break;
-            }
-
-            case 'bioticAssignment': {
-              const selected: boolean = MapSetup.isStationSelected(fe, this.pds);
-
-              MapSetup.selectAssignedStation(fe, this.ps, this.pds, this.dataService, !selected);
-              MapSetup.updateAssignedStationSelection(fe, this.pds);
-              break;
-            }
+          case 'bioticPSU': {
+            this.handleBioticPSUClickEvent(l, e, fe);
+            break;
           }
-        });
+
+          case 'bioticAssignment': {
+            this.handleBioticAssignment(fe);
+            break;
+          }
+        }
+      });
+
+    return farr;
+  }
+
+  async ngOnInit() {
+
+    await this.getMapInfo();
+    this.initProjections(this.mapInfo.origin);
+    this.createCoastLine();
+
+    console.log('Creating map');
+    this.createMap();
+
+    console.log('Create overlay');
+    this.createOverlay();
+
+    this.map.addLayer(this.coastLine);
+
+    this.setProjectionProj4(this.mapInfo.projection);
+
+    this.initializeStratumInteractions();
+
+    this.ps.processSubject.subscribe({
+      next: (action: SubjectAction) => {
+        this.handleProcessAction(action);
+      },
+    });
+
+    this.ps.iaModeSubject.subscribe(iaMode => {
+      this.handleIaMode(iaMode, this.proj);
+    });
+
+    this.pds.processDataSubject.subscribe(async evt => {
+      this.processDataEventHandler(evt);
+    });
+
+    this.map.on('singleclick', e => {
+      this.getClickableFeatures(e.pixel, e);
+
     });
 
     // Event handlers

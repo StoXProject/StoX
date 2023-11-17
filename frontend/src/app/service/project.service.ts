@@ -170,7 +170,6 @@ export class ProjectService {
   }
 
   async addProcess() {
-    // this.initializeProperties();
     if (this.selectedProject != null) {
       this.handleAPI(await this.dataService.addProcess(this.selectedProject.projectPath, this.selectedModel.modelName, null).toPromise());
     }
@@ -188,34 +187,38 @@ export class ProjectService {
   }
 
   public async OnProjectSelected() {
-    this.selectedModel = this.selectedProject == null ? null : this.models[0]; // This will trigger update process list.
+    this.selectedModel = this.selectedProject == null ? null : this.models[0]; // This will trigger update process list
 
-    // Update active process id.
-    if (this.selectedProject != null) {
-      const activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
+    // Update active process id
+    if (this.selectedProject == null) {
+      return;
+    }
 
-      const idx = activeProcess.processID == null ? null : this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
+    const activeProcess: ActiveProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
 
-      if (idx != null) {
-        for (let i: number = 0; i <= idx; i++) {
-          const p: Process = this.processes[i];
+    const idx = activeProcess.processID == null ? null : this.getProcessIdxByProcessesAndId(this.processes, activeProcess.processID);
 
-          this.activeProcessId = this.processes[i].processID;
-          if ((p.canShowInMap && p.showInMap) || p.hasProcessData) {
-            const iaMode: string = await this.dataService.getInteractiveMode(this.selectedProject.projectPath, this.selectedModel.modelName, this.activeProcessId).toPromise();
+    if (idx != null) {
+      for (let i: number = 0; i <= idx; i++) {
+        const p: Process = this.processes[i];
 
-            this.iaMode = iaMode;
-          }
+        this.activeProcessId = this.processes[i].processID;
+        if ((p.canShowInMap && p.showInMap) || p.hasProcessData) {
+          const iaMode: string = await this.dataService.getInteractiveMode(this.selectedProject.projectPath, this.selectedModel.modelName, this.activeProcessId).toPromise();
+
+          this.iaMode = iaMode;
         }
-      } else {
-        this.activeProcessId = null;
-        this.iaMode = 'reset';
       }
+    } else {
+      this.activeProcessId = null;
+      this.iaMode = 'reset';
     }
   }
+
   public get selectedProcessId(): string {
     return this.m_selectedProcessId;
   }
+
   public set selectedProcessId(processId: string) {
     if (processId != this.m_selectedProcessId) {
       this.m_selectedProcessId = processId;
@@ -260,10 +263,6 @@ export class ProjectService {
     }
   }
 
-  /* async initializeProperties() {
-     this.processProperties = null;     
-   }*/
-
   getProjects(): Project[] {
     return this.projects;
   }
@@ -281,9 +280,9 @@ export class ProjectService {
       this.appStatus = 'Initializing StoX';
       await this.checkRstoxFrameworkAvailability();
       this.m_Application = 'StoX ' + (await this.dataService.getStoxVersion().toPromise());
-      const projectPath = <string>await this.dataService.readActiveProject().toPromise(); // make projectpath a setting.
+      const projectPath = <string>await this.dataService.readActiveProject().toPromise();
 
-      console.log('> ' + 'Read projectpath:' + projectPath); // let activeProject: Project = <Project>JSON.parse(projectPath);
+      console.log('> ' + 'Read projectpath:' + projectPath);
       // Read models and set selected to the first model
       if (projectPath.length > 0 && this.rstoxFrameworkAvailable) {
         // THROW WHILE DEBUGGING
@@ -315,8 +314,10 @@ export class ProjectService {
     }
   }
 
+  /**
+   * Open the project and make it selected in the GUI
+   */
   async openProject(projectPath: string, doThrow: boolean, force: boolean, askSave: boolean, withStatus = false) {
-    // the following should open the project and make it selected in the GUI
     try {
       if (withStatus) {
         this.appStatus = 'Opening project ' + projectPath + '...';
@@ -328,7 +329,30 @@ export class ProjectService {
     }
   }
 
-  /*Activate project in gui - at the moment only one project is listed*/
+  /**
+   * Open the project and make it selected in the GUI
+   * */
+  async openProjectAsTemplate(projectPath: string, projectNewPath: string, doThrow: boolean, force: boolean, askSave: boolean, withStatus = true) {
+    try {
+      if (withStatus) {
+        this.appStatus = 'Opening project ' + projectPath + ' as template and storing in' + projectNewPath;
+      }
+
+      await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow).toPromise();
+
+      // Open again to get the project object
+      // Should possibly be done in the previous openProject call (need to be fixed in backend)
+      const project = await this.dataService.openProject(projectNewPath, doThrow, force).toPromise();
+
+      await this.activateProject(project, askSave);
+    } finally {
+      this.appStatus = null;
+    }
+  }
+
+  /**
+   * Activate project in gui - at the moment only one project is listed
+   */
   async activateProject(project: Project, askSave: boolean) {
     if (project != null && project.projectPath == 'NA') {
       project = null; // openProject returns NA when project is renamed or moved.
@@ -365,7 +389,8 @@ export class ProjectService {
 
     this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
     if (project != null) {
-      this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, '\n\n-------------------------------------------------------------------------\nOpen project: ' + project.projectName + ' (' + project.projectPath + ')\n-------------------------------------------------------------------------'));
+      const line = '-------------------------------------------------------------------------';
+      this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, '\n\n' + line + '\nOpen project: ' + project.projectName + ' (' + project.projectPath + ')\n' + line));
     }
 
     //this.processes = null;       // triggered by selected model
@@ -513,6 +538,11 @@ export class ProjectService {
     return res;
   }
 
+  stopR() {
+    const { modelName } = this.selectedModel;
+    this.dataService.stopR({ modelName }).toPromise();
+  }
+
   /**
    * A process is dirty if the process is active and the active process is dirty.
    * @param p
@@ -534,14 +564,6 @@ export class ProjectService {
         break;
       }
 
-      //case "geojson": {
-      // getProcessGeoJsonOutput
-      /*let output: ProcessGeoJsonOutput = await this.dataService.getProcessGeoJsonOutput(this.selectedProject.projectPath,
-          this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();
-        oe.output = output.data;
-        oe.outputjson = JSON.parse(output.data);*/
-      //break;
-      //}
       case 'plot':
         {
           const path: string = await this.dataService.getProcessPlotOutput(this.selectedProject.projectPath, this.selectedModel.modelName, oe.processId, oe.element.elementName).toPromise();

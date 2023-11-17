@@ -1,0 +1,20 @@
+<p-dialog header="Open project as template" [(visible)]="service.display" [modal]="true" [style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
+  <MessageDlg></MessageDlg>
+
+  <p>Template project folder:</p>
+  <input style="width: calc(100% - 22px)" type="text" pInputText [(ngModel)]="service.projectPath" />
+  <button style="width: 22px" type="button" pButton icon="pi pi-ellipsis-h" (click)="browseExistingProject()"></button>
+
+  <p>Project name:</p>
+  <input style="width: calc(100% - 22px)" type="text" pInputText [(ngModel)]="service.projectName" />
+
+  <p>New save folder:</p>
+  <input style="width: calc(100% - 22px)" type="text" pInputText [(ngModel)]="service.projectNewPath" />
+  <button style="width: 22px" type="button" pButton icon="pi pi-ellipsis-h" (click)="browseTargetDirectory()"></button>
+
+  <ng-template pTemplate="footer">
+    <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening"></mat-spinner>
+    <button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel" class="p-button-secondary"></button>
+    <button type="button" pButton icon="pi pi-check" (click)="apply()" label="OK"></button>
+  </ng-template>
+</p-dialog>

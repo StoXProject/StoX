@@ -139,8 +139,9 @@ export class MapSetup {
 
     return [
       MapSetup.getPointStyleRect(pointColor, MapSetup.POINT_OUTLINE_COLOR, symSize), // Not selected (previous station layer color)
-      MapSetup.getPointStyleRect(MapSetup.DISTANCE_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize), // Used PSU
-      MapSetup.getPointStyleRect(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5), MapSetup.POINT_OUTLINE_COLOR, symSize), // Selected PSU
+      MapSetup.getPointStyleRect(MapSetup.DISTANCE_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize), // Used PSU (bioticPSU)
+      MapSetup.getPointStyleRect(Color.darken(MapSetup.DISTANCE_POINT_SELECTED_COLOR, 0.5), MapSetup.POINT_OUTLINE_COLOR, symSize), // Selected PSU (bioticPSU)
+      MapSetup.getPointStyleRect(MapSetup.STATION_POINT_SELECTED_COLOR, MapSetup.POINT_OUTLINE_COLOR, symSize), // Used PSU (bioticAssigment)
     ];
   }
 
@@ -328,7 +329,7 @@ export class MapSetup {
       }
 
       if (layerType == 'station') {
-        MapSetup.updateStationSelection(evt.feature, null);
+        MapSetup.updateStationSelection(evt.feature, null, null);
       }
 
       if (layerType == 'stratum') {
@@ -502,18 +503,24 @@ export class MapSetup {
     f.set('selection', selection); // Set the style selection
   }
 
-  static updateStationSelection(f: Feature, selectedPSU) {
+  static updateStationSelection(f: Feature, selectedPSU, mode) {
     const stationPsu: Station_PSU = f.get('stationpsu');
     const selected: boolean = stationPsu?.PSU != null && stationPsu.PSU.length > 0 && stationPsu.PSU !== 'NA';
     const focused: boolean = selected && selectedPSU != null && stationPsu.PSU == selectedPSU;
-    const selection = focused != null && focused ? 2 : selected != null && selected ? 1 : 0;
+    let selection = focused != null && focused ? 2 : selected != null && selected ? 1 : 0;
 
     // console.log('> ' + 'updateStationSelection: ', stationPsu, selection);
 
+    // Choose another selected color if bioticAssignment
+    if (mode === 'bioticAssignment') {
+      selection = selected ? 3 : 0;
+    }
+
     // Update style for station layer
     // 0: not selected by any PSU
-    // 1: selected by some PSU
-    // 2: selected by selected PSU
+    // 1: selected by some PSU (bioticPSU)
+    // 2: selected by selected PSU (bioticPSU)
+    // 3: selected by some PSU (bioticAssignment)
     f.set('selection', selection);
   }
 
@@ -583,6 +590,7 @@ export class MapSetup {
   }
 
   static updateAssignedStationSelection(f: Feature, pds: ProcessDataService) {
-    f.set('selection', MapSetup.isStationSelected(f, pds) ? 1 : 0);
+    const selection = MapSetup.isStationSelected(f, pds) ? 3 : 0;
+    f.set('selection', selection);
   }
 }

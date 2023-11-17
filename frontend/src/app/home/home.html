@@ -2,6 +2,7 @@
 <RConnectionDlg></RConnectionDlg>
 <CreateProjectDialog></CreateProjectDialog>
 <OpenProjectDlg></OpenProjectDlg>
+<OpenProjectAsTemplateDlg></OpenProjectAsTemplateDlg>
 <app-busydlg></app-busydlg>
 <DefinedColumnsTableDlg></DefinedColumnsTableDlg>
 <SelectedVariablesDlg></SelectedVariablesDlg>
@@ -23,6 +24,7 @@
     <mat-menu #projectmenu="matMenu">
       <button mat-menu-item (click)="createNewProject()">Create new project</button>
       <button mat-menu-item (click)="openProject()">Open project</button>
+      <button mat-menu-item (click)="openProjectAsTemplate()">Open project as template</button>
       <button mat-menu-item (click)="closeProject()" [disabled]="!isProjectSelected()">Close project</button>
       <button mat-menu-item (click)="save()" [disabled]="isSaved()">Save</button>
       <button mat-menu-item (click)="saveProjectAs()" [disabled]="!isProjectSelected()">Save project as</button>
@@ -55,7 +57,7 @@
     <span style="margin-left: 10px; display: inline-block; font-size: 0.7rem; font-weight: bold; vertical-align: middle" [style.color]="getStoXVersionColor()">{{stoxVersion}}</span>
     <span style="font-size: 0.7rem; font-weight: bold" [style.color]="getPackageColorMain(ps.rstoxPackages)">{{getMainPackageDescr()}} </span>
     <mat-list class="popuptext mat-elevation-z4" id="myPopup">
-      <mat-list-item *ngFor="let pkg of ps.rstoxPackages" style="font-size: 0.7rem !important; font-weight: bold !important" [style.color]="getPackageColor(pkg)">{{getPackageDescr(pkg)}}</mat-list-item>
+      <mat-list-item *ngFor="let pkg of ps.rstoxPackages"><span style="font-size: 0.8rem !important; font-weight: bold !important" [style.color]="getPackageColor(pkg)">{{getPackageDescr(pkg)}}</span></mat-list-item>
     </mat-list>
   </div>
 </div>
@@ -70,7 +72,7 @@
           <div style="width: 100%">
             <app-model></app-model>
           </div>
-          <div style="height: 1.7rem; width: 100%">
+          <div style="width: 100%">
             <app-run></app-run>
           </div>
           <div style="height: calc(100% - (1.2rem + 1.7rem)); width: 100%">
