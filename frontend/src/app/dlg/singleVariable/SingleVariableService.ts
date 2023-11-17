@@ -56,29 +56,32 @@ export class SingleVariableService {
     if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {
       const o: any[] = JSON.parse(this.currentPropertyItem.value);
 
-      o.forEach(o1 => {
+      if(o.length >= 1) {
         const obj = new SelectedVariable();
-
-        obj.variableName = o1;
+        obj.variableName = o[1];
         this.selectedVariable.push(obj);
-      });
-
-      this.selectedVariableDataSource.next(this.selectedVariable);
+      }
     }
 
-    // this.returnValue  = <any> await this.dataService.getParameterVectorInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, this.currentPropertyItem.format).toPromise();
+    if(this.selectedVariable.length === 0) {
+      const obj = new SelectedVariable();
+      obj.variableName = "";
+      this.selectedVariable.push(obj); 
+    }
+
+    this.selectedVariableDataSource.next(this.selectedVariable);
 
     if (this.returnValue != null) {
       console.log('> ' + 'returnValue : ' + JSON.stringify(this.returnValue));
-      console.log('> ' + "returnValue['parameterVectorTitle'] : " + this.returnValue['parameterVectorTitle']);
+      console.log('> ' + "returnValue['parameterSingleTitle'] : " + this.returnValue['parameterSingleTitle']);
 
-      this.title = this.returnValue['parameterVectorTitle'];
+      this.title = this.returnValue['parameterSingleTitle'];
       this.currentTitleSource.next(this.title);
 
-      console.log('> ' + "returnValue['parameterVectorPossibleValues'] : " + JSON.stringify(this.returnValue['parameterVectorPossibleValues']));
+      console.log('> ' + "returnValue['parameterSinglePossibleValues'] : " + JSON.stringify(this.returnValue['parameterSinglePossibleValues']));
 
-      if (this.returnValue['parameterVectorPossibleValues'] != null) {
-        this.possibleValues = this.returnValue['parameterVectorPossibleValues'];
+      if (this.returnValue['parameterSinglePossibleValues'] != null) {
+        this.possibleValues = this.returnValue['parameterSinglePossibleValues'];
       }
     }
 

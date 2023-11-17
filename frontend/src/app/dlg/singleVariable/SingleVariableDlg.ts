@@ -47,23 +47,6 @@ export class SingleVariableDlg implements OnInit {
     this.dataSource = new MatTableDataSource<SelectedVariable>(this.service.selectedVariable);
   }
 
-  addRow() {
-    const obj = new SelectedVariable();
-
-    obj.variableName = null;
-    this.service.selectedVariable.push(obj);
-    this.dataSource = new MatTableDataSource<SelectedVariable>(this.service.selectedVariable);
-    // this.dataSource.data.push(obj);
-    this.dataSource.filter = '';
-  }
-
-  delete(selectedVariable: SelectedVariable) {
-    const index: number = this.service.selectedVariable.findIndex(d => d === selectedVariable);
-
-    this.service.selectedVariable.splice(index, 1);
-    this.dataSource = new MatTableDataSource<SelectedVariable>(this.service.selectedVariable);
-  }
-
   isEmpty(value): boolean {
     return (
       // null or undefined
@@ -75,39 +58,18 @@ export class SingleVariableDlg implements OnInit {
     );
   }
 
-  hasDuplicates(arr: SelectedVariable[]) {
-    const uniqueSet = new Set();
-
-    for (let i = 0; i < arr.length; i++) {
-      uniqueSet.add(arr[i].variableName);
-    }
-
-    if (uniqueSet.size != arr.length) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   apply() {
-    // validate input for null values in dialog and show messages if necessary
-    // check if there is empty field in dialog
+    // validate input for null or empty values in dialog and show messages if necessary
     for (let i = 0; i < this.service.selectedVariable.length; i++) {
-      if (this.service.selectedVariable[i].variableName == null) {
-        console.log('> ' + 'Field is null in row index : ' + i);
+      const containsOnlySpaces: boolean = /^\s*$/.test(this.service.selectedVariable[i].variableName);
+
+      if (this.service.selectedVariable[i].variableName == null || containsOnlySpaces) {
+        console.log('> ' + 'Field is null or empty in row index : ' + i);
         this.msgService.setMessage('One or more fields are empty!');
         this.msgService.showMessage();
 
         return;
       }
-    }
-
-    // validate input for duplicate rows
-    if (this.hasDuplicates(this.service.selectedVariable)) {
-      this.msgService.setMessage('There are duplicates!');
-      this.msgService.showMessage();
-
-      return;
     }
 
     // get the combined string from service
@@ -148,7 +110,6 @@ export class SingleVariableDlg implements OnInit {
   }
 
   onHide() {
-    // this.selection.clear();
     this.service.display = false;
     this.init();
   }
