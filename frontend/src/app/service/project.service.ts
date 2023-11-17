@@ -539,7 +539,8 @@ export class ProjectService {
   }
 
   stopR() {
-    this.dataService.stopR().toPromise();
+    const { modelName } = this.selectedModel;
+    this.dataService.stopR({ modelName }).toPromise();
   }
 
   /**

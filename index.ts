@@ -817,14 +817,23 @@ function setupServer() {
   });
 
   server.post("/stopR", async (req: any, res: any) => {
-    logInfo("Stopping R processes by creating stopfiles");
+    const { modelName } = JSON.parse(req.body);
+    logInfo("Stopping R process by creating stopfile for model: " + modelName);
 
-    const stopFileNames = [
-      "Stop",
-      "reportStop",
-      "baselineStop",
-      "analysisStop",
-    ];
+    const stopFileNames = [];
+    switch (modelName) {
+      case "baseline":
+        stopFileNames.push("baselineStop");
+        break;
+      case "analysis":
+        stopFileNames.push("analysisStop");
+        break;
+      case "report":
+        stopFileNames.push("reportStop");
+        break;
+      default:
+        stopFileNames.push("Stop");
+    }
 
     const statusDir = "/process/projectSession/status/";
 
