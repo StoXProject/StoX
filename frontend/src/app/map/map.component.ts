@@ -373,11 +373,29 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
+  /** 
+   * To add a new/ different map file, you need to find a topojson file with a world map
+   * (or a map of part of the world) and make sure that it's named correctly inside of the file.
+   * The layer is called 'world' and need to be named the same in the topojson. To achieve this
+   * you can search the topojson for 'objects' and name it like this:
+   * 
+   * "objects":{"world":{"type":"GeometryCollection","geometries":[{"arcs":
+   * 
+   * The important part is that "world" is written as in the example above. Leave the rest as is.
+   * 
+   * If the file is to large, you can shrink the size using mapshaper. This will decrease the 
+   * detail level, but will also decrease the filesize. Reducing the filesize with about 80 % gives
+   * a detail level of around 30 % of the original.
+   * 
+  */
+
   private createCoastLine() {
     console.log('Creating coastline');
     this.coastLine = new Vector({
       source: new Source({
-        url: 'assets/landflate_verden_gap180.json',
+        //url: 'assets/landflate_verden_gap180.json', //original
+        url: 'assets/Nyeste_verden_fin_opplosning.json', //whole world
+        //url: 'assets/topology_fine.json', // only Europe
         format: new TopoJSON({
           // don't want to render the full world polygon (stored as 'land' layer),
           // which repeats all countries
