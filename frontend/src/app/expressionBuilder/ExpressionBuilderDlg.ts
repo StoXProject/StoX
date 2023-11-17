@@ -166,6 +166,10 @@ export class ExpressionBuilderDlg {
     return true; // No duplicate values found in tableName
   }
 
+  filterIsNotRunOrTablesIsEmpty() {
+    return this.service.filterIsNotRunOrTablesIsEmpty;
+  }
+
   getDuplicateTableName() {
     const tmpArr = [];
 
