@@ -89,6 +89,8 @@ export class MapComponent implements OnInit, MapInteraction {
     { tool: 'freemove', iclass: 'freemoveicon' },
     { tool: 'stratum-edit', iclass: 'editicon' },
     { tool: 'stratum-add', iclass: 'addicon' },
+    { tool: 'zoom-in', iclass: 'zoominicon' },
+    { tool: 'zoom-out', iclass: 'zoomouticon' },
   ];
   projectionsMenu = [
     {
@@ -116,6 +118,8 @@ export class MapComponent implements OnInit, MapInteraction {
       case 'stratum-edit':
         return this.ps.iaMode == 'stratum' && this.stratumSelect != null && this.stratumModify != null;
       case 'stratum-add':
+      case 'zoom-in':
+      case 'zoom-out':
       case 'stratum-delete':
         return this.ps.iaMode == 'stratum' && this.stratumDraw != null;
     }

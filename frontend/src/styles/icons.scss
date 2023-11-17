@@ -143,14 +143,20 @@
   top: 28%;
 }
 .editicon:before {
-  @include icon_content('\f040', 0.7rem, rgb(19, 40, 58));
+  @include icon_content('\f040', 0.8rem, rgb(19, 40, 58));
+}
+.zoominicon:before {
+  @include icon_content('\f00e', 1rem, rgb(19, 40, 58));
+}
+.zoomouticon:before {
+  @include icon_content('\f010', 1rem, rgb(19, 40, 58));
 }
 .freemoveicon:before {
-  @include icon_content('\f0b2', 0.7rem, rgb(19, 40, 58));
+  @include icon_content('\f0b2', 0.8rem, rgb(19, 40, 58));
 }
 
 .addicon:before {
-  @include icon_content('\f067', 0.8rem, rgb(129, 133, 194), true);
+  @include icon_content('\f067', 0.9rem, rgb(19, 40, 58), true);
 }
 
 .deleteicon:before {
