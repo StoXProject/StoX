@@ -10,19 +10,24 @@
 
       <!-- tableName Column -->
       <ng-container matColumnDef="tableName">
-        <mat-header-cell *matHeaderCellDef> Table Name </mat-header-cell>
-        <mat-cell *matCellDef="let element">
+        <th mat-header-cell *matHeaderCellDef>Table Name</th>
+        <td mat-cell *matCellDef="let element">
           <mat-form-field floatLabel="never">
-            <mat-select placeholder="choose table" [(ngModel)]="element.tableName" (selectionChange)="onTableNameChange(element)" name="element.tableName" disableOptionCentering>
-              <mat-option *ngFor="let tableName of service.tableNames" [value]="tableName"> {{tableName}} </mat-option>
-            </mat-select>
+            <div *ngIf="filterIsNotRunOrTablesIsEmpty()">
+              <input matInput placeholder="Table Name" [value]="element.tableName" [(ngModel)]="element.tableName" />
+            </div>
+            <div *ngIf="!filterIsNotRunOrTablesIsEmpty()">
+              <mat-select placeholder="choose table" [(ngModel)]="element.tableName" (selectionChange)="onTableNameChange(element)" name="element.tableName" disableOptionCentering>
+                <mat-option *ngFor="let tableName of service.tableNames" [value]="tableName"> {{tableName}} </mat-option>
+              </mat-select>
+            </div>
           </mat-form-field>
-        </mat-cell>
+        </td>
       </ng-container>
 
       <!-- Expression Column -->
       <ng-container matColumnDef="expression">
-        <mat-header-cell *matHeaderCellDef> Expression </mat-header-cell>
+        <th mat-header-cell *matHeaderCellDef style="width: 50%">Expression</th>
         <mat-cell *matCellDef="let element">
           <mat-form-field floatLabel="never">
             <input matInput placeholder="Expression" [value]="element.expression" [(ngModel)]="element.expression" />
@@ -34,16 +39,18 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef>Action</th>
         <td mat-cell *matCellDef="let element" class="action-link">
-          <a (click)="edit(element)"><mat-icon aria-label="Edit">edit</mat-icon></a> |
+          <a (click)="!filterIsNotRunOrTablesIsEmpty() && edit(element)"><mat-icon aria-label="Edit">edit</mat-icon></a> |
           <a (click)="delete(element)"><mat-icon aria-label="Delete">delete</mat-icon></a>
         </td>
       </ng-container>
 
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
   </div>
 
   <ng-template pTemplate="footer">
+    <div *ngIf="filterIsNotRunOrTablesIsEmpty()">Filter has not been run: Table names are not populated automatically</div>
     <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening">Updating query...</mat-spinner>
     <button type="button" pButton icon="pi pi-close" (click)="cancel()" label="Cancel" class="p-button-secondary" [disabled]="service.isOpening"></button>
     <button type="button" pButton (click)="apply()" label="Save" [disabled]="service.isOpening"></button>

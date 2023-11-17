@@ -37,6 +37,8 @@ export class ExpressionBuilderDlgService {
   private tableExpressionsSource = new BehaviorSubject(this.tableExpressions);
   currentTableExpressionsObservable = this.tableExpressionsSource.asObservable();
 
+  filterIsNotRunOrTablesIsEmpty: boolean = false;
+
   constructor(
     private dataService: DataService,
     private ps: ProjectService,
@@ -128,13 +130,7 @@ export class ExpressionBuilderDlgService {
     const { modelName } = selectedModel;
 
     this.tableNames = await this.dataService.getFilterTableNames(projectPath, modelName, selectedProcessId).toPromise();
-
-    if (this.ps.isEmpty(this.tableNames)) {
-      this.setAndShowMessage('Could not get filter options. See user log.');
-      this.display = false;
-
-      return;
-    }
+    this.filterIsNotRunOrTablesIsEmpty = this.ps.isEmpty(this.tableNames);
 
     const notNullOrEmpty = this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '';
     if (!notNullOrEmpty) {
