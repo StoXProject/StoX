@@ -100,11 +100,11 @@ jobs:
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
 
           if [[ ${PKGVER} == *-* ]]; 
-					then
-					  PRERELEASE=true
-					else
-					  PRERELEASE=false
-					fi
+          then
+            PRERELEASE=true
+          else
+            PRERELEASE=false
+          fi
           export PRERELEASE=$PRERELEASE >> $GITHUB_ENV
         shell: bash
 
