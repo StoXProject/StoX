@@ -56,17 +56,17 @@ export class SingleVariableService {
     if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {
       const o: any[] = JSON.parse(this.currentPropertyItem.value);
 
-      if(o.length >= 1) {
+      if (o.length >= 1) {
         const obj = new SelectedVariable();
         obj.variableName = o[1];
         this.selectedVariable.push(obj);
       }
     }
 
-    if(this.selectedVariable.length === 0) {
+    if (this.selectedVariable.length === 0) {
       const obj = new SelectedVariable();
-      obj.variableName = "";
-      this.selectedVariable.push(obj); 
+      obj.variableName = '';
+      this.selectedVariable.push(obj);
     }
 
     this.selectedVariableDataSource.next(this.selectedVariable);

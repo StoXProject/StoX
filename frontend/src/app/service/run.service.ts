@@ -44,7 +44,6 @@ export class RunService {
   }
 
   canRunFromHere(): boolean {
-
     const isProcessActive = this.ps.getActiveProcessIdx() != null;
     const isProcessSelected = this.ps.getSelectedProcessIdx() != null;
 
@@ -54,10 +53,7 @@ export class RunService {
 
     const isFirstProcessRunnable = this.ps.getSelectedProcessIdx() == this.firstProcessIdxRunnable(nextProcessIndex);
 
-    const isValidRunCondition = isProcessSelected && 
-    this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && 
-    !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) && 
-    (isSelectedProcessBeforeOrEqualToActive || isFirstProcessRunnable);
+    const isValidRunCondition = isProcessSelected && this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) && (isSelectedProcessBeforeOrEqualToActive || isFirstProcessRunnable);
 
     return this.canRun() && isValidRunCondition;
   }

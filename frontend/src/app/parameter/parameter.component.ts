@@ -115,7 +115,7 @@ export class ParameterComponent {
   }
 
   async definedSingle(category: PropertyCategory, pi: PropertyItem) {
-    // TODO: to test a new method implemented in R 
+    // TODO: to test a new method implemented in R
     const returnValue = <any>await this.dataService.getParameterSingleInfo(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId, pi.format).toPromise();
 
     console.log('> ' + 'returnValue : ' + JSON.stringify(returnValue));
@@ -132,7 +132,7 @@ export class ParameterComponent {
     this.singleVariableService.returnValue = returnValue;
 
     this.singleVariableService.showDialog();
-  }  
+  }
 
   async filePath(category: PropertyCategory, pi: PropertyItem) {
     let options = {};

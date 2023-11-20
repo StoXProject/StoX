@@ -369,36 +369,36 @@ export class MapComponent implements OnInit, MapInteraction {
   private async getMapInfo() {
     console.log('Fetching map info from backend');
     try {
-        const mapInfoString = await this.dataService.getMapInfo().toPromise();
-        this.mapInfo = JSON.parse(mapInfoString);
+      const mapInfoString = await this.dataService.getMapInfo().toPromise();
+      this.mapInfo = JSON.parse(mapInfoString);
     } catch (error) {
-        console.error('Error fetching map info:', error);
-        //TODO
+      console.error('Error fetching map info:', error);
+      //TODO
     }
   }
 
-  /** 
+  /**
    * To add a new/ different map file, you need to find a topojson file with a world map
    * (or a map of part of the world) and make sure that it's named correctly inside of the file.
    * The layer is called 'world' and need to be named the same in the topojson. To achieve this
    * you can search the topojson for 'objects' and name it like this:
-   * 
+   *
    * "objects":{"world":{"type":"GeometryCollection","geometries":[{"arcs":
-   * 
+   *
    * The important part is that "world" is written as in the example above. Leave the rest as is.
-   * 
-   * If the file is to large, you can shrink the size using http://mapshaper.org. This will decrease the 
+   *
+   * If the file is to large, you can shrink the size using http://mapshaper.org. This will decrease the
    * detail level, but will also decrease the filesize. Reducing the filesize with about 80 % gives
    * a detail level of around 30 % of the original.
-   * 
-  */
+   *
+   */
 
   private createCoastLine() {
     console.log('Creating coastline');
     this.coastLine = new Vector({
       source: new Source({
         //url: 'assets/landflate_verden_gap180.json', //original
-        url: 'assets/topology_world_fine.json', 
+        url: 'assets/topology_world_fine.json',
         //url: 'assets/topology_only_europe_fine.json',
         format: new TopoJSON({
           // don't want to render the full world polygon (stored as 'land' layer),
@@ -450,50 +450,50 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
-  private handleAcousticPSU(){
+  private handleAcousticPSU() {
     this.map
-    .getLayers()
-    .getArray()
-    .filter(l => l.get('layerType') == 'EDSU')
-    .map(l => <VectorSource>(<Layer>l).getSource())
-    .forEach(s => 
-      s.getFeatures().forEach(f => {
-        const edsu: string = f.get('EDSU');
-        const edsuPsu: EDSU_PSU = this.pds.acousticPSU?.EDSU_PSU?.find(edsuPsu => edsuPsu.EDSU == edsu);
+      .getLayers()
+      .getArray()
+      .filter(l => l.get('layerType') == 'EDSU')
+      .map(l => <VectorSource>(<Layer>l).getSource())
+      .forEach(s =>
+        s.getFeatures().forEach(f => {
+          const edsu: string = f.get('EDSU');
+          const edsuPsu: EDSU_PSU = this.pds.acousticPSU?.EDSU_PSU?.find(edsuPsu => edsuPsu.EDSU == edsu);
 
-        // Connect EDSU_PSU to feature
-        if (edsuPsu == null) {
-          console.log('edsu ' + edsu + ' not mapped');
-        }
+          // Connect EDSU_PSU to feature
+          if (edsuPsu == null) {
+            console.log('edsu ' + edsu + ' not mapped');
+          }
 
-        f.set('edsupsu', edsuPsu);
-        // Get default any selection (not focused by user):
-        MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
-      })
-    );
+          f.set('edsupsu', edsuPsu);
+          // Get default any selection (not focused by user):
+          MapSetup.updateEDSUSelection(f, this.pds.selectedPSU);
+        })
+      );
   }
 
   private handleBioticPSU(evt: string): void {
     this.map
-    .getLayers()
-    .getArray()
-    .filter(l => l.get('layerType') == 'station')
-    .map(l => <VectorSource>(<Layer>l).getSource())
-    .forEach(s =>
-      s.getFeatures().forEach(f => {
-        const station: string = f.get('Station');
-        const stationPsu: Station_PSU = this.pds.bioticPSU?.Station_PSU?.find(stationPsu => stationPsu.Station == station);
+      .getLayers()
+      .getArray()
+      .filter(l => l.get('layerType') == 'station')
+      .map(l => <VectorSource>(<Layer>l).getSource())
+      .forEach(s =>
+        s.getFeatures().forEach(f => {
+          const station: string = f.get('Station');
+          const stationPsu: Station_PSU = this.pds.bioticPSU?.Station_PSU?.find(stationPsu => stationPsu.Station == station);
 
-        // Connect Station_PSU to feature
-        if (stationPsu == null) {
-          console.log('station ' + station + ' not mapped');
-        }
+          // Connect Station_PSU to feature
+          if (stationPsu == null) {
+            console.log('station ' + station + ' not mapped');
+          }
 
-        f.set('stationpsu', stationPsu);
-        // Get default any selection (not focused by user):
-        MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
-      })
-    );
+          f.set('stationpsu', stationPsu);
+          // Get default any selection (not focused by user):
+          MapSetup.updateStationSelection(f, this.pds.selectedPSU, evt);
+        })
+      );
   }
 
   private handleSelectedPSU(evt: string): void {
@@ -533,7 +533,7 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
-  private handleSelectedStratum(){
+  private handleSelectedStratum() {
     // Remove the check for iamode to update selected when always changed
     let handleStratumSelection: boolean = false;
 
@@ -596,7 +596,6 @@ export class MapComponent implements OnInit, MapInteraction {
   }
 
   private async handleAcousticPSUClickEvent(l: Layer, e: MapBrowserEvent<any>, fe: Feature<Geometry>) {
-
     // Controlling focus.
     let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
 
@@ -648,7 +647,7 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
-  private async handleBioticPSUClickEvent(l: Layer, e: MapBrowserEvent<any>, fe: Feature<Geometry>){
+  private async handleBioticPSUClickEvent(l: Layer, e: MapBrowserEvent<any>, fe: Feature<Geometry>) {
     // Controlling focus.
     //let farr: Feature[] = (<VectorSource>l.getSource()).getFeatures();
     let prevClickIndex = l.get('lastClickedIndex'); // handle range selection with respect to last clicked index
@@ -693,34 +692,32 @@ export class MapComponent implements OnInit, MapInteraction {
     }
   }
 
-  private handleBioticAssignment(fe: Feature<Geometry>){
-
+  private handleBioticAssignment(fe: Feature<Geometry>) {
     const selected: boolean = MapSetup.isStationSelected(fe, this.pds);
 
     MapSetup.selectAssignedStation(fe, this.ps, this.pds, this.dataService, !selected);
     MapSetup.updateAssignedStationSelection(fe, this.pds);
-
   }
 
   private getClickableFeatures(pixel: number[], e: MapBrowserEvent<any>): Feature[] {
     const farr: Feature[] = [];
 
-      this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
-        if (l == null || f == null) {
-          return;
-        }
+    this.map.forEachFeatureAtPixel(e.pixel, (f, l) => {
+      if (l == null || f == null) {
+        return;
+      }
 
-        const layerType: string = l.get('layerType');
+      const layerType: string = l.get('layerType');
 
-        const { iaMode } = this.ps;
-        if ((iaMode == 'acousticPSU' && layerType == 'EDSU') || (layerType == 'station' && (iaMode == 'bioticPSU' || iaMode == 'bioticAssignment'))) {
-          farr.push(<Feature>f);
-        }
-      });
+      const { iaMode } = this.ps;
+      if ((iaMode == 'acousticPSU' && layerType == 'EDSU') || (layerType == 'station' && (iaMode == 'bioticPSU' || iaMode == 'bioticAssignment'))) {
+        farr.push(<Feature>f);
+      }
+    });
 
-      const sortByZIndex = (a: Feature, b: Feature) => (<Layer>a.get('layer')).getZIndex() - (<Layer>b.get('layer')).getZIndex();
+    const sortByZIndex = (a: Feature, b: Feature) => (<Layer>a.get('layer')).getZIndex() - (<Layer>b.get('layer')).getZIndex();
 
-      farr
+    farr
       .sort(sortByZIndex)
       .slice(0, 1)
       .forEach(async f => {
@@ -755,7 +752,6 @@ export class MapComponent implements OnInit, MapInteraction {
   }
 
   async ngOnInit() {
-
     await this.getMapInfo();
     this.initProjections(this.mapInfo.origin);
     this.createCoastLine();
@@ -788,7 +784,6 @@ export class MapComponent implements OnInit, MapInteraction {
 
     this.map.on('singleclick', e => {
       this.getClickableFeatures(e.pixel, e);
-
     });
 
     // Event handlers
