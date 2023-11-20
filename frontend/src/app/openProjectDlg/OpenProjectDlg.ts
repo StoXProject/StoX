@@ -21,14 +21,19 @@ export class OpenProjectDlg {
   async ngOnInit() {}
 
   async browse() {
-    console.log('> ' + 'Browse ' + this.service.projectPath);
-    if (this.service.projectPath == null || this.service.projectPath.trim() == '') {
-      if (this.ps.selectedProject != null && this.ps.selectedProject.projectPath != null) {
-        this.service.projectPath = this.ps.selectedProject.projectPath.substring(0, this.ps.selectedProject.projectPath.lastIndexOf('/'));
+    const { selectedProject } = this.ps;
+    const { projectPath } = this.service;
+
+    console.log('> ' + 'Browse ' + projectPath);
+    if (projectPath == null || projectPath.trim() == '') {
+      if (selectedProject?.projectPath != null) {
+        this.service.projectPath = selectedProject.projectPath.substring(0, selectedProject.projectPath.lastIndexOf('/'));
       }
     }
 
+    this.service.isOpening = true;
     this.service.projectPath = <string>await this.dataService.browse(this.service.projectPath).toPromise();
+    this.service.isOpening = false;
     console.log('> ' + 'this.projectPath: ' + this.service.projectPath);
   }
 
