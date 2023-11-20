@@ -87,7 +87,7 @@ export class ExpressionBuilderDlg {
       }
     }
 
-    if (!this.areTableNamesUnique()) {
+    if (this.getDuplicateTableName() != null) {
       this.setAndShowMessage('Table or file names are not unique!');
 
       return;
@@ -149,21 +149,6 @@ export class ExpressionBuilderDlg {
   setAndShowMessage(msg: string) {
     this.msgService.setMessage(msg);
     this.msgService.showMessage();
-  }
-
-  areTableNamesUnique() {
-    const tmpArr = [];
-
-    for (const obj in this.service.tableExpressions) {
-      const tableName = this.service.tableExpressions[obj].tableName;
-      if (tmpArr.indexOf(tableName) >= 0) {
-        return false; // Duplicate value in tableName found
-      }
-
-      tmpArr.push(tableName);
-    }
-
-    return true; // No duplicate values found in tableName
   }
 
   filterIsNotRunOrTablesIsEmpty() {
