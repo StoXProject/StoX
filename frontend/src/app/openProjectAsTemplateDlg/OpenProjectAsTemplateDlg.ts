@@ -83,7 +83,7 @@ export class OpenProjectAsTemplateDlg {
 
       this.service.isOpening = true;
 
-      await this.ps.openProjectAsTemplate(this.service.projectPath, absolutePath, true, true, true);
+      await this.ps.openProjectAsTemplate(this.service.projectPath, absolutePath, projectName, true, true, true);
 
       this.service.isOpening = false;
     } catch (error) {

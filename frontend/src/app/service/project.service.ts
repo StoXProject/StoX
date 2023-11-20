@@ -332,19 +332,20 @@ export class ProjectService {
   /**
    * Open the project and make it selected in the GUI
    * */
-  async openProjectAsTemplate(projectPath: string, projectNewPath: string, doThrow: boolean, force: boolean, askSave: boolean, withStatus = true) {
+  async openProjectAsTemplate(projectPath: string, projectNewPath: string, projectName: string, doThrow: boolean, force: boolean, askSave: boolean, withStatus = true) {
     try {
       if (withStatus) {
         this.appStatus = 'Opening project ' + projectPath + ' as template and storing in' + projectNewPath;
       }
 
-      await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow).toPromise();
+      const newProjectPath = await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow).toPromise();
 
-      // Open again to get the project object
-      // Should possibly be done in the previous openProject call (need to be fixed in backend)
-      const project = await this.dataService.openProject(projectNewPath, doThrow, force).toPromise();
+      // The project is now loaded in backend
+      // Activate new project by creating a new project object
+      // Project object should possibly be returned in the openProjectAsTemplate call (need to be fixed in backend)
+      const newTemplateProject: Project = { projectPath: newProjectPath, projectName };
 
-      await this.activateProject(project, askSave);
+      await this.activateProject(newTemplateProject, askSave);
     } finally {
       this.appStatus = null;
     }
