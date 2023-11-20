@@ -49,16 +49,32 @@ export class SingleVariableService {
     return JSON.stringify(combinedArray);
   }
 
+  isJSONArray(str: string): boolean {
+    try {
+      const jsonArray = JSON.parse(str);
+
+      return Array.isArray(jsonArray);
+    } catch (error) {
+      return false; // Parsing failed, not a valid JSON array
+    }
+  }
+
   async showDialog() {
     this.init();
 
     // parse currentPropertyItem.value and populate definedColumnsData and send it to dialog
-    if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {
-      const o: any[] = JSON.parse(this.currentPropertyItem.value);
+    if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {     
+      if(this.isJSONArray(this.currentPropertyItem.value)) {
+        const o: any[] = JSON.parse(this.currentPropertyItem.value);
 
-      if (o.length >= 1) {
+        if (o.length >= 1) {
+          const obj = new SelectedVariable();
+          obj.variableName = o[1];
+          this.selectedVariable.push(obj);
+        }
+      } else {
         const obj = new SelectedVariable();
-        obj.variableName = o[1];
+        obj.variableName = this.currentPropertyItem.value;
         this.selectedVariable.push(obj);
       }
     }
