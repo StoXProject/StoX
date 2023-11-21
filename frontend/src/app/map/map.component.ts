@@ -390,6 +390,8 @@ export class MapComponent implements OnInit, MapInteraction {
    * If the file is to large, you can shrink the size using http://mapshaper.org. This will decrease the
    * detail level, but will also decrease the filesize. Reducing the filesize with about 80 % gives
    * a detail level of around 30 % of the original.
+   * 
+   * If changes are needed, NMD should have people experienced with adjusting topojson files.
    *
    */
 
@@ -397,9 +399,6 @@ export class MapComponent implements OnInit, MapInteraction {
     console.log('Creating coastline');
     this.coastLine = new Vector({
       source: new Source({
-        //url: 'assets/landflate_verden_gap180.json', //original
-        //url: 'assets/topology_world_fine.json',
-        //url: 'assets/topology_only_europe_fine.json',
         url: 'assets/topology_world_fine_details.json',
         format: new TopoJSON({
           // don't want to render the full world polygon (stored as 'land' layer),
