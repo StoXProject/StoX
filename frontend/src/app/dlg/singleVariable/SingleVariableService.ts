@@ -63,8 +63,8 @@ export class SingleVariableService {
     this.init();
 
     // parse currentPropertyItem.value and populate definedColumnsData and send it to dialog
-    if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {     
-      if(this.isJSONArray(this.currentPropertyItem.value)) {
+    if (this.currentPropertyItem.value != null && this.currentPropertyItem.value.trim() != '') {
+      if (this.isJSONArray(this.currentPropertyItem.value)) {
         const o: any[] = JSON.parse(this.currentPropertyItem.value);
 
         if (o.length >= 1) {

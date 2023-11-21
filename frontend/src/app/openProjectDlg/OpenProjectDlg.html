@@ -7,7 +7,7 @@
 
   <ng-template pTemplate="footer">
     <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening"></mat-spinner>
-    <button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel" class="p-button-secondary"></button>
-    <button type="button" pButton icon="pi pi-check" (click)="apply()" label="OK"></button>
+    <button [disabled]="service.isOpening" type="button" pButton icon="pi pi-close" (click)="service.display=false" label="Cancel" class="p-button-secondary"></button>
+    <button [disabled]="service.isOpening" type="button" pButton icon="pi pi-check" (click)="apply()" label="OK"></button>
   </ng-template>
 </p-dialog>
