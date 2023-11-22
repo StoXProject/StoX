@@ -408,6 +408,9 @@ export class MapComponent implements OnInit, MapInteraction {
    *
    * Some points are longitude above 180 degrees. This appears as stripes through the map.
    * Currently manually modified the points to be below 180 degrees.
+   * Save as GeoJSON in MapShaper
+   * Replace 180.0\d+ with 179.99999999999999 (was 20 points in current file)
+   * Save as TopoJSON again
    * TODO: Handle that programatically
    *
    */
