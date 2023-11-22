@@ -328,7 +328,7 @@ export class MapComponent implements OnInit, MapInteraction {
       console.log('Converting features from ' + this.proj + ' to ' + newProjCode);
       this.map.getLayers().forEach(l =>
         (<VectorSource<Geometry>>(<Layer>l).getSource()).getFeatures().forEach(f => {
-          f.getGeometry().transform(this.proj, newProjCode);
+          f.getGeometry()?.transform(this.proj, newProjCode);
         })
       );
     }
@@ -390,8 +390,28 @@ export class MapComponent implements OnInit, MapInteraction {
    * If the file is to large, you can shrink the size using http://mapshaper.org. This will decrease the
    * detail level, but will also decrease the filesize. Reducing the filesize with about 80 % gives
    * a detail level of around 30 % of the original.
-   * 
+   *
    * If changes are needed, NMD should have people experienced with adjusting topojson files.
+   *
+   *
+   * MapShaper
+   * Can be run in Web or downloaded as standalone
+   * TODO: Create a script to run MapShaper with the following options:
+   * -clean  https://github.com/mbloch/mapshaper/wiki/Command-Reference#-clean
+   * -filter-fields https://github.com/mbloch/mapshaper/wiki/Command-Reference#-filter-fields
+   * -rename-layers world https://github.com/mbloch/mapshaper/wiki/Command-Reference#-rename-layers
+   * -simplify 0.8 https://github.com/mbloch/mapshaper/wiki/Command-Reference#-simplify
+   * -format topojson
+   * -o newmap.topojson  prettify
+   *
+   * maybe this one also https://github.com/mbloch/mapshaper/wiki/Command-Reference#-polygons
+   *
+   * Some points are longitude above 180 degrees. This appears as stripes through the map.
+   * Currently manually modified the points to be below 180 degrees.
+   * Save as GeoJSON in MapShaper
+   * Replace 180.0\d+ with 179.99999999999999 (was 20 points in current file)
+   * Save as TopoJSON again
+   * TODO: Handle that programatically
    *
    */
 
