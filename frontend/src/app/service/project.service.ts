@@ -338,12 +338,12 @@ export class ProjectService {
         this.appStatus = 'Opening project ' + projectPath + ' as template and storing in' + projectNewPath;
       }
 
-      const newProjectPath = await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow).toPromise();
+      const newTemplateProject = await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow).toPromise();
 
       // The project is now loaded in backend
       // Activate new project by creating a new project object
       // Project object should possibly be returned in the openProjectAsTemplate call (need to be fixed in backend)
-      const newTemplateProject: Project = { projectPath: newProjectPath, projectName };
+      //const newTemplateProject: Project = { projectPath: newProjectPath, projectName };
 
       await this.activateProject(newTemplateProject, askSave);
     } finally {
