@@ -24,9 +24,9 @@ jobs:
 
     name: Node ${{ matrix.config.node_version }} - ${{ matrix.config.architecture }} on ${{ matrix.config.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
@@ -127,7 +127,7 @@ jobs:
       - run: find dist/installers
         shell: bash
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: ${{ env.FULL_TAG  }}
           path: dist/installers/${{ env.FULL_TAG }}*
