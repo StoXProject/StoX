@@ -1,24 +1,30 @@
 # StoX v3.6.3-9002 (2023-11-01)
 
 ## Summary
-* Bla
+* The StoX version 3.6.2-9002 is a pre-release prepareing for StoX 4.0.0. The pre-release includes a the following improvements to the StoX GUI:
+	* Added manual tagging of Stations to BioticPSU. This can be used to group stations together or create PSUs for stations that accidently fall outside of a stratum.
+	* Added "Open project as template" on the Project menu, which creates a new project with the same processes as the selected template project, but where all input files and process data are deleted, and UseProcessData is set to FALSE for all process data processes.
+	* Increased resolution of the map.
+	* Added a stop button that stops a model between two processes or stops a Bootstrap function between two bootstrap replicates.
+	* The filter expression builder is now faster and can be used also when the input process has not been run (in which case there are no options to select from).
+	* Allowed selecting from possible values in the filter expression builder for numeric values which are mostly whole numbers. Also excluded posssible values for keys.
+	* Added support for selecting multiple files, e.g. in ReadBiotic.
+
 
 ## Bug fixes
-* Bla
+* Fixed bug where 0 was interpreted as missing value in parameter tables.
+* Updated dependencies. This fixed a bug causing drop-down lists to jump when selecting a value.
 
 ## General changes
-* Blabla
-
-## Detailed changes
-* Bla
-
-
+* Added support for reading a project.json in DefineSurvey(), DefineAcousticPSU(), DefineBioticPSU(), DefineBioticAssignment() and DefineStratumPolygon.
+* Restricted warning for missing or 0 EffectiveTowDistance to only activate when there are there are more than 0 individuals in the Haul. 
+* Fixed bug in DefineSurvey with DefinitionMethod = "ResourceFile", where the FileName was the path to a project.xml file.
 
 
 # StoX v3.6.3-9001 (2023-10-15)
 
 ## Summary
-* The StoX version 3.6.2 is a pre-release prepareing for StoX 4.0.0. The pre-release intrtoduces bootstrapping using netCDF4 files which facilitates practically unlimited number of bootstrap replicates. Also, a new resampling function for BioticAssignment is introduced, where Hauls are resampled for each individual AcousicPSU, eliminating the risk of missing assignment length distribution in SplitNASC and AcousticDensity  which could  result in under-estimation. In addition, dependency on the R package sp has been  completely removed from RstoxData, RstoxBase and RstoxFramework.
+* The StoX version 3.6.2-9001 is a pre-release prepareing for StoX 4.0.0. The pre-release intrtoduces bootstrapping using netCDF4 files which facilitates practically unlimited number of bootstrap replicates. Also, a new resampling function for BioticAssignment is introduced, where Hauls are resampled for each individual AcousicPSU, eliminating the risk of missing assignment length distribution in SplitNASC and AcousticDensity  which could  result in under-estimation. In addition, dependency on the R package sp has been  completely removed from RstoxData, RstoxBase and RstoxFramework.
 
 ## Bug fixes
 * Moved functions to set precision to RstoxFramework, and fixed the following two bugs: 1. Datatypes which are lists of lists (AcousticData and BioticData) were not set precision to. 2. Integer fields were set precision to.
