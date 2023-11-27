@@ -16,7 +16,7 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   node_version: 18, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg@latest appdmg@latest'}
-          - {os: windows-latest, node_version: 18, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi@latest'}
+          - {os: windows-latest, node_version: 18, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi'}
           - {os: ubuntu-latest,  node_version: 18, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian@latest'}
     env:
       PLTF: ${{ matrix.config.pltf }}
@@ -31,22 +31,29 @@ jobs:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
       - run: npm install --include=dev
+      - run: npm install -g $INSTALL_PKG
       - run: cd frontend
       - run: npm install --include=dev
       - run: npm install -g @angular/cli@15.2.10
       - run: npm install -g typescript@4.9.5
       - run: cd ..
-      - run: npm install -g $INSTALL_PKG
 
       - name: Build
         if: runner.os != 'Windows'
         run: npm run build-${PLTF}
         shell: bash
 
+
+      - name: Build
+        if: runner.os == 'Windows'
+        run: npm install electron-wix-msi
+        shell: bash
+
       - name: Build for Windows
         if: runner.os == 'Windows'
         run: npm run build-frontend && npm run package-win && find dist/
         shell: bash
+
 
       - name: Create Code Signing Certificate
         if: runner.os == 'Windows'
