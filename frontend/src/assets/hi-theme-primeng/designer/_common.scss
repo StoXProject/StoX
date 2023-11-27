@@ -1,56 +1,57 @@
 /* Purchase the Designer API to get full access to the theme engine. */
 
 * {
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    .ui-widget,
-    .ui-widget .ui-widget {
-        font-family: $fontFamily;
-        text-decoration: none;
-    }
-    
-    .ui-corner-all {
-        @include border-radius($borderRadius);
-    }
+  .p-component,
+  .p-component .p-component {
+    font-family: $fontFamily;
+    text-decoration: none;
+  }
 
-    .ui-corner-top {
-        @include border-radius-top($borderRadius);
-    }
+  .p-corner-all {
+    @include border-radius($borderRadius);
+  }
 
-    .ui-corner-bottom {
-        @include border-radius-bottom($borderRadius);
-    }
+  .p-corner-top {
+    @include border-radius-top($borderRadius);
+  }
 
-    .ui-corner-left {
-        @include border-radius-left($borderRadius);
-    }
+  .p-corner-bottom {
+    @include border-radius-bottom($borderRadius);
+  }
 
-    .ui-corner-right {
-        @include border-radius-right($borderRadius);
-    }
+  .p-corner-left {
+    @include border-radius-left($borderRadius);
+  }
 
-    a {
-        color: $linkColor;
-        text-decoration: none;
+  .p-corner-right {
+    @include border-radius-right($borderRadius);
+  }
 
-        &:hover {
-            color: $linkHoverColor;
-        }
+  a {
+    color: $linkColor;
+    text-decoration: none;
 
-        &:active {
-            color: $linkActiveColor;
-        }
+    &:hover {
+      color: $linkHoverColor;
     }
 
-    .ui-helper-reset {
-        line-height: normal;
+    &:active {
+      color: $linkActiveColor;
     }
+  }
 
-    .ui-state-disabled, .ui-widget:disabled {
-        @include opacity($disabledOpacity);
-    }
+  .p-reset {
+    line-height: normal;
+  }
+
+  .p-disabled,
+  .p-component:disabled {
+    @include opacity($disabledOpacity);
+  }
 }

@@ -1,11 +1,9 @@
-import { Injector, ElementRef } from '@angular/core';
+import { ElementRef, Injector } from '@angular/core';
 
 export abstract class AppComponentBase {
+  elementRef: ElementRef;
 
-    elementRef: ElementRef;
-
-    constructor(injector: Injector) {
-        this.elementRef = injector.get(ElementRef);
-    }
-
+  constructor(injector: Injector) {
+    this.elementRef = injector.get(ElementRef);
+  }
 }

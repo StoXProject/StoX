@@ -1,7 +1,30 @@
+# StoX v3.6.3-9002 (2023-11-01)
+
+## Summary
+* The StoX version 3.6.2-9002 is a pre-release prepareing for StoX 4.0.0. The pre-release includes a the following improvements to the StoX GUI:
+	* Added manual tagging of Stations to BioticPSU. This can be used to group stations together or create PSUs for stations that accidently fall outside of a stratum.
+	* Added "Open project as template" on the Project menu, which creates a new project with the same processes as the selected template project, but where all input files and process data are deleted, and UseProcessData is set to FALSE for all process data processes.
+	* Increased resolution of the map.
+	* Added a stop button that stops a model between two processes or stops a Bootstrap function between two bootstrap replicates.
+	* The filter expression builder is now faster and can be used also when the input process has not been run (in which case there are no options to select from).
+	* Allowed selecting from possible values in the filter expression builder for numeric values which are mostly whole numbers. Also excluded posssible values for keys.
+	* Added support for selecting multiple files, e.g. in ReadBiotic.
+
+
+## Bug fixes
+* Fixed bug where 0 was interpreted as missing value in parameter tables.
+* Updated dependencies. This fixed a bug causing drop-down lists to jump when selecting a value.
+
+## General changes
+* Added support for reading a project.json in DefineSurvey(), DefineAcousticPSU(), DefineBioticPSU(), DefineBioticAssignment() and DefineStratumPolygon.
+* Restricted warning for missing or 0 EffectiveTowDistance to only activate when there are there are more than 0 individuals in the Haul. 
+* Fixed bug in DefineSurvey with DefinitionMethod = "ResourceFile", where the FileName was the path to a project.xml file.
+
+
 # StoX v3.6.3-9001 (2023-10-15)
 
 ## Summary
-* The StoX version 3.6.2 is a pre-release prepareing for StoX 4.0.0. The pre-release intrtoduces bootstrapping using netCDF4 files which facilitates practically unlimited number of bootstrap replicates. Also, a new resampling function for BioticAssignment is introduced, where Hauls are resampled for each individual AcousicPSU, eliminating the risk of missing assignment length distribution in SplitNASC and AcousticDensity  which could  result in under-estimation. In addition, dependency on the R package sp has been  completely removed from RstoxData, RstoxBase and RstoxFramework.
+* The StoX version 3.6.2-9001 is a pre-release prepareing for StoX 4.0.0. The pre-release intrtoduces bootstrapping using netCDF4 files which facilitates practically unlimited number of bootstrap replicates. Also, a new resampling function for BioticAssignment is introduced, where Hauls are resampled for each individual AcousicPSU, eliminating the risk of missing assignment length distribution in SplitNASC and AcousticDensity  which could  result in under-estimation. In addition, dependency on the R package sp has been  completely removed from RstoxData, RstoxBase and RstoxFramework.
 
 ## Bug fixes
 * Moved functions to set precision to RstoxFramework, and fixed the following two bugs: 1. Datatypes which are lists of lists (AcousticData and BioticData) were not set precision to. 2. Integer fields were set precision to.
@@ -130,11 +153,10 @@
 * Corrected warning for more NASC in B than in P.
 * Corrected warninig for non-supported NMDEhcosounder format from >= 1.4 to >= 1.1.
 
-
 # StoX v3.7.0-9001 (2023-02-27)
 
 ## Summary
-* The StoX version 3.6.0-9001 is a pre-release before StoX 3.7.0, schduled in April 2023. 
+* The StoX version 3.7.0-9001 is a pre-release before StoX 3.7.0, schduled in April 2023. 
 
 ## General changes
 * Removed the StoX XML from https://acoustic.ices.dk/submissions.
@@ -146,7 +168,7 @@
 * Changed RegroupLengthICESDatras() to regroup lengths both in the HL and the CA table, and also to support recalculating both HLNoAtLngt and CANoAtLngt. Also added the parameters ResolutionTableVariables and ResolutionTable to support specices specific (or other variables) regrouping.
 * Changed HaulNo to use the serialnumber and not the station variable of NMDBiotic >= 3 in ICESDatras().
 * Improved error message when there are missing LogOrigin or LogOrigin2.
-* Changed the error "The BaselineSeedTable must contain Seed for the processes..." to ignore ImputeSuperIndividuals proecsses with Regressio method (no seed required).
+* Changed the error "The BaselineSeedTable must contain Seed for the processes..." to ignore ImputeSuperIndividuals proecsses with Regression method (no seed required).
 * Corrected warning " There are more than one 'serialnumber' ..." to end with "More than one serialnumber for the following cruise/station (of the fishstation table of the BioticData):" instead of "Duplicated serialnumber for the following cruise/station (of the fishstation table of the BioticData):".
 * Corrected warning for more NASC in B than in P.
 * Corrected warninig for non-supported NMDEhcosounder format from >= 1.4 to >= 1.1.

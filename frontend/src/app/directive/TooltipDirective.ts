@@ -1,7 +1,7 @@
-import { Directive, Input, ElementRef, HostListener, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
 
 @Directive({
-  selector: '[tooltip]'
+  selector: '[tooltip]',
 })
 /**
  * The followig directive is written by:
@@ -15,14 +15,21 @@ export class TooltipDirective {
   // Distance between host element and tooltip element
   offset = 10;
 
-  constructor(private el: ElementRef, private renderer: Renderer2) { }
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2
+  ) {}
 
   @HostListener('mouseenter') onMouseEnter() {
-    if (!this.tooltip) { this.show(); }
+    if (!this.tooltip) {
+      this.show();
+    }
   }
 
   @HostListener('mouseleave') onMouseLeave() {
-    if (this.tooltip) { this.hide(); }
+    if (this.tooltip) {
+      this.hide();
+    }
   }
 
   show() {

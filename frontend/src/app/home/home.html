@@ -2,6 +2,7 @@
 <RConnectionDlg></RConnectionDlg>
 <CreateProjectDialog></CreateProjectDialog>
 <OpenProjectDlg></OpenProjectDlg>
+<OpenProjectAsTemplateDlg></OpenProjectAsTemplateDlg>
 <app-busydlg></app-busydlg>
 <DefinedColumnsTableDlg></DefinedColumnsTableDlg>
 <SelectedVariablesDlg></SelectedVariablesDlg>
@@ -9,132 +10,119 @@
 <SaveAsProjectDlg></SaveAsProjectDlg>
 <ResetProjectDlg></ResetProjectDlg>
 <InstallRPackagesDlg></InstallRPackagesDlg>
-<div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0; height:1.2rem;">
-	<button *ngIf="isDesktop()" mat-button [matMenuTriggerFor]="filemenu" [disabled]="ps.getRunningProcess() != null">File
-		<mat-menu #filemenu="matMenu">
-			<button *ngIf="isDesktop()" mat-menu-item (click)="exit()">Exit</button>
-		</mat-menu>
-	</button>
-	<button mat-button [matMenuTriggerFor]="projectmenu" [disabled]="ps.getRunningProcess() != null">Project
-		<mat-menu #projectmenu="matMenu">
-			<button mat-menu-item (click)="createNewProject()">Create new project</button>
-			<button mat-menu-item (click)="openProject()">Open project</button>
-			<button mat-menu-item (click)="closeProject()" [disabled]="!isProjectSelected()">Close project</button>
-			<button mat-menu-item (click)="save()" [disabled]="isSaved()">Save</button>
-			<button mat-menu-item (click)="saveProjectAs()" [disabled]="!isProjectSelected()">Save project as</button>
-		</mat-menu>
-	</button>
-	<button mat-button [matMenuTriggerFor]="toolsmenu" [disabled]="ps.getRunningProcess() != null">Tools
-		<mat-menu #toolsmenu="matMenu">
-			<button mat-menu-item (click)="rConnection()">R connection</button>
-			<button mat-menu-item (click)="installRstoxFramework()">Install Rstox packages</button>
-			<button *ngIf="isDesktop()" mat-menu-item (click)="toggleDevTools()">Toggle Developer Tools</button>
-		</mat-menu>
-	</button>
-	<button mat-button [matMenuTriggerFor]="helpmenu" [disabled]="ps.getRunningProcess() != null">Help
-		<mat-menu #helpmenu="matMenu">
-			<button mat-menu-item (click)="stoxHome()">StoX Home</button>
-		</mat-menu>
-	</button>
+<SingleVariableDlg></SingleVariableDlg>
 
-	<div class="flex-grow-1" style="height:100%;">
-	</div>
+<div class="navbar d-flex" style="z-index: 100; flex-wrap: nowrap; padding: 0; height: 1.2rem">
+  <button *ngIf="isDesktop()" mat-button [matMenuTriggerFor]="filemenu" [disabled]="!!ps.getRunningProcess()">
+    File
+    <mat-menu #filemenu="matMenu">
+      <button *ngIf="isDesktop()" mat-menu-item (click)="exit()">Exit</button>
+    </mat-menu>
+  </button>
+  <button mat-button [matMenuTriggerFor]="projectmenu" [disabled]="!!ps.getRunningProcess()">
+    Project
+    <mat-menu #projectmenu="matMenu">
+      <button mat-menu-item (click)="createNewProject()">Create new project</button>
+      <button mat-menu-item (click)="openProject()">Open project</button>
+      <button mat-menu-item (click)="openProjectAsTemplate()">Open project as template</button>
+      <button mat-menu-item (click)="closeProject()" [disabled]="!isProjectSelected()">Close project</button>
+      <button mat-menu-item (click)="save()" [disabled]="isSaved()">Save</button>
+      <button mat-menu-item (click)="saveProjectAs()" [disabled]="!isProjectSelected()">Save project as</button>
+    </mat-menu>
+  </button>
+  <button mat-button [matMenuTriggerFor]="toolsmenu" [disabled]="!!ps.getRunningProcess()">
+    Tools
+    <mat-menu #toolsmenu="matMenu">
+      <button mat-menu-item (click)="rConnection()">R connection</button>
+      <button mat-menu-item (click)="installRstoxFramework()">Install Rstox packages</button>
+      <button *ngIf="isDesktop()" mat-menu-item (click)="toggleDevTools()">Toggle Developer Tools</button>
+    </mat-menu>
+  </button>
+  <button mat-button [matMenuTriggerFor]="helpmenu" [disabled]="!!ps.getRunningProcess()">
+    Help
+    <mat-menu #helpmenu="matMenu">
+      <button mat-menu-item (click)="stoxHome()">StoX Home</button>
+    </mat-menu>
+  </button>
+
+  <div class="flex-grow-1" style="height: 100%"></div>
 </div>
-<div class="navbar d-flex" style="z-index:100; flex-wrap: nowrap; padding:0; height:1.4rem;">
-	<button type="button" style="margin-left:4px;" (click)="createNewProject()" pButton icon="pi pi-clone" [disabled]="ps.getRunningProcess() != null"></button>
-	<button type="button" style="margin-left:4px;" (click)="openProject()" pButton icon="pi pi-folder-open" [disabled]="ps.getRunningProcess() != null"></button>
-	<button type="button" style="margin-left:4px;" (click)="save()" [disabled]="isSaved() || ps.getRunningProcess() != null" pButton
-		icon="pi pi-save"></button>
-	<div class="flex-grow-1" style="height:100%;">
-	</div>
-	<div class="stox-logo popup" (click)="myFunction()"
-		style="display:inline-block; vertical-align: middle; line-height:0.7rem; ">
-		<img src="./assets/images/stox.svg"
-			style="height:0.7rem;width:45px;display:inline-block; vertical-align: middle; line-height:0.7rem;">
-		<span style="margin-left:10px;display:inline-block;font-size:0.7rem;font-weight:bold; vertical-align: middle;" 
-			[style.color]="getStoXVersionColor()">{{stoxVersion}}</span> 
-		<span style="font-size:0.7rem;font-weight:bold;" [style.color]="getPackageColorMain(ps.rstoxPackages)">{{getMainPackageDescr()}}
-		</span>
-		<mat-list class="popuptext mat-elevation-z4" id="myPopup">
-			<mat-list-item *ngFor="let pkg of ps.rstoxPackages"
-			style="font-size:0.7rem !important;font-weight:bold !important;" [style.color]="getPackageColor(pkg)">{{getPackageDescr(pkg)}}</mat-list-item>
-		</mat-list>
-	</div>
+<div class="navbar d-flex" style="z-index: 100; flex-wrap: nowrap; padding: 0; height: 1.4rem">
+  <button type="button" style="margin-left: 4px" (click)="createNewProject()" pButton icon="pi pi-clone" [disabled]="!!ps.getRunningProcess()"></button>
+  <button type="button" style="margin-left: 4px" (click)="openProject()" pButton icon="pi pi-folder-open" [disabled]="!!ps.getRunningProcess()"></button>
+  <button type="button" style="margin-left: 4px" (click)="save()" [disabled]="isSaved() || ps.getRunningProcess() !== null && ps.getRunningProcess() !== undefined" pButton icon="pi pi-save"></button>
+  <div class="flex-grow-1" style="height: 100%"></div>
+  <div class="stox-logo popup" (click)="myFunction()" style="display: inline-block; vertical-align: middle; line-height: 0.7rem">
+    <img src="./assets/images/stox.svg" style="height: 0.7rem; width: 45px; display: inline-block; vertical-align: middle; line-height: 0.7rem" />
+    <span style="margin-left: 10px; display: inline-block; font-size: 0.7rem; font-weight: bold; vertical-align: middle" [style.color]="getStoXVersionColor()">{{stoxVersion}}</span>
+    <span style="font-size: 0.7rem; font-weight: bold" [style.color]="getPackageColorMain(ps.rstoxPackages)">{{getMainPackageDescr()}} </span>
+    <mat-list class="popuptext mat-elevation-z4" id="myPopup">
+      <mat-list-item *ngFor="let pkg of ps.rstoxPackages"><span style="font-size: 0.8rem !important; font-weight: bold !important" [style.color]="getPackageColor(pkg)">{{getPackageDescr(pkg)}}</span></mat-list-item>
+    </mat-list>
+  </div>
 </div>
-<div style="height:calc(100vh - 2.6rem);"> 
-	<as-split style="height:100%" direction="horizontal" gutterSize=6>
-		<as-split-area size="20">
-			<as-split direction="vertical" gutterSize=6>
-				<as-split-area size=10 style="overflow:hidden">
-					<app-project [cm]="cm"></app-project>
-				</as-split-area>
-				<as-split-area size=90 style="overflow:hidden;">
-					<div style="height:1.2rem; width:100%;">
-						<app-model></app-model>
-					</div>
-					<div style="height:1.7rem; width:100%;">
-						<app-run></app-run>
-					</div>
-					<div style="height: calc(100% - (1.2rem + 1.7rem)); width:100%;">
-						<app-process [cm]="cm"></app-process>
-					</div>
-				</as-split-area>
-			</as-split>
-		</as-split-area>
-		<as-split-area size="55">
-			<as-split direction="vertical" gutterSize=6>
-				<as-split-area size="75">
-					<app-map class="map" [cm] = "cm"></app-map>
-				</as-split-area>
-				<as-split-area size="25">
-					<mat-tab-group [@.disabled]="true" #bottomTabGroup>
-						<mat-tab label="User log">
-							<userlog style="height:inherit; width:inherit;"  [cm]="cm"></userlog>
-						</mat-tab>
-						<mat-tab label="Preview">
-							<output [cm]="cm" style="height:100%; width:100%;"></output>
-						</mat-tab>
-						<!--<mat-tab label="Graph"> </mat-tab>-->
-						<mat-tab label="Stratum/PSU">
-							<app-stratumpsu [cm]="cm"></app-stratumpsu>
-						</mat-tab>
-					</mat-tab-group>
-					<!--					<p-tabView>
-						<p-tabPanel header="User log">
-							<userlog style="height:inherit; width:inherit;"></userlog>
-						</p-tabPanel>
-						<p-tabPanel header="Graph">
-						</p-tabPanel>
-						<p-tabPanel header="Output">
-							<output style="height:100%; width:100%;"></output>
-						</p-tabPanel>
-						<p-tabPanel header="Stratum/PSU">
-						</p-tabPanel>
-					</p-tabView>-->
-				</as-split-area>
-			</as-split>
-		</as-split-area>
-		<as-split-area size="25">
-			<as-split direction="vertical" gutterSize=6>
-				<as-split-area size="50">
-					<ExpressionBuilderDlg></ExpressionBuilderDlg>
-					<QueryBuilderDlg></QueryBuilderDlg>
-					<mat-tab-group #rightTabGroup>
-						<mat-tab label="{{getPropertiesHdr()}}">
-							<app-parameter></app-parameter>
-						</mat-tab>
-						<mat-tab label="Distance table">
-							<app-edsutable></app-edsutable>
-						</mat-tab>
-					</mat-tab-group>
-				</as-split-area>
-				<as-split-area size="50">
-					<!-- <p>Parameter description</p> -->
-					<app-help></app-help>
-				</as-split-area>
-			</as-split>
-		</as-split-area>
-	</as-split>
+<div style="height: calc(100vh - 2.6rem)">
+  <as-split style="height: 100%" direction="horizontal" gutterSize="6">
+    <as-split-area size="20">
+      <as-split direction="vertical" gutterSize="6">
+        <as-split-area size="10" style="overflow: hidden">
+          <app-project [cm]="cm"></app-project>
+        </as-split-area>
+        <as-split-area size="90" style="overflow: hidden">
+          <div style="width: 100%">
+            <app-model></app-model>
+          </div>
+          <div style="width: 100%">
+            <app-run></app-run>
+          </div>
+          <div style="height: calc(100% - (1.2rem + 1.7rem)); width: 100%">
+            <app-process [cm]="cm"></app-process>
+          </div>
+        </as-split-area>
+      </as-split>
+    </as-split-area>
+    <as-split-area size="55">
+      <as-split direction="vertical" gutterSize="6">
+        <as-split-area size="75">
+          <app-map class="map" [cm]="cm"></app-map>
+        </as-split-area>
+        <as-split-area size="25">
+          <mat-tab-group [@.disabled]="true" #bottomTabGroup style="height: 100%">
+            <mat-tab label="User log">
+              <userlog style="height: inherit; width: inherit" [cm]="cm"></userlog>
+            </mat-tab>
+            <mat-tab label="Preview">
+              <output [cm]="cm" style="height: 100%; width: 100%"></output>
+            </mat-tab>
+            <!--<mat-tab label="Graph"> </mat-tab>-->
+            <mat-tab label="Stratum/PSU">
+              <app-stratumpsu [cm]="cm"></app-stratumpsu>
+            </mat-tab>
+          </mat-tab-group>
+        </as-split-area>
+      </as-split>
+    </as-split-area>
+    <as-split-area size="25">
+      <as-split direction="vertical" gutterSize="6">
+        <as-split-area size="50">
+          <ExpressionBuilderDlg></ExpressionBuilderDlg>
+          <QueryBuilderDlg></QueryBuilderDlg>
+          <mat-tab-group #rightTabGroup>
+            <mat-tab label="{{getPropertiesHdr()}}">
+              <app-parameter></app-parameter>
+            </mat-tab>
+            <mat-tab label="Distance table">
+              <app-edsutable></app-edsutable>
+            </mat-tab>
+          </mat-tab-group>
+        </as-split-area>
+        <as-split-area size="50">
+          <!-- <p>Parameter description</p> -->
+          <app-help></app-help>
+        </as-split-area>
+      </as-split>
+    </as-split-area>
+  </as-split>
 </div>
-<!--<app-statusbar style="height:1.2rem;"></app-statusbar>--> 
-<p-contextMenu #cm ></p-contextMenu>
+<!--<app-statusbar style="height:1.2rem;"></app-statusbar>-->
+<p-contextMenu #cm (onShow)="ctxMenuShow"></p-contextMenu>

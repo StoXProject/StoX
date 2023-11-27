@@ -8,22 +8,20 @@ $stoxColor: #e8edf1;
 }
 
 .navbar {
-  background-image: linear-gradient(to bottom, darken($stoxColor, 2%) , lighten($stoxColor, 2%)); 
+  background-image: linear-gradient(to bottom, darken($stoxColor, 2%), lighten($stoxColor, 2%));
 }
 .stox-logo {
   background-image: radial-gradient(lighten($stoxColor, 20%), lighten($stoxColor, 5%), $stoxColor);
   border: 1px solid lighten($stoxColor, 4%);
-  border-radius:5px;
-  box-shadow: 0.8px 0.8px darken($stoxColor, 10%); 
-  //box-shadow:20px 20px 50px 15px grey;  
+  border-radius: 5px;
+  box-shadow: 0.8px 0.8px darken($stoxColor, 10%);
+  //box-shadow:20px 20px 50px 15px grey;
 }
 
-.ui-button {
-  height:1.2rem !important;
-  width:1.2rem !important;
+.p-button {
+  height: 1.2rem !important;
+  width: 1.2rem !important;
 }
-
-
 
 /*
 .menu-container{
@@ -66,7 +64,7 @@ button {
 }*/
 
 /* base selector-class for stox panes*/
-[class*="stox-pane"] {
+[class*='stox-pane'] {
   border-radius: 5px;
   border: 1px solid grey;
   /*   background-color: aquamarine;*/
@@ -115,8 +113,8 @@ button {
 .popup .popuptext {
   position: absolute;
   visibility: hidden;
-  width:inherit;
-  background-color: white;// rgb(240,240,240);
+  width: inherit;
+  background-color: white; // rgb(240,240,240);
   //border: 1px solid black;
   /*color: #fff;*/
   text-align: center;
@@ -144,11 +142,14 @@ button {
 /* Toggle this class - hide and show the popup */
 .popup .show {
   visibility: visible;
-  animation: fadeIn 0.5s; 
+  animation: fadeIn 0.5s;
 }
 
-
 @keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity:1 ;}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

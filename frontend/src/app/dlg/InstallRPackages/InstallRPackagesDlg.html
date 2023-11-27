@@ -1,12 +1,9 @@
-<p-dialog header="Install R Packages" [(visible)]="service.display" [modal]="true"
-	[style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000"
-	[closable]="!service.isInstalling">
-	<p>RstoxFramework and other packages will be installed in R. It is recommended to close Rstudio/R before installing, because the installation can be blocked by loaded packages. Do you want to proceed.</p>
-	<p-footer>
-		<mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isInstalling"></mat-spinner> <!--class="spinner"--> 
-		<button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="No"
-			class="ui-button-secondary" [disabled]="service.isInstalling"></button>
-		<button type="button" pButton icon="pi pi-check" (click)="service.apply()" label="Yes" 
-			[disabled]="service.isInstalling"></button>
-	</p-footer>
+<p-dialog header="Install R Packages" [(visible)]="service.display" [modal]="true" [style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000" [closable]="!service.isInstalling">
+  <p>RstoxFramework and other packages will be installed in R. It is recommended to close Rstudio/R before installing, because the installation can be blocked by loaded packages. Do you want to proceed.</p>
+  <ng-template pTemplate="footer">
+    <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isInstalling"></mat-spinner>
+    <!--class="spinner"-->
+    <button type="button" pButton icon="pi pi-close" (click)="service.display=false" label="No" class="p-button-secondary" [disabled]="service.isInstalling"></button>
+    <button type="button" pButton icon="pi pi-check" (click)="service.apply()" label="Yes" [disabled]="service.isInstalling"></button>
+  </ng-template>
 </p-dialog>

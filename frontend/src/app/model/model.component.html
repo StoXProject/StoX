@@ -1,6 +1,7 @@
-<!--<p-tabMenu #menuItems [model]="items" (click)="activateMenu()">
-</p-tabMenu>-->
-<nav mat-tab-nav-bar>
-    <a mat-tab-link *ngFor="let model of ps.models" (click)="activateMenu(model)"
-    [active]="ps.selectedModel == model">{{model.displayName}}</a>
+<nav mat-tab-nav-bar [tabPanel]="tabPanel">
+  <a mat-tab-link *ngFor="let model of ps.models" (click)="activateMenu(model)" [active]="ps.selectedModel === model">{{ model.displayName }}</a>
 </nav>
+
+<mat-tab-nav-panel #tabPanel>
+  <router-outlet></router-outlet>
+</mat-tab-nav-panel>

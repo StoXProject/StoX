@@ -1,5 +1,5 @@
-export class Project {   
-  projectName: string;  
+export class Project {
+  projectName: string;
   projectPath: string;
-  saved? : boolean;
+  saved?: boolean;
 }
