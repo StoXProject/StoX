@@ -36,7 +36,7 @@ jobs:
       - run: npm install -g @angular/cli@15.2.10
       - run: npm install -g typescript@4.9.5
       - run: cd ..
-      - run: npm install ${{INSTALL_PKG}}
+      - run: npm install ${INSTALL_PKG}
 
       - name: Build
         if: runner.os != 'Windows'
