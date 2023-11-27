@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
-      - run: npm install --include=dev --force
+      - run: npm install --include=dev
       - run: cd frontend
       - run: npm install --include=dev
       - run: npm install -g @angular/cli@15.2.10
