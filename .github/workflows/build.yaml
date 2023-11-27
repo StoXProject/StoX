@@ -3,7 +3,7 @@ on:
     branches:
       - master
       - develop
-  push:    
+  push:
     branches:
       - master
       - develop
@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
-      - run: npm install --include=dev
+      - run: npm install --include=dev --force
       - run: cd frontend
       - run: npm install --include=dev
       - run: npm install -g @angular/cli@15.2.10
@@ -141,4 +141,3 @@ jobs:
           name: StoX-v${{ env.FINAL_TAG }}
           artifacts: dist/installers/${{ env.FULL_TAG }}*
           token: ${{ secrets.GITHUB_TOKEN }}
-        
