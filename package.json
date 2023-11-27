@@ -54,6 +54,7 @@
   "devDependencies": {
     "electron": "^27.0.3",
     "electron-packager": "^17.1.2",
+    "electron-wix-msi": "^5.0.0",
     "typescript": "4.9.5",
     "uuid-by-string": "^4.0.0"
   },
