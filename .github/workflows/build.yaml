@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   node_version: 18, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg appdmg distutils'}
+          - {os: macOS-latest,   node_version: 18, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg@latest appdmg@latest'}
           - {os: windows-latest, node_version: 18, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi'}
           - {os: ubuntu-latest,  node_version: 18, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian'}
     env:
@@ -36,7 +36,7 @@ jobs:
       - run: npm install -g @angular/cli@15.2.10
       - run: npm install -g typescript@4.9.5
       - run: cd ..
-      - run: npm install $INSTALL_PKG
+      - run: npm install -g $INSTALL_PKG
 
       - name: Build
         if: runner.os != 'Windows'
