@@ -44,10 +44,6 @@ jobs:
         shell: bash
 
 
-      - name: Build
-        if: runner.os == 'Windows'
-        run: npm install -g electron-wix-msi
-        shell: bash
 
       - name: Build for Windows
         if: runner.os == 'Windows'
@@ -79,6 +75,7 @@ jobs:
       - name: Create installer for Windows
         if: runner.os == 'Windows'
         run: |
+          npm install electron-wix-msi
           npm run installer-win
           #cp dist/installers/*.msi installers/StoXInstaller/res/
           #cd installers/StoXInstaller
