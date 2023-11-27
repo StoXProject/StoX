@@ -31,12 +31,12 @@ jobs:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
       - run: npm install --include=dev
-      - run: npm install $INSTALL_PKG
       - run: cd frontend
       - run: npm install --include=dev
       - run: npm install -g @angular/cli@15.2.10
       - run: npm install -g typescript@4.9.5
       - run: cd ..
+      - run: npm install -g $INSTALL_PKG
 
       - name: Build
         if: runner.os != 'Windows'
