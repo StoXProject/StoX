@@ -49,16 +49,16 @@ export class CheckForUpdatesDialogService {
         const resultArray: string[] = lastLine.split(delimiter);
         const filteredArray: string[] = resultArray.filter(Boolean);
         this.newestOfficialVersion = filteredArray[0].trim();
+        const lastElement = filteredArray[filteredArray.length-1].trim();
+        const startIndex: number = lastElement.indexOf("(");
+        const endIndex: number = lastElement.indexOf(")"); 
+        this.newestOfficialVersionUrl = lastElement.substring(startIndex + 1, endIndex);        
 
         if(this.installedVersion === this.newestOfficialVersion) {
           this.displayHtml = "<p>The installed StoX version " +  this.installedVersion + " is the latest official StoX version</p>";
         } else if(this.installedVersion > this.newestOfficialVersion) {
           this.displayHtml = "<p>The installed StoX version " +  this.installedVersion + " is a pre-release version</p>";
         } else {
-          const lastElement = filteredArray[filteredArray.length-1].trim();
-          const startIndex: number = lastElement.indexOf("(");
-          const endIndex: number = lastElement.indexOf(")"); 
-          this.newestOfficialVersionUrl = lastElement.substring(startIndex + 1, endIndex);
           this.displayHtml = "<p>There is a newer official StoX version available. <a href=\"" + this.newestOfficialVersionUrl + "\">Click here</a> to download and install</p>";
         }
       }
