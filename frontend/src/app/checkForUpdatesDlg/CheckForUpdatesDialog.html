@@ -1,0 +1,13 @@
+<p-dialog header="Check for updates" [(visible)]="service.display" [modal]="true" [style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
+  <!--
+  <MessageDlg></MessageDlg>
+  <p>Project name:</p>
+  <input style="width: calc(100% - 22px)" type="text" pInputText [(ngModel)]="projectName" />
+   -->
+
+  <div class="helpcontent" updateContent *ngIf="service.displayHtml" [innerHTML]="service.displayHtml | sanitizeUpdateHtml"></div>
+
+  <ng-template pTemplate="footer">    
+    <button type="button" pButton icon="pi pi-check" (click)="service.display=false" label="OK"></button>
+  </ng-template>
+</p-dialog>
