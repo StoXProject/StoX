@@ -21,8 +21,8 @@ import { ExpressionBuilderDlgService } from './../expressionBuilder/ExpressionBu
 })
 export class ParameterComponent {
   cols = [
-    { field: 'name', header: 'Name', width: '50%' },
-    { field: 'value', header: 'Value', width: '50%' },
+    { field: 'name', header: 'Name' },
+    { field: 'value', header: 'Value' },
   ];
 
   constructor(
