@@ -314,6 +314,13 @@ export class ProjectService {
       this.setModels(null);
       await this.activateProject(null, false);
     }
+
+    // Check for StoX update:
+    await this.checkForUpdatesDialogService.checkForUpdates();
+    const newVersionAvailable = this.checkForUpdatesDialogService.newVersionAvailable();
+    if(newVersionAvailable) {
+      this.dataService.log.push(new UserLogEntry(UserLogType.WARNING, "There is a newer StoX version available. Go to 'Check for updates' on the Help menu to install the newer version."));
+    }
   }
 
   /**
@@ -390,14 +397,9 @@ export class ProjectService {
     await this.dataService.updateActiveProject(project != null ? project.projectPath : '').toPromise();
     await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();
 
+    
     this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
     if (project != null) {
-      await this.checkForUpdatesDialogService.checkForUpdates();
-      const newVersionAvailable = this.checkForUpdatesDialogService.newVersionAvailable();
-      if(newVersionAvailable) {
-        this.dataService.log.push(new UserLogEntry(UserLogType.WARNING, "There is a newer StoX version available. Go to 'Check for updates' on the Help menu to install the newer version."));
-      }
-
       const line = '-------------------------------------------------------------------------';
       this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, '\n\n' + line + '\nOpen project: ' + project.projectName + ' (' + project.projectPath + ')\n' + line));
     }

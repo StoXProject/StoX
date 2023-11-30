@@ -1,4 +1,4 @@
-# StoX v3.6.3-9002 (2023-11-01)
+# StoX v3.6.3-9002 (2023-11-27)
 
 ## Summary
 * The StoX version 3.6.2-9002 is a pre-release prepareing for StoX 4.0.0. The pre-release includes a the following improvements to the StoX GUI:
