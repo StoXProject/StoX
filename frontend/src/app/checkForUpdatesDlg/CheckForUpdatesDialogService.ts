@@ -26,11 +26,11 @@ export class CheckForUpdatesDialogService {
     await this.checkForUpdates();
     this.display = true;
 
-    console.log("this.isOnline", this.isOnline);
-    console.log("this.installedVersion", this.installedVersion);
-    console.log("this.newestOfficialVersion", this.newestOfficialVersion);
-    console.log("this.newestOfficialVersionUrl", this.newestOfficialVersionUrl);
-    console.log("this.displayHtml", this.displayHtml);
+    console.log("isOnline", this.isOnline);
+    console.log("installedVersion", this.installedVersion);
+    console.log("newestOfficialVersion", this.newestOfficialVersion);
+    console.log("newestOfficialVersionUrl", this.newestOfficialVersionUrl);
+    console.log("displayHtml", this.displayHtml);
   }
 
   async checkForUpdates() {
@@ -43,7 +43,7 @@ export class CheckForUpdatesDialogService {
 
       // get last line from a file on url
       const lastLine: string =  await this.readLastLineFromURL("https://raw.githubusercontent.com/StoXProject/StoX/master/Official_StoX_versions.md");
-      console.log("lastLine", lastLine);
+      // console.log("lastLine", lastLine);
       if(lastLine) {
         const delimiter: string = "|";
         const resultArray: string[] = lastLine.split(delimiter);
@@ -59,7 +59,7 @@ export class CheckForUpdatesDialogService {
         } else if(this.installedVersion > this.newestOfficialVersion) {
           this.displayHtml = "<p>The installed StoX version " +  this.installedVersion + " is a pre-release version</p>";
         } else {
-          this.displayHtml = "<p>There is a newer official StoX version available. <a href=\"" + this.newestOfficialVersionUrl + "\">Click here</a> to download and install</p>";
+          this.displayHtml = "<p>There is a newer official StoX version available. Go to <a href=\"" + this.newestOfficialVersionUrl + "\">" + this.newestOfficialVersionUrl + "</a> to download and install</p>";
         }
       }
     } else {
