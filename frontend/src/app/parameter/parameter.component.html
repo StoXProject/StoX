@@ -8,14 +8,20 @@
             <col *ngFor="let col of columns" [style.width]="col.width" />
           </colgroup>
         </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pResizableColumn style="height: 2px"></th>
+            <th pResizableColumn style="height: 2px"></th>
+          </tr>
+        </ng-template>
         <ng-template pTemplate="body" let-propertyItem>
-          <tr style="white-space: nowrap">
-            <td pResizableColumn>
+          <tr>
+            <td>
               <div class="ellipsiscolumn">
                 {{ propertyItem.displayName }}
               </div>
             </td>
-            <td pResizableColumn [ngSwitch]="propertyItem.type">
+            <td [ngSwitch]="propertyItem.type">
               <!-- character -->
               <div *ngSwitchCase="'character'">
                 <!-- If possible values are given but not vector, do autocomlpetion -->
