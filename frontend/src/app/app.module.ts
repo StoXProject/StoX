@@ -53,6 +53,8 @@ import { InMemoryDataService } from 'test/in-memory-data.service';
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 import { DirectiveAccessor } from './autocomplete/directive-accessor';
 import { BusydlgComponent } from './busydlg/busydlg.component';
+import { CheckForUpdatesDialog, SanitizeUpdateHtmlPipe, UpdateContentHandler } from './checkForUpdatesDlg/CheckForUpdatesDialog';
+import { CheckForUpdatesDialogService } from './checkForUpdatesDlg/CheckForUpdatesDialogService';
 import { CreateProjectDialogService } from './createProjectDlg/create-project-dialog.service';
 import { CreateProjectDialog } from './createProjectDlg/CreateProjectDialog';
 import { TooltipDirective } from './directive/TooltipDirective';
@@ -195,6 +197,7 @@ export class MaterialModule {}
     DefinedColumnsTableDlg,
     SelectedVariablesDlg,
     SingleVariableDlg,
+    CheckForUpdatesDialog,
     FilePathDlg,
     SaveAsProjectDlg,
     ResetProjectDlg,
@@ -214,6 +217,8 @@ export class MaterialModule {}
     HelpComponent,
     HelpContentHandler,
     SanitizeHtmlPipe,
+    SanitizeUpdateHtmlPipe,
+    UpdateContentHandler,
     StratumNameDlgComponent,
     MessageDlgComponent,
     AutocompleteComponent,
@@ -231,6 +236,7 @@ export class MaterialModule {}
     InstallRPackagesDlgService,
     SelectedVariablesService,
     SingleVariableService,
+    CheckForUpdatesDialogService,
     ExpressionBuilderDlgService,
     MessageService, // NOT PRIMENG MESSAGE SERVICE
     OpenProjectAsTemplateDlgService,
