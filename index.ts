@@ -522,6 +522,7 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       }
       logInfo("Properties read from file: " + propFileName);
     }
+
     if (properties == null) {
       // Properties not read properly from file, or the file doesnt exist.
       logInfo("create initial properties");
@@ -533,6 +534,7 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       };
       logInfo("Properties initialized.");
     }
+
     if (
       properties.projectRootPath == null ||
       properties.projectRootPath == ""
@@ -541,6 +543,12 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       console.log("> " + "Node Home: " + require("os").homedir());
       properties.projectRootPath = app.getPath("home");
     }
+
+    // STOX-576 Windows home directory is not a good place for project files
+    if (properties?.projectRootPath?.includes("Program Files")) {
+      properties.projectRootPath = "";
+    }
+
     if (properties.mapInfo == null) {
       properties.mapInfo = {
         projection: "StoX_001_LAEA",
@@ -549,6 +557,7 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       };
       //{projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]}
     }
+
   } catch (err) {
     logInfo("Error reading properties: " + err);
   }

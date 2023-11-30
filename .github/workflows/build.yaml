@@ -24,6 +24,10 @@ jobs:
 
     name: Node ${{ matrix.config.node_version }} - ${{ matrix.config.architecture }} on ${{ matrix.config.os }}
     steps:
+      - name: DevTools Mac
+        if: runner.os == 'macOS'
+        run: python3 -m pip install setuptools
+
       - uses: actions/checkout@v4
       - name: Setup node
         uses: actions/setup-node@v4
