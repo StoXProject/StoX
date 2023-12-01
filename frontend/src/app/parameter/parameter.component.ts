@@ -147,7 +147,7 @@ export class ParameterComponent {
         this.filePathDlgService.currentPropertyItem = pi;
         this.filePathDlgService.showDialog();
 
-        return;
+        return; // Value is set in the dialog
 
       case 'directoryPath':
         options = { properties: ['openDirectory'], title: 'Select folder', defaultPath: this.ps.selectedProject.projectPath };
@@ -159,20 +159,13 @@ export class ParameterComponent {
       }
     }
 
-    const filePath = await this.dataService.browsePath(options).toPromise();
+    const filePathRawSingleItemList = await this.dataService.browsePath(options).toPromise();
+    const path = this.convertSingleItemListToNiceFilePathString(filePathRawSingleItemList);
 
-    let paths: string[] = [];
-
-    if (filePath != null) {
-      paths = <string[]>JSON.parse(filePath);
-      paths = paths.map(PathUtils.ConvertBackslash);
-    }
-
-    const stringifiedPaths = JSON.stringify(paths);
-    const hasChanged = stringifiedPaths != pi.value;
+    const hasChanged = path != pi.value;
 
     if (hasChanged) {
-      pi.value = stringifiedPaths;
+      pi.value = path; // Send single item as string
       // call setProcessPropertyValue
       this.onChanged(category, pi);
     }
@@ -188,5 +181,15 @@ export class ParameterComponent {
 
   isDisabled = () => {
     return this.ps.getRunningProcess() !== null && this.ps.getRunningProcess() !== undefined;
+  };
+
+  convertSingleItemListToNiceFilePathString = (filePathRawSingleItemList: string) => {
+    let singleItemPath = null;
+    if (filePathRawSingleItemList != null) {
+      const rawPath = (<string[]>JSON.parse(filePathRawSingleItemList))[0];
+      singleItemPath = PathUtils.ConvertBackslash(rawPath);
+    }
+
+    return singleItemPath;
   };
 }
