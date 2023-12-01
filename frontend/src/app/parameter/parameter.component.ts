@@ -54,7 +54,7 @@ export class ParameterComponent {
     }
 
     // Quote strings to let backend smoothly transform all values to its corresponding types(jsonlite::fromJSON removes the quotes)
-    if (type == 'character' && (pi.format == 'none' || value === '')) {
+    if (type == 'character' && (pi.format == 'none' || value === '' || pi.formatClass == 'single')) {
       // single value string as json compatible
       value = JSON.stringify(value);
     }
