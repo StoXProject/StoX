@@ -185,4 +185,8 @@ export class ParameterComponent {
     this.msgService.setMessage(message);
     this.msgService.showMessage();
   };
+
+  isDisabled = () => {
+    return this.ps.getRunningProcess() !== null && this.ps.getRunningProcess() !== undefined;
+  };
 }
