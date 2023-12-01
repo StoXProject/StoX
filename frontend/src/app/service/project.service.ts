@@ -318,7 +318,7 @@ export class ProjectService {
     // Check for StoX update:
     await this.checkForUpdatesDialogService.checkForUpdates();
     const newVersionAvailable = this.checkForUpdatesDialogService.newVersionAvailable();
-    if(newVersionAvailable) {
+    if (newVersionAvailable) {
       this.dataService.log.push(new UserLogEntry(UserLogType.WARNING, "There is a newer StoX version available. Go to 'Check for updates' on the Help menu to install the newer version."));
     }
   }
@@ -397,7 +397,6 @@ export class ProjectService {
     await this.dataService.updateActiveProject(project != null ? project.projectPath : '').toPromise();
     await this.dataService.updateActiveProjectSavedStatus(project != null ? project.saved : true).toPromise();
 
-    
     this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
     if (project != null) {
       const line = '-------------------------------------------------------------------------';

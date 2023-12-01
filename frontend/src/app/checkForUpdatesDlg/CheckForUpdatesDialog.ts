@@ -13,12 +13,9 @@ import { CheckForUpdatesDialogService } from './CheckForUpdatesDialogService';
 export class CheckForUpdatesDialog {
   projectRootPath: string;
 
-  constructor(
-    public service: CheckForUpdatesDialogService
-  ) {}
+  constructor(public service: CheckForUpdatesDialogService) {}
 
-  async ngOnInit() {  
-  }
+  async ngOnInit() {}
 }
 
 /**
@@ -39,15 +36,13 @@ export class SanitizeUpdateHtmlPipe implements PipeTransform {
 /**
  * Update Content Handler class representing div with directive updateContent and innerhtml
  * This class will listen on DOM event click from the innerhtml.
- * Clicking hrefs will be prevented by default and stopped propagation in a synch. 
+ * Clicking hrefs will be prevented by default and stopped propagation in a synch.
  */
 @Directive({
   selector: '[updateContent]',
 })
 export class UpdateContentHandler {
-  constructor(
-    private dataService: DataService
-  ) {}
+  constructor(private dataService: DataService) {}
 
   /**
    * DOM click event handler. The HOST is the element the updateContent directive is attached to.
@@ -62,9 +57,9 @@ export class UpdateContentHandler {
         const stringToMatch = hRefAttr.value;
 
         this.dataService
-        .openUrl(stringToMatch)
-        .toPromise()
-        .then(st => console.log('> ' + st));
+          .openUrl(stringToMatch)
+          .toPromise()
+          .then(st => console.log('> ' + st));
 
         return false;
       }
