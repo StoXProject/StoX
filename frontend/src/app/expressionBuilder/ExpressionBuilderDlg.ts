@@ -151,10 +151,6 @@ export class ExpressionBuilderDlg {
     this.msgService.showMessage();
   }
 
-  filterIsNotRunOrTablesIsEmpty() {
-    return this.service.filterIsNotRunOrTablesIsEmpty;
-  }
-
   getDuplicateTableName() {
     const tmpArr = [];
 
