@@ -64,8 +64,8 @@
                       <button class="button-width" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="isDisabled()" (click)="definedVector(category, propertyItem)"></button>
                     </ng-container>
                     <ng-container *ngSwitchCase="propertyItem.formatClass === 'single'">
-                      <input [ngClass]="propertyItem.possibleValues.length > 0 ? 'input-with-button' : 'input-full-width'" type="text" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
-                      <button *ngIf="propertyItem.possibleValues.length > 0" class="button-width" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="isDisabled()" (click)="definedSingle(category, propertyItem)"></button>
+                      <input [ngClass]="propertyItem.format != 'none' ? 'input-with-button' : 'input-full-width'" type="text" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
+                      <button *ngIf="propertyItem.format != 'none'" class="button-width" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="isDisabled()" (click)="definedSingle(category, propertyItem)"></button>
                     </ng-container>
                     <ng-container *ngSwitchDefault>
                       <input matInput type="text" value="{{ propertyItem.value }}" spellcheck="false" [disabled]="isDisabled()" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" class="ellipsiscolumn" />

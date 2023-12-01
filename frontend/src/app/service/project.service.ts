@@ -347,6 +347,8 @@ export class ProjectService {
         this.appStatus = 'Opening project ' + projectPath + ' as template and storing in' + projectNewPath;
       }
 
+      await this.activateProject(null, true);
+
       const newTemplateProject = await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow).toPromise();
 
       // The project is now loaded in backend
@@ -368,6 +370,7 @@ export class ProjectService {
       project = null; // openProject returns NA when project is renamed or moved.
     }
 
+    // Close currently open project:
     if (this.selectedProject != null) {
       let save: boolean = false;
 
