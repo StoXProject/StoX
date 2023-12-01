@@ -951,13 +951,13 @@ function setupServer() {
 
   server.post("/browse", function (req: any, res: any) {
     logInfo("select a folder... wait");
-    let defPath = resolveDefaultPath(req.body); // correct slashes in default path
-    logInfo("default folder " + defPath);
+    const defaultPath = resolveDefaultPath(req.body); // correct slashes in default path
+    logInfo("default folder " + defaultPath);
     require("electron")
       .dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
         title: "Select a folder",
-        defaultPath: /*require('os').homedir()*/ defPath,
-        properties: [/*'openFile'*/ "openDirectory"],
+        defaultPath,
+        properties: ["openDirectory"],
       })
       .then(
         (object: {
@@ -981,12 +981,12 @@ function setupServer() {
     let options: any = JSON.parse(req.body);
 
     if (Object.keys(options).length) {
-      let defPath = resolveDefaultPath(options.defaultPath); // correct slashes in default path
-      logInfo("default folder " + defPath);
+      const defaultPath = resolveDefaultPath(options.defaultPath); // correct slashes in default path
+      logInfo("default folder " + defaultPath);
       require("electron")
         .dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
           title: options.title,
-          defaultPath: defPath,
+          defaultPath,
           properties: options.properties,
         })
         .then(
