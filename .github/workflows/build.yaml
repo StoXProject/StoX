@@ -1,10 +1,12 @@
 on:
   pull_request:
     branches:
-      - master_restore_v3.6.0_release
-  push:    
+      - master
+      - develop
+  push:
     branches:
-      - master_restore_v3.6.0_release
+      - master
+      - develop
 
 jobs:
   build:
@@ -13,9 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   node_version: 14, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg@latest'}
-          - {os: windows-latest, node_version: 14, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi@latest'}
-          - {os: ubuntu-latest,  node_version: 14, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian@latest'}
+          - {os: macOS-latest,   node_version: 18, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg'}
+          - {os: windows-latest, node_version: 18, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi'}
+          - {os: ubuntu-latest,  node_version: 18, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian'}
     env:
       PLTF: ${{ matrix.config.pltf }}
       INSTALL_PKG: ${{ matrix.config.installer }}
@@ -26,29 +28,32 @@ jobs:
         if: runner.os == 'macOS'
         run: python3 -m pip install setuptools
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
       - run: npm install --include=dev
       - run: cd frontend
       - run: npm install --include=dev
-      - run: npm install -g @angular/cli@9.1.15
-      - run: npm install -g typescript@3.8.3
+      - run: npm install -g @angular/cli@15.2.10
+      - run: npm install -g typescript@4.9.5
       - run: cd ..
-      - run: npm install ${INSTALL_PKG}
+      - run: npm install -g $INSTALL_PKG
 
       - name: Build
         if: runner.os != 'Windows'
         run: npm run build-${PLTF}
         shell: bash
 
+
+
       - name: Build for Windows
         if: runner.os == 'Windows'
         run: npm run build-frontend && npm run package-win && find dist/
         shell: bash
+
 
       - name: Create Code Signing Certificate
         if: runner.os == 'Windows'
@@ -74,6 +79,7 @@ jobs:
       - name: Create installer for Windows
         if: runner.os == 'Windows'
         run: |
+          npm install electron-wix-msi
           npm run installer-win
           #cp dist/installers/*.msi installers/StoXInstaller/res/
           #cd installers/StoXInstaller
@@ -100,6 +106,14 @@ jobs:
           echo "LAST_VERSION=${LAST_VERSION}" >> $GITHUB_ENV
           echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
+
+          if [[ ${PKGVER} == *-* ]]; 
+          then
+            PRERELEASE=true
+          else
+            PRERELEASE=false
+          fi
+          export PRERELEASE=$PRERELEASE >> $GITHUB_ENV
         shell: bash
 
       #- name: Renaming files for upload (Windows only)
@@ -121,13 +135,13 @@ jobs:
       - run: find dist/installers
         shell: bash
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: ${{ env.FULL_TAG  }}
           path: dist/installers/${{ env.FULL_TAG }}*
 
       - name: Create release and upload files
-        if: github.event_name == 'push' && ( github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' )
+        if: github.event_name == 'push' && ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) )
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
