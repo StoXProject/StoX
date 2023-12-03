@@ -1,10 +1,10 @@
 on:
   pull_request:
     branches:
-      - master
+      - master_restore_v3.6.0_release
   push:    
     branches:
-      - master
+      - master_restore_v3.6.0_release
 
 jobs:
   build:
