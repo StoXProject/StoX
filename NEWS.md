@@ -1,3 +1,17 @@
+# StoX v3.6.3-9003 (2023-12-03)
+
+## Summary
+* The StoX version 3.6.2-9003 is a pre-release prepareing for StoX 4.0.0. The pre-release includes a the following improvements to the StoX GUI:
+	* Added note in the User log and a link in the Help menu when there is a new official release.
+	* Added zoom in and out buttons in the map.
+	* Changed aa number of parameter to class "single" (DensityType, TargetVariableUni., etc).
+
+## General changes
+* Added functions ICESDatsusc(), CopyICESDatsusc, FilterICESDatsusc, TranslateICESDatsusc and WriteICESDatsusc().
+* Fixed bug in ImputeSuperIndividuals() when ImputationMethod = "RandomSampling", where individuals used in multiple strata were not uniquely represented by the Individual column. The consequence was that data were imputed from he first of the rows with identical Individual, resulting in possible loss of imputation, e.g. if imputing IndividualAge and only one of the identical individuals had IndividualAge but not the first of them, in which case that age would never be imputed. This was fixed by introducing a new unique ID StratumLayerIndividual, which is a concatenation of Stratum, Layer and Individual, and using this to idenify row o impue from.
+* Changed sorting of StratumLayerIndividual when creating the StratumLayerIndividualIndex to platform independent locale = "en_US_POSIX". This is actually a bug, but has not been discovered since all known StoX projects have been using input data with Cruise as numbers of only upper case letters (sorting by locale = "en_US_POSIX" arranges capital letters first (India before england)).
+
+
 # StoX v3.6.3-9002 (2023-11-27)
 
 ## Summary
