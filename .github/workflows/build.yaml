@@ -13,9 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   node_version: 18, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg'}
-          - {os: windows-latest, node_version: 18, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi'}
-          - {os: ubuntu-latest,  node_version: 18, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian'}
+          - {os: macOS-latest,   node_version: 14, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg@latest'}
+          - {os: windows-latest, node_version: 14, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi@latest'}
+          - {os: ubuntu-latest,  node_version: 14, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian@latest'}
     env:
       PLTF: ${{ matrix.config.pltf }}
       INSTALL_PKG: ${{ matrix.config.installer }}
@@ -26,9 +26,9 @@ jobs:
         if: runner.os == 'macOS'
         run: python3 -m pip install setuptools
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
@@ -121,7 +121,7 @@ jobs:
       - run: find dist/installers
         shell: bash
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v2
         with:
           name: ${{ env.FULL_TAG  }}
           path: dist/installers/${{ env.FULL_TAG }}*
