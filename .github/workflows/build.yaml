@@ -2,7 +2,7 @@ on:
   pull_request:
     branches:
       - master_restore_v3.6.0_release
-  push:
+  push:    
     branches:
       - master_restore_v3.6.0_release
 
@@ -35,23 +35,20 @@ jobs:
       - run: npm install --include=dev
       - run: cd frontend
       - run: npm install --include=dev
-      - run: npm install -g @angular/cli@15.2.10
-      - run: npm install -g typescript@4.9.5
+      - run: npm install -g @angular/cli@9.1.15
+      - run: npm install -g typescript@3.8.3
       - run: cd ..
-      - run: npm install -g $INSTALL_PKG
+      - run: npm install ${INSTALL_PKG}
 
       - name: Build
         if: runner.os != 'Windows'
         run: npm run build-${PLTF}
         shell: bash
 
-
-
       - name: Build for Windows
         if: runner.os == 'Windows'
         run: npm run build-frontend && npm run package-win && find dist/
         shell: bash
-
 
       - name: Create Code Signing Certificate
         if: runner.os == 'Windows'
@@ -77,7 +74,6 @@ jobs:
       - name: Create installer for Windows
         if: runner.os == 'Windows'
         run: |
-          npm install electron-wix-msi
           npm run installer-win
           #cp dist/installers/*.msi installers/StoXInstaller/res/
           #cd installers/StoXInstaller
@@ -104,14 +100,6 @@ jobs:
           echo "LAST_VERSION=${LAST_VERSION}" >> $GITHUB_ENV
           echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
-
-          if [[ ${PKGVER} == *-* ]]; 
-          then
-            PRERELEASE=true
-          else
-            PRERELEASE=false
-          fi
-          export PRERELEASE=$PRERELEASE >> $GITHUB_ENV
         shell: bash
 
       #- name: Renaming files for upload (Windows only)
@@ -139,7 +127,7 @@ jobs:
           path: dist/installers/${{ env.FULL_TAG }}*
 
       - name: Create release and upload files
-        if: github.event_name == 'push' && ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) )
+        if: github.event_name == 'push'
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
