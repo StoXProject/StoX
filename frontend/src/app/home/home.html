@@ -11,6 +11,7 @@
 <ResetProjectDlg></ResetProjectDlg>
 <InstallRPackagesDlg></InstallRPackagesDlg>
 <SingleVariableDlg></SingleVariableDlg>
+<CheckForUpdatesDialog></CheckForUpdatesDialog>
 
 <div class="navbar d-flex" style="z-index: 100; flex-wrap: nowrap; padding: 0; height: 1.2rem">
   <button *ngIf="isDesktop()" mat-button [matMenuTriggerFor]="filemenu" [disabled]="!!ps.getRunningProcess()">
@@ -42,6 +43,7 @@
     Help
     <mat-menu #helpmenu="matMenu">
       <button mat-menu-item (click)="stoxHome()">StoX Home</button>
+      <button mat-menu-item (click)="checkForUpdates()">Check for updates</button>
     </mat-menu>
   </button>
 

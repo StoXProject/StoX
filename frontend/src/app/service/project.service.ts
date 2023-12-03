@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 
+import { CheckForUpdatesDialogService } from '../checkForUpdatesDlg/CheckForUpdatesDialogService';
 import { HelpCache } from '../data/HelpCache';
 import { Model } from '../data/model';
 import { OutputElement as OutputElement } from '../data/outputelement';
@@ -50,7 +51,8 @@ export class ProjectService {
 
   constructor(
     private dataService: DataService /*, public rs: RunService*/,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private checkForUpdatesDialogService: CheckForUpdatesDialogService
   ) {
     console.log('> ' + 'Initializing project service');
     this.initData();
@@ -312,6 +314,13 @@ export class ProjectService {
       this.setModels(null);
       await this.activateProject(null, false);
     }
+
+    // Check for StoX update:
+    await this.checkForUpdatesDialogService.checkForUpdates();
+    const newVersionAvailable = this.checkForUpdatesDialogService.newVersionAvailable();
+    if (newVersionAvailable) {
+      this.dataService.log.push(new UserLogEntry(UserLogType.WARNING, "There is a newer StoX version available. Go to 'Check for updates' on the Help menu to install the newer version."));
+    }
   }
 
   /**
@@ -338,6 +347,8 @@ export class ProjectService {
         this.appStatus = 'Opening project ' + projectPath + ' as template and storing in' + projectNewPath;
       }
 
+      await this.activateProject(null, true);
+
       const newTemplateProject = await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow).toPromise();
 
       // The project is now loaded in backend
@@ -359,6 +370,7 @@ export class ProjectService {
       project = null; // openProject returns NA when project is renamed or moved.
     }
 
+    // Close currently open project:
     if (this.selectedProject != null) {
       let save: boolean = false;
 

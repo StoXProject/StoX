@@ -4,6 +4,7 @@ import { MatTabGroup } from '@angular/material/tabs';
 import { MenuItem } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
 
+import { CheckForUpdatesDialogService } from '../checkForUpdatesDlg/CheckForUpdatesDialogService';
 import { CreateProjectDialogService } from '../createProjectDlg/create-project-dialog.service';
 import { InstallRPackagesDlgService } from '../dlg/InstallRPackages/InstallRPackagesDlgService';
 import { RConnectionDlgService } from '../dlg/RConnectionDlgService';
@@ -36,7 +37,8 @@ export class HomeComponent {
     private resetProjectService: ResetProjectDlgService,
     private installRPackagesDlgService: InstallRPackagesDlgService,
     private ds: DataService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private checkForUpdatesDialogService: CheckForUpdatesDialogService
   ) {
     ps.bottomViewActivator.subscribe({
       next: idx => {
@@ -97,6 +99,10 @@ export class HomeComponent {
 
   isSaved(): boolean {
     return !this.isProjectSelected() || this.ps.selectedProject.saved;
+  }
+
+  checkForUpdates() {
+    this.checkForUpdatesDialogService.showDialog();
   }
 
   async stoxHome() {

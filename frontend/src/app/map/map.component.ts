@@ -118,10 +118,11 @@ export class MapComponent implements OnInit, MapInteraction {
       case 'stratum-edit':
         return this.ps.iaMode == 'stratum' && this.stratumSelect != null && this.stratumModify != null;
       case 'stratum-add':
-      case 'zoom-in':
-      case 'zoom-out':
       case 'stratum-delete':
         return this.ps.iaMode == 'stratum' && this.stratumDraw != null;
+      case 'zoom-in':
+      case 'zoom-out':
+        return true;
     }
 
     return false;
@@ -146,6 +147,19 @@ export class MapComponent implements OnInit, MapInteraction {
 
   get tool(): string {
     return this.m_Tool;
+  }
+
+  handleToolClick(tool: string) {
+    switch (tool) {
+      case 'zoom-in':
+        this.handleZoomIn();
+        this.resetInteraction();
+        break;
+      case 'zoom-out':
+        this.handleZoomOut();
+        this.resetInteraction();
+        break;
+    }
   }
 
   // Tooltip
@@ -453,6 +467,20 @@ export class MapComponent implements OnInit, MapInteraction {
   private initializeStratumInteractions() {
     this.stratumSelect = MapSetup.createStratumSelectInteraction();
     this.stratumModify = MapSetup.createStratumModifyInteraction(this.stratumSelect, this.dataService, this.ps, this);
+  }
+
+  private handleZoomIn() {
+    const view = this.map.getView();
+    const zoom = view.getZoom();
+    const newZoom = Math.min(11, Math.floor(zoom) + 1);
+    view.setZoom(newZoom);
+  }
+
+  private handleZoomOut() {
+    const view = this.map.getView();
+    const zoom = view.getZoom();
+    const newZoom = Math.max(0, Math.ceil(zoom) - 1);
+    view.setZoom(newZoom);
   }
 
   private handleProcessAction(action: SubjectAction): void {
@@ -887,7 +915,7 @@ export class MapComponent implements OnInit, MapInteraction {
       }
     }
 
-    this.tool = 'freemove';
+    this.resetInteraction();
   }
 
   onResized(_event: ResizeObserverEntry) {

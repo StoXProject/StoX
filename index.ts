@@ -522,6 +522,7 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       }
       logInfo("Properties read from file: " + propFileName);
     }
+
     if (properties == null) {
       // Properties not read properly from file, or the file doesnt exist.
       logInfo("create initial properties");
@@ -533,6 +534,7 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       };
       logInfo("Properties initialized.");
     }
+
     if (
       properties.projectRootPath == null ||
       properties.projectRootPath == ""
@@ -541,6 +543,12 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       console.log("> " + "Node Home: " + require("os").homedir());
       properties.projectRootPath = app.getPath("home");
     }
+
+    // STOX-576 Windows home directory is not a good place for project files
+    if (properties?.projectRootPath?.includes("Program Files")) {
+      properties.projectRootPath = "";
+    }
+
     if (properties.mapInfo == null) {
       properties.mapInfo = {
         projection: "StoX_001_LAEA",
@@ -549,6 +557,7 @@ const readPropertiesFromFile = function readPropertiesFromFile() {
       };
       //{projection:'StoX_001_LAEA', zoom:4.3, origin:[10,60]}
     }
+
   } catch (err) {
     logInfo("Error reading properties: " + err);
   }
@@ -942,13 +951,13 @@ function setupServer() {
 
   server.post("/browse", function (req: any, res: any) {
     logInfo("select a folder... wait");
-    let defPath = resolveDefaultPath(req.body); // correct slashes in default path
-    logInfo("default folder " + defPath);
+    const defaultPath = resolveDefaultPath(req.body); // correct slashes in default path
+    logInfo("default folder " + defaultPath);
     require("electron")
       .dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
         title: "Select a folder",
-        defaultPath: /*require('os').homedir()*/ defPath,
-        properties: [/*'openFile'*/ "openDirectory"],
+        defaultPath,
+        properties: ["openDirectory"],
       })
       .then(
         (object: {
@@ -972,12 +981,12 @@ function setupServer() {
     let options: any = JSON.parse(req.body);
 
     if (Object.keys(options).length) {
-      let defPath = resolveDefaultPath(options.defaultPath); // correct slashes in default path
-      logInfo("default folder " + defPath);
+      const defaultPath = resolveDefaultPath(options.defaultPath); // correct slashes in default path
+      logInfo("default folder " + defaultPath);
       require("electron")
         .dialog.showOpenDialog(mainWindow != null ? mainWindow : null, {
           title: options.title,
-          defaultPath: defPath,
+          defaultPath,
           properties: options.properties,
         })
         .then(
