@@ -28,7 +28,7 @@ export class MessageDlgComponent implements OnInit {
 
   public static async showDlg(dialog: MatDialog, title: string, message: string, dlgType: MessageDlgType = MessageDlgType.YESNO) {
     const dialogRef = dialog.open(MessageDlgComponent, {
-      width: '250px',
+      //width: '500px',
       disableClose: true,
       data: { title, message, dlgType },
     });

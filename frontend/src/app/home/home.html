@@ -26,7 +26,7 @@
       <button mat-menu-item (click)="createNewProject()">Create new project</button>
       <button mat-menu-item (click)="openProject()">Open project</button>
       <button mat-menu-item (click)="openProjectAsTemplate()">Open project as template</button>
-      <button mat-menu-item (click)="closeProject()" [disabled]="!isProjectSelected()">Close project</button>
+      <button mat-menu-item (click)="closeCurrentProject()" [disabled]="!isProjectSelected()">Close project</button>
       <button mat-menu-item (click)="save()" [disabled]="isSaved()">Save</button>
       <button mat-menu-item (click)="saveProjectAs()" [disabled]="!isProjectSelected()">Save project as</button>
     </mat-menu>

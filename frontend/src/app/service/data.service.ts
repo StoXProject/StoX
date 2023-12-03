@@ -162,6 +162,12 @@ export class DataService {
     });
   }
 
+  getProject(projectPath: string): Observable<any> {
+    return this.runFunction('getProject', {
+      projectPath
+    });
+  }
+
   getProcessPropertySheet(projectPath: string, modelName: string, processID: string): Observable<ProcessProperties> {
     return this.runProcessFunc<ProcessProperties>('getProcessPropertySheet', projectPath, modelName, processID);
   }

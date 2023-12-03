@@ -472,7 +472,7 @@ export class MapComponent implements OnInit, MapInteraction {
   private handleZoomIn() {
     const view = this.map.getView();
     const zoom = view.getZoom();
-    const newZoom = Math.min(11, Math.floor(zoom) + 1);
+    const newZoom = Math.min(28, Math.floor(zoom) + 1);
     view.setZoom(newZoom);
   }
 
