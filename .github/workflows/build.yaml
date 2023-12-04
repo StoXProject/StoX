@@ -142,8 +142,8 @@ jobs:
       #    name: ${{ env.FULL_TAG  }}
       #    path: dist/installers/${{ env.FULL_TAG }}*
 
-      - name: Create release and upload files but only for push
-        if: github.event_name == 'push' && ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) )
+      - name: Create release and upload files when a pull request is merged
+        if: github.event.pull_request.merged  &&  ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) )
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.FINAL_TAG }}
