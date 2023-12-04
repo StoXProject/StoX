@@ -1,3 +1,9 @@
+# StoX v3.6.3-9004 (2023-12-04)
+
+## Summary
+* Test release to test changes to the build script.
+
+
 # StoX v3.6.3-9003 (2023-12-03)
 
 ## Summary

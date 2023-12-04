@@ -99,7 +99,7 @@ jobs:
         run: |
           export VERSION=$(node -pe "require('./package.json')['version']")
           export LAST_VERSION=${VERSION##*.}
-          export FINAL_TAG=${VERSION}$(if [ "$GITHUB_REF" = "refs/heads/develop" ]; then echo "+dev.${GITHUB_SHA::7}"; else echo ""; fi)
+          export FINAL_TAG=${VERSION}
           export FULL_TAG=$(node -pe "require('./package.json')['name']")-installer-${PLTF}-${FINAL_TAG}
           mv $(ls dist/installers/*${EXT}) dist/installers/${FULL_TAG}.${EXT}
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
@@ -135,16 +135,17 @@ jobs:
       - run: find dist/installers
         shell: bash
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.FULL_TAG  }}
-          path: dist/installers/${{ env.FULL_TAG }}*
+      #- name: Upload artifacts
+      #  if: github.event_name == 'push' && ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) )
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: ${{ env.FULL_TAG  }}
+      #    path: dist/installers/${{ env.FULL_TAG }}*
 
-      - name: Create release and upload files
-        if: github.event_name == 'push' && ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) )
+      - name: Create release and upload files when a pull request is merged
+        if: ${{ github.event.pull_request.merged == true  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) ) }}
         uses: ncipollo/release-action@v1
         with:
-          allowUpdates: true
           tag: v${{ env.FINAL_TAG }}
           name: StoX-v${{ env.FINAL_TAG }}
           artifacts: dist/installers/${{ env.FULL_TAG }}*
