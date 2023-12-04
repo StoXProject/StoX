@@ -143,7 +143,7 @@ jobs:
       #    path: dist/installers/${{ env.FULL_TAG }}*
 
       - name: Create release and upload files when a pull request is merged
-        if: ${{ github.event.pull_request.merged  &&  ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) ) }}
+        if: ${{ github.event.pull_request.merged  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE = false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE = true ) ) }}
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.FINAL_TAG }}
