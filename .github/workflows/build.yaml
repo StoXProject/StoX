@@ -142,7 +142,7 @@ jobs:
       #    name: ${{ env.FULL_TAG  }}
       #    path: dist/installers/${{ env.FULL_TAG }}*
 
-      - name: Create release and upload files
+      - name: Create release and upload files but only for push
         if: github.event_name == 'push' && ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) )
         uses: ncipollo/release-action@v1
         with:
