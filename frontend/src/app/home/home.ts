@@ -77,7 +77,7 @@ export class HomeComponent {
   openProjectAsTemplate() {
     this.openProjectAsTemplateDlgService.showDialog();
   }
-  closeProject() {
+  closeCurrentProject() {
     this.ps.activateProject(null, true);
   }
   save() {

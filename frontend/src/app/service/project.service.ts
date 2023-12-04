@@ -347,8 +347,35 @@ export class ProjectService {
         this.appStatus = 'Opening project ' + projectPath + ' as template and storing in' + projectNewPath;
       }
 
+      // Close the current project first:
       await this.activateProject(null, true);
 
+      // Then get the project to copy from and close that also:
+      const projectToCopy = await this.dataService.getProject(projectPath).toPromise();
+
+      let save: boolean = false;
+
+      if (askSave) {
+        if (!projectToCopy.saved) {
+          // #263 requires a save before close message
+          const res = await MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project "' + projectToCopy.projectName + '" before closing?');
+
+          switch (res) {
+            case 'yes':
+              save = true;
+              break;
+            case 'no':
+              save = false;
+              break;
+            case '':
+              return; // interrupt activation
+          }
+        }
+      }
+
+      await this.dataService.closeProject(projectToCopy.projectPath, save, this.application).toPromise();
+      
+      // Then open as template:
       const newTemplateProject = await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow).toPromise();
 
       // The project is now loaded in backend
@@ -356,6 +383,7 @@ export class ProjectService {
       // Project object should possibly be returned in the openProjectAsTemplate call (need to be fixed in backend)
       //const newTemplateProject: Project = { projectPath: newProjectPath, projectName };
 
+      // Activate the new project:
       await this.activateProject(newTemplateProject, askSave);
     } finally {
       this.appStatus = null;
@@ -377,7 +405,7 @@ export class ProjectService {
       if (askSave) {
         if (!this.selectedProject.saved) {
           // #263 requires a save before close message
-          const res = await MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project before closing?');
+          const res = await MessageDlgComponent.showDlg(this.dialog, 'Save project', 'Save project "' + this.selectedProject.projectName + '" before closing?');
 
           switch (res) {
             case 'yes':
