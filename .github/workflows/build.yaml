@@ -107,14 +107,11 @@ jobs:
 
           if [[ ${FINAL_TAG} == *-* ]]; 
           then
-            PRERELEASE=true
+            echo "PRERELEASE=true" >> "$GITHUB_ENV"  
           else
-            PRERELEASE=false
+            echo "PRERELEASE=false" >> "$GITHUB_ENV"  
           fi
-          export PRERELEASE=$PRERELEASE >> $GITHUB_ENV
           
-          #echo "PRERELEASE=${PRERELEASE}" >> $GITHUB_ENV
-
           echo "${PRERELEASE}"
           echo "${FINAL_TAG}"
           echo "${FULL_TAG}"
@@ -175,8 +172,28 @@ jobs:
           echo ${{ env.PRERELEASE == 'false' }}
         shell: bash
       
+      - name: Test 3b - env.PRERELEASE == 'false'
+        if: ${{ env.PRERELEASE == 'false' }}
+        run: |
+          echo ${{ env.PRERELEASE }}
+          echo ${{ env.PRERELEASE == false }}
+          echo ${{ env.PRERELEASE == 'false' }}
+        shell: bash
+      
       - name: Test 4 - github.ref == 'refs/heads/develop'
         if: ${{ github.ref == 'refs/heads/develop' }}
+        run: |
+          echo "Testing"
+        shell: bash
+      
+      - name: Test 5 - env.PRERELEASE == true
+        if: ${{ env.PRERELEASE == true }}
+        run: |
+          echo "Testing"
+        shell: bash
+      
+      - name: Test 5b - env.PRERELEASE == 'true'
+        if: ${{ env.PRERELEASE == 'true' }}
         run: |
           echo "Testing"
         shell: bash
