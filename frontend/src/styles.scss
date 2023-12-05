@@ -16,29 +16,6 @@ html {
   font-weight: bold;
 }
 
-// .ngx-contextmenu {
-//   background-color: rgb(242, 242, 242);
-//   ul {
-//     padding: 0;
-//     margin: 0;
-//     li:not(.divider) {
-//       background-color: rgb(242, 242, 242);
-//       padding: 0.05rem;
-//       margin: 0;
-//       a {
-//         margin-left: 33px;
-//         color: black;
-//       }
-//       a:hover {
-//         text-decoration: none;
-//       }
-//     }
-//     li:hover:not(.divider) {
-//       background-color: rgb(145, 201, 247);
-//     }
-//   }
-// }
-
 .rib {
   position: relative;
   display: inline-block;
@@ -93,4 +70,9 @@ html {
   background-color: #e9f3fc !important;
   border: 1px solid lighten(#e9f3fc, 4%);
   box-shadow: 1px 1px darken(#e9f3fc, 10%);
+}
+
+/* Angular Material will convert this if this is present in component scss files */
+.mat-mdc-tab-body-wrapper {
+  height: 100%;
 }
