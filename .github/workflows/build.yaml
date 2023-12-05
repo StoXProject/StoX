@@ -115,6 +115,10 @@ jobs:
           
           echo "PRERELEASE=${PRERELEASE}" >> $GITHUB_ENV
 
+          echo "${PRERELEASE}"
+          echo "${FINAL_TAG}"
+          echo "${FULL_TAG}"
+
         shell: bash
 
       #- name: Renaming files for upload (Windows only)
