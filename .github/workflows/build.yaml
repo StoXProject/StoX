@@ -114,6 +114,9 @@ jobs:
             PRERELEASE=false
           fi
           export PRERELEASE=$PRERELEASE >> $GITHUB_ENV
+          
+          echo "PRERELEASE=${PRERELEASE}" >> $GITHUB_ENV
+
         shell: bash
 
       #- name: Renaming files for upload (Windows only)
@@ -142,6 +145,13 @@ jobs:
       #    name: ${{ env.FULL_TAG  }}
       #    path: dist/installers/${{ env.FULL_TAG }}*
 
+      - name: Test 0 - push
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          echo "Testing"
+        shell: bash
+      
+      
       - name: Test 1 - github.event.pull_request.merged == true
         if: ${{ github.event.pull_request.merged == true }}
         run: |
@@ -192,7 +202,7 @@ jobs:
         shell: bash
 
       - name: Create release and upload files when a pull request is merged
-        if: ${{ github.event.pull_request.merged == true  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) ) }}
+        if: ${{ github.event_name == 'push'  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) ) }}
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.FINAL_TAG }}
