@@ -68,6 +68,7 @@ export class ProcessComponent {
     // comment: add list of outputtablenames to runModel result.
     const m: MenuItem[] = [];
 
+    // Generate menu items
     const runFromHere = {
       label: 'Run from here',
       icon: 'rib absa runfromhereicon',
@@ -120,59 +121,77 @@ export class ProcessComponent {
     m.push(duplicate);
 
     if (this.ps.selectedProcess.hasBeenRun && this.rs.isProcessIdxRunnable(this.ps.getSelectedProcessIdx())) {
-      const elements: ProcessOutputElement[] = await this.ds.getProcessOutputElements(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
-
-      if (elements.length > 0) {
-        m.push({
-          label: 'Preview',
-          icon: 'rib absa previewicon',
-          items: elements.map(e => {
-            return {
-              label: e.elementName,
-              icon: 'rib absa fileicon',
-              command: async _event => {
-                let idx = this.ps.outputElements.findIndex(t => t.element.elementFullName == e.elementFullName);
-
-                if (idx == -1) {
-                  const oe: OutputElement = { processId: this.ps.selectedProcessId, element: e };
-
-                  this.ps.outputElements.push(oe);
-                  console.log('> ' + JSON.stringify(oe));
-                  try {
-                    this.ps.appStatus = 'Loading...';
-                    await this.ps.resolveElementOutput(oe);
-                  } finally {
-                    this.ps.appStatus = null;
-                  }
-
-                  idx = this.ps.outputElements.length - 1;
-                }
-
-                this.ps.bottomViewActivator.next(1);
-                this.ps.outputTableActivator.next(idx);
-              },
-            };
-          }),
-        });
+      const previewItems = await this.generatePreviewItems();
+      if (previewItems) {
+        m.push(previewItems);
       }
 
-      const hasFileOutput: boolean = await this.ds.hasFileOutput(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
-
-      if (hasFileOutput) {
-        m.push({
-          label: 'Show in folder',
-          icon: 'rib absa foldericon',
-          command: async event => {
-            const outFolder: string = await this.ds.getProcessOutputFolder(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
-
-            await this.ds.showinfolder(outFolder).toPromise();
-          },
-        });
+      const fileOutputItems = await this.generateFileOuputItems();
+      if (fileOutputItems) {
+        m.push(fileOutputItems);
       }
     }
 
     this.cm.model = m;
   }
+
+  generateFileOuputItems = async (): Promise<MenuItem | null> => {
+    const hasFileOutput: boolean = await this.ds.hasFileOutput(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+
+    if (!hasFileOutput) {
+      return null;
+    }
+
+    return {
+      label: 'Show in folder',
+      icon: 'rib absa foldericon',
+      command: async event => {
+        const outFolder: string = await this.ds.getProcessOutputFolder(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+
+        await this.ds.showinfolder(outFolder).toPromise();
+      },
+    };
+  };
+
+  generatePreviewItems = async (): Promise<MenuItem | null> => {
+    const elements: ProcessOutputElement[] = await this.ds.getProcessOutputElements(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
+
+    if (elements.length <= 0) {
+      return null;
+    }
+
+    return {
+      label: 'Preview',
+      icon: 'rib absa previewicon',
+      items: elements.map(e => {
+        return {
+          label: e.elementName,
+          icon: 'rib absa fileicon',
+          command: async _event => {
+            let idx = this.ps.outputElements.findIndex(t => t.element.elementFullName == e.elementFullName);
+
+            if (idx == -1) {
+              const oe: OutputElement = { processId: this.ps.selectedProcessId, element: e };
+
+              this.ps.outputElements.push(oe);
+              console.log('> ' + JSON.stringify(oe));
+              try {
+                this.ps.appStatus = 'Loading...';
+                await this.ps.resolveElementOutput(oe);
+              } finally {
+                this.ps.appStatus = null;
+              }
+
+              idx = this.ps.outputElements.length - 1;
+            }
+
+            this.ps.bottomViewActivator.next(1);
+            this.ps.outputTableActivator.next(idx);
+          },
+        };
+      }),
+    };
+  };
 
   async openCm(event: MouseEvent, cm: ContextMenu, process: Process) {
     // TODO: Incorpoate dynamic ng-action-outlet with material. or support scrolling primeng menus
@@ -188,14 +207,16 @@ export class ProcessComponent {
   }
 
   async drop(event: CdkDragDrop<string[]>) {
-    if (event.previousIndex == event.currentIndex) {
+    const { currentIndex, previousIndex } = event;
+
+    if (previousIndex == currentIndex) {
       return;
     }
 
-    console.log('> ' + event.previousIndex, event.currentIndex);
-    const draggedProcessId: string = this.ps.processes[event.previousIndex].processID;
+    console.log('> ' + previousIndex, currentIndex);
+    const draggedProcessId: string = this.ps.processes[previousIndex].processID;
 
-    const droppedProcessAfterIndex: number = event.previousIndex < event.currentIndex ? event.currentIndex : event.currentIndex - 1;
+    const droppedProcessAfterIndex: number = previousIndex < currentIndex ? currentIndex : currentIndex - 1;
 
     const droppedProcessAfterId = droppedProcessAfterIndex >= 0 ? this.ps.processes[droppedProcessAfterIndex].processID : null;
 
@@ -214,9 +235,13 @@ export class ProcessComponent {
 
     const { functionInputProcessIDs: inputIds, usedInProcessIDs: usedIds } = selectedProcess;
 
-    const inputIdsList = Array.isArray(inputIds) ? inputIds : [inputIds];
-    const usedIdsList = Array.isArray(usedIds) ? usedIds : [usedIds];
+    const inputIdsList = this.stringOrListToList(inputIds);
+    const usedIdsList = this.stringOrListToList(usedIds);
 
     return inputIdsList.includes(iteratedProcessId) || usedIdsList.includes(iteratedProcessId);
+  };
+
+  stringOrListToList = (input: string | string[]): string[] => {
+    return Array.isArray(input) ? input : [input];
   };
 }
