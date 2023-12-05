@@ -186,6 +186,12 @@ jobs:
           echo "Testing"
         shell: bash
       
+      - name: Test 4b - github.ref == 'refs/heads/StoX4'
+        if: ${{ github.ref == 'refs/heads/StoX4' }}
+        run: |
+          echo "StoX4"
+        shell: bash
+      
       - name: Test 5 - env.PRERELEASE == true
         if: ${{ env.PRERELEASE == true }}
         run: |
