@@ -198,32 +198,26 @@ jobs:
           echo "Testing"
         shell: bash
       
-      - name: Test 5 - env.PRERELEASE == true
-        if: ${{ env.PRERELEASE == true }}
-        run: |
-          echo "Testing"
-        shell: bash
-      
-      - name: Test 6 - (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false)
-        if: ${{ (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) }}
+      - name: Test 6 - (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false')
+        if: ${{ (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') }}
         run: |
           echo "Testing"
         shell: bash
 
-      - name: Test 7 - ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true )
-        if: ${{ ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) }}
+      - name: Test 7 - ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' )
+        if: ${{ ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) }}
         run: |
           echo "Testing"
         shell: bash
 
-      - name: Test 8 - ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) )
-        if: ${{ ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) ) }}
+      - name: Test 8 - ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) )
+        if: ${{ ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) ) }}
         run: |
           echo "Testing"
         shell: bash
 
       - name: Create release and upload files when a pull request is merged
-        if: ${{ github.event_name == 'push'  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) ) }}
+        if: ${{ github.event_name == 'push'  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) ) }}
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.FINAL_TAG }}
