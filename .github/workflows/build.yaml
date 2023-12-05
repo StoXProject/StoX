@@ -170,7 +170,9 @@ jobs:
       - name: Test 3 - env.PRERELEASE == false
         if: ${{ env.PRERELEASE == false }}
         run: |
-          echo "Testing"
+          echo ${{ env.PRERELEASE }}
+          echo ${{ env.PRERELEASE == false }}
+          echo ${{ env.PRERELEASE == 'false' }}
         shell: bash
       
       - name: Test 4 - github.ref == 'refs/heads/develop'
