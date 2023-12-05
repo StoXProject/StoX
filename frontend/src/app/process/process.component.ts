@@ -1,5 +1,5 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { Component, ElementRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, Renderer2, ViewChild } from '@angular/core';
 import { KeyboardShortcutsComponent, ShortcutInput } from 'ng-keyboard-shortcuts';
 import { MenuItem } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
@@ -15,7 +15,7 @@ import { RunService } from '../service/run.service';
   templateUrl: './process.component.html',
   styleUrls: ['./process.component.scss'],
 })
-export class ProcessComponent implements OnInit {
+export class ProcessComponent {
   shortcuts: ShortcutInput[] = [];
 
   @ViewChild('input', { static: false }) input: ElementRef;
@@ -29,25 +29,31 @@ export class ProcessComponent implements OnInit {
   ) {}
 
   keydown(event: KeyboardEvent) {
-    if (this.ps.processes != null && this.ps.processes.length > 0) {
-      switch (event.key) {
-        case 'ArrowDown':
-        case 'ArrowUp': {
-          const idx: number = event.key == 'ArrowDown' ? Math.min(this.ps.processes.length - 1, this.ps.getSelectedProcessIdx() + 1) : Math.max(0, this.ps.getSelectedProcessIdx() - 1);
+    if (!(this.ps.processes != null && this.ps.processes.length > 0)) {
+      return;
+    }
 
-          this.ps.selectedProcess = this.ps.processes[idx];
-          break;
-        }
-      }
+    let idx = null;
+    const currentId = this.ps.getSelectedProcessIdx();
+    switch (event.key) {
+      case 'ArrowDown':
+        idx = Math.min(this.ps.processes.length - 1, currentId + 1);
+        break;
+
+      case 'ArrowUp':
+        idx = Math.max(0, currentId - 1);
+        break;
+    }
+
+    if (idx != null) {
+      this.ps.selectedProcess = this.ps.processes[idx];
     }
   }
-
-  async ngOnInit() {}
 
   ngAfterViewInit(): void {
     this.shortcuts.push({
       key: 'ctrl + f6',
-      command: e => {
+      command: _event => {
         this.rs.runToHere();
       },
     });
@@ -57,57 +63,61 @@ export class ProcessComponent implements OnInit {
   showMessage(message: any) {
     console.log('> ' + message);
   }
-  toggleBreak(p: Process) {
-    //p.breakingui = !p.breakingui
-  }
 
   async prepCm() {
     // comment: add list of outputtablenames to runModel result.
     const m: MenuItem[] = [];
 
+    const runFromHere = {
+      label: 'Run from here',
+      icon: 'rib absa runfromhereicon',
+      command: _event => {
+        this.rs.runFromHere();
+      },
+    };
+    const runThis = {
+      label: 'Run this',
+      icon: 'rib absa runthisicon',
+      command: _event => {
+        this.rs.runThis();
+      },
+    };
+    const runToHere = {
+      label: 'Run to here',
+      icon: 'rib absa runtoicon',
+      command: _event => {
+        this.rs.runToHere();
+      },
+    };
+
+    const deleteMenuItem = {
+      label: 'Delete',
+      icon: 'rib absa deleteicon',
+      command: _event => {
+        this.ps.removeSelectedProcess();
+      },
+    };
+    const duplicate = {
+      label: 'Duplicate',
+      icon: 'rib absa duplicate',
+      command: _event => {
+        this.ps.duplicateSelectedProcess();
+      },
+    };
+
+    // Add items to menu
     if (this.rs.canRunFromHere()) {
-      m.push({
-        label: 'Run from here',
-        icon: 'rib absa runfromhereicon',
-        command: event => {
-          this.rs.runFromHere();
-        },
-      });
+      m.push(runFromHere);
     }
 
     if (this.rs.canRunThis()) {
-      m.push({
-        label: 'Run this',
-        icon: 'rib absa runthisicon',
-        command: event => {
-          this.rs.runThis();
-        },
-      });
+      m.push(runThis);
     } else if (this.rs.canRunToHere()) {
-      m.push({
-        label: 'Run to here',
-        icon: 'rib absa runtoicon',
-        command: event => {
-          this.rs.runToHere();
-        },
-      });
+      m.push(runToHere);
     }
 
-    m.push({
-      label: 'Delete',
-      icon: 'rib absa deleteicon',
-      command: event => {
-        this.ps.removeSelectedProcess();
-      },
-    });
-
-    m.push({
-      label: 'Duplicate',
-      icon: 'rib absa duplicate',
-      command: event => {
-        this.ps.duplicateSelectedProcess();
-      },
-    });
+    m.push(deleteMenuItem);
+    m.push(duplicate);
 
     if (this.ps.selectedProcess.hasBeenRun && this.rs.isProcessIdxRunnable(this.ps.getSelectedProcessIdx())) {
       const elements: ProcessOutputElement[] = await this.ds.getProcessOutputElements(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, this.ps.selectedProcessId).toPromise();
@@ -120,7 +130,7 @@ export class ProcessComponent implements OnInit {
             return {
               label: e.elementName,
               icon: 'rib absa fileicon',
-              command: async event => {
+              command: async _event => {
                 let idx = this.ps.outputElements.findIndex(t => t.element.elementFullName == e.elementFullName);
 
                 if (idx == -1) {
@@ -194,4 +204,19 @@ export class ProcessComponent implements OnInit {
       this.ps.handleAPI(await this.ds.rearrangeProcesses(this.ps.selectedProject.projectPath, this.ps.selectedModel.modelName, draggedProcessId, droppedProcessAfterId).toPromise());
     }
   }
+
+  isUsedBySelectedProcess = (iteratedProcessId): boolean => {
+    const selectedProcess = this.ps.selectedProcess;
+
+    if (!selectedProcess) {
+      return false;
+    }
+
+    const { functionInputProcessIDs: inputIds, usedInProcessIDs: usedIds } = selectedProcess;
+
+    const inputIdsList = Array.isArray(inputIds) ? inputIds : [inputIds];
+    const usedIdsList = Array.isArray(usedIds) ? usedIds : [usedIds];
+
+    return inputIdsList.includes(iteratedProcessId) || usedIdsList.includes(iteratedProcessId);
+  };
 }
