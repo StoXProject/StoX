@@ -88,10 +88,10 @@
         <as-split-area size="75">
           <app-map class="map" [cm]="cm"></app-map>
         </as-split-area>
-        <as-split-area size="25">
+        <as-split-area size="25" style="overflow: hidden">
           <mat-tab-group [@.disabled]="true" #bottomTabGroup style="height: 100%">
             <mat-tab label="User log">
-              <userlog style="height: inherit; width: inherit" [cm]="cm"></userlog>
+              <userlog [cm]="cm" style="height: 100%; width: inherit"></userlog>
             </mat-tab>
             <mat-tab label="Preview">
               <output [cm]="cm" style="height: 100%; width: 100%"></output>
