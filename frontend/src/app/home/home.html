@@ -88,17 +88,17 @@
         <as-split-area size="75">
           <app-map class="map" [cm]="cm"></app-map>
         </as-split-area>
-        <as-split-area size="25" style="overflow: hidden">
+        <as-split-area size="25">
           <mat-tab-group [@.disabled]="true" #bottomTabGroup style="height: 100%">
             <mat-tab label="User log">
-              <userlog [cm]="cm" style="height: 100%; width: inherit"></userlog>
+              <userlog [cm]="cm" style="height: 100%; width: 100%"></userlog>
             </mat-tab>
             <mat-tab label="Preview">
               <output [cm]="cm" style="height: 100%; width: 100%"></output>
             </mat-tab>
             <!--<mat-tab label="Graph"> </mat-tab>-->
             <mat-tab label="Stratum/PSU">
-              <app-stratumpsu [cm]="cm"></app-stratumpsu>
+              <app-stratumpsu [cm]="cm" style="height: 100%; width: 100%"></app-stratumpsu>
             </mat-tab>
           </mat-tab-group>
         </as-split-area>

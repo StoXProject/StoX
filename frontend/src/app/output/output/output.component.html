@@ -1,10 +1,10 @@
-<mat-tab-group [@.disabled]="true" #outputTableGroup style="height: 100%">
+<mat-tab-group [@.disabled]="true" #outputTableGroup>
   <mat-tab *ngFor="let item of ps.outputElements" label="{{ item.element.elementFullName }}">
     <ng-template mat-tab-label>
       <div (contextmenu)="openCm($event, item)">{{ item.element.elementFullName }}</div>
     </ng-template>
-    <ng-container [ngSwitch]="item.element.elementType" style="height: 100%">
-      <cdk-virtual-scroll-viewport *ngSwitchDefault itemSize="10" style="" class="preview-content">
+    <ng-container [ngSwitch]="item.element.elementType">
+      <cdk-virtual-scroll-viewport *ngSwitchDefault itemSize="10" class="preview-content">
         <div *cdkVirtualFor="let line of item.output">{{ line }}</div>
       </cdk-virtual-scroll-viewport>
       <img [hidden]="item.output?.img === null || item.output?.img === undefined" *ngSwitchCase="'plot'" [src]="bypassURL(item.output?.img)" [ngStyle]="{ width: item.output?.width + 'cm', height: item.output?.height + 'cm' }" />
