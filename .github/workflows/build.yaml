@@ -144,6 +144,13 @@ jobs:
       #    name: ${{ env.FULL_TAG  }}
       #    path: dist/installers/${{ env.FULL_TAG }}*
 
+
+      - name: Print stuff
+        run: |
+          echo "$GITHUB_REF"
+        shell: bash
+      
+
       - name: Test 0 - push
         if: ${{ github.event_name == 'push' }}
         run: |
