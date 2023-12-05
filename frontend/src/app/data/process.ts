@@ -14,4 +14,6 @@ export class Process {
   hasProcessData?: boolean; // process with color in middle.
   hasBeenRun?: boolean; // not used in gui.
   //modified?: boolean; // not needed - remove this, replaced by processDirty at ActiveProcess
+  functionInputProcessIDs?: string[];
+  usedInProcessIDs?: string[];
 }

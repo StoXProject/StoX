@@ -374,7 +374,7 @@ export class ProjectService {
       }
 
       await this.dataService.closeProject(projectToCopy.projectPath, save, this.application).toPromise();
-      
+
       // Then open as template:
       const newTemplateProject = await this.dataService.openProjectAsTemplate(projectPath, projectNewPath, doThrow).toPromise();
 
