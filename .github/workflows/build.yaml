@@ -147,7 +147,9 @@ jobs:
 
       - name: Print stuff
         run: |
-          echo "$GITHUB_REF"
+          echo "Tag name from github.ref: ${{  github.ref }}"
+          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
+          echo "Tag name from github.head_ref: ${{  github.head_ref }}"
         shell: bash
       
 
