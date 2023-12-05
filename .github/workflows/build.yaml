@@ -185,6 +185,20 @@ jobs:
         run: |
           echo "Testing"
         shell: bash
+
+      - name: Test 4c - github.ref_name == 'develop'
+        if: ${{ github.ref_name == 'develop' }}
+        run: |
+          echo "Testing"
+        shell: bash
+
+      - name: Test 4d - github.ref_name == 'develop' no brackets
+        if: github.ref_name == 'develop'
+        run: |
+          echo "Testing"
+        shell: bash
+
+        
       
       - name: Test 4b - github.ref == 'refs/heads/StoX4'
         if: ${{ github.ref == 'refs/heads/StoX4' }}
