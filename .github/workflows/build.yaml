@@ -245,10 +245,11 @@ jobs:
           echo "Testing"
         shell: bash
 
-      - name: Create release and upload files when a pull request is merged
+      - name: Create release and upload files when a pull request is merged (allowUpdates is set to true so that all platforms can be included in the release)
         if: ${{ github.event_name == 'push'  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) ) }}
         uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
           tag: v${{ env.FINAL_TAG }}
           name: StoX-v${{ env.FINAL_TAG }}
           artifacts: dist/installers/${{ env.FULL_TAG }}*
