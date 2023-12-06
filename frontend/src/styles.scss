@@ -76,3 +76,7 @@ html {
 .mat-mdc-tab-body-wrapper {
   height: 100%;
 }
+.mat-mdc-tab-body-content {
+  height: 100%;
+  overflow: hidden !important;
+}
