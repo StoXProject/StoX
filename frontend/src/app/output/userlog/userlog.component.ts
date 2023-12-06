@@ -1,4 +1,5 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { MenuItem } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
 
@@ -10,9 +11,10 @@ import { ProjectService } from '../../service/project.service';
   templateUrl: './userlog.component.html',
   styleUrls: ['./userlog.component.scss'],
 })
-export class UserLogComponent implements OnInit {
+export class UserLogComponent implements OnChanges {
   @Input() cm: ContextMenu;
-  @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
+  @Input() onTabChange: MatTabChangeEvent;
+  @ViewChild('scrollMe', { static: true }) private myScrollContainer: ElementRef;
   constructor(
     public ds: DataService,
     public ps: ProjectService
@@ -31,8 +33,6 @@ export class UserLogComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
-
   scrollToBottom(): void {
     try {
       this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
@@ -50,12 +50,32 @@ export class UserLogComponent implements OnInit {
         this.ds.log.splice(0, this.ds.log.length);
       },
     });
+
     this.cm.model = m;
   }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.onTabChange) {
+      this.loadScrollPosition();
+    }
+  }
+
+  loadScrollPosition() {
+    const userlogScroll = localStorage.getItem('userlogScroll');
+    if (userlogScroll) {
+      this.myScrollContainer.nativeElement.scrollTop = userlogScroll;
+    }
+  }
+
+  saveScroll = () => {
+    const userlogScroll = this.myScrollContainer.nativeElement.scrollTop;
+    localStorage.setItem('userlogScroll', userlogScroll);
+  };
 
   async openCm(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
+
     await this.prepCm();
     this.cm.show(event);
 

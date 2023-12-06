@@ -89,9 +89,9 @@
           <app-map class="map" [cm]="cm"></app-map>
         </as-split-area>
         <as-split-area size="25">
-          <mat-tab-group [@.disabled]="true" #bottomTabGroup style="height: 100%">
+          <mat-tab-group [@.disabled]="true" #bottomTabGroup style="height: 100%" (selectedTabChange)="onTabChange($event)">
             <mat-tab label="User log">
-              <userlog [cm]="cm" style="height: 100%; width: 100%"></userlog>
+              <userlog [cm]="cm" [onTabChange]="tabEvent" style="height: 100%; width: 100%"></userlog>
             </mat-tab>
             <mat-tab label="Preview">
               <output [cm]="cm" style="height: 100%; width: 100%"></output>
