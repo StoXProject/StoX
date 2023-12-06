@@ -1,6 +1,6 @@
 <p-listbox cdkDropList (cdkDropListDropped)="drop($event)" #listBox [options]="ps.processes" [(ngModel)]="ps.selectedProcess" optionLabel="processName" (keydown)="keydown($event)">
   <ng-template let-process pTemplate="item">
-    <div (contextmenu)="openCm($event, cm, process)" cdkDrag>
+    <div (contextmenu)="openCm($event, cm, process)" cdkDrag style="height: 1.5em; width: 100%">
       <span [ngClass]="{ 'rib fa': true, processicon: process.enabled, inactiveprocessicon: !process.enabled, 'fa-spin': process === ps.getRunningProcess() }">
         <span *ngIf="process.hasProcessData" [ngClass]="{ absa: true, interactiveicon: process.enabled, inactiveinteractiveicon: !process.enabled }"></span>
         <span *ngIf="process !== ps.getRunningProcess() && process.canShowInMap" [ngClass]="{ absa: true, mapicon: process.enabled, inactivemapicon: !process.enabled }"></span>
