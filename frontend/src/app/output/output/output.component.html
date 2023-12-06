@@ -4,14 +4,10 @@
       <div (contextmenu)="openCm($event, item)">{{ item.element.elementFullName }}</div>
     </ng-template>
     <ng-container [ngSwitch]="item.element.elementType">
-      <cdk-virtual-scroll-viewport *ngSwitchDefault itemSize="10" minBufferPx="600" maxBufferPx="600" style="user-select: text; height: inherit; width: inherit; overflow: auto; white-space: pre; font-family: 'Courier New', Courier, monospace; --max-lines: 100">
+      <cdk-virtual-scroll-viewport *ngSwitchDefault itemSize="10" class="preview-content">
         <div *cdkVirtualFor="let line of item.output">{{ line }}</div>
       </cdk-virtual-scroll-viewport>
-      <div [ngStyle]="{ overflow: 'auto', width: '100%', height: '100%' }">
-        <img [hidden]="item.output?.img === null || item.output?.img === undefined" *ngSwitchCase="'plot'" [src]="bypassURL(item.output?.img)" [ngStyle]="{ width: item.output?.width + 'cm', height: item.output?.height + 'cm', overflow: 'auto' }" />
-      </div>
-      <!-- Serves as placeholder for content to come and keep scrollbar visible-->
-      <div style="height: 500px"></div>
+      <img [hidden]="item.output?.img === null || item.output?.img === undefined" *ngSwitchCase="'plot'" [src]="bypassURL(item.output?.img)" [ngStyle]="{ width: item.output?.width + 'cm', height: item.output?.height + 'cm' }" />
     </ng-container>
   </mat-tab>
 </mat-tab-group>

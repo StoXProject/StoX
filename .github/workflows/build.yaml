@@ -98,24 +98,23 @@ jobs:
           EXT: ${{ matrix.config.in_ext }}
         run: |
           export VERSION=$(node -pe "require('./package.json')['version']")
-          export LAST_VERSION=${VERSION##*.}
           export FINAL_TAG=${VERSION}
           export FULL_TAG=$(node -pe "require('./package.json')['name']")-installer-${PLTF}-${FINAL_TAG}
           mv $(ls dist/installers/*${EXT}) dist/installers/${FULL_TAG}.${EXT}
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "LAST_VERSION=${LAST_VERSION}" >> $GITHUB_ENV
           echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
 
-          if [[ ${PKGVER} == *-* ]]; 
+          if [[ ${FINAL_TAG} == *-* ]]; 
           then
-            PRERELEASE=true
+            echo "PRERELEASE=true" >> "$GITHUB_ENV"  
           else
-            PRERELEASE=false
+            echo "PRERELEASE=false" >> "$GITHUB_ENV"  
           fi
-          export PRERELEASE=$PRERELEASE >> $GITHUB_ENV
           
-          echo "PRERELEASE=${PRERELEASE}" >> $GITHUB_ENV
+          echo "${PRERELEASE}"
+          echo "${FINAL_TAG}"
+          echo "${FULL_TAG}"
 
         shell: bash
 
@@ -145,6 +144,15 @@ jobs:
       #    name: ${{ env.FULL_TAG  }}
       #    path: dist/installers/${{ env.FULL_TAG }}*
 
+
+      - name: Print stuff
+        run: |
+          echo "Tag name from github.ref: ${{  github.ref }}"
+          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
+          echo "Tag name from github.head_ref: ${{  github.head_ref }}"
+        shell: bash
+      
+
       - name: Test 0 - push
         if: ${{ github.event_name == 'push' }}
         run: |
@@ -168,13 +176,43 @@ jobs:
       - name: Test 3 - env.PRERELEASE == false
         if: ${{ env.PRERELEASE == false }}
         run: |
-          echo "Testing"
+          echo ${{ env.PRERELEASE }}
+          echo ${{ env.PRERELEASE == false }}
+          echo ${{ env.PRERELEASE == 'false' }}
+        shell: bash
+      
+      - name: Test 3b - env.PRERELEASE == 'false'
+        if: ${{ env.PRERELEASE == 'false' }}
+        run: |
+          echo ${{ env.PRERELEASE }}
+          echo ${{ env.PRERELEASE == false }}
+          echo ${{ env.PRERELEASE == 'false' }}
         shell: bash
       
       - name: Test 4 - github.ref == 'refs/heads/develop'
         if: ${{ github.ref == 'refs/heads/develop' }}
         run: |
           echo "Testing"
+        shell: bash
+
+      - name: Test 4c - github.ref_name == 'develop'
+        if: ${{ github.ref_name == 'develop' }}
+        run: |
+          echo "Testing"
+        shell: bash
+
+      - name: Test 4d - github.ref_name == 'develop' no brackets
+        if: github.ref_name == 'develop'
+        run: |
+          echo "Testing"
+        shell: bash
+
+        
+      
+      - name: Test 4b - github.ref == 'refs/heads/StoX4'
+        if: ${{ github.ref == 'refs/heads/StoX4' }}
+        run: |
+          echo "StoX4"
         shell: bash
       
       - name: Test 5 - env.PRERELEASE == true
@@ -183,26 +221,32 @@ jobs:
           echo "Testing"
         shell: bash
       
-      - name: Test 6 - (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false)
-        if: ${{ (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) }}
+      - name: Test 5b - env.PRERELEASE == 'true'
+        if: ${{ env.PRERELEASE == 'true' }}
+        run: |
+          echo "Testing"
+        shell: bash
+      
+      - name: Test 6 - (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false')
+        if: ${{ (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') }}
         run: |
           echo "Testing"
         shell: bash
 
-      - name: Test 7 - ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true )
-        if: ${{ ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) }}
+      - name: Test 7 - ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' )
+        if: ${{ ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) }}
         run: |
           echo "Testing"
         shell: bash
 
-      - name: Test 8 - ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) )
-        if: ${{ ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) ) }}
+      - name: Test 8 - ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) )
+        if: ${{ ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) ) }}
         run: |
           echo "Testing"
         shell: bash
 
       - name: Create release and upload files when a pull request is merged
-        if: ${{ github.event_name == 'push'  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == false) || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == true ) ) }}
+        if: ${{ github.event_name == 'push'  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) ) }}
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.FINAL_TAG }}

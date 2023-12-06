@@ -1,0 +1,7 @@
+.preview-content {
+  user-select: text;
+  height: 100%;
+  white-space: pre;
+  font-family: 'Courier New', Courier, monospace;
+  --max-lines: 100;
+}

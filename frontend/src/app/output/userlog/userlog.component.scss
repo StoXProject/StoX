@@ -1,6 +1,15 @@
 .errorlog {
-    color:red;
+  color: red;
 }
 .warninglog {
-    color:blue;
+  color: blue;
+}
+.logentry {
+  white-space: pre-line;
+  display: flex;
+  font-size: 0.85rem;
+  line-height: 0.9rem;
+}
+.scrollDiv {
+  user-select: text;
 }

@@ -164,7 +164,7 @@ export class DataService {
 
   getProject(projectPath: string): Observable<any> {
     return this.runFunction('getProject', {
-      projectPath
+      projectPath,
     });
   }
 

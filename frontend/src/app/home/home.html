@@ -91,14 +91,14 @@
         <as-split-area size="25">
           <mat-tab-group [@.disabled]="true" #bottomTabGroup style="height: 100%">
             <mat-tab label="User log">
-              <userlog style="height: inherit; width: inherit" [cm]="cm"></userlog>
+              <userlog [cm]="cm" style="height: 100%; width: 100%"></userlog>
             </mat-tab>
             <mat-tab label="Preview">
               <output [cm]="cm" style="height: 100%; width: 100%"></output>
             </mat-tab>
             <!--<mat-tab label="Graph"> </mat-tab>-->
             <mat-tab label="Stratum/PSU">
-              <app-stratumpsu [cm]="cm"></app-stratumpsu>
+              <app-stratumpsu [cm]="cm" style="height: 100%; width: 100%"></app-stratumpsu>
             </mat-tab>
           </mat-tab-group>
         </as-split-area>
