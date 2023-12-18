@@ -3,7 +3,9 @@
     <p-listbox [options]="ps.projects" [(ngModel)]="ps.selectedProject" optionLabel="projectName">
       <ng-template let-project pTemplate="item">
         <div (contextmenu)="openCm($event, cm, project)" pTooltip="{{ project.projectPath }}" tooltipPosition="right">
-          <span>{{ project.projectName }}</span>
+          <span style="display: inline-block; line-height: 1.1" [ngClass]="{  
+            allProjects: project.projectName
+          }">{{ project.projectName }}</span>
         </div>
       </ng-template>
     </p-listbox>
