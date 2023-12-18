@@ -16,4 +16,5 @@ export class Process {
   //modified?: boolean; // not needed - remove this, replaced by processDirty at ActiveProcess
   functionInputProcessIDs?: string[];
   usedInProcessIDs?: string[];
+  terminalProcess?: boolean; // not used as input in the model.
 }

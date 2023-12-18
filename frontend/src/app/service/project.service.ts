@@ -141,11 +141,13 @@ export class ProjectService {
 
   set selectedModel(model: Model) {
     this.m_selectedModel = model;
+    console.log('> ' + 'Change to model', model);
     // To do in future: caching process list per model. For now update process list on each model click
     this.onModelSelected();
   }
 
   async onModelSelected() {
+    console.log('> ' + 'Change model');
     if (this.selectedProject != null && this.selectedModel != null) {
       this.processes = await this.dataService.getProcessTable(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();
       this.activeProcess = await this.dataService.getActiveProcess(this.selectedProject.projectPath, this.selectedModel.modelName).toPromise();

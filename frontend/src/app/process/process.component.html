@@ -11,7 +11,15 @@
         <span *ngIf="process.enabled && !process.functionInputError && process.hasBeenRun && ps.isProcessDirty(process)" class="absa runstatusmodifiedicon"></span>
         <span *ngIf="process.enabled && process.functionInputError" class="absa functioninputerroricon"></span>
       </span>
-      <span style="display: inline-block; line-height: 1.1" [ngClass]="{ processUsedAsInput: isUsedAsInputBySelectedProcess(process.processID), usesSelectedProcess: usesSelectedProcess(process.processID) }">{{ process.processName }}</span>
+      <span style="display: inline-block; line-height: 1.1" [ngClass]="{  
+        processUsedAsInput: isUsedAsInputBySelectedProcess(process.processID), 
+        usesSelectedProcess: usesSelectedProcess(process.processID), 
+        processUsedAsInputButNotEnabled: !process.enabled && isUsedAsInputBySelectedProcess(process.processID), 
+        usesSelectedProcessButNotEnabled: !process.enabled && usesSelectedProcess(process.processID), 
+        notEnabled: !process.enabled, 
+        isTerminalProcess: process.terminalProcess, 
+        allProcesses: process.processID
+      }">{{ process.processName }}</span>
     </div>
   </ng-template>
 </p-listbox>
