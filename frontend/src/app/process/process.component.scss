@@ -1,3 +1,27 @@
-.processUsed {
-  font-weight: bold;
+// Using color blind friendly pallette, green and purple (https://www.nceas.ucsb.edu/sites/default/files/2022-06/Colorblind%20Safe%20Color%20Schemes.pdf):
+.processUsedAsInput {
+  font-weight: 800;
+  color: green;
+}
+.usesSelectedProcess {
+  font-weight: 800;
+  color: green;
+}
+.processUsedAsInputButNotEnabled {
+  font-weight: 800;
+  color: grey;
+}
+.usesSelectedProcessButNotEnabled {
+  font-weight: 800;
+  color: grey;
+}
+.notEnabled {
+  color: grey;
+}
+.isTerminalProcess {
+  font-weight: 800;
+  color: black;
+}
+.allProcesses {
+  font-size: 0.9rem;
 }

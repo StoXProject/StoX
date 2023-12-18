@@ -44,16 +44,20 @@ export class RunService {
   }
 
   canRunFromHere(): boolean {
+
+    // Get the next process, set to 0 if no active processes:
     const isProcessActive = this.ps.getActiveProcessIdx() != null;
-    const isProcessSelected = this.ps.getSelectedProcessIdx() != null;
-
-    const isSelectedProcessBeforeOrEqualToActive = isProcessSelected && this.ps.getSelectedProcessIdx() <= this.ps.getActiveProcessIdx() + 1;
-
     const nextProcessIndex = isProcessActive ? this.ps.getActiveProcessIdx() + 1 : 0;
+    //const isProcessSelected = this.ps.getSelectedProcessIdx() != null;
 
+    // Run from here is only possible if the selected processe is no later than the next process after the active:
+    const isSelectedProcessBeforeOrEqualToActive = this.ps.getSelectedProcessIdx() <= nextProcessIndex;
+
+    // Is the process the first of the processes from the nextt process and onwards that cann  be run? This adds support for run from here from a process that is the first runable process after the active process:
     const isFirstProcessRunnable = this.ps.getSelectedProcessIdx() == this.firstProcessIdxRunnable(nextProcessIndex);
 
-    const isValidRunCondition = isProcessSelected && this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) && (isSelectedProcessBeforeOrEqualToActive || isFirstProcessRunnable);
+    // Require that the selected process is enabled (runnable), that is does not have input errors, and that it is either one of the processes up to the next after the selected or the firs runnable after the next process:
+    const isValidRunCondition = this.isProcessIdxRunnable(this.ps.getSelectedProcessIdx()) && !this.hasFunctionalErrorUpTo(this.ps.getSelectedProcessIdx()) && (isSelectedProcessBeforeOrEqualToActive || isFirstProcessRunnable);
 
     return this.canRun() && isValidRunCondition;
   }

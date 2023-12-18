@@ -1,3 +1,11 @@
+# StoX v3.6.3-9005 (2023-12-18)
+
+## Summary
+* The StoX version 3.6.2-9004 is another a pre-release prepareing for StoX 4.0.0. The pre-release includes a the following improvements to the StoX GUI:
+	* Added green bold for input and output processes to the selected process and black bold for processes no used in any other processes in the model.
+	* Added note in the User log if there is a new official StoX release, with instructioins on how to install in the Help menu.
+
+
 # StoX v3.6.3-9004 (2023-12-04)
 
 ## Summary
@@ -10,7 +18,7 @@
 * The StoX version 3.6.2-9003 is a pre-release prepareing for StoX 4.0.0. The pre-release includes a the following improvements to the StoX GUI:
 	* Added note in the User log and a link in the Help menu when there is a new official release.
 	* Added zoom in and out buttons in the map.
-	* Changed aa number of parameter to class "single" (DensityType, TargetVariableUni., etc).
+	* Changed a number of parameter to class "single" (DensityType, TargetVariableUnit, etc).
 
 ## General changes
 * Added functions ICESDatsusc(), CopyICESDatsusc, FilterICESDatsusc, TranslateICESDatsusc and WriteICESDatsusc().

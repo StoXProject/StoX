@@ -226,20 +226,34 @@ export class ProcessComponent {
     }
   }
 
-  isUsedBySelectedProcess = (iteratedProcessId): boolean => {
+  isUsedAsInputBySelectedProcess = (iteratedProcessId): boolean => {
     const selectedProcess = this.ps.selectedProcess;
 
     if (!selectedProcess) {
       return false;
     }
 
-    const { functionInputProcessIDs: inputIds, usedInProcessIDs: usedIds } = selectedProcess;
+    const { functionInputProcessIDs: inputIds } = selectedProcess;
 
     const inputIdsList = this.stringOrListToList(inputIds);
+
+    return inputIdsList.includes(iteratedProcessId);
+  };
+
+  usesSelectedProcess = (iteratedProcessId): boolean => {
+    const selectedProcess = this.ps.selectedProcess;
+
+    if (!selectedProcess) {
+      return false;
+    }
+
+    const { usedInProcessIDs: usedIds } = selectedProcess;
+
     const usedIdsList = this.stringOrListToList(usedIds);
 
-    return inputIdsList.includes(iteratedProcessId) || usedIdsList.includes(iteratedProcessId);
+    return usedIdsList.includes(iteratedProcessId);
   };
+  
 
   stringOrListToList = (input: string | string[]): string[] => {
     return Array.isArray(input) ? input : [input];

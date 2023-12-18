@@ -48,6 +48,7 @@ export class HomeComponent {
   }
   items?: MenuItem[];
   m_isDesktop = true;
+  tabEvent = null;
   @HostListener('window:beforeunload', ['$event'])
   async unloadHandler(_event: any) {}
 
@@ -179,4 +180,8 @@ export class HomeComponent {
       event.preventDefault();
     }
   }
+
+  onTabChange = (event: MatTabGroup) => {
+    this.tabEvent = event;
+  };
 }

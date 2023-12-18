@@ -12,4 +12,6 @@
 }
 .scrollDiv {
   user-select: text;
+  overflow: auto;
+  height: 100%;
 }

@@ -10,7 +10,7 @@
 }
 
 .processicon:before {
-  @include icon_content('\f013', 1rem, rgb(145, 173, 131), true);
+  @include icon_content('\f013', 1.1rem, rgb(145, 173, 131), true);
   left: 0px;
   top: 0px;
   position: relative;
