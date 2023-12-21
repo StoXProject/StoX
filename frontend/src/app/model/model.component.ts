@@ -20,7 +20,7 @@ export class ModelComponent implements OnInit {
   async ngOnInit() {}
 
   async activateMenu(model: Model) {
-    if (model.modelName != this.currentLabel) {
+    if (model.modelName != this.currentLabel && this.ps.runningProcessId === null) {
       this.ps.selectedModel = model;
       this.currentLabel = model.modelName;
     }
