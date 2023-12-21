@@ -61,7 +61,7 @@ export class OpenProjectDlg {
 
       // the following should open the project and make it selected in the GUI
       this.service.isOpening = true;
-      await this.ps.openProject(this.service.projectPath, true, true, true);
+      await this.ps.openProject(this.service.projectPath, false, true, true);
       this.service.isOpening = false;
     } catch (error) {
       console.log('> ' + error);

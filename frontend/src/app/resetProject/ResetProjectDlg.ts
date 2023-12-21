@@ -19,7 +19,7 @@ export class ResetProjectDlg implements OnInit {
   async apply(continueWithoutSave: boolean) {
     try {
       if (this.service.ps.selectedProject?.projectPath != null && continueWithoutSave) {
-        this.service.ps.openProject(this.service.ps.selectedProject.projectPath, true, true, true);
+        this.service.ps.openProject(this.service.ps.selectedProject.projectPath, false, true, true);
       }
     } catch (error) {
       this.msgService.setMessage(error);

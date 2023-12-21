@@ -290,7 +290,7 @@ export class ProjectService {
       // Read models and set selected to the first model
       if (projectPath.length > 0 && this.rstoxFrameworkAvailable) {
         // THROW WHILE DEBUGGING
-        await this.openProject(projectPath, true, true, false, true);
+        await this.openProject(projectPath, false, true, false, true);
       }
     } finally {
       this.appStatus = null;
