@@ -1,3 +1,28 @@
+# StoX v3.6.3-9007 (2024-04-25)
+
+## Summary
+* The StoX version 3.6.3-9007 is a pre-release preparing for StoX 4.0.0. The changes involve new report functions (facilitating planned introduction of prey estimation from NMDBiotic data in StoX 4.1.0), fix of ana issue with validation of large projects which caused StoX to crash, reaming of parameters in ReportBootstrap(), and some other changes and bug fixes.
+
+## General changes
+* Added report functions number(), fractionOfOccurrence() and fractionOfSum().
+* Moved warnings for only one PSU to Bootstrap in RstoxFramework. These warnings occurred inn Baseline but were actuaally warnings about the potetial issues in Bootstrap. One reason was that warnings were not shown from Bootstrap, but this issue is fixed, and warnings when there is only one element to resample from occur now in the actual resampling functions.
+* Relaxed validation of the project.json to only consider the first 6 rows (using utils::head()) of each table or sf object. This was due to an observed crash of jsonvalidate::json_validator() for project.json of size larger than 1/2 GB.
+* Renamed AggregationFunction to ReportFunction.
+* Renamed AggregationWeightingVariable to WeightingVariable.
+
+
+## Detailed changes
+* Added documentation of ReportFunctions.
+
+
+## Bug fixes
+* Fixed bug where help for a topic aliased by another topic did not work in getObjectHelpAsHtml() used  by the GUI (e.g. var which is documented in cor).
+* Fixed bug where the bootstrap attributes processNames and dataTypes were not written past the first value.
+* Fixed bug where IndividualAge was not avaiable as TargetVariable in reports (due to class integer, which was not accounted for).
+* Fixed bug in DefineBioticAssignment() when DefinitionMethod = "Stratum".
+* Fixed bug in DefineBioticPSU when DefinitionMethod = "Maual".
+
+
 # StoX v3.6.3-9006 (2023-12-19)
 
 ## Summary
@@ -139,7 +164,7 @@
 
 ## Bug fixes
 * Fixed a bug introduced in StoX 3.6.1, where the output file of Bootstrap() was a number of text file instead of a single RData file, causing the option UseOutputData to fail.
-* Fixed a ReportBootstrap() where TargetVariableUnit did not work. Also the base unit for the variable Biomass of the QuantityData was corrected from g to kg, as this data originates from SweptAreaDensity() with SweptAreaDensityMethod = "TotalCatch".
+* Fixed a bug in ReportBootstrap() where TargetVariableUnit did not work. Also the base unit for the variable Biomass of the QuantityData was corrected from g to kg, as this data originates from SweptAreaDensity() with SweptAreaDensityMethod = "TotalCatch".
 * Removed SpeciesCategoryKey from ReportSpeciesCategoryCatch(), as the output is per haul.
 * Fixed bug when translating with PreserveClass = FALSE, in which case the class change could corrupt the condition of the translation (e.g., translating a copy of the DateTime in the Log table of the StoxAcousticData would convert that to string after the first line of the TranslationTable, and then any time condition will fail, as the class is no longer POSIX).
 
