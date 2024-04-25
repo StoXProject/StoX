@@ -3,12 +3,10 @@ on:
     branches:
       - master
       - develop
-      - StoX4
   push:
     branches:
       - master
       - develop
-      - StoX4
 
 jobs:
   build:
