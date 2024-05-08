@@ -10,6 +10,8 @@
 ## Detailed changes
 * Removed "not mapped" console log messages that could slow down closing a project.
 * Fixed the function unReDoProject(). This is now ready to be implemeted in the GUI.
+* Reduced the number of rows shown in Preview to 10000 to speed up Preview of large data.
+* Fixed bug causing the Preview to jump when scrolling.
 
 
 ## Bug fixes
