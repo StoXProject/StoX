@@ -510,9 +510,10 @@ export class MapComponent implements OnInit, MapInteraction {
           const edsuPsu: EDSU_PSU = this.pds.acousticPSU?.EDSU_PSU?.find(edsuPsu => edsuPsu.EDSU == edsu);
 
           // Connect EDSU_PSU to feature
-          if (edsuPsu == null) {
-            console.log('edsu ' + edsu + ' not mapped');
-          }
+          // Removing 
+          //if (edsuPsu == null) {
+          //  console.log('edsu ' + edsu + ' not mapped');
+          //}
 
           f.set('edsupsu', edsuPsu);
           // Get default any selection (not focused by user):
@@ -533,9 +534,9 @@ export class MapComponent implements OnInit, MapInteraction {
           const stationPsu: Station_PSU = this.pds.bioticPSU?.Station_PSU?.find(stationPsu => stationPsu.Station == station);
 
           // Connect Station_PSU to feature
-          if (stationPsu == null) {
-            console.log('station ' + station + ' not mapped');
-          }
+          //if (stationPsu == null) {
+          //  console.log('station ' + station + ' not mapped');
+          //}
 
           f.set('stationpsu', stationPsu);
           // Get default any selection (not focused by user):

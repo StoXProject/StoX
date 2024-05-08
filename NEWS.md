@@ -1,3 +1,29 @@
+# StoX v3.6.3-9008 (2024-05-08)
+
+## Summary
+* The StoX version 3.6.3-9008 is a pre-release preparing for StoX 4.0.0 including some bug fixes and more consistent font size for function parameters.
+
+## General changes
+* Added the ICESBioic format 1.6 that includes the new GeneticPopulationCode field.
+
+
+## Detailed changes
+* Removed "not mapped" console log messages that could slow down closing a project.
+* Fixed the function unReDoProject(). This is now ready to be implemeted in the GUI.
+
+
+## Bug fixes
+* Fixed bug in FilterLanding() by adding expandFilterExpressionList().
+* Fixed bug in EstimateBioticRegression(), where failed estimate (e.g. due to sigularity) resulted in two insteda of 1 row in the output RegressionTable.
+* Fixed bug when ReportVariableUnit is first inserted and then cleared, which resulted in error in the form "... is not a valid name for quantity ...".
+* Fixed bug in getFilterTableNames() where the json array was unboxed in runFunction.JSON() (due to auto_unbox = TRUE) when only one name was returned. Fixed by enclosing in a list if length is 1.
+* Fixed bug where empty process output due to modification of process data caused error on right click on the process (changing from return(NULL) to return(list()) in getProcessOutputElements()).
+* Fixed bug where modifying process data in DefineAcousticPSU() or DefineBioticPSU() could not be saved past the first click on the save icon.
+* Fixed bug in Bootstrap() where character columns with all missing values were written as "N" and not "NA".
+* Fixed bug in Bootstrap() where SpeciesCategory containing nordic characters were truncated.
+* Fixed bug in getBootstrapData() where DateTime was not converted to POSIX.
+
+
 # StoX v3.6.3-9007 (2024-04-25)
 
 ## Summary
