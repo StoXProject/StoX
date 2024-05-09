@@ -669,7 +669,7 @@ export class DataService {
       tableName,
       flatten: true,
       pretty: true,
-      linesPerPage: 200000,
+      linesPerPage: 10000,
       pageindex: 1,
       columnSeparator: ' ',
       na: '-',

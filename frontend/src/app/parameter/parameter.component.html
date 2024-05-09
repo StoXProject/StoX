@@ -22,6 +22,19 @@
               </div>
             </td>
             <td [ngSwitch]="propertyItem.type">
+
+              <!--
+              This works as follows:
+              The backend specifies a format (in the processPropertyFormats object), 
+              and a formatClass which is one of "single", "vector", "table" and "list". 
+              For the process parameters and function inputs the class is always "single". 
+              Possible values are defined from the backend for each 'propertyItem', 
+              and these 'possibleValues' are what is defined in the R function definition, 
+              e.g. as DefinitionMethod = c("ResourceFile", "Talbe"). The possibleValues are
+              only defined for class "single", as specifying a vector of options in an R function 
+              is only relevant if the parameter has length 1.
+              -->
+
               <!-- character -->
               <div *ngSwitchCase="'character'">
                 <!-- If possible values are given but not vector, do autocomlpetion -->
@@ -40,7 +53,7 @@
                 <div *ngIf="propertyItem.possibleValues.length === 0 || propertyItem.formatClass === 'vector'">
                   <ng-container [ngSwitch]="true">
                     <ng-container *ngSwitchCase="propertyItem.format === 'filterExpressionList'">
-                      <input class="input-with-button" type="text" pInputText [(ngModel)]="propertyItem.value" [disabled]="isDisabled()" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
+                      <input class="input-with-button" type="text" style="font-size:13.5px;" pInputText [(ngModel)]="propertyItem.value" [disabled]="isDisabled()" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
                       <button class="button-width" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="isDisabled()" (click)="filter(category, propertyItem)"></button>
                     </ng-container>
                     <!--
@@ -52,19 +65,19 @@
                     </ng-container>
                     -->
                     <ng-container *ngSwitchCase="propertyItem.format === 'filePath' || propertyItem.format === 'filePaths' || propertyItem.format === 'directoryPath'">
-                      <input class="input-with-button" type="text" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
+                      <input class="input-with-button" type="text" style="font-size:13.5px;" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
                       <button class="button-width" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="isDisabled()" (click)="filePath(category, propertyItem)"></button>
                     </ng-container>
                     <ng-container *ngSwitchCase="propertyItem.formatClass === 'table'">
-                      <input class="input-with-button" type="text" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
+                      <input class="input-with-button" type="text" style="font-size:13.5px;" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
                       <button class="button-width" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="isDisabled()" (click)="definedColumns(category, propertyItem)"></button>
                     </ng-container>
                     <ng-container *ngSwitchCase="propertyItem.formatClass === 'vector'">
-                      <input class="input-with-button" type="text" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
+                      <input class="input-with-button" type="text" style="font-size:13.5px;" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
                       <button class="button-width" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="isDisabled()" (click)="definedVector(category, propertyItem)"></button>
                     </ng-container>
                     <ng-container *ngSwitchCase="propertyItem.formatClass === 'single'">
-                      <input [ngClass]="propertyItem.format !== 'none' ? 'input-with-button' : 'input-full-width'" type="text" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
+                      <input [ngClass]="propertyItem.format !== 'none' ? 'input-with-button' : 'input-full-width'" type="text" style="font-size:14px;" pInputText [disabled]="isDisabled()" [(ngModel)]="propertyItem.value" (change)="propertyItem.value = $event.target.value; onChanged(category, propertyItem)" />
                       <button *ngIf="propertyItem.format !== 'none'" class="button-width" type="button" pButton icon="pi pi-ellipsis-h" [disabled]="isDisabled()" (click)="definedSingle(category, propertyItem)"></button>
                     </ng-container>
                     <ng-container *ngSwitchDefault>

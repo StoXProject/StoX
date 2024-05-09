@@ -4,7 +4,7 @@
       <div (contextmenu)="openCm($event, item)">{{ item.element.elementFullName }}</div>
     </ng-template>
     <ng-container [ngSwitch]="item.element.elementType">
-      <cdk-virtual-scroll-viewport *ngSwitchDefault itemSize="1" class="preview-content">
+      <cdk-virtual-scroll-viewport *ngSwitchDefault itemSize = 5 minBufferPx = 100 maxBufferPx = 100000 class="preview-content">
         <div *cdkVirtualFor="let line of item.output">{{ line }}</div>
       </cdk-virtual-scroll-viewport>
       <img [hidden]="item.output?.img === null || item.output?.img === undefined" *ngSwitchCase="'plot'" [src]="bypassURL(item.output?.img)" [ngStyle]="{ width: item.output?.width + 'cm', height: item.output?.height + 'cm' }" />
