@@ -1,3 +1,5 @@
+import { UserLogEntry } from '../data/userlogentry';
+import { UserLogType } from '../enum/enums';
 import { Injectable } from '@angular/core';
 
 import { DataService } from '../service/data.service';
@@ -32,6 +34,8 @@ export class RConnectionDlgService {
       const res = <string>await this.dataService.setRPath(this.rpath).toPromise();
       console.log('> ' + 'Posting rpath, response ' + res);
       await this.ps.checkRstoxFrameworkAvailability();
+      //logInfo('R connection set to ' + res);
+      this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, "\n" + "R connection set to " + this.rpath + ')\n'));
     } finally {
       this.isConnecting = false;
     }

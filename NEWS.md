@@ -1,3 +1,26 @@
+# StoX v3.6.3-9009 (2024-05-24)
+
+## Summary
+* The StoX version 3.6.3-9009 is a pre-release preparing for StoX 4.0.0. The important change is the breaking change that rows with 0 Abundance are now deleted from the QuantityData before merging with the IndividualsData in SuperIndividuals(). This change solves the problem that length groups present in few stations, when not re-sampled in a bootstrap run would lead to a row with present SpeciesCategory and IndividualTotalLength, but missing Abundance in SuperIndividuals. This missing Abundance could not be isolated using GroupingVariables in reports, forcing the use of RemoveMissingValues to get non-missing values in the report, with the immediate danger of producing wrong estimates. The effect of this change is that of a seed effect in the bootstrapping, since rows that were previous present in SuperIndividualsData are no exluded. Running Bootstrap will thus produce different results, but with the same expected value, as in StoX 3.6.2.
+
+## General changes
+* Breaking change: Rows with 0 Abundance are now deleted from the QuantityData before merging with the IndividualsData in SuperIndividuals(). This removes unwanted rows with present SpeciesCategory and IndividualTotalLength, but missing Abundance when Biotic PSUs with rare IndividualTotalLength are not re-sampled in a bootstrap run.
+* Added message about how to read a bootstrap NetCDF4 file into R to replicate the old bootstrap RData file.
+* Added truncation of output from ICESDatsusc() and similar functions in the Preview in the GUI.
+
+## Detailed changes
+* Added message about what the R connection was set to.
+* Removing the temporary column "TempLengthGroupUsedInSuperIndividuals" from AddHaulDensityToSuperIndividuals(), aand fixed the order of rows and columns to match the input SuperIndividualsData.
+* Added support for AggregationFunction in ReportBootstrap() for backward compatibility of R scripts.
+* Added support for nc files in readStoxOutputFile().
+* Updated the following test projects for the breaking change in RstoxBase where rows with 0 Abundance are deleted from the QuantityData before merging with the IndividualsData in SuperIndividuals(), which removes unwanted rows with present SpeciesCategory and IndividualTotalLength but missing Abundance when Biotic PSUs with rare IndividualTotalLength are not re-sampled in a bootstrap run.
+
+## Bug fixes
+* Fixed bug in the GUI where R 4.4.0 was not supported.
+* Fixed bug in EstimateBioticRegression(), where failed estimate (e.g. due to singularity) resulted in two instead of 1 row in the output RegressionTable.
+* Fixed bug where empty tables showed with duplicated header row in Preview in the GUI.
+
+
 # StoX v3.6.3-9008 (2024-05-08)
 
 ## Summary
@@ -6,13 +29,11 @@
 ## General changes
 * Added the ICESBioic format 1.6 that includes the new GeneticPopulationCode field.
 
-
 ## Detailed changes
 * Removed "not mapped" console log messages that could slow down closing a project.
 * Fixed the function unReDoProject(). This is now ready to be implemeted in the GUI.
 * Reduced the number of rows shown in Preview to 10000 to speed up Preview of large data.
 * Fixed bug causing the Preview to jump when scrolling.
-
 
 ## Bug fixes
 * Fixed bug in FilterLanding() by adding expandFilterExpressionList().
@@ -38,10 +59,8 @@
 * Renamed AggregationFunction to ReportFunction.
 * Renamed AggregationWeightingVariable to WeightingVariable.
 
-
 ## Detailed changes
 * Added documentation of ReportFunctions.
-
 
 ## Bug fixes
 * Fixed bug where help for a topic aliased by another topic did not work in getObjectHelpAsHtml() used  by the GUI (e.g. var which is documented in cor).
@@ -80,7 +99,6 @@
 * Changed a number of parameter to class "single" (DensityType, TargetVariableUnit, etc).
 * Allowed selecting from possible values in the filter expression builder for numeric values which are mostly whole numbers. Also excluded possible values for keys.
 
-
 ## Detailed changes
 * Restricted warning for missing or 0 EffectiveTowDistance to only activate when there are there are more than 0 individuals in the Haul. 
 * Speeding up openProject() for StoX projects with large process data tables.
@@ -88,7 +106,6 @@
 * Changed GearDependentCatchCompensation() to keep all variables from the input SpeciesCategoryCatchData.
 * Exposing PlotAcousticTrawlSurvey().
 * Removed dependency on the retiring R package sp.
-
 
 ## Bug fixes
 * Fixed bug in DefineSurvey with DefinitionMethod = "ResourceFile", where the FileName was the path to a project.xml file.
@@ -138,7 +155,6 @@
 	* The filter expression builder is now faster and can be used also when the input process has not been run (in which case there are no options to select from).
 	* Allowed selecting from possible values in the filter expression builder for numeric values which are mostly whole numbers. Also excluded possible values for keys.
 	* Added support for selecting multiple files, e.g. in ReadBiotic.
-
 
 ## Bug fixes
 * Fixed bug where 0 was interpreted as missing value in parameter tables.
