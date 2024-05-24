@@ -2,7 +2,7 @@
   <p>Path to R Bin:</p>
   <input style="width: calc(100% - 22px)" type="text" pInputText [(ngModel)]="service.rpath" />
   <button style="width: 22px" type="button" pButton icon="pi pi-ellipsis-h" (click)="service.browse()"></button>
-  <p>The path to R bin (location to binary executable) is the folder where the R binary is located (for example C:\Program Files\R\R-4.3.2\bin\x64 on Windows). StoX will use this path to trigger R commands.</p>
+  <p>The path to R bin (location to binary executable) is the folder where the R binary is located (for example C:\Program Files\R\R-4.4.0\bin\x64 on Windows). StoX will use this path to trigger R commands.</p>
   <ng-template pTemplate="footer">
     <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isConnecting"></mat-spinner>
     <!--class="spinner"-->

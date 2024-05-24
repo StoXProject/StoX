@@ -283,13 +283,8 @@ getTwoDigitRVersionForDownload <- function(twoDigitRVersion = NA, Rstox.repos = 
     if(twoDigitRVersion < min(supportedRVersion)) {
         stop("R ", min(supportedRVersion), " is the minimum supported R version for StoX")
     }
-    else if(twoDigitRVersion >= min(supportedRVersion) && twoDigitRVersion <= max(supportedRVersion) && ! twoDigitRVersion %in% supportedRVersion) {
-        newTwoDigitRVersion <- max(supportedRVersion[supportedRVersion <= twoDigitRVersion])
-        warning("R (minor) version ", twoDigitRVersion, " was requested, but this is not one of the supported versions (", paste(supportedRVersion, collapse = ", "), "). Rstox packages for the closest supported R version (", newTwoDigitRVersion, ") were downloaded.")
-        twoDigitRVersion <- newTwoDigitRVersion
-    }
-    if(twoDigitRVersion > max(supportedRVersion)) {
-        warning("R ", max(supportedRVersion), " is the latest supported R version for StoX. Rstox packages for the closest supported R version (", newTwoDigitRVersion, ") were downloaded.")
+    else if(twoDigitRVersion > max(supportedRVersion)) {
+        warning("Rstox packages were downloaded for the latest supported R version for StoX (R ", max(supportedRVersion), ", installed R version is ", twoDigitRVersion, ").")
         twoDigitRVersion <- max(supportedRVersion)
     }
         
