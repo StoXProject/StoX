@@ -1,7 +1,13 @@
+# StoX v3.6.3-9010 (2024-05-28)
+
+## Summary
+* The StoX version 3.6.3-9010 is a pre-release preparing for StoX 4.0.0, reverting the breaking change of 3.6.3-9009, and adding defaults "Survey" and "SpeciesCategory" in GroupingVariables of reports.
+
+
 # StoX v3.6.3-9009 (2024-05-24)
 
 ## Summary
-* The StoX version 3.6.3-9009 is a pre-release preparing for StoX 4.0.0. The important change is the breaking change that rows with 0 Abundance are now deleted from the QuantityData before merging with the IndividualsData in SuperIndividuals(). This change solves the problem that length groups present in few stations, when not re-sampled in a bootstrap run would lead to a row with present SpeciesCategory and IndividualTotalLength, but missing Abundance in SuperIndividuals. This missing Abundance could not be isolated using GroupingVariables in reports, forcing the use of RemoveMissingValues to get non-missing values in the report, with the immediate danger of producing wrong estimates. The effect of this change is that of a seed effect in the bootstrapping, since rows that were previous present in SuperIndividualsData are no exluded. Running Bootstrap will thus produce different results, but with the same expected value, as in StoX 3.6.2.
+* The StoX version 3.6.3-9009 is a pre-release preparing for StoX 4.0.0. 
 
 ## General changes
 * Breaking change: Rows with 0 Abundance are now deleted from the QuantityData before merging with the IndividualsData in SuperIndividuals(). This removes unwanted rows with present SpeciesCategory and IndividualTotalLength, but missing Abundance when Biotic PSUs with rare IndividualTotalLength are not re-sampled in a bootstrap run.
