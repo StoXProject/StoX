@@ -433,7 +433,7 @@ export class ProjectService {
     this.projects = project != null && Object.keys(project).length > 0 ? [project] : [];
     if (project != null) {
       const line = '-------------------------------------------------------------------------';
-      this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, '\n\n' + line + '\nOpen project: ' + project.projectName + ' (' + project.projectPath + ')\n' + line));
+      this.dataService.log.push(new UserLogEntry(UserLogType.MESSAGE, '\n' + line + '\nOpened project: ' + project.projectName + ' (' + project.projectPath + ')\n' + line));
     }
 
     //this.processes = null;       // triggered by selected model

@@ -1,3 +1,23 @@
+# StoX v3.6.3-9011 (2024-07-03)
+
+## Summary
+* The StoX version 3.6.3-9011 is a pre-release preparing for StoX 4.0.0, including some bug fixes and improved warnings and documentation. 
+
+## General changes
+* Changed the color of a process which is not used by any other process in the same model from black to dark green in the case that a process used by that process is selected. This change is to avoid loosing information about which processes that use the selected process as input.
+* Added warning when openProject() informing the used about the OutputVariables argument in Bootstrap().
+* Corrected and simplified documentation of AssignmentLengthDistribution.
+
+## Detailed changes
+* Disabled ReportFunction "number", "fractionOfOccurrence" and "fractionOfSum".
+* Temporarily disabled test for ICESExport due to problems at ICES. 
+
+## Bug fixes
+* Fixed the problem of truncated time steps when writing bootstrap data to NetCDF4 file, due to R's awkward bug with formatting POSIXct objects (the last decimal trucated).
+*  Fixed bug where existing bootstrap data was deleted even when UseOutputData = TRUE.
+*  Fixed bug which made some plotting functions failing seemingly randomly, by no longer setting precision in plot functions.
+
+
 # StoX v3.6.3-9010 (2024-05-28)
 
 ## Summary
@@ -92,7 +112,7 @@
 * Added a stop button that stops a model between two processes or stops a Bootstrap function between two bootstrap replicates.
 * Added support for selecting multiple files, e.g., in ReadBiotic.
 * Increased resolution of the map.
-* Added green bold for input and output processes to the selected process and black bold for processes no used in any other processes in the model. This can be used to identify errors particularly in the Baseline model.
+* Added green bold for input and output processes to the selected process and black bold for processes not used in any other processes in the model. This can be used to identify errors particularly in the Baseline model.
 * Added support for reading a project.json in DefineSurvey(), DefineAcousticPSU(), DefineBioticPSU(), DefineBioticAssignment() and DefineStratumPolygon.
 * Added printing of messages, warnings and errors for parallel bootstrapping.
 * Added the number of identical warnings in the warning printout. This is useful e.g. to get an idea of how many bootstrap replicates that has a problem of missing assignment length distribution for AcousticPSUs.
@@ -126,7 +146,7 @@
 
 ## Summary
 * The StoX version 3.6.3-9004 is another a pre-release preparing for StoX 4.0.0. The pre-release includes the following improvements to the StoX GUI:
-	* Added green bold for input and output processes to the selected process and black bold for processes no used in any other processes in the model.
+	* Added green bold for input and output processes to the selected process and black bold for processes not used in any other processes in the model.
 	* Added note in the User log if there is a new official StoX release, with instructions on how to install in the Help menu.
 
 

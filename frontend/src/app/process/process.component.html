@@ -18,6 +18,7 @@
         usesSelectedProcessButNotEnabled: !process.enabled && usesSelectedProcess(process.processID), 
         notEnabled: !process.enabled, 
         isTerminalProcess: process.terminalProcess, 
+        isTerminalProcessAndUsesSelectedProcess: process.terminalProcess && usesSelectedProcess(process.processID), 
         allProcesses: process.processID
       }">{{ process.processName }}</span>
     </div>
