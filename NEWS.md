@@ -1,3 +1,16 @@
+# StoX v3.6.3-9012 (2024-07-08)
+
+## Summary
+* The StoX version 3.6.3-9012 is the final pre-release before StoX 4.0.0 (jumping 3.6.3). 
+
+## General changes
+* Fixed so that RstoxFramework appears red if any of RstoxData, RstoxBase or RstoxFramework are not installed.
+
+## Detailed changes
+* Moved "addParameter" to be before "removeParameter" and "renameParameter" as backwaards compatibility actions, to facilitate adding a parameter with a value depending on existing values.
+* Made comparison to ICES vocabularies more robust, and re-introduced the test for ICESExport.
+
+
 # StoX v3.6.3-9011 (2024-07-03)
 
 ## Summary
@@ -1298,7 +1311,8 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 * Added TranslateICESAcoustic() and TranslateICESBiotic().
 * Added option of a conditional variable in DefineTranslation() and Translate*().
 * Enabled reading zipped input xml file.
-* Added stop if not all EDSUs are inside a stratum in SplitMeanNASC()Fixed bug where stations with 0 fish were removed in LenghtDistribution().
+* Added stop if not all EDSUs are inside a stratum in SplitMeanNASC()
+* Fixed bug where stations with 0 fish were removed in LenghtDistribution().
 * Removed hard coded conversions in ICESBiotic(), moving the responsibility of such conversions to the translation functions.
 
 ## Detailed changes in Rstox packages
