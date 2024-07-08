@@ -150,7 +150,7 @@ export class HomeComponent {
       maxStatus = 3;
     }
 
-    return maxStatus > 1 ? 'grey' : maxStatus == 1 ? 'rgb(255,30,78)' : 'black';
+    return maxStatus == 3 ? 'rgb(255,30,78)' : maxStatus > 1 ? 'grey' : maxStatus == 1 ? 'rgb(255,30,78)' : 'black';
   }
 
   getPackageColor(pkg: PackageVersion) {

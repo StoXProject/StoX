@@ -1,7 +1,7 @@
 {
   "name": "StoX",
   "productName": "StoX",
-  "version": "3.6.3-9011",
+  "version": "3.6.3-9012",
   "description": "StoX: An open source software for marine survey analyses",
   "main": "build/index.js",
   "scripts": {

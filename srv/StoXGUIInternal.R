@@ -181,6 +181,9 @@ installOfficialRstoxPackagesWithDependencies <- function(
         warning("The directory ", lib, " contains locked folders (name starting with 00LOCK). If problems are expreienced during installation of the R pacckcages, you may try deleting such folders manually.")
     }
 
+    # First install downladed binaries
+
+
     # Then install into first of .libPaths():
     installedRstoxPackages <- utils::install.packages(localFiles, type = getInstallType("StoX"), repos = NULL, quiet = quiet, lib = lib)
     
@@ -230,6 +233,10 @@ downloadRstoxPackage <- function(
         destfile = replace4backslashWithOneForward(localFile), 
         quiet = quiet
     )
+
+    if(! file.exists(localFile)) {
+        localFile <- NA
+    }
 
     return(localFile)
 }
@@ -623,7 +630,7 @@ readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFil
 
 # Convert a vector to JSON using siple paste (no package dependencies):
 vector2json <- function(x) {
-    paste0("[", paste(sapply(x, deparse), collapse = ","), "]")
+    paste0("[", paste(sapply(x, deparse), collapse = ", "), "]")
 }
 
 # Small function to parse the string defining officical Rstox-package versions:
