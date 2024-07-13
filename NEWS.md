@@ -1,3 +1,103 @@
+# StoX v4.0.0 (2024-07-12)
+
+## Summary
+* The StoX version 4.0.0 is a major release which includes several improvements to the StoX GUI, new features like unlimited bootstrapping using NetCDF4 files, and a series of bugfixes. The release contains two breaking changes which may result in differences to existing StoX projects (acoustic-trawl StoX projects with differently assigned hauls to acoustic PSUs in a stratum, or where hauls are used in multiple strata). See details below.
+
+## Changes affecting backward compatibility
+1. In acoustic-trawl projects hauls are assigned to the acoustic PSUs (function BioticAssignment) in order to produce a length distribution (function AssignmentLengthDistribution) used for converting NASC to number density (function AcousticDensity). When boostrapping acoustic-trawl projects in StoX <= 3.6.2 the collection of hauls assigned to at least one acoustic PSU in a stratum is resampled with replacement, so that the hauls are sampled 0, 1, 2, etc times. If hauls are assigned differently to different acoustic PSUs there is a probability that none of the assigned hauls are resampled for a specific acoustic PSU. This can lead to under-estimation, as the corresponding NASC cannot be converted to density without a length distribution (resulting in missing density). In StoX 4.0.0 this results in a warning and a proposal to use the new resampling function that samples only from the assigned hauls for each individual acoustic PSU (using ResampleBioticAssignmentByPSU instead of ResampleBioticAssignmentByStratum in the BootstrapMethodTable). Making this change to a StoX project will change the results, and may also require new assignments to be defined in case there are acoustic PSUs with only one assigned haul, which will result in no contribution to the bootstrap variation from those PSUs.
+
+2. A bug in ImputeSuperIndividuals() in StoX <= 3.6.2, occurring in acoustic-trawl projects when hauls are assigned to more than one stratum, could result in data not being fully imputed. The bug was that the Individual column was used to identify rows to impute from, but the values of this column are not unique when an individual is used in more than one stratum. A row with data to be imputed could thus me masked by another row with the same Individual. To solve this the new StoX version has introduced a new column of unique values named StratumLayerIndividual which is used in the imputation.
+
+## Changes in the GUI
+* Added green bold for input and output processes to the selected process and black bold for processes not used in any other processes in the model. Processes that use the selected process but are not used by any other process in the model are show as dark green bold.
+* Added a stop button that stops a model between two processes or stops a Bootstrap process between two bootstrap replicates.
+* The filter expression builder is now faster and can be used also when the input process has not been run (in which case there are no options to select from).
+* Increased resolution of the map.
+* Added "Open project as template" on the Project menu, which creates a new project with the same processes as the selected template project, but where all input files and process data are deleted, and UseProcessData is set to FALSE for all process data processes.
+* Added manual tagging of Stations to BioticPSU. This can be used to group stations together or create PSUs for stations that accidently fall outside of a stratum.
+* Added support for selecting multiple files, e.g. in ReadBiotic
+* Added zoom in and out buttons in the map.
+* Allowed selecting from possible values in the filter expression builder for numeric values which are mostly whole numbers. Also excluded possible values for keys.
+* Added note in the User log and a link in the Help menu when there is a new official release.
+* Typing and selcting in drop-down lists now works as expected
+* Added printing of messages, warnings and errors for parallel bootstrapping.
+* Added the number of identical warnings in the warning printout. This is useful e.g. to get an idea of how many bootstrap replicates that has a problem of missing assignment length distribution for AcousticPSUs.
+
+## General changes
+* Bootstrap now use netCDF4 files which facilitates practically unlimited number of bootstrap replicates as well as selecting parameter values in ReportBootstrap() from drop-down lists. The change also speeds up ReportBootstrap(). 
+* Added warning when opening an existing StoX project using Bootstrap, informing the used about how to use the OutputVariables argument in Bootstrap to reduce the time used by the Bootstrap function.
+* Added message about how to read a bootstrap NetCDF4 file into R to replicate the old bootstrap RData file.
+* Added defaults "Survey" and "SpeciesCategory" in GroupingVariables of reports.
+* Added truncation of output from ICESDatsusc() and similar functions in the Preview in the GUI.
+* Added the ICESBioic format 1.6 that includes the new GeneticPopulationCode field.
+* Moved warnings for only one PSU from Baseline to Bootstrap (as warnings can now be shown from Bootstrap).
+* Moved printing of "Running baseline process" type of messages from backend to frontend, so that this gets printed before the process runs and not after.
+* Relaxed validation of the project.json to only consider the first 6 rows (using utils::head()) of each table or sf object. This was due to an observed crash of jsonvalidate::json_validator() for project.json of size larger than 1/2 GB.
+* Renamed AggregationFunction to ReportFunction and AggregationWeightingVariable to WeightingVariable.
+* Added support for reading a project.json in DefineSurvey(), DefineAcousticPSU(), DefineBioticPSU(), DefineBioticAssignment() and DefineStratumPolygon.
+* Added functions ICESDatsusc(), CopyICESDatsusc, FilterICESDatsusc, TranslateICESDatsusc and WriteICESDatsusc().
+* Changed a number of parameter to class "single" (DensityType, TargetVariableUnit, etc).
+* Changed sorting of StratumLayerIndividual when creating the StratumLayerIndividualIndex to platform independent locale = "en_US_POSIX". This is actually a bug, but has not been discovered since all known StoX projects have been using input data with Cruise as numbers of only upper case letters (sorting by locale = "en_US_POSIX" arranges capital letters first (India before england)).
+* Restricted warning for missing or 0 EffectiveTowDistance to only activate when there are there are more than 0 individuals in the Haul. 
+* Removed dependency on the retiring R package sp.
+* Added ResampleBioticAssignmentByPSU() and ResampleBioticAssignmentByStratum(), where the latter is identical to the ResampleBioticAssignment() of StoX <= 3.6.2.
+* Speeding up openProject() for StoX projects with large process data tables.
+* Changed GearDependentCatchCompensation() to keep all variables from the input SpeciesCategoryCatchData.
+* Added PlotAcousticTrawlSurvey().
+* Added message about what the R connection was set to.
+
+## Bug fixes
+* Fixed bug in DefineSurvey with DefinitionMethod = "ResourceFile", where the FileName was the path to a project.xml file.
+* Fixed the problem of truncated time steps when writing bootstrap data to NetCDF4 file, due to R's awkward bug with formatting POSIXct objects (the last decimal trucated).
+* Fixed bug where existing bootstrap data was deleted even when UseOutputData = TRUE.
+* Fixed bug which made some plotting functions failing seemingly randomly, by no longer setting precision in plot functions.
+* Fixed bug in the GUI where R 4.4.0 was not supported.
+* Fixed bug in EstimateBioticRegression(), where failed estimate (e.g. due to singularity) resulted in two instead of 1 row in the output RegressionTable.
+* Fixed bug where empty tables showed with duplicated header row in Preview in the GUI.
+* Fixed bug in FilterLanding() by adding expandFilterExpressionList().
+* Fixed bug when ReportVariableUnit is first inserted and then cleared, which resulted in error in the form "... is not a valid name for quantity ...".
+* Fixed bug in getFilterTableNames() where the json array was unboxed in runFunction.JSON() (due to auto_unbox = TRUE) when only one name was returned. Fixed by enclosing in a list if length is 1.
+* Fixed bug where empty process output due to modification of process data caused error on right click on the process (changing from return(NULL) to return(list()) in getProcessOutputElements()).
+* Fixed bug where modifying process data in DefineAcousticPSU() or DefineBioticPSU() could not be saved past the first click on the save icon.
+* Fixed bug in Bootstrap() where character columns with all missing values were written as "N" and not "NA".
+* Fixed bug in Bootstrap() where SpeciesCategory containing nordic characters were truncated.
+* Fixed bug in getBootstrapData() where DateTime was not converted to POSIX.
+* Fixed bug where help for a topic aliased by another topic did not work in getObjectHelpAsHtml() used by the GUI (e.g. var which is documented in cor).
+* Fixed bug where the bootstrap attributes processNames and dataTypes were not written past the first value.
+* Fixed bug where IndividualAge was not avaiable as TargetVariable in reports (due to class integer, which was not accounted for).
+* Fixed bug in DefineBioticAssignment() when DefinitionMethod = "Stratum".
+* Fixed bug in DefineBioticPSU when DefinitionMethod = "Manual".
+* Fixed bug where 0 was interpreted as missing value in parameter tables.
+* Moved functions to set precision to RstoxFramework, and fixed the following two bugs: 1. Datatypes which are lists of lists (AcousticData and BioticData) were not set precision to. 2. Integer fields were set precision to.
+* Fixed bug in LengthDistribution() where missing raising factor was reported for samples with no individuals.
+* Fixed bug in getNumberOfCores() where the number of cores was not restricted by the number of available cores.
+* Fixing a problem with setting default precision in StoX. Before, precision was not set for process outputs which were lists of lists of tables (ReadBioic() and ReadAcousic()). Also, all numeric columns, even integer ones were set precision to, which is now changed to exclude integer columns.
+* Fixed bug where runProject() did not open the project.
+* Fixed so that RstoxFramework appears red if any of RstoxData, RstoxBase or RstoxFramework are not installed.
+* Fixed bug causing the Preview to jump when scrolling.
+
+## Detailed changes
+* Corrected and simplified documentation of AssignmentLengthDistribution.
+* Moved "addParameter" to be before "removeParameter" and "renameParameter" as backwaards compatibility actions, to facilitate adding a parameter with a value depending on existing values.
+* Made comparison to ICES vocabularies more robust.
+* Removing the temporary column "TempLengthGroupUsedInSuperIndividuals" from AddHaulDensityToSuperIndividuals(), and fixed the order of rows and columns to match the input SuperIndividualsData.
+* Added support for AggregationFunction in ReportBootstrap() for backward compatibility of R scripts.
+* Added support for nc files in readStoxOutputFile().
+* Updated some test projects for the breaking change in RstoxBase where rows with 0 Abundance are deleted from the QuantityData before merging with the IndividualsData in SuperIndividuals(), which removes unwanted rows with present SpeciesCategory and IndividualTotalLength but missing Abundance when Biotic PSUs with rare IndividualTotalLength are not re-sampled in a bootstrap run.
+* Removed "not mapped" console log messages that could slow down closing a project.
+* Fixed the function unReDoProject(). This is now ready to be implemeted in the GUI.
+* Reduced the number of rows shown in Preview to 10000 to speed up Preview of large data.
+* Changed isOpenProject() to only require that the projectSession folder exits, with an option strict = TRUE to use the old requirement that all folders must exist.
+* Added warning when replaceArgs contains non-existent arguments.
+* Changed to using unlistDepth2 = FALSE in compareProjectToStoredOutputFiles(), as this is in line with the bug fix from StoX 3.6.0 where outputs with multiple tables were no longer unlisted in Bootstrap data.
+* Improved error message then Percentages is not given (now saying exactly that and not "SpecificationParameter must be given").
+* Improved documentation of DefinitionMethod in DefineBioticPSU(), DefineAcousticPSU() and DefineBioticAssignment().
+* Added a warning when reading BioticPSUs from a StoX 2.7 project.xml file where Method is Station and not UseProcessData in DefineSweptAreaPSU(), which makes the BioticPSUs of the project.xml file unused.
+* Improved warning when there are Individuals in the IndividualsData with IndividualTotalLength that does not match any of the length intervals of the QuantityData.
+* Improved warning for when there are positive NASC values with no assignment length distribution, also removing the list of the affected PSUs.
+* Improved simplifyStratumPolygon() used in DefineStratumPolygon() which got stuck in an endless loop in certain cases.
+
+
 # StoX v3.6.3-9012 (2024-07-08)
 
 ## Summary
@@ -27,8 +127,8 @@
 
 ## Bug fixes
 * Fixed the problem of truncated time steps when writing bootstrap data to NetCDF4 file, due to R's awkward bug with formatting POSIXct objects (the last decimal trucated).
-*  Fixed bug where existing bootstrap data was deleted even when UseOutputData = TRUE.
-*  Fixed bug which made some plotting functions failing seemingly randomly, by no longer setting precision in plot functions.
+* Fixed bug where existing bootstrap data was deleted even when UseOutputData = TRUE.
+* Fixed bug which made some plotting functions failing seemingly randomly, by no longer setting precision in plot functions.
 
 
 # StoX v3.6.3-9010 (2024-05-28)
@@ -102,7 +202,7 @@
 * Added documentation of ReportFunctions.
 
 ## Bug fixes
-* Fixed bug where help for a topic aliased by another topic did not work in getObjectHelpAsHtml() used  by the GUI (e.g. var which is documented in cor).
+* Fixed bug where help for a topic aliased by another topic did not work in getObjectHelpAsHtml() used by the GUI (e.g. var which is documented in cor).
 * Fixed bug where the bootstrap attributes processNames and dataTypes were not written past the first value.
 * Fixed bug where IndividualAge was not avaiable as TargetVariable in reports (due to class integer, which was not accounted for).
 * Fixed bug in DefineBioticAssignment() when DefinitionMethod = "Stratum".
@@ -955,15 +1055,15 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 		* **This could affect external scripts that use the StoxBioticData.**
 	* In LengthDistribution(), SumLengthDistribution(), MeanLengthDistribution(), AssignmentLengthDistribution(), RegroupLengthDistribution(), GearDependentCatchCompensation(), LengthDependentCatchCompensation(), RelativeLengthDistribution():
 		* *Renamed the column WeightedCount to WeightedNumber*
-    	* **This could affect external scripts that use one of the listed datatypes as WeightedCount is no longer found. Other than that the WeightedCount does not exist further in the estimation models in StoX.**
+  	* **This could affect external scripts that use one of the listed datatypes as WeightedCount is no longer found. Other than that the WeightedCount does not exist further in the estimation models in StoX.**
 	* In BioticAssignmentWeighting():
-		* *WeightingMethod = "NormalizedTotalCount"    -> "NormalizedTotalNumber"*
-		* *WeightingMethod = "SumWeightedCount"        -> "SumWeightedNumber"*
+		* *WeightingMethod = "NormalizedTotalCount"  -> "NormalizedTotalNumber"*
+		* *WeightingMethod = "SumWeightedCount"    -> "SumWeightedNumber"*
 		* *WeightingMethod = "InverseSumWeightedCount" -> "InverseSumWeightedNumber"*
 		* **Backward compatibility should take care of these**
 	* LengthDistribution():
 		* *RaisingFactorPriority = "Count" -> "Number"*
-    	* **Backward compatibility should take care of these**
+  	* **Backward compatibility should take care of these**
 * Changed SpeciesCategoryCatch() to return a single table similar to LengthDistributionData, but with TotalCatchWeight and TotalCatchCount instead of WeightedCount. As such, moved the CatchVariable of SpeciesCategoryCatch() to the ReportVariable of ReportSpeciesCategoryCatch(). The latter is a backward compatibility breaking change. Any existing StoX project using SpeciesCategoryCatch() and ReportSpeciesCategoryCatch() will break in ReportSpeciesCategoryCatch(), and the ReportVariable needs to be set to the appropriate value in order to continue.
 
 ## General changes
@@ -1000,15 +1100,15 @@ StoX has now changed to fully apply semantic versioning (https://semver.org/), m
 		* **This could affect external scripts that use the StoxBioticData.**
 	* In LengthDistribution(), SumLengthDistribution(), MeanLengthDistribution(), AssignmentLengthDistribution(), RegroupLengthDistribution(), GearDependentCatchCompensation(), LengthDependentCatchCompensation(), RelativeLengthDistribution():
 		* *Renamed the column WeightedCount to WeightedNumber*
-    	* **This could affect external scripts that use one of the listed datatypes as WeightedCount is no longer found. Other than that the WeightedCount does not exist further in the estimation models in StoX.**
+  	* **This could affect external scripts that use one of the listed datatypes as WeightedCount is no longer found. Other than that the WeightedCount does not exist further in the estimation models in StoX.**
 	* In BioticAssignmentWeighting():
-		* *WeightingMethod = "NormalizedTotalCount"    -> "NormalizedTotalNumber"*
-		* *WeightingMethod = "SumWeightedCount"        -> "SumWeightedNumber"*
+		* *WeightingMethod = "NormalizedTotalCount"  -> "NormalizedTotalNumber"*
+		* *WeightingMethod = "SumWeightedCount"    -> "SumWeightedNumber"*
 		* *WeightingMethod = "InverseSumWeightedCount" -> "InverseSumWeightedNumber"*
 		* **Backward compatibility should take care of these**
 	* LengthDistribution():
 		* *RaisingFactorPriority = "Count" -> "Number"*
-    	* **Backward compatibility should take care of these**
+  	* **Backward compatibility should take care of these**
 * Added the function ReportAbundance.
 
 ## Detailed changes

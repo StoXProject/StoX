@@ -23,7 +23,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     quiet = FALSE
 ) {
     
-     # 1. Warn about locked files.
+    # 1. Warn about locked files.
 
     # 2. Identify and download non-Rstox dependencies, located on CRAN. Binary on Windows, source on MacOS (may change to binary when arm64 vs x86_64 is sorted out) and Linux.
     #   - If any are not installed on Windows, try source also here.
@@ -158,7 +158,6 @@ installOfficialRstoxPackagesWithDependencies <- function(
     ###     destfile = replace4backslashWithOneForward(localFiles), 
     ###     quiet = quiet
     ### )
-
 
     localFiles <- mapply( 
         downloadRstoxPackage, 
