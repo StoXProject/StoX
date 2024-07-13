@@ -3,7 +3,7 @@
     margin: 30px;
   }
 
-  .mat-icon-button {
+  .mat-mdc-icon-button {
     outline: none;
   }
 
@@ -12,7 +12,7 @@
     line-height: 32px;
   }
 
-  .mat-form-field {
+  .mat-mdc-form-field {
     padding-left: 5px;
     padding-right: 5px;
   }
@@ -33,7 +33,7 @@
     height: 300px;
   }
 
-  .mat-card {
+  .mat-mdc-card {
     overflow: auto;
     max-height: 500px;
   }

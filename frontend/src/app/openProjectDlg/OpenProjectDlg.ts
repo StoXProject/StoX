@@ -1,78 +1,78 @@
-import { Component, OnInit } from '@angular/core';
-import { OpenProjectDlgService } from './OpenProjectDlgService';
+import { Component } from '@angular/core';
+
+import { MessageService } from '../message/MessageService';
 import { DataService } from '../service/data.service';
 import { ProjectService } from '../service/project.service';
-import { MessageService } from '../message/MessageService';
-import { Project } from '../data/project';
+import { OpenProjectDlgService } from './OpenProjectDlgService';
 
 @Component({
-    selector: 'OpenProjectDlg',
-    templateUrl: './OpenProjectDlg.html',
-    styleUrls: []
+  selector: 'OpenProjectDlg',
+  templateUrl: './OpenProjectDlg.html',
+  styleUrls: [],
 })
 export class OpenProjectDlg {
+  constructor(
+    public service: OpenProjectDlgService,
+    private msgService: MessageService,
+    private dataService: DataService,
+    private ps: ProjectService
+  ) {}
 
-    // projectPath: string;
+  async ngOnInit() {}
 
-    constructor(public service: OpenProjectDlgService,
-        private msgService: MessageService,
-        private dataService: DataService, private ps: ProjectService) {
+  async browse() {
+    const { selectedProject } = this.ps;
+    const { projectPath } = this.service;
+
+    console.log('> ' + 'Browse ' + projectPath);
+    if (projectPath == null || projectPath.trim() == '') {
+      if (selectedProject?.projectPath != null) {
+        this.service.projectPath = selectedProject.projectPath.substring(0, selectedProject.projectPath.lastIndexOf('/'));
+      }
     }
 
-    async ngOnInit() {
-        // this.projectPath = <string>await this.dataService.getProjectRootPath().toPromise();
-        // console.log("> " + "project root path retrieved: " + this.projectPath);
+    this.service.isOpening = true;
+    this.service.projectPath = <string>await this.dataService.browse(this.service.projectPath).toPromise();
+    this.service.isOpening = false;
+    console.log('> ' + 'this.projectPath: ' + this.service.projectPath);
+  }
+
+  async apply() {
+    console.log('> ' + 'start apply');
+    if (!this.service.projectPath) {
+      this.msgService.setMessage('Project folder is empty!');
+      this.msgService.showMessage();
+
+      return;
     }
 
-    async browse() {
-        console.log("> " + "Browse " + this.service.projectPath);
-        if(this.service.projectPath == null || this.service.projectPath.trim() == "") {
-            if(this.ps.selectedProject != null && this.ps.selectedProject.projectPath != null) {
-                this.service.projectPath = this.ps.selectedProject.projectPath.substring(0, this.ps.selectedProject.projectPath.lastIndexOf("/"));
-            }   
-        }
+    console.log('> ' + 'projectPath : ' + this.service.projectPath);
+    this.service.projectPath = this.service.projectPath.replace(/\\/g, '/');
+    console.log('> ' + 'converted projectPath : ' + this.service.projectPath);
+    try {
+      const isProject: boolean = await this.dataService.isProject(this.service.projectPath).toPromise();
 
-        this.service.projectPath = <string> await this.dataService.browse(this.service.projectPath).toPromise();
-        console.log("> " + "this.projectPath: " + this.service.projectPath);
+      if (!isProject) {
+        this.msgService.setMessage(this.service.projectPath + ' is not a project, or R connection not set!');
+        this.msgService.showMessage();
+
+        return;
+      }
+
+      // the following should open the project and make it selected in the GUI
+      this.service.isOpening = true;
+      await this.ps.openProject(this.service.projectPath, false, true, true);
+      this.service.isOpening = false;
+    } catch (error) {
+      console.log('> ' + error);
+      const firstLine = error;
+
+      this.msgService.setMessage(firstLine);
+      this.msgService.showMessage();
+
+      return;
     }
 
-    async apply() {
-        console.log("> " + "start apply");
-        if (!this.service.projectPath) {
-            this.msgService.setMessage("Project folder is empty!");
-            this.msgService.showMessage();
-            return;
-        }
-        console.log("> " + "projectPath : " + this.service.projectPath);
-        this.service.projectPath = this.service.projectPath.replace(/\\/g, "/");
-        console.log("> " + "converted projectPath : " + this.service.projectPath);
-        try {
-            let isProject: boolean = await this.dataService.isProject(this.service.projectPath).toPromise();
-            if (!isProject) {
-                this.msgService.setMessage(this.service.projectPath + " is not a project, or R connection not set!");
-                this.msgService.showMessage();
-                return;
-            }
-            /*if (this.ps.selectedProject != null) {
-                // Check if project is open in GUI
-                if (this.ps.selectedProject.projectPath == this.service.projectPath) {
-                    this.msgService.setMessage("Project with name " + this.ps.selectedProject.projectName + " is already open in the GUI!");
-                    this.msgService.showMessage();
-                    return;
-                }
-            }*/
-
-            // the following should open the project and make it selected in the GUI
-            this.service.isOpening = true;
-            await this.ps.openProject(this.service.projectPath, true, true, true);
-            this.service.isOpening = false;
-        } catch (error) {
-            console.log("> " + error); 
-            var firstLine = error;//.error.split('\n', 1)[0];
-            this.msgService.setMessage(firstLine);
-            this.msgService.showMessage();
-            return;
-        }
-        this.service.display = false;
-    }
+    this.service.display = false;
+  }
 }

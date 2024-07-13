@@ -23,7 +23,7 @@ installOfficialRstoxPackagesWithDependencies <- function(
     quiet = FALSE
 ) {
     
-     # 1. Warn about locked files.
+    # 1. Warn about locked files.
 
     # 2. Identify and download non-Rstox dependencies, located on CRAN. Binary on Windows, source on MacOS (may change to binary when arm64 vs x86_64 is sorted out) and Linux.
     #   - If any are not installed on Windows, try source also here.
@@ -159,7 +159,6 @@ installOfficialRstoxPackagesWithDependencies <- function(
     ###     quiet = quiet
     ### )
 
-
     localFiles <- mapply( 
         downloadRstoxPackage, 
         packageName = RstoxPackages$packageName, 
@@ -180,6 +179,9 @@ installOfficialRstoxPackagesWithDependencies <- function(
     if(length(lockedDirs)) {
         warning("The directory ", lib, " contains locked folders (name starting with 00LOCK). If problems are expreienced during installation of the R pacckcages, you may try deleting such folders manually.")
     }
+
+    # First install downladed binaries
+
 
     # Then install into first of .libPaths():
     installedRstoxPackages <- utils::install.packages(localFiles, type = getInstallType("StoX"), repos = NULL, quiet = quiet, lib = lib)
@@ -230,6 +232,10 @@ downloadRstoxPackage <- function(
         destfile = replace4backslashWithOneForward(localFile), 
         quiet = quiet
     )
+
+    if(! file.exists(localFile)) {
+        localFile <- NA
+    }
 
     return(localFile)
 }
@@ -283,13 +289,8 @@ getTwoDigitRVersionForDownload <- function(twoDigitRVersion = NA, Rstox.repos = 
     if(twoDigitRVersion < min(supportedRVersion)) {
         stop("R ", min(supportedRVersion), " is the minimum supported R version for StoX")
     }
-    else if(twoDigitRVersion >= min(supportedRVersion) && twoDigitRVersion <= max(supportedRVersion) && ! twoDigitRVersion %in% supportedRVersion) {
-        newTwoDigitRVersion <- max(supportedRVersion[supportedRVersion <= twoDigitRVersion])
-        warning("R (minor) version ", twoDigitRVersion, " was requested, but this is not one of the supported versions (", paste(supportedRVersion, collapse = ", "), "). Rstox packages for the closest supported R version (", newTwoDigitRVersion, ") were downloaded.")
-        twoDigitRVersion <- newTwoDigitRVersion
-    }
-    if(twoDigitRVersion > max(supportedRVersion)) {
-        warning("R ", max(supportedRVersion), " is the latest supported R version for StoX. Rstox packages for the closest supported R version (", newTwoDigitRVersion, ") were downloaded.")
+    else if(twoDigitRVersion > max(supportedRVersion)) {
+        warning("Rstox packages were downloaded for the latest supported R version for StoX (R ", max(supportedRVersion), ", installed R version is ", twoDigitRVersion, ").")
         twoDigitRVersion <- max(supportedRVersion)
     }
         
@@ -628,7 +629,7 @@ readOfficialRstoxPackageVersionsFile <- function(officialRstoxPackageVersionsFil
 
 # Convert a vector to JSON using siple paste (no package dependencies):
 vector2json <- function(x) {
-    paste0("[", paste(sapply(x, deparse), collapse = ","), "]")
+    paste0("[", paste(sapply(x, deparse), collapse = ", "), "]")
 }
 
 # Small function to parse the string defining officical Rstox-package versions:

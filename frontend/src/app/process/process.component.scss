@@ -1,0 +1,31 @@
+// Using color blind friendly pallette, green and purple (https://www.nceas.ucsb.edu/sites/default/files/2022-06/Colorblind%20Safe%20Color%20Schemes.pdf):
+.processUsedAsInput {
+  font-weight: bold;
+  color: limegreen;
+}
+.usesSelectedProcess {
+  font-weight: bold;
+  color: limegreen;
+}
+.processUsedAsInputButNotEnabled {
+  font-weight: bold;
+  color: grey;
+}
+.usesSelectedProcessButNotEnabled {
+  font-weight: bold;
+  color: grey;
+}
+.notEnabled {
+  color: grey;
+}
+.isTerminalProcess {
+  font-weight: bold;
+  color: black;
+}
+.isTerminalProcessAndUsesSelectedProcess{
+  font-weight: bold;
+  color: green;
+}
+.allProcesses {
+  font-size: 0.9rem;
+}

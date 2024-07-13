@@ -1,5 +1,5 @@
 export enum UserLogType {
-    MESSAGE,
-    WARNING,
-    ERROR
-  }
+  MESSAGE,
+  WARNING,
+  ERROR,
+}

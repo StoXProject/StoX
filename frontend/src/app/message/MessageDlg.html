@@ -1,7 +1,6 @@
-  <p-dialog header='Message' modal='modal' [(visible)]='service.display'>
-    <p>{{service.message}}</p> 
-    <p-footer>
-      <button pButton type='button' (click)='service.display=false' class='ui-button-primary' label='Close'></button>
-    </p-footer>
-  </p-dialog>
-  
+<p-dialog header="Message" modal="modal" [(visible)]="service.display">
+  <p>{{service.message}}</p>
+  <ng-template pTemplate="footer">
+    <button pButton type="button" (click)="service.display=false" class="p-button-primary" label="Close"></button>
+  </ng-template>
+</p-dialog>

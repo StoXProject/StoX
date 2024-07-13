@@ -1,7 +1,9 @@
-<div style="height:100%;width:100%;overflow:auto!important;">
-    <p-tree #tree [value]="nodes" selectionMode="single" [(selection)]="selectedNode">
+<div style="height: 100%; width: 100%; overflow: auto !important">
+  <p-tree #tree [value]="nodes" selectionMode="single" [(selection)]="selectedNode">
     <ng-template let-node pTemplate="default">
-        <div (contextmenu)="openCm($event, node)"><span style="user-select:none">{{node.label}}</span></div>
+      <div (contextmenu)="openCm($event, node)">
+        <span style="user-select: none">{{ node.label }}</span>
+      </div>
     </ng-template>
-</p-tree>
+  </p-tree>
 </div>

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { PropertyItem } from '../../data/propertyitem';
-import { PropertyCategory } from '../../data/propertycategory';
 import { BehaviorSubject } from 'rxjs';
-import { FilePath } from '../../data/FilePath';
 
-@Injectable({
-  providedIn: 'root'
-})
+import { FilePath } from '../../data/FilePath';
+import { PropertyCategory } from '../../data/propertycategory';
+import { PropertyItem } from '../../data/propertyitem';
+
+@Injectable()
 export class FilePathDlgService {
   public display: boolean = false;
 
@@ -17,22 +16,29 @@ export class FilePathDlgService {
   public currentPropertyItem: PropertyItem = null;
   public currentPropertyCategory: PropertyCategory = null;
 
+  /**
+   * Combine all paths into one combined array of paths
+   */
   combinedPaths(): string[] {
-    let combined: string[] = [];
+    const combined: string[] = [];
+
     for (let i = 0; i < this.paths.length; i++) {
       combined.push(this.paths[i].path);
     }
 
     return combined;
   }
+
   obj2FilePath(o: any): FilePath {
-    return <FilePath>{ path: typeof (o) == "string" ? o : JSON.stringify(o) };
+    return <FilePath>{ path: typeof o == 'string' ? o : JSON.stringify(o) };
   }
+
   async showDialog() {
     // parse currentPropertyItem and populate array paths and broadcast this to component
-    console.log("> " + "currentPropertyItem.value : " + this.currentPropertyItem.value);
+    console.log('> ' + 'currentPropertyItem.value : ' + this.currentPropertyItem.value);
 
-    let o: any = JSON.parse(this.currentPropertyItem.value);
+    const o: any = JSON.parse(this.currentPropertyItem.value);
+
     // The propertyItem is an array, map each element to FilePath
     // Enhanced: Otherwise map propertyItem to FilePath? The user may enter a path manually without []
     this.paths = Array.isArray(o) ? o.map(s => this.obj2FilePath(s)) : [this.obj2FilePath(o)];

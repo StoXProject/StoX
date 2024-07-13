@@ -1,5 +1,3 @@
-import { ValidationErrors } from '@angular/forms';
-
 export interface RuleSet {
   condition: string;
   negate?: boolean;
@@ -101,9 +99,7 @@ export interface QueryBuilderConfig {
   removeRuleSet?: (ruleset: RuleSet, parent: RuleSet) => void;
   removeRule?: (rule: Rule, parent: RuleSet) => void;
   coerceValueForOperator?: (operator: string, value: any, rule: Rule) => any;
-  calculateFieldChangeValue?: (currentField: Field,
-                               nextField: Field,
-                               currentValue: any) => any;
+  calculateFieldChangeValue?: (currentField: Field, nextField: Field, currentValue: any) => any;
 }
 
 export interface SwitchGroupContext {

@@ -1,0 +1,75 @@
+{
+  "root": true,
+  "ignorePatterns": ["projects/**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.json"],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "plugins": ["unused-imports", "simple-import-sort"],
+      "rules": {
+        // "@angular-eslint/component-selector": [
+        //   "error",
+        //   {
+        //     "prefix": "app",
+        //     "style": "kebab-case",
+        //     "type": "element"
+        //   }
+        // ],
+        // "@angular-eslint/directive-selector": [
+        //   "error",
+        //   {
+        //     "prefix": "app",
+        //     "style": "camelCase",
+        //     "type": "attribute"
+        //   }
+        // ],
+        "semi": [2, "always"],
+        "unused-imports/no-unused-imports-ts": "error",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-inferrable-types": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_",
+            "caughtErrorsIgnorePattern": "^_"
+          }
+        ],
+        "no-empty-function": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "simple-import-sort/imports": "error",
+        "padding-line-between-statements": [
+          "error",
+          { "blankLine": "always", "prev": "*", "next": "return" },
+          { "blankLine": "always", "prev": "block-like", "next": "*" },
+          { "blankLine": "always", "prev": "*", "next": "function" },
+          { "blankLine": "always", "prev": "function", "next": "*" },
+          { "blankLine": "any", "prev": "function", "next": "function" }
+        ],
+        "object-shorthand": ["warn"],
+        // DISABLE CURRENTLY NOT FOLLOWED RULES (TO BE REVISITED)
+        "@angular-eslint/no-output-native": "off",
+        "@angular-eslint/component-selector": "off",
+        "@angular-eslint/no-empty-lifecycle-method": "off",
+        "@angular-eslint/use-lifecycle-interface": "off",
+        "@angular-eslint/component-class-suffix": "off",
+        "@angular-eslint/directive-selector": "off",
+        "@angular-eslint/directive-class-suffix": "off"
+      }
+    },
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
+      "rules": {}
+    }
+  ]
+}

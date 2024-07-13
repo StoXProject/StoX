@@ -1,30 +1,28 @@
-import { Component, ElementRef, ViewChild, OnInit, DoCheck, AfterViewInit } from '@angular/core';
-import { ProjectService } from '../service/project.service';
-import { DataService } from '../service/data.service';
+import { Component, OnInit } from '@angular/core';
+
 import { Model } from '../data/model';
-import { MenuItem } from 'primeng/api';
+import { DataService } from '../service/data.service';
+import { ProjectService } from '../service/project.service';
+
 @Component({
   selector: 'app-model',
   templateUrl: './model.component.html',
-  styleUrls: ['./model.component.scss']
+  styleUrls: ['./model.component.scss'],
 })
 export class ModelComponent implements OnInit {
   models: Model[];
-  constructor(private dataService: DataService, public ps: ProjectService) { }
-  //items: MenuItem[] = [];
+  constructor(
+    private dataService: DataService,
+    public ps: ProjectService
+  ) {}
+
   currentLabel: string = '';
-  // activeItem: MenuItem;
-  //defaultActiveItem: MenuItem;
-  //@ViewChild('menuItems', { static: false }) menu: MenuItem[];
-  async ngOnInit() {
-  //  this.ps.models.forEach(m => this.items.push({ label: m.displayName }));
-  } 
+  async ngOnInit() {}
 
   async activateMenu(model: Model) {
-    if( model.modelName != this.currentLabel) {
+    if (model.modelName != this.currentLabel && this.ps.runningProcessId === null) {
       this.ps.selectedModel = model;
       this.currentLabel = model.modelName;
     }
   }
 }
-  

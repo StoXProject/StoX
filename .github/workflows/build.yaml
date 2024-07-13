@@ -2,9 +2,11 @@ on:
   pull_request:
     branches:
       - master
-  push:    
+      - develop
+  push:
     branches:
       - master
+      - develop
 
 jobs:
   build:
@@ -13,38 +15,42 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   node_version: 14, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg@latest'}
-          - {os: windows-latest, node_version: 14, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi@latest'}
-          - {os: ubuntu-latest,  node_version: 14, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian@latest'}
+          - {os: macOS-13,   node_version: 18, architecture: 'x64', pltf: 'mac',   in_ext: 'dmg', installer: 'electron-installer-dmg'}
+          - {os: windows-latest, node_version: 18, architecture: 'x64', pltf: 'win',   in_ext: 'msi', installer: 'electron-wix-msi'}
+          - {os: ubuntu-latest,  node_version: 18, architecture: 'x64', pltf: 'linux', in_ext: 'deb', installer: 'electron-installer-debian'}
     env:
       PLTF: ${{ matrix.config.pltf }}
       INSTALL_PKG: ${{ matrix.config.installer }}
 
     name: Node ${{ matrix.config.node_version }} - ${{ matrix.config.architecture }} on ${{ matrix.config.os }}
     steps:
-      - uses: actions/checkout@v2
+
+      - uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.config.node_version }}
           architecture: ${{ matrix.config.architecture }}
       - run: npm install --include=dev
       - run: cd frontend
       - run: npm install --include=dev
-      - run: npm install -g @angular/cli@9.1.15
-      - run: npm install -g typescript@3.8.3
+      - run: npm install -g @angular/cli@15.2.10
+      - run: npm install -g typescript@4.9.5
       - run: cd ..
-      - run: npm install ${INSTALL_PKG}
+      - run: npm install -g $INSTALL_PKG
 
       - name: Build
         if: runner.os != 'Windows'
         run: npm run build-${PLTF}
         shell: bash
 
+
+
       - name: Build for Windows
         if: runner.os == 'Windows'
         run: npm run build-frontend && npm run package-win && find dist/
         shell: bash
+
 
       - name: Create Code Signing Certificate
         if: runner.os == 'Windows'
@@ -70,6 +76,7 @@ jobs:
       - name: Create installer for Windows
         if: runner.os == 'Windows'
         run: |
+          npm install electron-wix-msi
           npm run installer-win
           #cp dist/installers/*.msi installers/StoXInstaller/res/
           #cd installers/StoXInstaller
@@ -88,14 +95,24 @@ jobs:
           EXT: ${{ matrix.config.in_ext }}
         run: |
           export VERSION=$(node -pe "require('./package.json')['version']")
-          export LAST_VERSION=${VERSION##*.}
-          export FINAL_TAG=${VERSION}$(if [ "$GITHUB_REF" = "refs/heads/develop" ]; then echo "+dev.${GITHUB_SHA::7}"; else echo ""; fi)
+          export FINAL_TAG=${VERSION}
           export FULL_TAG=$(node -pe "require('./package.json')['name']")-installer-${PLTF}-${FINAL_TAG}
           mv $(ls dist/installers/*${EXT}) dist/installers/${FULL_TAG}.${EXT}
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "LAST_VERSION=${LAST_VERSION}" >> $GITHUB_ENV
           echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
           echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_ENV
+
+          if [[ ${FINAL_TAG} == *-* ]]; 
+          then
+            echo "PRERELEASE=true" >> "$GITHUB_ENV"  
+          else
+            echo "PRERELEASE=false" >> "$GITHUB_ENV"  
+          fi
+          
+          echo "${PRERELEASE}"
+          echo "${FINAL_TAG}"
+          echo "${FULL_TAG}"
+
         shell: bash
 
       #- name: Renaming files for upload (Windows only)
@@ -117,13 +134,116 @@ jobs:
       - run: find dist/installers
         shell: bash
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.FULL_TAG  }}
-          path: dist/installers/${{ env.FULL_TAG }}*
+      #- name: Upload artifacts
+      #  if: github.event_name == 'push' && ( (github.ref == 'refs/heads/master'  &&  ${{ env.PRERELEASE  }} = false) || ( github.ref == 'refs/heads/develop'  &&  ${{ env.PRERELEASE  }} = true ) )
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: ${{ env.FULL_TAG  }}
+      #    path: dist/installers/${{ env.FULL_TAG }}*
 
-      - name: Create release and upload files
-        if: github.event_name == 'push' && ( github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' )
+
+      - name: Print stuff
+        run: |
+          echo "Tag name from github.ref: ${{  github.ref }}"
+          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
+          echo "Tag name from github.head_ref: ${{  github.head_ref }}"
+        shell: bash
+      
+
+      - name: Test 0 - push
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          echo "Testing"
+        shell: bash
+      
+      
+      - name: Test 1 - github.event.pull_request.merged == true
+        if: ${{ github.event.pull_request.merged == true }}
+        run: |
+          echo "Testing"
+        shell: bash
+      
+      
+      - name: Test 2 - github.ref == 'refs/heads/master'
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: |
+          echo "Testing"
+        shell: bash
+      
+      - name: Test 3 - env.PRERELEASE == false
+        if: ${{ env.PRERELEASE == false }}
+        run: |
+          echo ${{ env.PRERELEASE }}
+          echo ${{ env.PRERELEASE == false }}
+          echo ${{ env.PRERELEASE == 'false' }}
+        shell: bash
+      
+      - name: Test 3b - env.PRERELEASE == 'false'
+        if: ${{ env.PRERELEASE == 'false' }}
+        run: |
+          echo ${{ env.PRERELEASE }}
+          echo ${{ env.PRERELEASE == false }}
+          echo ${{ env.PRERELEASE == 'false' }}
+        shell: bash
+      
+      - name: Test 4 - github.ref == 'refs/heads/develop'
+        if: ${{ github.ref == 'refs/heads/develop' }}
+        run: |
+          echo "Testing"
+        shell: bash
+
+      - name: Test 4c - github.ref_name == 'develop'
+        if: ${{ github.ref_name == 'develop' }}
+        run: |
+          echo "Testing"
+        shell: bash
+
+      - name: Test 4d - github.ref_name == 'develop' no brackets
+        if: github.ref_name == 'develop'
+        run: |
+          echo "Testing"
+        shell: bash
+
+        
+      
+      - name: Test 4b - github.ref == 'refs/heads/StoX4'
+        if: ${{ github.ref == 'refs/heads/StoX4' }}
+        run: |
+          echo "StoX4"
+        shell: bash
+      
+      - name: Test 5 - env.PRERELEASE == true
+        if: ${{ env.PRERELEASE == true }}
+        run: |
+          echo "Testing"
+        shell: bash
+      
+      - name: Test 5b - env.PRERELEASE == 'true'
+        if: ${{ env.PRERELEASE == 'true' }}
+        run: |
+          echo "Testing"
+        shell: bash
+      
+      - name: Test 6 - (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false')
+        if: ${{ (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') }}
+        run: |
+          echo "Testing"
+        shell: bash
+
+      - name: Test 7 - ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' )
+        if: ${{ ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) }}
+        run: |
+          echo "Testing"
+        shell: bash
+
+      - name: Test 8 - ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) )
+        if: ${{ ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) ) }}
+        run: |
+          echo "Testing"
+        shell: bash
+
+      - name: Create release and upload files when a pull request is merged (allowUpdates is set to true so that all platforms can be included in the release)
+        if: ${{ github.event_name == 'push'  &&  ( (github.ref == 'refs/heads/master'  &&  env.PRERELEASE == 'false') || ( github.ref == 'refs/heads/develop'  &&  env.PRERELEASE == 'true' ) ) }}
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true

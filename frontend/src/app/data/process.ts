@@ -8,11 +8,13 @@ export class Process {
   fileOutput?: boolean; // not used in gui
   functionInputs?: string[]; // not used in gui
   functionParameters?: any; // not used in gui
-  functionOutputDataType : string;
+  functionOutputDataType: string;
   functionInputError?: boolean; // model status flag.
   canShowInMap?: boolean; // have overlay globe icon
   hasProcessData?: boolean; // process with color in middle.
   hasBeenRun?: boolean; // not used in gui.
   //modified?: boolean; // not needed - remove this, replaced by processDirty at ActiveProcess
+  functionInputProcessIDs?: string[];
+  usedInProcessIDs?: string[];
+  terminalProcess?: boolean; // not used as input in the model.
 }
-

@@ -1,25 +1,21 @@
 <div id="mapcontainer" [ngClass]="tool">
-	<mat-toolbar id="toolbar">
-		<mat-button-toggle-group [(ngModel)]="tool">
-			<ng-container *ngFor="let t of tools">
-				<mat-button-toggle value="{{t.tool}}" [disabled]="!getToolEnabled(t.tool)"
-					[ngClass]="{disableButton: !getToolEnabled(t.tool)}">
-					<span class="rib absa {{t.iclass}} toolbar-button"></span>
-				</mat-button-toggle>
-			</ng-container>
-		</mat-button-toggle-group>
-		<p-menu #menu popup="popup" [model]="projectionsMenu">
-		</p-menu>
-		<mat-button-toggle (click)="menu.toggle($event)">
-			<span class="rib absa globeicon toolbar-button"></span>
-		</mat-button-toggle>
-		
-	</mat-toolbar>
-	<div id="map" (resized)="onResized($event)">
+  <mat-toolbar id="toolbar">
+    <mat-button-toggle-group [(ngModel)]="tool">
+      <ng-container *ngFor="let t of tools">
+        <mat-button-toggle value="{{ t.tool }}" [disabled]="!getToolEnabled(t.tool)" [ngClass]="{ disableButton: !getToolEnabled(t.tool) }" (click)="handleToolClick(t.tool)">
+          <span class="rib absa {{ t.iclass }} toolbar-button"></span>
+        </mat-button-toggle>
+      </ng-container>
+    </mat-button-toggle-group>
+    <p-menu #menu popup="popup" [model]="projectionsMenu"> </p-menu>
+    <mat-button-toggle (click)="menu.toggle($event)">
+      <span class="rib absa globeicon toolbar-button"></span>
+    </mat-button-toggle>
+  </mat-toolbar>
 
-	</div>
-	<div id="mapstatus">
-		<div id="mouse-position"></div>
-	</div>
+  <div id="map" (onResize)="onResized($event)"></div>
+  <div id="mapstatus">
+    <div id="mouse-position"></div>
+  </div>
 </div>
 <div #tooltip class="maptooltip"></div>

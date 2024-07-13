@@ -1,18 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
-import { FormsModule, } from '@angular/forms';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+
 import { QueryBuilderComponent } from './query-builder.component';
 
 describe('QueryBuilderComponent', () => {
   let component: QueryBuilderComponent;
+
   let fixture: ComponentFixture<QueryBuilderComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [ CommonModule, FormsModule ],
-      declarations: [ QueryBuilderComponent ]
-    })
-    .compileComponents();
+      imports: [CommonModule, FormsModule],
+      declarations: [QueryBuilderComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
