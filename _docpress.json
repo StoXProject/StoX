@@ -32,11 +32,6 @@
                 "title": "Linux:",
                 "depth": 3,
                 "id": "linux:"
-              },
-              {
-                "title": "Installation of Rstox packages in R for unofficial StoX versions",
-                "depth": 3,
-                "id": "installation-of-rstox-packages-in-r-for-unofficial-stox-versions"
               }
             ]
           },
@@ -97,11 +92,6 @@
               "title": "Linux:",
               "depth": 3,
               "id": "linux:"
-            },
-            {
-              "title": "Installation of Rstox packages in R for unofficial StoX versions",
-              "depth": 3,
-              "id": "installation-of-rstox-packages-in-r-for-unofficial-stox-versions"
             }
           ]
         },

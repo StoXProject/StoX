@@ -26,8 +26,6 @@
                   </li>
                   <li class="menu-item -level-2"><a class="link title link-linux:" href="#linux:">Linux:</a>
                   </li>
-                  <li class="menu-item -level-2"><a class="link title link-installation-of-rstox-packages-in-r-for-unofficial-stox-versions" href="#installation-of-rstox-packages-in-r-for-unofficial-stox-versions">Installation of Rstox packages in R for unofficial StoX versions</a>
-                  </li>
                 </ul>
               </li>
               <li class="menu-item -level-1"><a class="link title link-known-issues" href="#known-issues">Known issues</a>
@@ -55,13 +53,13 @@
 <p>&#x201C;StoX is designed as a tool for transparent and reproducible survey estimation across nations and survey objectives. All methods, user settings and links to input data are documented in a description file. A process is a user&#x2010;defined call to one function available in a library of functions defined by StoX. Any StoX model can be modified by changing parameters of the processes, adding or removing processes and by rearranging their order of execution. Different StoX functions require one or more input datasets, which can be data files or output from previously executed processes.&#x201D; <a href="https://doi.org/10.1111/2041-210X.13250">Johnsen, E., Totland, A., Sk&#xE5;levik, &#xC5;., Holmin, A. J., Dings&#xF8;r, G. E., Fuglebakk, E., &amp; Handegard, N. O. (2019). StoX: An open source software for marine survey analyses. Methods in Ecology and Evolution, 10(9), 1523-1528.</a></p>
 <h2 id="installation">Installation</h2>
 <p>The following describes installation of the latest <em>official</em> StoX version (Se <a href="https://github.com/StoXProject/StoX/blob/master/Official_StoX_versions.md">all official StoX versions</a>). For unofficial versions installation of the Rstox-packages must be done in R (details given at the end of this paragraph). It is highly recommended to use official versions, as these are fully tested, whereas tetsting is limited for unofficial versions.</p>
-<p>See <a href="https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v360-2023-01-18">release notes for StoX 3.6.2</a>.</p>
-<p>Download StoX from (<a href="https://github.com/StoXProject/StoX/releases/tag/v3.6.2">https://github.com/StoXProject/StoX/releases/tag/v3.6.2</a>). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:</p>
+<p>See <a href="https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v400-2024-07-12">release notes for StoX 4.0.0</a>.</p>
+<p>Download StoX from (<a href="https://github.com/StoXProject/StoX/releases/tag/v4.0.0">https://github.com/StoXProject/StoX/releases/tag/v4.0.0</a>). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:</p>
 <h3 id="windows:">Windows:</h3>
 <p>Step 1:
 Install by double-clicking on the downloaded .msi file, and follow the instructions. If you get a message along the lines that the installer is blocked by the system, you can click on &quot;More info&quot; and select &quot;Run anyway&quot;.</p>
 <p>Step 2:
-Install R 4.0.0 or newer if not already installed. For StoX 3.5.0 on Windows it is recommended to use R 4.2 or newer for the filter expression builder to work properly.</p>
+Install R 4.0.0 or newer if not already installed. It is recommended to use the latest version of R.</p>
 <p>Step 3:
 Click on &quot;Tools&quot; &gt; &quot;R connection&quot; in the menu to define the path to R (for example C:\Program Files\R\R-4.0.3\bin\x64).</p>
 <p>Step 4:
@@ -72,7 +70,7 @@ StoX is now ready for use.</p>
 <p>Step 1:
 Install by double-clicking on the downloaded .dmg file, and follow the instructions.</p>
 <p>Step 2:
-Install R 4.0.0 or newer if not already installed.</p>
+Install R 4.0.0 or newer if not already installed. It is recommended to use the latest version of R.</p>
 <p>Step 3:
 Open StoX by double clicking on the &quot;StoX.app&quot; in the Applications folder in the Finder app. If you get a message saying &quot;StoX can&apos;t be opened because the identity of the developer cannot be confirmed&quot;, or similar, ctr + click and select Open. Some users may need to</p>
 <p>Step 4:
@@ -85,7 +83,7 @@ StoX is now ready for use.</p>
 <p>Step 1:
 Install by double-clicking on the downloaded .rpm or .deb file, and follow the instructions.</p>
 <p>Step 2:
-Install R 4.0.0 or newer if not already installed.</p>
+Install R 4.0.0 or newer if not already installed. It is recommended to use the latest version of R.</p>
 <p>Step 3:
 Open StoX either by clicking on the StoX icon or using the command &apos;StoX&apos;.</p>
 <p>Step 4:
@@ -94,17 +92,17 @@ Click on &quot;Tools&quot; &gt; &quot;R connection&quot; in the menu to define t
 Click on &quot;Tools&quot; &gt; &quot;Install Rstox packages&quot; in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages.</p>
 <p>Note that on Linux it may be required to install C++ libraries and other resources that are needed by the Rstox packages and their dependencies. The following commands may be sufficient to avoid errors in the &quot;Install Rstox packages&quot;:</p>
 <ul>
-<li>Used in the pakcage &quot;units&quot;:
+<li>Used in the package &quot;units&quot;:
 sudo apt-get install -y libudunits2-dev</li>
-<li>Used in the pakcage &quot;jsonvalidate&quot; used by &quot;RstoxFramework&quot;:
+<li>Used in the package &quot;jsonvalidate&quot; used by &quot;RstoxFramework&quot;:
 sudo apt-get install -y libcurl4-openssl-dev</li>
-<li>Used in the pakcage &quot;xml2&quot;:
+<li>Used in the package &quot;xml2&quot;:
 sudo apt-get install -y libxml2-dev</li>
-<li>Used in the pakcage &quot;xslt&quot; used by &quot;RstoxData&quot;:
+<li>Used in the package &quot;xslt&quot; used by &quot;RstoxData&quot;:
 sudo apt-get install -y libxslt1-dev</li>
-<li>Used in the pakcage &quot;rgdal&quot;:
-sudo aptitude install libgdal-dev</li>
-<li>Used in the pakcage &quot;sf&quot;:
+<li>Used in the package &quot;rgdal&quot;:
+sudo apt-get install libgdal-dev</li>
+<li>Used in the package &quot;sf&quot;:
 sudo apt-get install -y libproj-dev</li>
 </ul>
 <p>If problems still occur, try debugging by loacting and running in R the commands that (1) source the Vesions.R file and (2) call the installOfficialRstoxPackagesWithDependencies() function, found in the log file located in the folder &quot;stox&quot; in your system temp folder (/tmp/stox), but with quiet = FALSE. See the following example:</p>
@@ -112,12 +110,6 @@ sudo apt-get install -y libproj-dev</li>
 installOfficialRstoxPackagesWithDependencies(&quot;3.1.4&quot;, &quot;/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.OfficialRstoxFrameworkVersions.txt&quot;, quiet = FALSE, toJSON = TRUE)</p>
 <p>Step 6:
 StoX is now ready for use.</p>
-<h3 id="installation-of-rstox-packages-in-r-for-unofficial-stox-versions">Installation of Rstox packages in R for unofficial StoX versions</h3>
-<p>Insert the appropriate versions stored in the file <a href="https://raw.githubusercontent.com/StoXProject/RstoxFramework/master/inst/versions/OfficialRstoxFrameworkVersions.txt">OfficialRstoxFrameworkVersions.txt</a>. StoX 3.4.6 is given as example:</p>
-<pre><code>remotes::install_github(repo = &quot;stoxproject/RstoxData&quot;, ref = &quot;RstoxData-v1.6.8&quot;)
-remotes::install_github(repo = &quot;stoxproject/RstoxBase&quot;, ref = &quot;RstoxBase-v1.9.8&quot;)
-remotes::install_github(repo = &quot;stoxproject/RstoxFramework&quot;, ref = &quot;RstoxFramework-v3.4.6&quot;)
-</code></pre>
 <h2 id="known-issues">Known issues</h2>
 <p>StoX uses files to store the memory of an open StoX project. These files are located in the folder &quot;process/projectSession&quot;, which only exists while the StoX project is open. These memory files occupy 113 characters in the file paths after the StoX project folder. If the StoX project contains processes with long names, the output files can occupy more than 113 characters. For Windows systems with maximum 256 character file path only 143 characters are left for the path of the StoX project folder. When working with StoX projects with long names, it is adivced to change the Windows Registry to accept long file paths (search, e.g., for &quot;How to Make Windows 10 Accept long File Paths&quot; for more information).</p>
 <h2 id="examples">Examples</h2>
