@@ -150,11 +150,11 @@ export class HomeComponent {
       maxStatus = 3;
     }
 
-    return maxStatus > 1 ? 'grey' : maxStatus == 1 ? 'rgb(255,30,78)' : 'black';
+    return maxStatus == 3 ? 'rgb(255,30,78)' : maxStatus > 1 ? 'grey' : maxStatus == 1 ? 'rgb(255,30,78)' : 'black';
   }
 
   getPackageColor(pkg: PackageVersion) {
-    return pkg == null || pkg.status > 1 ? 'grey' : pkg.status == 1 ? 'rgb(255,30,78)' : 'black';
+    return pkg == null || pkg.status == 3 ? 'rgb(255,30,78)' : pkg.status > 1 ? 'grey' : pkg.status == 1 ? 'rgb(255,30,78)' : 'black';
   }
 
   getMainPackageDescr() {
