@@ -50,7 +50,7 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <div *ngIf="service.filterIsNotRunOrTablesIsEmpty">Filter has not been run: Table names are not populated automatically</div>
+    <div *ngIf="service.filterIsNotRunOrTablesIsEmpty">The input process has not been run: Table names not populated automatically.</div>
     <mat-spinner diameter="16" mode="indeterminate" *ngIf="service.isOpening">Updating query...</mat-spinner>
     <button type="button" pButton icon="pi pi-close" (click)="cancel()" label="Cancel" class="p-button-secondary" [disabled]="service.isOpening"></button>
     <button type="button" pButton (click)="apply()" label="Save" [disabled]="service.isOpening"></button>

@@ -733,7 +733,7 @@ function setupServer() {
   });
   // observe project root path
   server.get("/projectrootpath", function (req: any, res: any) {
-    //logInfo('get project root path ' + properties.projectRootPath);
+    logInfo('get project root path ' + properties.projectRootPath);
     res.send(properties.projectRootPath);
   });
   // observe rpath in backend
@@ -753,6 +753,7 @@ function setupServer() {
   });
 
   server.get("/stoxversion", function (req: any, res: any) {
+    logInfo("get stoxVersion " + stoxVersion);
     res.send(stoxVersion);
   });
 
@@ -932,11 +933,12 @@ function setupServer() {
     } else {
       packages.push({ packageName: "R disconnected", version: "", status: 3 });
     }
-    // logInfo(JSON.stringify(packages));
+    logInfo("Rstox-packages: " + JSON.stringify(packages));
     res.send(packages);
   });
 
   server.get("/getIsOfficialStoXVersion", function (req: any, res: any) {
+    logInfo("Is the StoX version official?: " + isOfficialStoXVersion);
     res.send(isOfficialStoXVersion);
   });
 
