@@ -1,3 +1,25 @@
+# StoX v4.0.1-9001 (2024-09-03)
+
+## Summary
+* The StoX version 4.0.1-9001 is the final pre-release before StoX 4.0.1. The pre-release contains the new tables PreySpeciesCategory and PreySample in StoxBiotic and new functions PreySpeciesCategoryCatch and ReportPreySpeciesCategoryCatch, for estimates from prey data in NMDBiotic files.
+
+## General changes
+* Added tables PreySpeciesCategory and PreySample in StoxBiotic, and prepared for adding PreyIndividual. 
+* Added functions PreySpeciesCategoryCatch and ReportPreySpeciesCategoryCatch.
+* Added the ReportFunction "number", "fractionOfOccurrence" and "fractionOfSum".
+* Added resample function ResamplePreySpeciesCategoryCatchData().
+
+## Detailed changes
+* Changed error to something sensible when ReportFunction or TargetVariable are empty in ReportDensity().
+* Removed stop in ReportBootstrap when Bootstrap() is not run, and rather showing the default warning.
+
+## Bug fixes
+* Fixed bug where reports could be run even though the Baseline model had been rerun."
+* Fixed bug where possible values where not available for DensityUnit in ReportDensity().
+* Fixed bug where a ReportBootstrap process could be run even if the Baseline model or the Bootstrap process was reset. Also introduced the columns usedInRecursiveProcessIndices, usedInRecursiveProcessIDs and usedInRecursiveProcessNames in getProcessTable() to support resetting processes using outputs from processes in previous tables.
+* Fixed bug where defaults were not given for Percentages and GroupingVariables in ReportBootstrap().
+
+
 # StoX v4.0.0 (2024-07-12)
 
 ## Summary
