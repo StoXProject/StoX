@@ -1,14 +1,14 @@
 <p-dialog header="Open project as template" [(visible)]="service.display" [modal]="true" [style]="{width: '550px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
   <MessageDlg></MessageDlg>
 
-  <p>Template project folder:</p>
+  <p>Template project:</p>
   <input style="width: calc(100% - 22px)" type="text" pInputText [(ngModel)]="service.projectPath" />
   <button style="width: 22px" type="button" pButton icon="pi pi-ellipsis-h" (click)="browseExistingProject()"></button>
 
-  <p>Project name:</p>
+  <p>Name of the new project:</p>
   <input style="width: calc(100% - 22px)" type="text" pInputText [(ngModel)]="service.projectName" />
 
-  <p>New save folder:</p>
+  <p>Folder in which to place the new project:</p>
   <input style="width: calc(100% - 22px)" type="text" pInputText [(ngModel)]="service.projectNewPath" />
   <button style="width: 22px" type="button" pButton icon="pi pi-ellipsis-h" (click)="browseTargetDirectory()"></button>
 
