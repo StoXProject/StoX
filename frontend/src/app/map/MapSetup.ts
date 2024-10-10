@@ -205,7 +205,7 @@ export class MapSetup {
         return f2;
       });
 
-      console.log('> ' + JSON.stringify(fcloned));
+      //console.log('> ' + JSON.stringify(fcloned));
 
       const s: string = new GeoJSON().writeFeatures(fcloned, { featureProjection: mapInteraction.getProj(), dataProjection: 'EPSG:4326' });
 
