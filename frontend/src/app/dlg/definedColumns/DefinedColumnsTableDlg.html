@@ -15,11 +15,11 @@
         </mat-cell>
       </ng-container>
 
-      <ng-container *ngFor="let column of displayedColumns">
+      <ng-container *ngFor="let column of displayedColumns; let rowIndex = index">
         <ng-container *ngIf="column !== 'select'">
           <ng-container [matColumnDef]="column">
             <mat-header-cell *matHeaderCellDef> {{column}} </mat-header-cell>
-            <mat-cell *matCellDef="let element">
+            <mat-cell *matCellDef="let element; let rowIndex = index">
               <ng-container *ngIf="possibleValues(column) !== null && possibleValues(column) !== undefined">
                 <mat-form-field floatLabel="never">
                   <mat-select placeholder="" [(ngModel)]="element.getColumn(column).value" name="element.getColumn(column).value">
@@ -30,12 +30,12 @@
               <ng-container *ngIf="possibleValues(column) === null || possibleValues(column) === undefined">
                 <ng-container *ngIf="getType(column) === 'double' || getType(column) === 'numeric'">
                   <mat-form-field floatLabel="never">
-                    <input matInput #inputRef placeholder="" type="text" (ngModelChange)="allowNumberLikeString($event, column, inputRef,element.getColumn(column).value)" (focusout)="allowOnlyProperNumberString(column, inputRef)" [(ngModel)]="element.getColumn(column).value" />
+                    <input matInput #inputRef placeholder="" type="text" (ngModelChange)="allowNumberLikeString($event, column, rowIndex, inputRef,element.getColumn(column).value)" (focusout)="allowOnlyProperNumberString(column, rowIndex, inputRef)" [(ngModel)]="element.getColumn(column).value" />
                   </mat-form-field>
                 </ng-container>
                 <ng-container *ngIf="getType(column) === 'integer'">
                   <mat-form-field floatLabel="never">
-                    <input matInput #inputRef placeholder="" type="text" (ngModelChange)="allowNumberLikeString($event, column, inputRef,element.getColumn(column).value)" (focusout)="allowOnlyProperNumberString(column, inputRef)" [(ngModel)]="element.getColumn(column).value" />
+                    <input matInput #inputRef placeholder="" type="text" (ngModelChange)="allowNumberLikeString($event, column, rowIndex, inputRef,element.getColumn(column).value)" (focusout)="allowOnlyProperNumberString(column, rowIndex, inputRef)" [(ngModel)]="element.getColumn(column).value" />
                   </mat-form-field>
                 </ng-container>
                 <ng-container *ngIf="getType(column) === 'character'">
