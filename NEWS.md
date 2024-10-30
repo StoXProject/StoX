@@ -66,49 +66,6 @@
 * Fixed problem with selecting PointColor in PlotAcousticTrawlSurvey() in the GUI.
 
 
-# StoX v4.0.1-9002 (2024-10-10)
-
-## Summary
-* The StoX version 4.0.1-9003 is a pre-release before StoX 4.0.1 (or perhaps 4.1.0). The pre-release fixes multiple bugs, and in particular a bug occurring when modifying a heavy stratum in the GUI (payload too large error). The most important bugfix was that certain values of BiologyLengthCode were shifted down one value in ICESBiotic(). 
-
-## General changes
-* Added SpeedGround as vesselspeed from NMDBiotic in ICESBiotic().
-* Changed mapplyOnCores() to using sockets both for Windows and macOS, which solved the problem that the memory of the parent R session was copied to all cores, potentially causing memory issues.
-* Added support for numeric sorting of plus groups in plots, so that 9 comes before 10+.
-* Added warning if there are duplicated StratumLayerIndividual in Individuals(). There may however be duplicated StratumLayerIndividual in SuperIndividuals(), e.g. when multiple Beam are used. Added support in imputation to tackle this.
-* Added the resampling function Resample_PreySpeciesCategoryCatchData_Hierarchical, which does actual resampling by repeating entries that are sampled more than once, as opposed to scaling the data variable.
-* Renamed the resampling functions used in Bootstrap to the following convension: "Resample" + "_" + dataType + "_" + specification, where dataType is the StoX data type such as "MeanNASCData" and "BioticAssignment", and specification is any string in CamelCase describing the resampling function, such as "ByStratum" and "ByAcousticPSU":
-    * "ResampleMeanLengthDistributionData" -> "Resample_MeanLengthDistributionData"
-    * "ResampleMeanSpeciesCategoryCatchData" -> "Resample_MeanSpeciesCategoryCatchData"
-    * "ResamplePreySpeciesCategoryCatchData" -> "Resample_PreySpeciesCategoryCatchData_HierarchicalUsingScaling"
-    * "ResampleBioticAssignmentByStratum" -> "Resample_BioticAssignment_ByStratum"
-    * "ResampleBioticAssignmentByAcousticPSU" -> "Resample_BioticAssignment_ByAcousticPSU"
-    * "ResampleMeanNASCData" -> "Resample_MeanNASCData"
-* Changed to show TargetVariableUnit in ReportBootstrap() only when the ReportFunction is not a fraction (fractionOfOccurrence or fractionOfSum).
-
-## Detailed changes
-* Added documentation of PreySpeciesCategory and PreySample in StoxBiotic.
-* Fixed inaccuracies in the documentation of the StoxBiotic format.
-* Added warning when there are missing values in keys in StoxBiotic.
-* Renamed ReportVariable to TargetVariable and ReportVariableUnit to TargetVariableUnit in ReportSpeciesCategoryCatch() for consistency with other report functions.
-* Added the progress of writing the nc file in Bootstrap() to the progress file (which is used by estimateTimeOfProcesses()).
-* Added explicit error message when a variable is requested that does not exist in a Bootstrap nc file.
-* Relaxed error to warning for unknown file extension in output files read through readModelData().
-
-## Bug fixes
-* Fixed bug when modifying a heavy stratum in the GUI, which appeared to work but when the StratumPolygon process was re-run the modifications were lost.
-* Fixed a bug where certain values of BiologyLengthCode were shifted one integer value down in ICESBiotic(). The bug is related to floating point precision which causes some values to be slightly lower than the corresponding integer after calculations. In R one example is format(29 / 100 * 100, digits = 20) = "28.999999999999996447", which results in 28 when converted to integer. The following values are affected:
-	* 29, 57, 58, 113, 114, 115, 116 when BiologyLengthCode is "cm" (lengthresolution "3")
-	* 1001, 1003, 1005, 1007, 1009, 1011, 1013, 1015, 1017, 1019, 1021 and 1023 when BiologyLengthCode is "mm"  (lengthresolution "1")
-	* 1005 and 1015 (a subset of the values for "mm") when BiologyLengthCode is "halfcm" (lengthresolution "2")
-* Fixed bug in colors of processes to not show bold for ProcessData processes that are used by a later ProcessData process where this use is hidden by UseProcessData.
-* Fixed bug where the function inputs to a process data process were not considered when UseProcessData is TRUE, with the consequence that the process was marked as terminal (bold in the GUI).
-* Fixed bug when using DefinitionMethod = "PreDefined" in DefineAcousticPSU().
-* Fixed bug in RedefineStoxBiotic(), where duplicated keys in the input BioticData were warned but not removed.
-* Fixed bug where PreyCatchfractionWeight = 0 was set to NA if PreyCatchFractionWeightResolution was missing. Now returning 0.
-* Fixed problem with selecting PointColor in PlotAcousticTrawlSurvey() in the GUI.
-
-
 # StoX v4.0.1-9001 (2024-09-03)
 
 ## Summary
