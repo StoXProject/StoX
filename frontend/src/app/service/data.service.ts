@@ -388,7 +388,7 @@ export class DataService {
           r2 = new RunResult();
           r2.error = [res];
         }
-
+        
         if (dothrow) {
           if (r2.error.length > 0) {
             throw r2.error[0];
@@ -407,7 +407,7 @@ export class DataService {
             this.m_logSubject.next('log-error');
           });
         }
-
+        
         return r2.value;
       })
     );

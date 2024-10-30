@@ -584,7 +584,9 @@ const writePropertiesToFile = function writePropertiesToFile() {
 };
 
 function callR(arg: string) {
+  
   const startTime = process.hrtime();
+
   return new Promise(async (resolve) => {
     while (callr_evaluate.length > 0) {
       // pause when client is busy.
@@ -682,7 +684,8 @@ async function evaluate(client: any, cmd: string) {
 function setupServer() {
   server = express();
   //server.use(bodyParser.json())
-  server.use(bodyParser.text());
+  //server.use(bodyParser.json({limit: '50mb'}));
+  server.use(bodyParser.text({limit: '50mb'}));
   //server.use('/static', express.static('srv'))
   server.use(cors()); // enable cors in header (http call from static resources)
   //server.options(cors());
