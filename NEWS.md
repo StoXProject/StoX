@@ -1,3 +1,19 @@
+# StoX v4.0.1-9004 (2024-11-01)
+
+## Summary
+* The StoX version 4.0.1-9004 is a bugfix pre-release before StoX 4.1.0.
+
+## Detailed changes
+* Breaking change: Changed default from save = TRUE to save = FALSE in runModel(), runProject() and runProjects().
+* Updated the documentation of StratumNameLabel.
+
+## Bug fixes
+* Fixed bug in asIntegerAfterRound() used when setting class of ICES data to avoid floating point to integer errors. The bug appeared when the input was character (but convertible to numeric). 
+* Fixed bug with numeric vectors with NAs in factorNAfirst().
+* Fixed bug in runProject() where startProcess and endProcess outside of the range of processes resulted in a warning. In the new version these are truncated to the range of processes. 
+* Fixed warnings in translateOneTable() so that a warning is given if the variable to translate is not present in any table, and if any conditional variables are not present in a table to be translated.
+
+
 # StoX v4.0.1-9003 (2024-10-30)
 
 ## Summary
