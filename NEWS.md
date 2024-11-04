@@ -1,3 +1,66 @@
+# StoX v4.1.0 (2024-11-04)
+
+## Summary
+* The StoX version 4.1.0 is a minor release which includes some improvements to the StoX GUI and the Rstox packages, and a series of bugfixes, specifically a bug in parameter tables where numeric values entered in one row was copied to the first row, thus overwriting the user input in the first row, a bug occurring when modifying a heavy stratum in the GUI (payload too large error), and a bug where certain values of BiologyLengthCode were shifted down one value in ICESBiotic(). See details below.
+
+## General changes
+* Changed how output files are deleted. Before, output files were deleted for all later processes in a model in addition to the processes of later models using any of these processes. Now, the processes which have an argument UseOutputData = TRUE are not deleted.
+* Added a warning in NASC() for multiple Beam with the same frequency, which may lead to over-estimation.
+* Added splitting by both "-" and "/" in formatOutput to ensure correct sorting. This change should not affect any results through imputation as all known StoX project use only one SpeciesCategory in SuperIndividuals.
+* Changed the drop down list of ConditionalVariableNames in Translate functions to only include the variables in the table of the VariableName (and also excluding the VariableName). Previously all variables of the entire data were listed, which was confusing since only those present in the relevant table could be used.
+* Changed the behavior of Translate functions when a variable that is not present in the table is used as a conditional variable. Before this conditional variable was effectively ignored, but in the new version the behavior is to give a warning and not perform any translation.
+* Added a warning if no values are translated in Translate functions.
+* Added the new GeneticPopulationCode to ICESBiotic().
+* Added SpeedGround as vesselspeed from NMDBiotic in ICESBiotic().
+* Changed mapplyOnCores() to using sockets both for Windows and macOS, which solved the problem that the memory of the parent R session was copied to all cores, potentially causing memory issues.
+* Added support for numeric sorting of plus groups in plots, so that 9 comes before 10+.
+* Added warning if there are duplicated StratumLayerIndividual in Individuals(). There may however be duplicated StratumLayerIndividual in SuperIndividuals(), e.g. when multiple Beam are used. Added support in imputation to tackle this.
+* Renamed the resampling functions used in Bootstrap to the following convension: "Resample" + "\_" + dataType + "\_" + specification, where dataType is the StoX data type such as "MeanNASCData" and "BioticAssignment", and specification is any string in CamelCase describing the resampling function, such as "ByStratum" and "ByAcousticPSU":
+    * "ResampleMeanLengthDistributionData" -> "Resample_MeanLengthDistributionData"
+    * "ResampleMeanSpeciesCategoryCatchData" -> "Resample_MeanSpeciesCategoryCatchData"
+    * "ResampleBioticAssignmentByStratum" -> "Resample_BioticAssignment_ByStratum"
+    * "ResampleBioticAssignmentByAcousticPSU" -> "Resample_BioticAssignment_ByAcousticPSU"
+    * "ResampleMeanNASCData" -> "Resample_MeanNASCData"
+* Changed to show TargetVariableUnit in ReportBootstrap() only when the ReportFunction is not a fraction (fractionOfOccurrence or fractionOfSum).
+* Added the ReportFunction "number", "fractionOfOccurrence" and "fractionOfSum".
+
+## Bug fixes
+* Fixed bug where reports could be run even though the Baseline model had been rerun.
+* Fixed bug where a ReportBootstrap process could be run even if the Baseline model or the Bootstrap process was reset. Also introduced the columns usedInRecursiveProcessIndices, usedInRecursiveProcessIDs and usedInRecursiveProcessNames in getProcessTable() to support resetting processes using outputs from processes in previous tables.
+* Fixed bug when modifying a heavy stratum in the GUI, which appeared to work but when the StratumPolygon process was re-run the modifications were lost.
+* Fixed a bug where certain values of BiologyLengthCode were shifted one integer value down in ICESBiotic(). The bug is related to floating point precision which causes some values to be slightly lower than the corresponding integer after calculations. In R one example is format(29 / 100 * 100, digits = 20) = "28.999999999999996447", which results in 28 when converted to integer. The following values are affected:
+	* 29, 57, 58, 113, 114, 115, 116 when BiologyLengthCode is "cm" (lengthresolution "3")
+	* 1001, 1003, 1005, 1007, 1009, 1011, 1013, 1015, 1017, 1019, 1021 and 1023 when BiologyLengthCode is "mm"  (lengthresolution "1")
+	* 1005 and 1015 (a subset of the values for "mm") when BiologyLengthCode is "halfcm" (lengthresolution "2")
+* Fixed bug in colors of processes to not show bold for ProcessData processes that are used by a later ProcessData process where this use is hidden by UseProcessData.
+* Fixed bug where the function inputs to a process data process were not considered when UseProcessData is TRUE, with the consequence that the process was marked as terminal (bold in the GUI).
+* Fixed bug in asIntegerAfterRound() used when setting class of ICES data to avoid floating point to integer errors. The bug appeared when the input was character (but convertible to numeric). 
+* Fixed warnings in translateOneTable() so that a warning is given if the variable to translate is not present in any table, and if any conditional variables are not present in a table to be translated.
+* Fixed bug in ReportBootstrap when an integer variables with missing values are reported (in which case replacing NA by 0 did not work).
+* Fixed bug in as.numeric_IfPossible() used by setorderv_numeric() and orderRowsByKeys() where individual elements could be set to NA in a vector unless all of the values were NA after conversion to numeric. In the new version all of the values must be convertible to numeric for a numeric vector to be returned. In addition setorderv_numeric() has gained the parameter split, which is used in RstoxBase::formatOutput() as split = c("-", "/") to split both by the within StoX key separator and the between StoX kye separator used in IDs such as Sample and Individual. This bugfix may result in different sorting of StoxBiotic, particularly for NMDBiotic data with herring coded as catchcategory 161722.G03, 161722.G05 or 161722.G07.
+* Fixed problem with selecting PointColor in PlotAcousticTrawlSurvey() in the GUI.
+* Fixed bug where possible values where not available for DensityUnit in ReportDensity().
+* Fixed bug where defaults were not given for Percentages and GroupingVariables in ReportBootstrap().
+* Fixed bug in runProject() where startProcess and endProcess outside of the range of processes resulted in a warning. In the new version these are truncated to the range of processes. 
+* Fixed bug in factorNAfirst() which failed when age plus group was not used.
+* Fixed bug with numeric vectors with NAs in factorNAfirst().
+* Fixed bug when using DefinitionMethod = "PreDefined" in DefineAcousticPSU().
+* Fixed bug in RedefineStoxBiotic(), where duplicated keys in the input BioticData were warned but not removed.
+
+## Detailed changes
+* Breaking change: Changed default from save = TRUE to save = FALSE in runModel(), runProject() and runProjects().
+* Updated the documentation of StratumNameLabel.
+* Refactored resampling functions used in Bootstrap() to save a resamplingFactor in the resampling and then scale the data using the new applyResamplingFactor().
+* Changed aggregateBaselineDataOneTableSingleFunction() used by aggregateBaselineDataOneTable() to pad with zeros for all "data" variables, as specified in the dataTypeDefinition.
+* Fixed inaccuracies in the documentation of the StoxBiotic format.
+* Added warning when there are missing values in keys in StoxBiotic.
+* Added the progress of writing the nc file in Bootstrap() to the progress file (which is used by estimateTimeOfProcesses()).
+* Added explicit error message when a variable is requested that does not exist in a Bootstrap nc file.
+* Relaxed error to warning for unknown file extension in output files read through readModelData().
+* Changed error to something sensible when ReportFunction or TargetVariable are empty in ReportDensity().
+* Removed stop in ReportBootstrap when Bootstrap() is not run, and rather showing the default warning.
+
+
 # StoX v4.0.1-9004 (2024-11-01)
 
 ## Summary
@@ -98,7 +161,7 @@
 * Removed stop in ReportBootstrap when Bootstrap() is not run, and rather showing the default warning.
 
 ## Bug fixes
-* Fixed bug where reports could be run even though the Baseline model had been rerun."
+* Fixed bug where reports could be run even though the Baseline model had been rerun.
 * Fixed bug where possible values where not available for DensityUnit in ReportDensity().
 * Fixed bug where a ReportBootstrap process could be run even if the Baseline model or the Bootstrap process was reset. Also introduced the columns usedInRecursiveProcessIndices, usedInRecursiveProcessIDs and usedInRecursiveProcessNames in getProcessTable() to support resetting processes using outputs from processes in previous tables.
 * Fixed bug where defaults were not given for Percentages and GroupingVariables in ReportBootstrap().
