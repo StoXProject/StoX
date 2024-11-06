@@ -20,10 +20,10 @@ Step 1:
 Install by double-clicking on the downloaded .msi file, and follow the instructions. If you get a message along the lines that the installer is blocked by the system, you can click on "More info" and select "Run anyway".
 
 Step 2: 
-Install R 4.0.0 or newer if not already installed. It is recommended to use the latest version of R. 
+Install R 4.3.0 or newer if not already installed. It is recommended to use the latest version of R. 
 
 Step 3: 
-Click on "Tools" > "R connection" in the menu to define the path to R (for example C:\Program Files\R\R-4.0.3\bin\x64).
+Click on "Tools" > "R connection" in the menu to define the path to R (for example C:\Program Files\R\R-4.4.2\bin\x64).
 
 Step 4: 
 Click on "Tools" > "Install Rstox packages" in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages. 
@@ -37,7 +37,7 @@ Step 1:
 Install by double-clicking on the downloaded .dmg file, and follow the instructions.
 
 Step 2: 
-Install R 4.0.0 or newer if not already installed. It is recommended to use the latest version of R. 
+Install R 4.3.0 or newer if not already installed. It is recommended to use the latest version of R. 
 
 Step 3: 
 Open StoX by double clicking on the "StoX.app" in the Applications folder in the Finder app. If you get a message saying "StoX can't be opened because the identity of the developer cannot be confirmed", or similar, ctr + click and select Open. Some users may need to 
@@ -57,7 +57,7 @@ Step 1:
 Install by double-clicking on the downloaded .rpm or .deb file, and follow the instructions.
 
 Step 2: 
-Install R 4.0.0 or newer if not already installed. It is recommended to use the latest version of R. 
+Install R 4.3.0 or newer if not already installed. It is recommended to use the latest version of R. 
 
 Step 3: 
 Open StoX either by clicking on the StoX icon or using the command 'StoX'.
