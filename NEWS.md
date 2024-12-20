@@ -1,3 +1,39 @@
+# StoX v4.1.1 (2024-12-20)
+
+## Summary
+* The StoX version 4.1.1 is a patch release which includes some important bug fixes, in particular the problem that certain floating values were shifted one integer value down in the functions ICESBiotic and ICESAcoustic. An attempt to fix this bug was made in StoX 4.1.0, but was not successful. 
+
+I addition, the resamling function "ResampleBioticAssignmentByAcousticPSU" that was introduced in StoX 4.0.0 for BioticAssignment in the function Bootstrap, is now more carefully documented in the help page of the function. Specifically, the potential risk of under-estimating the variance by using this resampling function is stated. It is adviced to carefully read the documentation before choosing between the resampling functions "ResampleBioticAssignmentByStratum" and "ResampleBioticAssignmentByAcousticPSU". I.e., there is no single ResampleFunction that can be recommended for resampling of BioticAssignment. 
+
+## General changes
+* Updated the documentation of ResampleFunction in the BootstrapMethodTable of Bootstrap(). Specifically the pros and cons of ResampleFunction "ResampleBioticAssignmentByStratum" and "ResampleBioticAssignmentByAcousticPSU" are described. There are dangers to using the "ResampleBioticAssignmentByAcousticPSU" in that the variance may be lower than expected due to Hauls being resampled multiple times for the same Stratum, which smoothes out the extreme values. 
+
+
+## Bug fixes
+* Fixed the 29 cm bug again, as it was not properly fixed in RstoxData v2.1.0. Refactored how precision is set both when reading data and in the ICESBiotic() and ICESAcoustic(). In R one example is format(29 / 100 * 100, digits = 20) = "28.999999999999996447", which results in 28 when converted to integer. The following values are affected:
+	* 29, 57, 58, 113, 114, 115, 116 when BiologyLengthCode is "cm" (lengthresolution "3")
+	* 1001, 1003, 1005, 1007, 1009, 1011, 1013, 1015, 1017, 1019, 1021 and 1023 when BiologyLengthCode is "mm"  (lengthresolution "1")
+	* 1005 and 1015 (a subset of the values for "mm") when BiologyLengthCode is "halfcm" (lengthresolution "2")
+* Fixed bug in MeanNASC() causing StratumPolygon to show in the Function inputs if the user first selects PSUDefinition = "FunctionParameter" and PSUDefinitionMethod = "EDSUToPSU" and then changing to PSUDefinition = "FunctionInput".
+* Fixed bug in DefineAcousticTargetStrength() where specifying a table with the columns AcousticCategory, Frequency, TotalLength and TargetStrength in the case of AcousticTargetStrengthModel = "TargetStrengthByLength" resulted in the error message "The output from DefineAcousticTargetStrength() contains duplicated keys (AcousticCategory, Frequency) in rows 1, 2.". The reason was that only the first two columns were considered as grouping variables, whereas all three first columns should (specifying different lengths, and a target strength per length).
+
+
+## Detailed changes
+* Removed rscript_args from mapplyOnCores(), since this caused the Renviron to be ignored in the sub processes, resulting in errors with finding RstoxFramework in the case of multiple libraries on Linux and macOS.
+* Introduced the EchoType as a column in the Data table of ICESBiotic() (and WriteICESBiotic()).
+* Updated documentation of the AcousticPSU process data.
+* Changed unwanted error "Passed a filename that is NOT a string of characters!" when creating a process using ReportBootstrap and clicking on the drop down list for e.g. BaselineProcess, to a warning "Bootstrap output NetCDF4 file missing." and with empty drop down as result.
+* Added removal of temporary files: 1. Shapefiles written by setRstoxPrecision() were not completely deleted (shx, dbf and prj were not deleted). 2. The NetCDF4 file written temporarily during bootstrapping and copied to the bootstrap process output was not deleted. 3. The temporary project description file used in validation in readProjectDescription() was not deleted.
+* Reverted the name change of Resample* functions back to using CamelCase and not underscore separated CamelCase (underscore between the word "Resample", the data type, and the specification):
+    * "Resample_MeanLengthDistributionData" -> "ResampleMeanLengthDistributionData"
+    * "Resample_MeanSpeciesCategoryCatchData" -> "ResampleMeanSpeciesCategoryCatchData"
+    * "Resample_PreySpeciesCategoryCatchData_HierarchicalUsingScaling" -> "ResamplePreySpeciesCategoryCatchData"
+    * "Resample_BioticAssignment_ByStratum" -> "ResampleBioticAssignmentByStratum"
+    * "Resample_BioticAssignment_ByAcousticPSU" -> "ResampleBioticAssignmentByAcousticPSU"
+    * "Resample_MeanNASCData" -> "ResampleMeanNASCData"
+* Added message when replaceDataList or replaceArgsList is used.
+
+
 # StoX v4.1.0 (2024-11-04)
 
 ## Summary

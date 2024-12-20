@@ -10,9 +10,9 @@ StoX is an open source software developed at IMR, Norway, to analyze survey data
 
 The following describes installation of the latest *official* StoX version (Se [all official StoX versions](https://github.com/StoXProject/StoX/blob/master/Official_StoX_versions.md)). For unofficial versions installation of the Rstox-packages must be done in R (details given at the end of this paragraph). It is highly recommended to use official versions, as these are fully tested, whereas tetsting is limited for unofficial versions.
 
-See [release notes for StoX 4.1.0](https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v410-2024-11-04).
+See [release notes for StoX 4.1.1](https://github.com/StoXProject/StoX/blob/master/NEWS.md#stox-v411-2024-12-20).
 
-Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v4.1.0). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
+Download StoX from (https://github.com/StoXProject/StoX/releases/tag/v4.1.1). For Windows download the .msi file, for MacOS download the .dmg file and for Linux download the .rpm or .deb file. Then follow the instructions below:
 
 ### Windows:
 
