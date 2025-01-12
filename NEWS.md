@@ -1,3 +1,18 @@
+# StoX v4.1.2-9001 (2025-01-12)
+
+## Summary
+* The StoX version 4.1.2-9001 is a pre-release to the patch release 4.1.2 which fixes a critical bug which causes the GUI to freeze if a process listed in the OutputProcesses of a Bootstrap process is renamed.
+
+## General changes
+* Changed the behavior of DefinitionMethod = "Manual" from deleting all strata, to passing the StratumPolygon as output unchanged. In addition, a new option is added, "DeleteAllStrata", which replaces the old behavior of DefinitionMethod = "Manual".
+
+## Bug fixes
+* Fixed a bug where the GUI freezes if a process listed in the OutputProcesses of a Bootstrap process is renamed.
+
+## Detailed changes
+* Added formal support for R 4.4 in the GUI.
+
+
 # StoX v4.1.1 (2024-12-20)
 
 ## Summary

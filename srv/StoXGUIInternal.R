@@ -1,9 +1,7 @@
 supportedRVersion = c(
+    "4.4", 
     "4.3", 
-    "4.2", 
-    "4.1", 
-    "4.0", 
-    "3.6"
+    "4.2"
     )
 
 #' Install official Rstox packages
