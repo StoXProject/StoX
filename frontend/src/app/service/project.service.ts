@@ -301,7 +301,7 @@ export class ProjectService {
     this.isOfficialStoXVersion = JSON.parse(await this.dataService.getIsOfficialStoXVersion().toPromise());
     console.log('> ' + 'this.isOfficialStoXVersion: ' + this.isOfficialStoXVersion);
     this.rstoxPackages = JSON.parse(await this.dataService.getRstoxPackageVersions().toPromise());
-    console.log('> ' + 'this.rstoxPackages: ' + this.rstoxPackages);
+    //console.log('> ' + 'this.rstoxPackages: ' + this.rstoxPackages);
 
     // Accept empty list of Rstox packages:
     if (this.rstoxPackages.length > 0) {
