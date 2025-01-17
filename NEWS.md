@@ -1,3 +1,13 @@
+# StoX v4.1.2-9002 (2025-01-17)
+
+## Summary
+* The StoX version 4.1.2-9002 is a pre-release to the patch release 4.1.2. The main change from StoX 4.1.2-9001 is that RstoxData is also released as a pre-release, which was needed given the current release process.
+
+## Detailed changes
+* Improved warning when multiple serial numbers have the same station in NMDBiotic input files.
+* Updated documentation on LengthDependentLengthDistributionCompensation with equations.
+
+
 # StoX v4.1.2-9001 (2025-01-12)
 
 ## Summary
