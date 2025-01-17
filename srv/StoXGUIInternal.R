@@ -76,10 +76,10 @@ installOfficialRstoxPackagesWithDependencies <- function(
     # Get the R version as two digit string:
     twoDigitRVersion <- getTwoDigitRVersionForDownload(Rstox.repos = Rstox.repos)
     
-    # Get the package tables from the Rstox 
+    # Get the package tables from CRAN:  
     dependency.contriburl <- contrib.url(dependency.repos, type = "source")
     dependency.available <- utils::available.packages(dependency.contriburl)
-    # ... and the CRAN repo, 
+    # Get the package tables from the Rstox official repo:  
     Rstox.contriburl <- contrib.url(Rstox.repos, type = "source")
     Rstox.available <- utils::available.packages(Rstox.contriburl)
     # ... and rbind to one table to be used in package_dependencies:
