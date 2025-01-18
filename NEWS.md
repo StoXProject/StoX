@@ -1,3 +1,9 @@
+# StoX v4.1.2-9003 (2025-01-18)
+
+## Summary
+* The StoX version 4.1.2-9003 is a pre-release to the patch release 4.1.2. It fixes the bug when processes listed in the OutputProcesses of a Bootstrap process was deleted.
+
+
 # StoX v4.1.2-9002 (2025-01-17)
 
 ## Summary
