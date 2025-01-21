@@ -1,3 +1,19 @@
+# StoX v4.1.2 (2025-01-21)
+
+## Summary
+* The StoX version 4.1.2 is a patch release which includes a critical bug fix related to renaming or deleting a baseline process that is included in the OutputProcesses in a Bootstrap process, which caused StoX 4.1.1 to freeze with no simple work-around. 
+
+## General changes
+* Changed the behavior of DefinitionMethod = "Manual" from deleting all strata, to passing the StratumPolygon as output unchanged. In addition, a new option is added, "DeleteAllStrata", which replaces the old behavior of DefinitionMethod = "Manual".
+
+## Bug fixes
+* Fixed a bug in the communication to the StoX GUI which caused the GUI to freeze when a process listed in the OutputProcesses of a Bootstrap process was renamed or deleted.
+
+## Detailed changes
+* Improved warning when multiple serial numbers have the same station in NMDBiotic input files.
+* Updated documentation on LengthDependentLengthDistributionCompensation with equations.
+
+
 # StoX v4.1.2-9003 (2025-01-18)
 
 ## Summary
@@ -39,7 +55,6 @@ I addition, the resamling function "ResampleBioticAssignmentByAcousticPSU" that 
 ## General changes
 * Updated the documentation of ResampleFunction in the BootstrapMethodTable of Bootstrap(). Specifically the pros and cons of ResampleFunction "ResampleBioticAssignmentByStratum" and "ResampleBioticAssignmentByAcousticPSU" are described. There are dangers to using the "ResampleBioticAssignmentByAcousticPSU" in that the variance may be lower than expected due to Hauls being resampled multiple times for the same Stratum, which smoothes out the extreme values. 
 
-
 ## Bug fixes
 * Fixed the 29 cm bug again, as it was not properly fixed in RstoxData v2.1.0. Refactored how precision is set both when reading data and in the ICESBiotic() and ICESAcoustic(). In R one example is format(29 / 100 * 100, digits = 20) = "28.999999999999996447", which results in 28 when converted to integer. The following values are affected:
 	* 29, 57, 58, 113, 114, 115, 116 when BiologyLengthCode is "cm" (lengthresolution "3")
@@ -47,7 +62,6 @@ I addition, the resamling function "ResampleBioticAssignmentByAcousticPSU" that 
 	* 1005 and 1015 (a subset of the values for "mm") when BiologyLengthCode is "halfcm" (lengthresolution "2")
 * Fixed bug in MeanNASC() causing StratumPolygon to show in the Function inputs if the user first selects PSUDefinition = "FunctionParameter" and PSUDefinitionMethod = "EDSUToPSU" and then changing to PSUDefinition = "FunctionInput".
 * Fixed bug in DefineAcousticTargetStrength() where specifying a table with the columns AcousticCategory, Frequency, TotalLength and TargetStrength in the case of AcousticTargetStrengthModel = "TargetStrengthByLength" resulted in the error message "The output from DefineAcousticTargetStrength() contains duplicated keys (AcousticCategory, Frequency) in rows 1, 2.". The reason was that only the first two columns were considered as grouping variables, whereas all three first columns should (specifying different lengths, and a target strength per length).
-
 
 ## Detailed changes
 * Removed rscript_args from mapplyOnCores(), since this caused the Renviron to be ignored in the sub processes, resulting in errors with finding RstoxFramework in the case of multiple libraries on Linux and macOS.
