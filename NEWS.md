@@ -1,3 +1,20 @@
+# StoX v4.1.3-9001 (2025-03-22)
+
+## Summary
+* The StoX version 4.1.3-9001 is a pre-release to the patch release 4.1.3 which fixes a bug in ReadAcoustic() and ReadBiotic() appearing on Windows when the R package xml2 is upgraded to 1.3.7 or higher. 
+
+## General changes
+* In addition, the function ICESDatras() has been changed to output missing Sex in the HL table, and where TotalNo and NoMeas are now sums over all sexes (a consequence of setting Sex to NA). The reason for this change is that in Norwegian biotic data catch categories (sub-samples) are not separated by sex, which results in SubWgt and CatCatchWgt being sums over sexes. In other words, the resolution in the Norwegian biotic data is not by sex, hence the change to Sex set to NA in the HL table. The CA table is left unchanged.
+
+## Bug fixes
+* Fixed error in ReadBiotic() and ReadAcoustic() where autodetectXml() returned \"Memory allocation failed\" on Windows due to imcomplete XML returned by readCharZip() not beeing accepted by xml2 v1.3.7 and v1.3.8.
+
+## Detailed changes
+* Added unit for Density in MeanDensityData.
+* Refactored LengthDependentLengthDistributionCompensation(), preparing for the selectivity method.
+* Corrected the test projects coastalCod_20.zip, cod_19.zip, haddock_19.zip and versus_2.7/coastalCod_21.zip from using RstoxFramework::LengthDependentLengthDistributionCompensation() to the correct RstoxBase::LengthDependentLengthDistributionCompensation(), as runProcess() now gives an error if the function is not in the specified namespace.
+
+
 # StoX v4.1.2 (2025-01-21)
 
 ## Summary
