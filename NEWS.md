@@ -1,3 +1,9 @@
+# StoX v4.1.3-9002 (2025-03-25)
+
+## Summary
+* The StoX version 4.1.3-9002 is a pre-release to the patch release 4.1.3 containing som changes to the GitHub build process and correcting a wrong version of RstoxBase in OfficialRstoxFrameworkVersions.txt that made Install Rstox packages fail in the StoX GUI.
+
+
 # StoX v4.1.3-9001 (2025-03-22)
 
 ## Summary
