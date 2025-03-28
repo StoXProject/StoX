@@ -447,7 +447,7 @@ getInstallType <- function(repoClass = c("StoX", "CRAN")) {
     else if (platform == "macosx") {
         type = list(
             # 2023-04-29: With R 4.3 there are two R distributions on MacOS, which does not seem to be supported in drat. We need to figure this out before enabeling binary install of Rstox packages on MacOs:
-            StoX = "source", 
+            StoX = "binary", 
             CRAN = "binary"
         )
     }
