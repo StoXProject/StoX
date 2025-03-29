@@ -1,3 +1,9 @@
+# StoX v4.1.3-9003 (2025-03-28)
+
+## Summary
+* The StoX version 4.1.3-9003 is a pre-release to the patch release 4.1.3 fixing a problem with Sex being NA in the CA table and adding a DATRAS test project. Also trying binary install of Rstox packages on macOS.
+
+
 # StoX v4.1.3-9002 (2025-03-25)
 
 ## Summary
