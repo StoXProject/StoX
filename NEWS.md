@@ -1,7 +1,22 @@
+# StoX v4.1.3 (2025-04-01)
+
+## Summary
+* The StoX version 4.1.3 is a patch release which fixes a recent problem on Windows where the StoX functions ReadAcoustic and ReadBiotic failed on most datasets after an update to the R package "xml2". In addition, the output of the StoX function ICESDatras was corrected for Norwegian biotic data.
+
+## General changes
+* The function ICESDatras() has been changed to output missing Sex in the HL table, and where TotalNo and NoMeas are now sums over all sexes (a consequence of setting Sex to NA). The reason for this change is that in Norwegian biotic data catch categories (sub-samples) are not separated by sex, which results in SubWgt and CatCatchWgt being sums over sexes. In other words, the resolution in the Norwegian biotic data is not by sex, hence the change to Sex set to NA in the HL table. The CA table is left unchanged.
+
+## Bug fixes
+* Fixed error in ReadBiotic() and ReadAcoustic() where autodetectXml() returned \"Memory allocation failed\" on Windows due to imcomplete XML returned by readCharZip() not beeing accepted by xml2 v1.3.7 and v1.3.8. Downgrading the "xml2" package to version 1.3.6 resulted in the empty map in the StoX GUI on a number of Windows units, supposedly caused by the same change in an underlying library that caused the change in the xml2 package.
+
+## Detailed changes
+* Added unit for Density in MeanDensityData.
+
+
 # StoX v4.1.3-9003 (2025-03-28)
 
 ## Summary
-* The StoX version 4.1.3-9003 is a pre-release to the patch release 4.1.3 fixing a problem with Sex being NA in the CA table and adding a DATRAS test project. Also trying binary install of Rstox packages on macOS.
+* The StoX version 4.1.3-9003 is a pre-release to the patch release 4.1.3, fixing a problem with Sex being NA in the CA table and adding a DATRAS test project. Also trying binary install of Rstox packages on macOS.
 
 
 # StoX v4.1.3-9002 (2025-03-25)
