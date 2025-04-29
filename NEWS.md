@@ -1,3 +1,12 @@
+# StoX v4.1.4-9001 (2025-04-28)
+
+## Summary
+* The StoX version 4.1.3-9002 is a pre-release to the patch release 4.1.4 which adds support for R 4.5 binary Rstox packages, which are installed through the StoX GUI.
+
+## Bug fixes
+* Removed the field EchoType from the ICESAcousticData when this is not present in the input.
+
+
 # StoX v4.1.3 (2025-04-01)
 
 ## Summary
