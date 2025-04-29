@@ -68,13 +68,18 @@ installOfficialRstoxPackagesWithDependencies <- function(
         #    "\", dependencies = FALSE)"
         #)
         #stop("The StoX version ", StoXVersion, " is not an official version. Installation of Rstox packages for non-official versions is no longer supported in the StoX GUI. It is highly recommended to use the latest official version StoX ", getLatestOfficialStoxVersion(officialRstoxPackageVersionsFile), ".\nTo install the Rstox packages for this non-official version, the following lines must be run in R. If you are using Rstudio, it is adviced to restart R before installing the Rstox packages. Also, on Windows Rtools must be installed, as the Rstox packages are installed from source by these lines:\n", paste0(installCommands, collapse = "\n"))
-        Rstox.repos <- Rstox_preRelease.repos
+        Rstox.repos <- c(
+            Rstox_preRelease.repos, 
+            Rstox.repos
+        )
     }
 
     #### Step 2: List and install the dependencies: ####
     
     # Get the R version as two digit string:
-    twoDigitRVersion <- getTwoDigitRVersionForDownload(Rstox.repos = Rstox.repos)
+    #twoDigitRVersion <- getTwoDigitRVersionForDownload(Rstox.repos = Rstox.repos)
+    twoDigitRVersion <- getTwoDigitRVersion()
+    
     
     # Get the package tables from CRAN:  
     dependency.contriburl <- contrib.url(dependency.repos, type = "source")
@@ -206,13 +211,6 @@ downloadRstoxPackage <- function(
     quiet = FALSE
 ) {
 
-    twoDigitRVersion <- getTwoDigitRVersionForDownload(
-        twoDigitRVersion = twoDigitRVersion, 
-        Rstox.repos = Rstox.repos, 
-        packageName = packageName, 
-        packageVersion = version
-    )
-
     # Get the URLs of the Rstox package to download:
     RstoxPackageURL <- getRstoxPackageURL(
         packageName, 
@@ -220,9 +218,16 @@ downloadRstoxPackage <- function(
         Rstox.repos = Rstox.repos, 
         type = type, 
         twoDigitRVersion = twoDigitRVersion
-    ) 
+    )
+
+    if(!length(RstoxPackageURL)) {
+        stop("The version ", version, " of the package ", packageName, " was not found in any of the following repos", paste(Rstox.repos, collapse = ", "))
+    }
+    else if (length(RstoxPackageURL) > 1) {
+        warning("The version ", version, " of the package ", packageName, " was found in multiple repos.")
+    }
+
     localFile <- paste(destdir, basename(RstoxPackageURL), sep = "/")
-    
     
     # Download the binaries:
     utils::download.file(
@@ -247,19 +252,84 @@ contrib.url_Rstox <- function(Rstox.repos = "https://stoxproject.github.io/repo"
         # Replace by the given R minor version to support other R versions than the installed one (e.g. before the StoX repo is updated):
         contriburl_sans_RMinorVersion <- sub("/[^/]*$", "", contriburl)
         RMinorVersion <- gsub(".*/", "", contriburl)
-        if(RMinorVersion != twoDigitRVersion) {
-            contriburl <- paste(contriburl_sans_RMinorVersion, twoDigitRVersion, sep = "/")
+
+        differingR <- RMinorVersion != twoDigitRVersion
+        if(any(differingR)) {
+            contriburl[differingR] <- paste(contriburl_sans_RMinorVersion[differingR], twoDigitRVersion, sep = "/")
         }
+
+        #if(RMinorVersion != twoDigitRVersion) {
+        #    contriburl <- paste(contriburl_sans_RMinorVersion, twoDigitRVersion, sep = "/")
+        #}
     }
     
 
     return(contriburl)
 }
 
-getRstoxPackageURL <- function(packageName, version = NULL, Rstox.repos = "https://stoxproject.github.io/repo", type = getInstallType("StoX"), twoDigitRVersion = NA) {
+getRstoxPackageURL <- function(
+    packageName, 
+    version = NULL, 
+    Rstox.repos = "https://stoxproject.github.io/repo", 
+    type = getInstallType("StoX"), 
+    twoDigitRVersion = NA
+) {
 
+    # Get the R minor version string, and issue error if older than the supported versions and warning if newer:
+    if(is.na(twoDigitRVersion)) {
+        twoDigitRVersion <- getTwoDigitRVersion()
+    }
+    if(twoDigitRVersion < min(supportedRVersion)) {
+        stop("R ", min(supportedRVersion), " is the minimum supported R version for StoX")
+    }
+    else if(twoDigitRVersion > max(supportedRVersion)) {
+        warning("Rstox packages were downloaded for the latest supported R version for StoX (R ", max(supportedRVersion), ", installed R version is ", twoDigitRVersion, ").")
+        twoDigitRVersion <- max(supportedRVersion)
+    }
+    
+
+    packageURL <- mapply(
+        locatePackage, 
+        packageName = packageName, 
+        version = version, 
+        Rstox.repos = Rstox.repos, 
+        type = type, 
+        twoDigitRVersion = twoDigitRVersion
+    )
+
+    output <- na.omit(packageURL)
+
+
+    return(output)
+}
+
+
+
+# Function to get the table of avaiable packages for each repo:
+locatePackage <- function(packageName, version, Rstox.repos, type, twoDigitRVersion) {
+    # Get the comtrib URL and download and read the package table:
     contriburl <- contrib.url_Rstox(Rstox.repos = Rstox.repos, type = type, twoDigitRVersion = twoDigitRVersion)
+    tmpf <- file.path(tempdir(), "PACKAGES")
+    download.file(url = file.path(contriburl, "PACKAGES"), destfile = tmpf, quiet = TRUE)
+    suppressWarnings(packageTable <- read.dcf(tmpf))
+    
+    # Empty table results in NA returned:
+    output <- NA
+    if(NROW(packageTable)) {
+        hasPackageVersion <- packageTable[, "Package"] == packageName  &  packageTable[, "Version"] == version
 
+        if(sum(hasPackageVersion) == 1) {
+            output <- getPackageURL(contriburl, packageName, version, type)
+        }
+        
+    }
+
+    return(output)
+}
+
+
+getPackageURL <- function(contriburl, packageName, version, type) {
+    # Build the path sans ext:
     pathSansExt <- paste(
         contriburl, 
         getPackageNameAndVersionString(packageName, version), 
@@ -275,47 +345,18 @@ getRstoxPackageURL <- function(packageName, version = NULL, Rstox.repos = "https
 }
 
 
-
-getTwoDigitRVersionForDownload <- function(twoDigitRVersion = NA, Rstox.repos = "https://stoxproject.github.io/repo", packageName = NULL, packageVersion = NULL) {
+getTwoDigitRVersion <- function() {
     
-    if(is.na(twoDigitRVersion)) {
-        RMajor <- R.Version()$major
-        RMinor <- gsub("(.+?)([.].*)", "\\1", R.Version()$minor)
-        twoDigitRVersion <- paste(RMajor, RMinor, sep = ".")
-    }
+    RMajor <- R.Version()$major
+    RMinor <- gsub("(.+?)([.].*)", "\\1", R.Version()$minor)
+    twoDigitRVersion <- paste(RMajor, RMinor, sep = ".")
     
-    if(twoDigitRVersion < min(supportedRVersion)) {
-        stop("R ", min(supportedRVersion), " is the minimum supported R version for StoX")
-    }
-    else if(twoDigitRVersion > max(supportedRVersion)) {
-        warning("Rstox packages were downloaded for the latest supported R version for StoX (R ", max(supportedRVersion), ", installed R version is ", twoDigitRVersion, ").")
-        twoDigitRVersion <- max(supportedRVersion)
-    }
-        
-    # Test against the repo, whether it exists:
-    contriburl <- contrib.url_Rstox(Rstox.repos = Rstox.repos, type = getInstallType("StoX"), twoDigitRVersion = twoDigitRVersion)
-    #suppressWarnings(packageTable <- utils::available.packages(contriburl))
-    tmpf <- file.path(tempdir(), "PACKAGES")
-    download.file(url = file.path(contriburl, "PACKAGES"), destfile = tmpf, quiet = TRUE)
-    suppressWarnings(packageTable <- read.dcf(tmpf))
-    if(!NROW(packageTable)) {
-        newTwoDigitRVersion <- max(supportedRVersion[supportedRVersion < twoDigitRVersion])
-        warning("R (minor) version ", twoDigitRVersion, " was requested, but does not exist (presumably a delay or an error when building StoX). Rstox packages for the previvous supported R version (", newTwoDigitRVersion, ") were downloaded.")
-        twoDigitRVersion <- newTwoDigitRVersion
-    }
-    else if(length(packageName) && length(packageVersion)) {
-        atPackage <- which(packageTable[, "Package"] == packageName)
-        if(length(atPackage) && ! packageVersion %in% packageTable[atPackage, "Version"]) {
-            latestExistingVersion <- max(packageTable[atPackage, "Version"])
-            warning("The requested package version ", packageName, "_v", packageVersion, " is not present in ", contriburl, "(presumably a delay or an error when building StoX). Latest existing version is ", latestExistingVersion, ".")
-        }
-
-        
-    }
-
-
     return(twoDigitRVersion)
 }
+
+
+
+
 
 
 getPlatform <- function(platform = NA) {
