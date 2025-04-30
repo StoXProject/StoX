@@ -1,3 +1,12 @@
+# StoX v4.1.4 (2025-04-30)
+
+## Summary
+* The StoX version 4.1.4 is a patch release which supports R 4.5 which was released in April 2025. In addition, the error \"Memory allocation failed\" appearing in ReadAcoustic and ReadBiotic on Windows is fixed also for input files with nordic characters.
+
+## Bug fixes
+* Removed EchoType from ICESAcousticData, which should only appear if the present in the input file.
+
+
 # StoX v4.1.4-9001 (2025-04-28)
 
 ## Summary
