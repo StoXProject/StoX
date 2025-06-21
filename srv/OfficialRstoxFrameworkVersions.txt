@@ -92,3 +92,4 @@ StoX	RstoxFramework	Dependencies	OptionalDependencies	Official	Date
 4.1.3	4.1.3	RstoxBase_2.1.3,RstoxData_2.1.4	RstoxFDA_1.6.0	TRUE	2025-04-01
 4.1.4-9001	4.1.4-9001	RstoxBase_2.1.3,RstoxData_2.1.5-9001	RstoxFDA_1.6.0	FALSE	2025-04-28
 4.1.4	4.1.4	RstoxBase_2.1.3,RstoxData_2.1.5	RstoxFDA_1.6.0	TRUE	2025-04-30
+4.2.0-9001	4.2.0-9001	RstoxBase_2.1.3,RstoxData_2.2.0-9001	RstoxFDA_1.6.0	FALSE	2025-06-20
