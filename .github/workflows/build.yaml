@@ -44,25 +44,16 @@ jobs:
         run: npm run build-${PLTF}
         shell: bash
 
-
-
       - name: Build for Windows
         if: runner.os == 'Windows'
         run: npm run build-frontend && npm run package-win && find dist/
         shell: bash
 
-
-      - name: Create Code Signing Certificate
-        if: runner.os == 'Windows'
-        run: |
-          New-Item -ItemType directory -Path certificate
-          Set-Content -Path certificate\certificate.txt -Value '${{ secrets.CODE_SIGN_CERT }}'
-          certutil -decode certificate\certificate.txt certificate\certificate.pfx
-
       - name: Code Sign (exe)
         if: runner.os == 'Windows'
         run: |
-          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://timestamp.sectigo.com /td sha256 dist\StoX-win32-x64\StoX.exe
+          Invoke-WebRequest https://github.com/vcsjones/AzureSignTool/releases/download/v6.0.1/AzureSignTool-x64.exe -OutFile AzureSignTool.exe
+          ./AzureSignTool.exe sign -du "https://github.com/StoXProject" -fd sha384 -kvu '${{ secrets.CODE_SIGN_VAULT }}' -kvi '${{ secrets.CODE_SIGN_APPID }}' -kvt '${{ secrets.CODE_SIGN_TENANT }}' -kvs '${{ secrets.CODE_SIGN_PASS }}' -kvc '${{ secrets.CODE_SIGN_CERT }}' -tr http://timestamp.digicert.com -td sha384 -v dist\StoX-win32-x64\StoX.exe
 
       - name: Set path for candle and light
         if: runner.os == 'Windows'
@@ -87,8 +78,7 @@ jobs:
       - name: Code Sign (installers)
         if: runner.os == 'Windows'
         run: |
-          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://timestamp.sectigo.com /td sha256 dist\installers\StoX.msi
-          #& 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /f certificate\certificate.pfx /p '${{ secrets.CODE_SIGN_PASS }}' /fd sha256 /tr http://timestamp.sectigo.com /td sha256 installers\StoXInstaller\x64\Release\StoXInstaller.exe
+          ./AzureSignTool.exe sign -du "https://github.com/StoXProject" -fd sha384 -kvu '${{ secrets.CODE_SIGN_VAULT }}' -kvi '${{ secrets.CODE_SIGN_APPID }}' -kvt '${{ secrets.CODE_SIGN_TENANT }}' -kvs '${{ secrets.CODE_SIGN_PASS }}' -kvc '${{ secrets.CODE_SIGN_CERT }}' -tr http://timestamp.digicert.com -td sha384 -v dist\installers\StoX.msi
 
       - name: Renaming files for upload
         env:
