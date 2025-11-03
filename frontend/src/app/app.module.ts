@@ -148,7 +148,7 @@ export class MaterialModule {}
     FormsModule,
     TabViewModule,
     NgbModule,
-    AngularSplitModule.forRoot(),
+    AngularSplitModule,
     NgxResizeObserverModule,
     HttpClientModule,
 

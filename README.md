@@ -23,7 +23,7 @@ Step 2:
 Step 2: Install R 4.4 or newer if not already installed. It is recommended to use the latest version of R.
 
 Step 3: 
-Click on "Tools" > "R connection" in the menu to define the path to R (for example C:\Program Files\R\R-4.5.0\bin\x64).
+Click on "Tools" > "R connection" in the menu to define the path to R (for example C:\Program Files\R\R-4.5.2\bin\x64).
 
 Step 4: 
 Click on "Tools" > "Install Rstox packages" in the menu. This will install the required R packages. After installing, the StoX and RstoxFramework version numbers shown in the upper right corner should be in black color. If any of these are in red color you are using an unofficial StoX release. It is recommended to close Rstudio and any other R applications before running Install Rstox packages. 
