@@ -1,4 +1,4 @@
-<p-dialog header="{{title}}" [(visible)]="service.display" [modal]="true" (onHide)="onHide()" [style]="{width: '800px', minWidth: '400px', maxHeight: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
+<p-dialog header="{{title}}" [(visible)]="service.display" [modal]="true" (onHide)="onHide()" [style]="{width: '800px', minWidth: '400px'}" [minY]="20" [maximizable]="false" [baseZIndex]="10000">
   <MessageDlg></MessageDlg>
   <button mat-raised-button (click)="addRow()">Add</button> &nbsp; <button mat-raised-button [disabled]="!atLeastOneSelected()" (click)="removeSelectedRows()">Delete</button> &nbsp;
 
