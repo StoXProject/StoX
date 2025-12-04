@@ -1,10 +1,25 @@
+# StoX v4.2.0-9002 (2025-12-04)
+
+## Summary
+* The StoX version 4.2.0-9002 is a pre-release to the minor release 4.2.0 containing improvements to StationsAlongTransectDesign() and WriteStationsAlongTransectDesign().
+
+## General changes
+* Added names to stations in output from WriteStationsAlongTransectDesign() in the form Station_01, Station_02, etc.
+* Added the option AddTransectEndPoints for adding transect end points in StationsAlongTransectDesign().
+* Added support for reading a table in from file in DefineSurvey() (not only form a project.xml/project.json).
+* Improved the warnings when RemoveMissingValues is TRUE, which is now only triggered if there are missing values for any of the GroupingVariables.
+
+## Detailed changes
+* Restricted error when BaselineSeedTable does not include all required processes to not include non-Enabled processes.
+
+
 # StoX v4.2.0-9001 (2025-11-03)
 
 ## Summary
-* The StoX version 4.2.0-9003 is a pre-release to the minor release 4.2.0 containing the new functions DefineTransectParameter, TransectDesign, PlotTransectDesign, ReportTransectDesign and WriteTransectDesign, and StationsAlongTransectDesign and WriteStationsAlongTransectDesign, in addition to changes in the functions ICESDatras, ICESDatsu, ICESAcousic and ICESBiotic, and a number of important bug fixes and improvements to speed in the GUI (approximately 25 % faster when manipulating arguments of a StoX process and approximately 75% for moving between processes, for a normal sized StoX project).
+* The StoX version 4.2.0-9001 is a pre-release to the minor release 4.2.0 containing the new functions DefineTransectParameter, TransectDesign, PlotTransectDesign, ReportTransectDesign and WriteTransectDesign, and StationsAlongTransectDesign and WriteStationsAlongTransectDesign, in addition to changes in the functions ICESDatras, ICESDatsu, ICESAcousic and ICESBiotic, and a number of important bug fixes and improvements to speed in the GUI (approximately 25 % faster when manipulating arguments of a StoX process and approximately 75% for moving between processes, for a normal sized StoX project).
 
 ## Bug fixes
-
+* Fixed bug that made all plots fail in StoX 4.1.4.
 * Fixed bug in ICESAcoustic(), where LogOrigin and LogOrigin2 were set to "start" and "end" even then positions were missing, resulting in error when trying to submit data to ICES.
 * Fixed bug in all Copy-functions (CopyBiotic, CopyStoxBiotic, CopyICESBiotic, CopyICESDatras, CopyICESDatsusc, CopyAcoustic, CopyStoxAcoustic, CopyICESAcoustic, CopyLanding, CopyStoxLanding) where the argument PreserveClass was visible even when Overwrite was FALSE.
 * Fixed bug in RedefineStoxBiotic() where redefining a variable in the Station level where there are multiple hauls per station in the BioticData (multiple 'serialnumber' per 'station' in NMDBiotic) resulted in duplicated rows in the Station table of the output StoxBioticData.
@@ -21,10 +36,8 @@
 	* Changed from -9 to NA in EmptyStomWgt in the PI table.
 * Changed -9 to NA to represent missing values in WriteICESDatsusc().
 * Fixed bug where WriteICESDatsusc actually called WriteICESDatrasOne().
-* Changed warning to error when ICES vocabulary cannot be checked (e.g. when internet connection is lost), affecting ICESBiotic() and ICESAcoustic(). StoX project that are run with these functions should not fail if the internet connection is lost.
-* Temporarily disabled the checks for ICESAcoustic() and ICESBiotic() in test-StoxExport.R due to failure on macOS "x86_64" architecture to access https://acoustic.ices.dk/Services/Schema/XML at ICES.
 * Added rounding of the StratumPolygon to 12 digits in TransectDesign() to avoid the error "IllegalArgumentException: Points of LinearRing do not form a closed linestring" that appeared on macOS arm64 on R v4.5.2.
-
+* Removed all check against ICES vocabularies in ICESAcoustic() and ICESBiotic(). Comprehensive checks are run when a file is submitted to the acoustic database at ICES.
 
 ## General changes
 * Added the functions DefineTransectParameter, TransectDesign, PlotTransectDesign, ReportTransectDesign and WriteTransectDesign, which can be used to produce, plot, report and write a transect survey design (inspired from the old surveyPlanner() funciton of the no longer maintained R package Rstox).
@@ -41,14 +54,13 @@
 * Removed the argument AllowRemoveSpecies in ICESBiotic(), and added the backwards compatibility action that any ICESBiotic process is split into an ICESBiotic process and a FilterICESBiotic process that keeps only those species present in the ICES vocabulary at the time of opening the old project.
 * Added drop-down list of possible values in TranslationTable in Translation* funcitons (except for the NewValue).
 
-
 ## Detailed changes
 * Renamed UseDefaultTextSettings to UseDefaultLabelSettings in PlotReportBootstrap().
 * Added a check when UseProcessData = TRUE in DefineAcousticPSU() for whether recalculated PSUByTime differs from the existing in processData. If differing, a message is shown to the user that the process can be re-run with DefinitionMethod "Manual" in order to update the PSUByTime.
 * Removed unused PSUDefinitionMethod in MeanLengthDistribution() and MeanSpeciesCategoryCatch().
 * Refactored PlotAcousticTrawlSurvey() and dependent functions to work consistently with the new PlotSurveyPlan().
 * Improved the description of the argument SplitTableAllocation.
-* Removed all check against ICES vocabularies in ICESAcoustic() and ICESBiotic(). Comprehensive checks are run when a file is submitted to the acoustic database at ICES.
+
 
 
 # StoX v4.1.4 (2025-04-30)
@@ -371,7 +383,7 @@ I addition, the resamling function "ResampleBioticAssignmentByAcousticPSU" that 
 ## Changes affecting backward compatibility
 1. In acoustic-trawl projects hauls are assigned to the acoustic PSUs (function BioticAssignment) in order to produce a length distribution (function AssignmentLengthDistribution) used for converting NASC to number density (function AcousticDensity). When boostrapping acoustic-trawl projects in StoX <= 3.6.2 the collection of hauls assigned to at least one acoustic PSU in a stratum is resampled with replacement, so that the hauls are sampled 0, 1, 2, etc times. If hauls are assigned differently to different acoustic PSUs there is a probability that none of the assigned hauls are resampled for a specific acoustic PSU. This can lead to under-estimation, as the corresponding NASC cannot be converted to density without a length distribution (resulting in missing density). In StoX 4.0.0 this results in a warning and a proposal to use the new resampling function that samples only from the assigned hauls for each individual acoustic PSU (using ResampleBioticAssignmentByPSU instead of ResampleBioticAssignmentByStratum in the BootstrapMethodTable). Making this change to a StoX project will change the results, and may also require new assignments to be defined in case there are acoustic PSUs with only one assigned haul, which will result in no contribution to the bootstrap variation from those PSUs.
 
-2. A bug in ImputeSuperIndividuals() in StoX <= 3.6.2, occurring in acoustic-trawl projects when hauls are assigned to more than one stratum, could result in data not being fully imputed. The bug was that the Individual column was used to identify rows to impute from, but the values of this column are not unique when an individual is used in more than one stratum. A row with data to be imputed could thus me masked by another row with the same Individual. To solve this the new StoX version has introduced a new column of unique values named StratumLayerIndividual which is used in the imputation.
+2. A bug in ImputeSuperIndividuals() in StoX <= 3.6.2, occurring in acoustic-trawl projects when hauls are assigned to more than one stratum, could result in data not being fully imputed. The bug was that the Individual column was used to identify rows to impute from, but the values of this column are not unique when an individual is used in more than one stratum. A row with data to be imputed could thus be masked by another row with the same Individual. To solve this the new StoX version has introduced a new column of unique values named StratumLayerIndividual which is used in the imputation.
 
 ## Changes in the GUI
 * Added green bold for input and output processes to the selected process and black bold for processes not used in any other processes in the model. Processes that use the selected process but are not used by any other process in the model are show as dark green bold.
