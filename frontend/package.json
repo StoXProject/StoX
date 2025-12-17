@@ -1,6 +1,6 @@
 {
   "name": "stox",
-  "version": "4.2.0-9002",
+  "version": "4.2.0-9003",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
