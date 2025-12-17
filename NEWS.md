@@ -1,3 +1,25 @@
+# StoX v4.2.0-9003 (2025-12-17)
+
+## Summary
+* The StoX version 4.2.0-9003 is a pre-release to the minor release 4.2.0 containing Convert functions, expansion from 5 to 7 colors for StoxBioticData in the map in the GUI (allowing for 6 filtering processes in addition to the first StoxBiotic process).
+
+## General changes
+* Added support for specifying a function in NewValue in TranslationTable in Translate functions. This allows for mathematical transformation of values, e.g. IndividualTotalLength * 0.9 to get total length from fork length
+* Added the possibility to condition on variables present in parent tables in Translate functions. This can be useful e.g. when translating variables in the Individual table of StoxBiotic conditioned on SpeciesCategory (which is found two tables up in the SpeciesCategory table).
+* Restricted LengthType accepted to only "1" from ICESBiotic XML files in the StoxBiotic() function, equivalent to the only accepted lengthmeasurement "E" from NMDBiotic XML files.
+
+## Bug fixes
+* Fixed bug where the only the first Survey from the Survey table of BioticData read from ICESBiotic XML files was added to the Cruise table. In the ICESBiotic CSV file multiple surveys concatenated with "~" as separator, which is not adopted in RstoxData.
+* Fixed bug where PreserveClass was not showing in the GUI even if Overwrite was set to TRUE.
+
+## Detailed changes
+* Changed the warning i StoxBiotic() for non-total length (lengthmeasurement != "E" or LengthType != "1") to not list the species, but rather inform about the possibility to transform the length values using Translate functions.
+* Added the LocalID as key field in the Survey table of BioticData and AcousticData when read from ICES XML files.
+* Updated documentation of DefineTranslation().
+* Fixed bug where the current process and beyond were shown in the drop down list for function inputs.
+* Updated the test project coastalCod_20 to contain translation of length.
+
+
 # StoX v4.2.0-9002 (2025-12-04)
 
 ## Summary

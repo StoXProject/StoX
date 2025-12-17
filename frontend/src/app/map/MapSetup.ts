@@ -130,10 +130,33 @@ export class MapSetup {
     ];
   }
 
-  static STATION_POINT_COLORS: string[] = ['rgb(92,172,238)', 'rgb(78,96,188)', 'rgb(88,0,139)', 'rgb(169,10,186)', 'rgb(199,21,90)'];
-  static DISTANCE_POINT_COLORS: string[] = ['rgb(255,192,203)', 'rgb(196,96,101)', 'rgb(139,0,0)', 'rgb(188,59,0)', 'rgb(238,118,0)'];
+  static STATION_POINT_COLORS: string[] = [
+    //'rgb(92,172,238)', 
+    //'rgb(78,96,188)', 
+    //'rgb(88,0,139)', 
+    //'rgb(169,10,186)', 
+    //'rgb(199,21,90)'
+    'rgb(115, 161, 230)',
+    'rgb(77, 95, 191)',
+    'rgb(104, 0, 153)',
+    'rgb(166, 17, 160)',
+    'rgb(230, 23, 147)',
+    'rgb(166, 8, 65)',
+    'rgb(102, 0, 0)'
+  ];
+  static DISTANCE_POINT_COLORS: string[] = [
+    'rgb(255,192,203)', 
+    'rgb(196,96,101)', 
+    'rgb(139,0,0)', 
+    'rgb(188,59,0)', 
+    'rgb(238,118,0)'
+  ];
 
   static getStationPointStyleCache(layerIdx: number): Style[] {
+    if(layerIdx >= MapSetup.STATION_POINT_COLORS.length) {
+      console.error('StoX can only show ' + MapSetup.STATION_POINT_COLORS.length + "layers of StoxBiotic Stations (Too many processes returning StoxBioticData with 'Show in map' checked).");
+      throw 'StoX can only show ' + MapSetup.STATION_POINT_COLORS.length + "layers of StoxBiotic Stations (Too many processes returning StoxBioticData with 'Show in map' checked).";
+    }
     const pointColor = MapSetup.STATION_POINT_COLORS[layerIdx % MapSetup.STATION_POINT_COLORS.length];
     const symSize: number = 14;
 
