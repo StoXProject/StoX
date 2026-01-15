@@ -1,3 +1,23 @@
+# StoX v4.2.0-9004 (2026-01-13)
+
+## Summary
+* The StoX version 4.2.0-9004 is a pre-release to the minor release 4.2.0 containing bug fixes.
+
+## General changes
+* Added message recommending to use the OutputVariables if not given in Bootstrap().
+
+## Bug fixes
+* Fixed bug in Bootstrap() when UseOutputData was TRUE, in which case the stored output file was not found.
+* Fixed bug in the drop down list of DensityUnit in ReportDensity(), where only the area number density units were shown even when DensityType was "AreaWeightDensity" (by introducing the column variableType in dataTypeUnits).
+* Fixed bug in ICESAcoustic, where reading an NMDEchosounder file in the ReadAcoustic process used as input failed in the merging of tables "distance", "frequency", "sa", Now expanded to merge "distance", "frequency", "ch_type", "sa_by_acocat" and "sa".
+* Fixed bug where ReplaceLevel and ReplaceStratumLayerIndividual were not reset in ImputeSuperIndividuals, so that values from a previous such process remained in the output.
+* Fixed bug where a process was shown as terminal (bold face) even if it was used in a later model.
+
+## Detailed changes
+* Added units for area_weight_density.
+* Added documentation of the output of getProcessTable.
+
+
 # StoX v4.2.0-9003 (2025-12-17)
 
 ## Summary
