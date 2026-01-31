@@ -17,3 +17,4 @@ Official StoX versions are fully tested and are the only one that should be used
 | 4.1.2|          4.1.2|     2.1.2|     2.1.2|    1.3.0|   2025-01-21| [StoX-v4.1.2](https://github.com/StoXProject/StoX/releases/tag/v4.1.2)| R >= 4.3
 | 4.1.3|          4.1.3|     2.1.3|     2.1.4|    1.6.0|   2025-04-01| [StoX-v4.1.3](https://github.com/StoXProject/StoX/releases/tag/v4.1.3)| R >= 4.3
 | 4.1.4|          4.1.4|     2.1.3|     2.1.5|    1.6.0|   2025-04-30| [StoX-v4.1.4](https://github.com/StoXProject/StoX/releases/tag/v4.1.4)| R >= 4.3
+| 4.2.0|          4.2.0|     2.2.0|     2.2.0|    1.7.0|   2026-01-30| [StoX-v4.2.0](https://github.com/StoXProject/StoX/releases/tag/v4.2.0)| R >= 4.4
