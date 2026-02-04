@@ -8,6 +8,7 @@
 	* A number of bugs have been fixed and critical upgrades have been made, inparticular to the functions ICESDatras, ICESDatsu, ICESAcousic and ICESBiotic. 
 	* The GUI has gained a speed increase of approximately 25 % for a nomral sized StoX project when manipulating arguments of a process and approximately 75% when moving between processes. 
 	* The colors of stations in the map have been changed from 5 colors from light blue to pink to 7 colors from light blue to dark red, which adds support for a 5th and 6th FilterStoxBiotic process to be shown in addition to a StoxBiotic process.
+	* Fixed bug in RegroupLengthDistribution(), where values of IndividualTotalLength were shifted down one length interval. See details under Bug fixes.
 
 ## General changes
 * Added message recommending to use the OutputVariables if not already used in Bootstrap().
@@ -28,6 +29,15 @@
 * Added drop-down list of possible values in TranslationTable in Translation* funcitons (except for the NewValue).
 
 ## Bug fixes
+* Fixed bug where adding a process to a blank project resulted in error.
+* Fixed bug in RegroupLengthDistribution(), where values of IndividualTotalLength were shifted down one length interval. This problem is most apparent when the function argument LengthInterval is the same as the LengthResolution in the input LengthDistributionData. When using the GUI or RstoxFramework::runModel() and similar functions, the precision is rounded to 12 digits, which elliminates this problem for LengthResolution 1 and 0.5 cm. The following table shows the number of lengths between 0 and 1 m that are shifted down when RegroupLengthDistribution() is applied with LengthInterval equal to LengthResolution:
+| LengthResolution | Fraction of values shifted down | Mean downwards shift in cm |
+|----------|----------|----------|
+| 0.1 mm | 357 / 1000 = 0.357 | 0.0357 |
+| 0.5 mm | 7 / 200 = 0.035 | 0.0175 |
+| 1 cm | 3 / 100 = 0.03 | 0.03 |
+
+For ICESBiotic data the problem will only occur for StoX projects where data are in 1 mm resolution AND the LengthInterval in RegroupLengthDistribution is 0.1 cm. For Norwegian data the problem is potentially wider as supported length resolutions include 0.1 mm and 0.5 mm as well as 1 mm, 0.5 cm and 1 cm.
 * Fixed bug in Bootstrap() when UseOutputData was TRUE, in which case the stored output file was not found.
 * Fixed bug in the drop down list of DensityUnit in ReportDensity(), where only the area number density units were shown even when DensityType was "AreaWeightDensity" (by introducing the column variableType in dataTypeUnits).
 * Fixed bug in ICESAcoustic, where reading an NMDEchosounder file in the ReadAcoustic process used as input failed in the merging of tables "distance", "frequency", "sa", Now expanded to merge "distance", "frequency", "ch_type", "sa_by_acocat" and "sa".
