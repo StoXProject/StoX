@@ -4,7 +4,7 @@
 
 StoX is an open source software developed at IMR, Norway, to analyze survey data and calculate survey estimates from acoustic and swept area surveys. The program is a stand-alone application for easy sharing and further development in cooperation with other institutes. 
 
-“StoX is designed as a tool for transparent and reproducible survey estimation across nations and survey objectives. All methods, user settings and links to input data are documented in a description file. A process is a user‐defined call to one function available in a library of functions defined by StoX. Any StoX model can be modified by changing parameters of the processes, adding or removing processes and by rearranging their order of execution. Different StoX functions require one or more input datasets, which can be data files or output from previously executed processes.” [Johnsen, E., Totland, A., Skålevik, Å., Holmin, A. J., Dingsør, G. E., Fuglebakk, E., & Handegard, N. O. (2019). StoX: An open source software for marine survey analyses. Methods in Ecology and Evolution, 10(9), 1523-1528.](https://doi.org/10.1111/2041-210X.13250)
+“StoX is designed as a tool for transparent and reproducible survey estimation across nations and survey objectives. All methods, user settings and links to input data are documented in a description file (the project.json file). A process is a user‐defined call to one function available in a library of functions defined by StoX. Any StoX model can be modified by changing parameters of the processes, adding or removing processes and by rearranging their order of execution. Different StoX functions require one or more input datasets, which can be data files or output from previously executed processes.” [Johnsen, E., Totland, A., Skålevik, Å., Holmin, A. J., Dingsør, G. E., Fuglebakk, E., & Handegard, N. O. (2019). StoX: An open source software for marine survey analyses. Methods in Ecology and Evolution, 10(9), 1523-1528.](https://doi.org/10.1111/2041-210X.13250)
 
 ## Installation
 
@@ -86,7 +86,7 @@ sudo apt-get install -y libproj-dev
 If problems still occur, try debugging by loacting and running in R the commands that (1) source the Vesions.R file and (2) call the installOfficialRstoxPackagesWithDependencies() function, found in the log file located in the folder "stox" in your system temp folder (/tmp/stox), but with quiet = FALSE. See the following example:
 
 source("/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.Versions.R")
-installOfficialRstoxPackagesWithDependencies("3.1.4", "/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.OfficialRstoxFrameworkVersions.txt", quiet = FALSE, toJSON = TRUE) 
+installOfficialRstoxPackagesWithDependencies("4.2.0", "/private/var/folders/gn/965ff8792cz_pmwdkdgssbzsyn4rns/T/stox.OfficialRstoxFrameworkVersions.txt", quiet = FALSE, toJSON = TRUE) 
 
 Step 6: 
 StoX is now ready for use. 
