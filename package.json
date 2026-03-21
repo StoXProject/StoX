@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/StoXProject/StoX#readme",
   "dependencies": {
-    "@angular/cli": "^21.1.2",
+    "@angular/cli": "^15.2.10",
     "@types/node": "^18.0.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
