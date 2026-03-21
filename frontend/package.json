@@ -1,6 +1,6 @@
 {
   "name": "stox",
-  "version": "4.2.0",
+  "version": "4.2.1-9001",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -46,15 +46,15 @@
     "zone.js": "^0.11.8"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^15.2.10",
-    "@angular-eslint/builder": "15.2.1",
-    "@angular-eslint/eslint-plugin": "15.2.1",
-    "@angular-eslint/eslint-plugin-template": "15.2.1",
-    "@angular-eslint/schematics": "15.2.1",
-    "@angular-eslint/template-parser": "15.2.1",
-    "@angular/cli": "^9.1.0",
-    "@angular/compiler": "^15.0.0",
-    "@angular/compiler-cli": "^15.0.0",
+    "@angular-devkit/build-angular": "^21.1.2",
+    "@angular-eslint/builder": "^21.1.2",
+    "@angular-eslint/eslint-plugin": "^21.1.2",
+    "@angular-eslint/eslint-plugin-template": "^21.1.2",
+    "@angular-eslint/schematics": "^21.1.2",
+    "@angular-eslint/template-parser": "^21.1.2",
+    "@angular/cli": "^21.1.2",
+    "@angular/compiler": "^21.1.2",
+    "@angular/compiler-cli": "^21.1.2",
     "@types/jasmine": "^5.1.1",
     "@typescript-eslint/eslint-plugin": "5.48.2",
     "@typescript-eslint/parser": "5.48.2",

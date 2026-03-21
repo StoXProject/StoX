@@ -1,3 +1,22 @@
+# StoX v4.2.1-9001 (2026-03-22)
+
+## Summary
+* The StoX version 4.2.1-9001 is a pre-release to the patch release 4.2.1 containing bug fixes.
+
+## General changes
+* Changed warning to error in StoxAcoustic when the Time (ICESAcoustic) or start_time (NMDEchosounder) is not unique in AcousticData, since StoX uses these as the LogKey in StoxAcousticData. Existing StoX projects with non-unique times will now fail. Before, the logs with duplicated time were removed.
+
+## Bug fixes
+* Fixed bug where selecting 0 in a parameter table drow down list resulted in null, not 0.
+
+## Detailed changes
+* Added message when RstoxFramework fails to read memory files that it has created itself, due to system encoding not being URF-8 on Windows.
+* Added support for returning the JSON string to insert into the OutputVariables field in Bootstrap processes in the StoX GUI from getBootstrapOutputVariables().
+* Added documentation of the returned elements from getProjectPaths().
+* Added a check for existence of the resource file in DefineTranslation().
+* Improved warning when bottomdepthstart or bottomdepthstop used to calcualte BottomDepth in StoxBiotic() contains missing values.
+
+
 # StoX v4.2.0 (2026-01-30)
 
 ## Summary
@@ -5,7 +24,7 @@
 	* Tools for survey design thorugh the new functions TransectDesign and StationsAlongTransectDesign, and related functions for reporting, plotting and exporting to files for import to map applications (e.g. Olex). 
 	* The Translate funcitons (TranslateBiotic, TranslateStoxBiotic, TranslateAcoustic, etc) now support using an R expression string in the NewValue column, which opens for transforming data (e.g. between different length measurements). 
 	* Support for conditioning on variables in parent tables in Translate funcitons, e.g., conditioning on SpeciesCategory when translating columns in the Individual table of StoxBioticData.
-	* A number of bugs have been fixed and critical upgrades have been made, inparticular to the functions ICESDatras, ICESDatsu, ICESAcousic and ICESBiotic. 
+	* A number of bugs have been fixed and critical upgrades have been made, in particular to the functions ICESDatras, ICESDatsu, ICESAcousic and ICESBiotic. 
 	* The GUI has gained a speed increase of approximately 25 % for a nomral sized StoX project when manipulating arguments of a process and approximately 75% when moving between processes. 
 	* The colors of stations in the map have been changed from 5 colors from light blue to pink to 7 colors from light blue to dark red, which adds support for a 5th and 6th FilterStoxBiotic process to be shown in addition to a StoxBiotic process.
 	* Fixed bug in RegroupLengthDistribution(), where values of IndividualTotalLength were shifted down one length interval. See details under Bug fixes.
