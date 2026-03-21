@@ -173,7 +173,7 @@ export class DefinedColumnsTableDlg {
     for (let i = 0; i < this.service.definedColumnsData.length; i++) {
       for (let j = 0; j < this.service.definedColumnsData[i].columnValues.length; j++) {
         // Treat empty string (empty field) as null
-        if (this.service.definedColumnsData[i].columnValues[j].value == '') {
+        if (this.service.definedColumnsData[i].columnValues[j].value === '') {
           this.service.definedColumnsData[i].columnValues[j].value = null;
         }
       }
