@@ -1,3 +1,17 @@
+# StoX v4.2.1-9002 (2026-05-07)
+
+## Summary
+* The StoX version 4.2.1-9002 is a pre-release to the patch release 4.2.1 containing the important bug fix in StoxAcoustic for ICESAcoustic input files.
+
+## General changes
+* Added the column Direction in the Stratum table of the output from ReportTransectDesign(), so that tour and retour will be in separate rows.
+
+## Bug fixes
+* Fixed bug in Bootstrap, where the output file was not overwritten when running the process again, but only when the previous file was deleted when running one or more processes in Baseline again. The problem was that the output file need to be kept in order for the argument UseOutputData to work, but the file copy from memory file to output file did not overwrite.
+* Fixed bug in StoxAcoustic where BeamKey was corrupted for data read by ReadAcoustic() from file in the ICESAcoustic format (LU25/LUF26 from LSSS). This resulted in NASC data being mixed between frequencies in the output from StoxAcoustic. The fix was to set sort = FALSE when merging in the Instrument table.
+* Fixed bug where TranslateICESAcoustic() did not manage to translate variables in the tables Instrument, Calibration, DataAcquisition and DataProcessing.
+
+
 # StoX v4.2.1-9001 (2026-03-22)
 
 ## Summary
@@ -10,7 +24,7 @@
 * Fixed bug where selecting 0 in a parameter table drow down list resulted in null, not 0.
 
 ## Detailed changes
-* Added message when RstoxFramework fails to read memory files that it has created itself, due to system encoding not being URF-8 on Windows.
+* Added message when RstoxFramework fails to read memory files that it has created itself, due to system encoding not being UTF-8 on Windows.
 * Added support for returning the JSON string to insert into the OutputVariables field in Bootstrap processes in the StoX GUI from getBootstrapOutputVariables().
 * Added documentation of the returned elements from getProjectPaths().
 * Added a check for existence of the resource file in DefineTranslation().
