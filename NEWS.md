@@ -10,7 +10,8 @@
 * Fixed bug in Bootstrap, where the output file was not overwritten when running the process again, but only when the previous file was deleted when running one or more processes in Baseline again. The problem was that the output file need to be kept in order for the argument UseOutputData to work, but the file copy from memory file to output file did not overwrite.
 * Fixed bug in StoxAcoustic where BeamKey was corrupted for data read by ReadAcoustic() from file in the ICESAcoustic format (LU25/LUF26 from LSSS). This resulted in NASC data being mixed between frequencies in the output from StoxAcoustic. The fix was to set sort = FALSE when merging in the Instrument table.
 * Fixed bug where TranslateICESAcoustic() did not manage to translate variables in the tables Instrument, Calibration, DataAcquisition and DataProcessing.
-
+* Fixed bug in getMapData() which caused EDSUs with no NASC data to not show in the GUI map.
+* Removed error message when there are missing LogOrigin or LogOrigin2 if all other values are equal.
 
 # StoX v4.2.1-9001 (2026-03-22)
 
