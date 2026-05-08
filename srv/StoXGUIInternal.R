@@ -287,6 +287,9 @@ getRstoxPackageURL <- function(
     }
     
 
+
+
+
     packageURL <- mapply(
         locatePackage, 
         packageName = packageName, 
@@ -309,19 +312,25 @@ locatePackage <- function(packageName, version, Rstox.repos, type, twoDigitRVers
     # Get the comtrib URL and download and read the package table:
     contriburl <- contrib.url_Rstox(Rstox.repos = Rstox.repos, type = type, twoDigitRVersion = twoDigitRVersion)
     tmpf <- file.path(tempdir(), "PACKAGES")
-    download.file(url = file.path(contriburl, "PACKAGES"), destfile = tmpf, quiet = TRUE)
-    suppressWarnings(packageTable <- read.dcf(tmpf))
+
     
     # Empty table results in NA returned:
     output <- NA
-    if(NROW(packageTable)) {
-        hasPackageVersion <- packageTable[, "Package"] == packageName  &  packageTable[, "Version"] == version
+    url <- file.path(contriburl, "PACKAGES")
 
-        if(sum(hasPackageVersion) == 1) {
-            output <- getPackageURL(contriburl, packageName, version, type)
+    if(is_online(url)) {
+        download.file(url = file.path(contriburl, "PACKAGES"), destfile = tmpf, quiet = TRUE)
+        suppressWarnings(packageTable <- read.dcf(tmpf))
+
+        if(NROW(packageTable)) {
+            hasPackageVersion <- packageTable[, "Package"] == packageName  &  packageTable[, "Version"] == version
+
+            if(sum(hasPackageVersion) == 1) {
+                output <- getPackageURL(contriburl, packageName, version, type)
+            }
         }
-        
     }
+    
 
     return(output)
 }
