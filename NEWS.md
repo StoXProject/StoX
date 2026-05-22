@@ -1,3 +1,16 @@
+# StoX v4.2.1-9003 (2026-05-22)
+
+## Summary
+* The StoX version 4.2.1-9003 is a pre-release to the patch release 4.2.1 containing bug fixes for reading PSUByTime in DefineAcousticPSU() and translating fields in the tables Calibration, DataAcquisition, DataProcessing in TranslateICESAcoustic().
+
+## General changes
+* Changed ICESBiotic() to NOT set NA to 0 for SubsampleWeight in the Catch table, since the ICES acoustic database only accepts NA or a positive number as of the beginning of 2026.
+* In ICESBiotic() changed BioticData_NMDToICESBioticOne() to set SubsamplingFactor to catchweight / lengthsampleweight if both catchcount and lengthsamplecount are missing.
+## Bug fixes
+* Fixed bug where reading a PSUByTime.txt file with DefineAcousticPSU() (using DefinitionMethod = "ResourceFile") failed when e.g. Stratum was interpretable as numeric/integer. Now columns are read as character and time.
+* Fixed bug in TranslateICESAcoustic() where translation of the tables Calibration, DataAcquisition, DataProcessing did not work due to error in the keys generated with expandICESKeysWithPrefix().
+
+
 # StoX v4.2.1-9002 (2026-05-07)
 
 ## Summary
