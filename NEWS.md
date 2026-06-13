@@ -1,3 +1,21 @@
+
+# StoX v4.2.1-9004 (2026-06-13)
+
+## Summary
+* The StoX version 4.2.1-9004 is a pre-release to the patch release 4.2.1 containing a number of bug fixes and some improvements.
+
+## General changes
+* Added support for reading zipped ICESAcoustic XML files (in getIcesVocabulary()).
+* Added support in DefineStratumPolygon() for specifying a folder holding shape files, and not only the file with extension "shp". 
+
+## Bug fixes
+* Fixed bug in Translate functions where translating numeric variables did not work for large values that are represented by scientific notation in R. As an example, 200000000 is represented as 2E+08, and after the fix, both 200000000 and 2E+08 are valid values to translate from.
+* Fixed bug in zipProject(), where large files failed presumably due to the q flag, which is not removed.
+
+## Detailed changes
+* Removed warning occurring when translation table and variable is coerced to numeric in matchVariable().
+
+
 # StoX v4.2.1-9003 (2026-05-22)
 
 ## Summary
@@ -6,6 +24,7 @@
 ## General changes
 * Changed ICESBiotic() to NOT set NA to 0 for SubsampleWeight in the Catch table, since the ICES acoustic database only accepts NA or a positive number as of the beginning of 2026.
 * In ICESBiotic() changed BioticData_NMDToICESBioticOne() to set SubsamplingFactor to catchweight / lengthsampleweight if both catchcount and lengthsamplecount are missing.
+
 ## Bug fixes
 * Fixed bug where reading a PSUByTime.txt file with DefineAcousticPSU() (using DefinitionMethod = "ResourceFile") failed when e.g. Stratum was interpretable as numeric/integer. Now columns are read as character and time.
 * Fixed bug in TranslateICESAcoustic() where translation of the tables Calibration, DataAcquisition, DataProcessing did not work due to error in the keys generated with expandICESKeysWithPrefix().
