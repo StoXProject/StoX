@@ -1,3 +1,37 @@
+# StoX v4.2.1 (2026-06-25)
+
+## Summary
+* The StoX version 4.2.1 is a patch release including a series of bug fixes, in addition to a reduction of time used by the Bootstrap function for StoX projects with large aoustic data.
+
+## General changes
+* Reduced processing time for the functions MeanNASC, AcousticDensity, MeanDensity and Abundance to approximately 30% for a StoX project with large acoustic data (regular survey with 10 m channels and 0.1 nautical mile log distance). This can lead to approximately 50 % reduction in Bootstrap time.
+* Added support for reading zipped ICESAcoustic XML files (change in getIcesVocabulary()).
+* Added support in DefineStratumPolygon() for specifying a folder holding shape files, and not only the shape file itself (file with extension "shp"). 
+
+## Bug fixes
+* Fixed bug in Translate functions where translating numeric variables did not work for large values that are represented by scientific notation in R. As an example, 200000000 is represented as 2E+08, and after the fix, both 200000000 and 2E+08 are valid values to translate from.
+* Fixed bug in zipProject(), where large files failed, presumably due to the q flag, which is now removed.
+* Fixed bug where reading a PSUByTime.txt file with DefineAcousticPSU() (using DefinitionMethod = "ResourceFile") failed when e.g. Stratum was interpretable as numeric/integer. Now columns are read as character and time.
+* Fixed bug in TranslateICESAcoustic() where translation of the tables Calibration, DataAcquisition, DataProcessing did not work due to error in the keys generated with expandICESKeysWithPrefix().
+* Fixed bug in Bootstrap, where the output file was not overwritten when running the process again, but only when the previous file was deleted when running one or more processes in Baseline again. The problem was that the output file need to be kept in order for the argument UseOutputData to work, but the file copy from memory file to output file did not overwrite.
+* Fixed bug in StoxAcoustic where BeamKey was corrupted for data read by ReadAcoustic() from file in the ICESAcoustic format (LU25/LUF26 from LSSS). This resulted in NASC data being mixed between frequencies in the output from StoxAcoustic. The fix was to set sort = FALSE when merging in the Instrument table.
+* Fixed bug where TranslateICESAcoustic() did not manage to translate variables in the tables Instrument, Calibration, DataAcquisition and DataProcessing.
+* Fixed bug in getMapData() which caused EDSUs with no NASC data to not show in the GUI map.
+* Removed error message when there are missing LogOrigin or LogOrigin2 if all other values are equal.
+* Fixed bug where selecting 0 in a parameter table drow down list resulted in null, not 0.
+
+## Detailed changes
+* Changed ICESBiotic() to NOT set NA to 0 for SubsampleWeight in the Catch table, since the ICES acoustic database only accepts NA or a positive number as of the beginning of 2026.
+* In ICESBiotic() changed BioticData_NMDToICESBioticOne() to set SubsamplingFactor to catchweight / lengthsampleweight if both catchcount and lengthsamplecount are missing.
+* Added the column Direction in the Stratum table of the output from ReportTransectDesign(), so that tour and retour will be in separate rows.
+* Changed warning to error in StoxAcoustic when the Time (ICESAcoustic) or start_time (NMDEchosounder) is not unique in AcousticData, since StoX uses these as the LogKey in StoxAcousticData. Existing StoX projects with non-unique times will now fail. Before, the logs with duplicated time were removed.
+* Added message when RstoxFramework fails to read memory files that it has created itself, due to system encoding not being UTF-8 on Windows.
+* Added support for returning the JSON string to insert into the OutputVariables field in Bootstrap processes in the StoX GUI from getBootstrapOutputVariables().
+* Added a check for existence of the resource file in DefineTranslation().
+* Improved warning when bottomdepthstart or bottomdepthstop used to calcualte BottomDepth in StoxBiotic() contains missing values.
+* Removed warning occurring when translation table and variable is coerced to numeric in matchVariable().
+
+
 # StoX v4.2.1-9005 (2026-06-24)
 
 ## Summary
